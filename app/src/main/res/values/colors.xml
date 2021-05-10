@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="naver_text_color">#FFFFFF</color>
+    <color name="naver_theme_color">#03c75a</color>
+    <color name="kakao_text_color">#3e2723</color>
+    <color name="kakao_theme_color">#FEE500</color>
+    <color name="google_text_color">#FFFFFF</color>
+    <color name="google_theme_color">#db4437</color>
+    <color name="facebook_text_color">#FFFFFF</color>
+    <color name="facebook_theme_color">#4E71A8</color>
+    <color name="app_theme_color">#09F6C7</color>
+
 </resources>
