@@ -5,6 +5,8 @@
     <string name="kakao_login">카카오 로그인</string>
     <string name="google_login">구글 로그인</string>
     <string name="facebook_login">페이스북 로그인</string>
+    <string name="facebook_app_id">453824635710043</string>
+    <string name="fb_login_protocol_scheme">fb453824635710043</string>
 
 
 </resources>
