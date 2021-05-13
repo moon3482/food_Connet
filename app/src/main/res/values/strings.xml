@@ -7,6 +7,11 @@
     <string name="facebook_login">페이스북 로그인</string>
     <string name="facebook_app_id">453824635710043</string>
     <string name="fb_login_protocol_scheme">fb453824635710043</string>
-<string name="kakao_native_appkey">79386308695f07328a0a5316dcb46a0a</string>
+    <string name="kakao_native_appkey">79386308695f07328a0a5316dcb46a0a</string>
+    <string name="fragment_menu_home">홈</string>
+    <string name="fragment_menu_review">리뷰</string>
+    <string name="fragment_menu_ranking">랭킹</string>
+    <string name="fragment_menu_chat">채팅</string>
+    <string name="fragment_menu_mypage">마이페이지</string>
 
 </resources>

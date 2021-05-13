@@ -2,8 +2,6 @@ package com.example.abled_food_connect
 
 import android.annotation.SuppressLint
 
-import android.content.Intent
-
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
@@ -14,14 +12,13 @@ import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.KakaoSdk
-import com.kakao.*
+import com.kakao.sdk.user.UserApiClient
+import android.content.Intent
+import android.view.MenuItem
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kakao.sdk.common.util.Utility
 
-import com.kakao.sdk.common.model.AuthErrorCause.*
-import com.kakao.sdk.user.UserApiClient
-
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
     lateinit var callbackManager: CallbackManager
   var TAG = "KAKAO"
     var id = ""
@@ -38,7 +35,8 @@ class MainActivity : AppCompatActivity() {
         val btnFacebookLogin : LinearLayout = findViewById(R.id.btnFacebookLogin)
         val btnKakaoLogin : LinearLayout = findViewById(R.id.btnKakaoLogin)
 
-//        var keyHash = Utility.getKeyHash(this)
+        val keyHash = Utility.getKeyHash(this)
+        Log.e("해시",keyHash)
 
 
 
@@ -65,7 +63,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 Log.i(TAG, "로그인 성공 ${token.accessToken}")
-
+                val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
+                startActivity(mainFragmentJoin)
             }
 
         }
@@ -79,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         callbackManager = CallbackManager.Factory.create()
-
+    
 
         if (isLoggedIn()) {
             Log.d("LoggedIn? :", "YES")
@@ -128,6 +127,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onSuccess(loginResult: LoginResult?) {
                     Log.d("TAG", "Success Login")
                     getUserProfile(loginResult?.accessToken, loginResult?.accessToken?.userId)
+                 val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
+                    startActivity(mainFragmentJoin)
                 }
 
                 override fun onCancel() {
@@ -264,6 +265,8 @@ class MainActivity : AppCompatActivity() {
         callbackManager.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
+
+
 
 
 }
