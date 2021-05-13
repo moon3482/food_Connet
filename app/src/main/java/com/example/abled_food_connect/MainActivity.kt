@@ -1,30 +1,29 @@
 package com.example.abled_food_connect
 
 import android.annotation.SuppressLint
-import android.content.Context
+
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Base64
+
 import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import io.socket.client.IO
-import io.socket.client.Socket
-import io.socket.emitter.Emitter
-import java.net.URISyntaxException
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import kotlin.concurrent.thread
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.KakaoSdk
+import com.kakao.*
+import com.kakao.sdk.common.util.Utility
+
+import com.kakao.sdk.common.model.AuthErrorCause.*
+import com.kakao.sdk.user.UserApiClient
 
 class MainActivity : AppCompatActivity() {
     lateinit var callbackManager: CallbackManager
-
+  var TAG = "KAKAO"
     var id = ""
     var firstName = ""
     var middleName = ""
@@ -37,7 +36,48 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val btnFacebookLogin : LinearLayout = findViewById(R.id.btnFacebookLogin)
+        val btnKakaoLogin : LinearLayout = findViewById(R.id.btnKakaoLogin)
 
+//        var keyHash = Utility.getKeyHash(this)
+
+
+
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+
+            if (error != null) {
+
+                Log.e(TAG, "로그인 실패", error)
+
+            }
+
+            else if (token != null) {
+                UserApiClient.instance.me { user, error ->
+                    if (error != null) {
+                        Log.e(TAG, "사용자 정보 요청 실패", error)
+                    }
+                    else if (user != null) {
+                        Log.i(TAG, "사용자 정보 요청 성공" +
+                                "\n회원번호: ${user.id}" +
+                                "\n이메일: ${user.kakaoAccount?.email}" +
+                                "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                                "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}"+
+                                "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+                    }
+                }
+                Log.i(TAG, "로그인 성공 ${token.accessToken}")
+
+            }
+
+        }
+
+
+        btnKakaoLogin.setOnClickListener {
+            if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)){
+                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
+            }else{
+                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+            }
+        }
         callbackManager = CallbackManager.Factory.create()
 
 

@@ -7,6 +7,6 @@
     <string name="facebook_login">페이스북 로그인</string>
     <string name="facebook_app_id">453824635710043</string>
     <string name="fb_login_protocol_scheme">fb453824635710043</string>
-
+<string name="kakao_native_appkey">79386308695f07328a0a5316dcb46a0a</string>
 
 </resources>
