@@ -53,12 +53,16 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    lateinit var nextIntent : Intent
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        nextIntent = Intent(this, UserRegisterActivity::class.java)
 
         /*
         네이버 로그인 구현
@@ -120,8 +124,10 @@ class MainActivity : AppCompatActivity() {
         val goToUserRegisterActivity : Button = findViewById(R.id.goToUserRegisterActivity)
         //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
         goToUserRegisterActivity.setOnClickListener {
-            val intent = Intent(applicationContext, UserRegisterActivity::class.java)
-            startActivity(intent)
+
+            nextIntent.putExtra("user_id", "uid")
+            nextIntent.putExtra("social_login_type", "GOOGLE")
+            startActivity(nextIntent)
         }
 
 
@@ -177,6 +183,13 @@ class MainActivity : AppCompatActivity() {
                 profile_image = profile_image.replace("\\", "")
                 Log.d("고유ID", id)
                 Log.d("프로필이미지", profile_image)
+
+                nextIntent.putExtra("user_id", id)
+                nextIntent.putExtra("social_login_type", "NAVER")
+
+                startActivity(nextIntent)
+
+
 
 //                val accessToken: String = mOAuthLoginModule.getAccessToken(baseContext)
 //                val refreshToken: String = mOAuthLoginModule.getRefreshToken(baseContext)
@@ -242,6 +255,11 @@ class MainActivity : AppCompatActivity() {
                     Log.d("이메일", email)
                     Log.d("프로필사진", photoUrl.toString())
                     Log.d("사용자 식별자 id", uid)
+
+
+                    nextIntent.putExtra("user_id", user.uid)
+                    nextIntent.putExtra("social_login_type", "GOOGLE")
+                    startActivity(nextIntent)
 
                     Toast.makeText(this, "success", Toast.LENGTH_LONG).show()
                     //startActivity(Intent (this, StudyRecommendActivity::class.java))

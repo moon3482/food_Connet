@@ -96,8 +96,8 @@ class UserRegisterActivity : AppCompatActivity() {
         // 뷰 id도 파스칼케이스 + 카멜케이스의 네이밍규칙 적용으로 인해서 nicName_Et -> nicNameEt 로 자동 변환 되었습니다.
 
 
-        user_id ="ddwdklqwdjlwqd"
-        social_login_type = "NAVER"
+        user_id = intent.getStringExtra("user_id").toString()
+        social_login_type = intent.getStringExtra("social_login_type").toString()
 
         imageView = binding.userProfileIv
 
@@ -108,12 +108,11 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
 
-        //사진첩 기능
+        //이미지뷰를 누르면 사진을 변경할 수 있다.
         binding.userProfileIv.setOnClickListener {
             var builder = AlertDialog.Builder(this)
-            builder.setTitle("기본 다이얼로그")
-            builder.setMessage("기본 다이얼로그")
-            builder.setIcon(R.mipmap.ic_launcher)
+            builder.setTitle("사진 업로드")
+            builder.setIcon(R.drawable.ic_baseline_camera_alt_24)
 
             // 버튼 클릭시에 무슨 작업을 할 것인가!
             var listener = object : DialogInterface.OnClickListener {
