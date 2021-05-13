@@ -1,4 +1,4 @@
-package com.example.kotlin_retrofit_test
+package com.example.abled_food_connect
 
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -11,7 +11,12 @@ interface retrofit_interface {
     @Multipart
     @POST("upload_image_test.php")
     fun post_Porfile_Request(
-        @Part("userId") userId: String,
+        @Part("user_id") user_id: String,
+        @Part("social_login_type") social_login_type: String,
+        @Part("nick_name") nick_name: String,
+        @Part("birth_year") birth_year: String,
+        @Part("user_gender") user_gender: String,
+        @Part("phone_number") phone_number: String,
         @Part imageFile : MultipartBody.Part): Call<String>
 
 //    //string값 보내는 예제입니다.
