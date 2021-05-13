@@ -30,6 +30,9 @@ class MainFragmentActivity : AppCompatActivity(),
         Log.d(TAG, "홈액티비티 onCreate()")
 
         bottom_nav.setOnNavigationItemSelectedListener(onBottomOnNavigationItemSelectedListener)
+        setSupportActionBar(maintoolbar)
+        val tb = supportActionBar!!
+        tb.setTitle("홈")
         mainFragment = MainFragment.newInstance()
         supportFragmentManager.beginTransaction().add(R.id.view,mainFragment).commit()
     }
@@ -42,27 +45,42 @@ class MainFragmentActivity : AppCompatActivity(),
             when (it.itemId) {
                 R.id.menu_home -> {
                     Log.d(TAG, "메인 엑티비티 홈 버튼 클릭")
+                    setSupportActionBar(maintoolbar)
+                    val tb = supportActionBar!!
+                    tb.setTitle("홈")
                     mainFragment = MainFragment.newInstance()
                     supportFragmentManager.beginTransaction().replace(R.id.view,mainFragment).commit()
                 }
                 R.id.menu_review -> {
                     Log.d(TAG, "메인 엑티비티 리뷰 버튼 클릭")
+                    setSupportActionBar(maintoolbar)
+                    val tb = supportActionBar!!
+                    tb.setTitle("리뷰")
                     reviewFragment = ReviewFragment.newInstance()
                     supportFragmentManager.beginTransaction().replace(R.id.view,reviewFragment).commit()
                 }
                 R.id.menu_ranking -> {
                     Log.d(TAG, "메인 엑티비티 랭킹 버튼 클릭")
+                    setSupportActionBar(maintoolbar)
+                    val tb = supportActionBar!!
+                    tb.setTitle("랭킹")
                     rankingFragment = RankingFragment.newInstance()
                     supportFragmentManager.beginTransaction().replace(R.id.view,rankingFragment).commit()
                 }
                 R.id.menu_chat -> {
                     Log.d(TAG, "메인 엑티비티 채팅 버튼 클릭")
+                    setSupportActionBar(maintoolbar)
+                    val tb = supportActionBar!!
+                    tb.setTitle("채팅")
                     chatingFragment = ChatingFragment.newInstance()
                     supportFragmentManager.beginTransaction().replace(R.id.view,chatingFragment).commit()
                 }
                 R.id.menu_mypage -> {
                     Log.d(TAG, "메인 엑티비티 마이페이지 버튼 클릭")
                     myPageFragment = MyPageFragment.newInstance()
+                    setSupportActionBar(maintoolbar)
+                    val tb = supportActionBar!!
+                    tb.setTitle("마이페이지")
                     supportFragmentManager.beginTransaction().replace(R.id.view,myPageFragment).commit()
                 }
 

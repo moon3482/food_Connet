@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/LinearMainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_theme_color"
-    android:gravity="bottom"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_logo"
+        android:layout_margin="30dp"
+        android:layout_above="@id/socialBtnGroup"/>
+
     <LinearLayout
+        android:id="@+id/socialBtnGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/btnNaverLogin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginHorizontal="@dimen/mainActivityLoginButtonMarginSide"
             android:layout_marginVertical="@dimen/mainActivityLoginButtonMarginTomBottom"
+            android:layout_weight="1"
             android:background="@drawable/social_login_naver_button"
             android:orientation="horizontal">
 
@@ -55,6 +65,7 @@
             android:layout_height="match_parent"
             android:layout_marginHorizontal="@dimen/mainActivityLoginButtonMarginSide"
             android:layout_marginVertical="@dimen/mainActivityLoginButtonMarginTomBottom"
+            android:layout_weight="1"
             android:background="@drawable/social_login_kakao_button"
             android:orientation="horizontal">
 
@@ -87,6 +98,7 @@
             android:layout_height="match_parent"
             android:layout_marginHorizontal="@dimen/mainActivityLoginButtonMarginSide"
             android:layout_marginVertical="@dimen/mainActivityLoginButtonMarginTomBottom"
+            android:layout_weight="1"
             android:background="@drawable/social_login_google_button"
             android:orientation="horizontal">
 
@@ -120,6 +132,7 @@
             android:layout_marginHorizontal="@dimen/mainActivityLoginButtonMarginSide"
             android:layout_marginVertical="@dimen/mainActivityLoginButtonMarginTomBottom"
 
+            android:layout_weight="1"
             android:background="@drawable/social_login_facebook_button"
             android:orientation="horizontal">
 
@@ -146,4 +159,5 @@
         </LinearLayout>
 
     </LinearLayout>
-</LinearLayout>
+
+</RelativeLayout>
