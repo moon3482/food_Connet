@@ -7,9 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.Adapter.MainFragmentAdapter
+import com.example.abled_food_connect.Data.MainFragmentItemData
 import com.example.abled_food_connect.R
 
 class ReviewFragment:Fragment() {
+    private val reviewFragmentListArray: ArrayList<MainFragmentItemData> = ArrayList()
+    lateinit var recyclerView: RecyclerView
     companion object{
         const val TAG : String = "리뷰 프래그먼트 로그"
         fun newInstance(): ReviewFragment{
@@ -32,6 +38,18 @@ class ReviewFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.review_fragment, container, false)
+        val view = inflater.inflate(R.layout.review_fragment, container, false)
+        reviewFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","",0,0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","",0,0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","",0,0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","",0,0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","",0,0))
+
+
+
+        recyclerView = view.findViewById(R.id.reviewRcv) as RecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = MainFragmentAdapter(requireContext(),reviewFragmentListArray)
+        return view
     }
 }
