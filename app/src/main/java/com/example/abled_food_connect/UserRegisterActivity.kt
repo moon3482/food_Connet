@@ -25,6 +25,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import com.example.abled_food_connect.Interfaces.retrofit_interface
 import com.example.abled_food_connect.databinding.ActivityUserRegisterBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*

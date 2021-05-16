@@ -1,22 +1,23 @@
 package com.example.abled_food_connect
-
 import android.annotation.SuppressLint
-
-import androidx.appcompat.app.AppCompatActivity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.util.Base64
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.Button
-import android.widget.NumberPicker
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.abled_food_connect.Interfaces.CheckingRegisteredUser
+import com.example.abled_food_connect.Interfaces.retrofit_interface
+import com.facebook.*
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -27,24 +28,26 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.util.Utility
+import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import org.json.JSONObject
-
-
-import android.util.Log
-import android.widget.LinearLayout
-import android.widget.Toast
-import com.facebook.*
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
-import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.user.UserApiClient
-import android.content.Intent
-import android.view.MenuItem
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.kakao.sdk.common.util.Utility
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 class MainActivity : AppCompatActivity(){
     lateinit var callbackManager: CallbackManager
@@ -92,12 +95,17 @@ class MainActivity : AppCompatActivity(){
 
 
 
+
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val btnFacebookLogin : LinearLayout = findViewById(R.id.btnFacebookLogin)
         val btnKakaoLogin : LinearLayout = findViewById(R.id.btnKakaoLogin)
+
+
+        nextIntent = Intent(this, UserRegisterActivity::class.java)
 
         val keyHash = Utility.getKeyHash(this)
         Log.e("해시",keyHash)
@@ -124,11 +132,16 @@ class MainActivity : AppCompatActivity(){
                                 "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
                                 "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}"+
                                 "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+
+                        nextIntent.putExtra("user_id", user.id.toString())
+                        nextIntent.putExtra("social_login_type", "KAKAO")
+
+                        startActivity(nextIntent)
                     }
                 }
                 Log.i(TAG, "로그인 성공 ${token.accessToken}")
-                val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
-                startActivity(mainFragmentJoin)
+//                val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
+//                startActivity(mainFragmentJoin)
             }
 
         }
@@ -191,8 +204,10 @@ class MainActivity : AppCompatActivity(){
                 override fun onSuccess(loginResult: LoginResult?) {
                     Log.d("TAG", "Success Login")
                     getUserProfile(loginResult?.accessToken, loginResult?.accessToken?.userId)
-                 val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
-                    startActivity(mainFragmentJoin)
+
+
+//                 val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
+//                    startActivity(mainFragmentJoin)
                 }
 
                 override fun onCancel() {
@@ -209,7 +224,7 @@ class MainActivity : AppCompatActivity(){
 
 
 
-        nextIntent = Intent(this, UserRegisterActivity::class.java)
+
 
         /*
         네이버 로그인 구현
@@ -230,14 +245,22 @@ class MainActivity : AppCompatActivity(){
         //네이버 아이디로 로그인 인스턴스에 클라이언트 정보를 설정합니다.
         mOAuthLoginInstance.init(mContext, naver_client_id, naver_client_secret, naver_client_name)
 
-        //네이버 로그인 버튼 연결
+
+
+        var btnNaverLogin : LinearLayout = findViewById(R.id.btnNaverLogin)
+            //네이버 로그인 버튼 연결
+
+        //네이버에서 제공하는 버튼은 숨겨둔다.
+        //그리고 커스텀 버튼에서 실행하게 했다.
         val buttonOAuthLoginImg : OAuthLoginButton = findViewById(R.id.buttonOAuthLoginImg)
-        //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
         buttonOAuthLoginImg.setOAuthLoginHandler(mOAuthLoginHandler)
 
 
 
-
+        btnNaverLogin.setOnClickListener {
+                //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
+            buttonOAuthLoginImg.performClick()
+        }
 
 
 
@@ -253,10 +276,14 @@ class MainActivity : AppCompatActivity(){
         val btn_googleSignIn : SignInButton = findViewById(R.id.btn_googleSignIn)
 
 
-        // 구글 로그인 버튼 클릭 시 이벤트 : googleLogin function 실행
-        btn_googleSignIn.setOnClickListener {
+        var btnGoogleLogin : LinearLayout = findViewById(R.id.btnGoogleLogin)
+
+
+        btnGoogleLogin.setOnClickListener {
+            //로그인 버튼을 눌렀을때 구글로그인 실행
             googleLogin()
         }
+
 
         // 구글 로그인을 위해 구성되어야 하는 코드 (Id, Email request)
         var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -267,13 +294,21 @@ class MainActivity : AppCompatActivity(){
 
 
 
-
-
-
-
-
-
-
+        try {
+            val info = packageManager.getPackageInfo(
+                "com.example.abled_food_connect;",
+                PackageManager.GET_SIGNATURES
+            )
+            for (signature in info.signatures) {
+                val md = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                Log.e("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT))
+            }
+        } catch (e: NameNotFoundException) {
+            e.printStackTrace()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        }
 
 
     }
@@ -307,6 +342,13 @@ class MainActivity : AppCompatActivity(){
                     val facebookId = jsonObject.getString("id")
                     Log.i("Facebook Id: ", facebookId.toString())
                     id = facebookId.toString()
+
+                    nextIntent.putExtra("user_id", id)
+                    nextIntent.putExtra("social_login_type", "FACEBOOK")
+
+                    startActivity(nextIntent)
+
+
                 } else {
                     Log.i("Facebook Id: ", "Not exists")
                     id = "Not exists"
@@ -382,6 +424,9 @@ class MainActivity : AppCompatActivity(){
                     Log.i("Facebook Email: ", "Not exists")
                     email = "Not exists"
                 }
+
+                val facebookId = jsonObject.getString("id")
+
 
 
             }).executeAsync()
@@ -524,6 +569,7 @@ class MainActivity : AppCompatActivity(){
                     Log.d("프로필사진", photoUrl.toString())
                     Log.d("사용자 식별자 id", uid)
 
+                    RegistUserInfo(user.uid)
 
                     nextIntent.putExtra("user_id", user.uid)
                     nextIntent.putExtra("social_login_type", "GOOGLE")
@@ -537,6 +583,71 @@ class MainActivity : AppCompatActivity(){
                 }
             }
     } //firebaseAuthWithGoogle
+
+
+
+
+
+
+
+
+
+
+
+
+
+    fun RegistUserInfo(userId:String){
+
+
+
+        //The gson builder
+        var gson : Gson =  GsonBuilder()
+            .setLenient()
+            .create()
+
+
+        //creating retrofit object
+        var retrofit =
+            Retrofit.Builder()
+                .baseUrl("http://3.37.36.188/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+
+        //creating our api
+
+        var server = retrofit.create(CheckingRegisteredUser::class.java)
+
+        // 파일, 사용자 아이디, 파일이름
+        server.post_checking_register_user(userId).enqueue(object:
+            Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                t.message?.let { Log.d("레트로핏 결과1", it) }
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response?.isSuccessful) {
+                    if(response?.body().toString()=="true") {
+                        Toast.makeText(getApplicationContext(), "유저가 있습니다.", Toast.LENGTH_LONG)
+                            .show();
+                        Log.d("성공",""+"유저가있습니다.")
+                    }
+
+                    if(response?.body().toString()=="false") {
+                        Toast.makeText(getApplicationContext(), "유저가 없습니다.", Toast.LENGTH_LONG)
+                            .show();
+                    }
+
+                    Log.d("레트로핏 성공결과",""+response?.body().toString())
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "유저가 없습니다.", Toast.LENGTH_LONG).show();
+                    Log.d("레트로핏 실패결과",""+response?.body().toString())
+                    Log.d("레트로핏 실패결과",""+call.request())
+
+                }
+            }
+        })
+    }
 
 
 

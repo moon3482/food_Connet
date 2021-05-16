@@ -25,6 +25,27 @@
         android:layout_marginBottom="20dp"
         android:orientation="vertical">
 
+        <com.nhn.android.naverlogin.ui.view.OAuthLoginButton
+            android:id="@+id/buttonOAuthLoginImg"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!--Google Sign In 부분-->
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btn_googleSignIn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonOAuthLoginImg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></com.google.android.gms.common.SignInButton>
+
+
+
+
+
+
         <LinearLayout
             android:id="@+id/btnNaverLogin"
             android:layout_width="match_parent"
@@ -56,7 +77,8 @@
                 android:gravity="center"
                 android:text="@string/naver_login"
                 android:textColor="@color/naver_text_color"
-                android:textSize="@dimen/mainActivityLoginButtonTextSize" />
+                android:textSize="@dimen/mainActivityLoginButtonTextSize"
+                android:layout_marginRight="20dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -158,4 +180,6 @@
                 android:textSize="@dimen/mainActivityLoginButtonTextSize" />
         </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+</RelativeLayout>
