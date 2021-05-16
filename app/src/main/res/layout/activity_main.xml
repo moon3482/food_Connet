@@ -158,6 +158,4 @@
                 android:textSize="@dimen/mainActivityLoginButtonTextSize" />
         </LinearLayout>
 
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
