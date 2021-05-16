@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     최초 작성 21.05.10
     작성자 박의조
      */
+    
     //OAuthLogin 객체
     lateinit var mOAuthLoginInstance : OAuthLogin
     //애플리케이션 컨텍스트
