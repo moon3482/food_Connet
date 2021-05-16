@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     //애플리케이션 컨텍스트
     lateinit var mContext: Context
 
-    var ttt: String = "k"
+
 
 
     /*
