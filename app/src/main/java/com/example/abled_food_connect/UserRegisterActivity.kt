@@ -117,6 +117,9 @@ class UserRegisterActivity : AppCompatActivity() {
         user_id = intent.getStringExtra("user_id").toString()
         social_login_type = intent.getStringExtra("social_login_type").toString()
 
+        Log.d("로그인에서 받아온 값 : 유저 아이디", user_id)
+        Log.d("로그인에서 받아온 값 : 소셜 타입", social_login_type)
+
         imageView = binding.userProfileIv
 
 
