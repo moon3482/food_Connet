@@ -1,12 +1,18 @@
 package com.example.abled_food_connect
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
+import android.widget.NumberPicker
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -57,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -118,17 +125,6 @@ class MainActivity : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-
-
-        //네이버 로그인 버튼 연결
-        val goToUserRegisterActivity : Button = findViewById(R.id.goToUserRegisterActivity)
-        //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
-        goToUserRegisterActivity.setOnClickListener {
-
-            nextIntent.putExtra("user_id", "uid")
-            nextIntent.putExtra("social_login_type", "GOOGLE")
-            startActivity(nextIntent)
-        }
 
 
 
@@ -237,6 +233,7 @@ class MainActivity : AppCompatActivity() {
         } //if
     } // onActivityResult
 
+
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
         var credential = GoogleAuthProvider.getCredential(account?.idToken, null)
 
@@ -261,7 +258,7 @@ class MainActivity : AppCompatActivity() {
                     nextIntent.putExtra("social_login_type", "GOOGLE")
                     startActivity(nextIntent)
 
-                    Toast.makeText(this, "success", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this, "success", Toast.LENGTH_LONG).show()
                     //startActivity(Intent (this, StudyRecommendActivity::class.java))
                 } else {
                     // 로그인 실패 시

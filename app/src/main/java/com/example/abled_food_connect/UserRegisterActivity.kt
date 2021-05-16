@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
+import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -15,14 +16,18 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.text.InputFilter
+import android.text.TextUtils
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.example.abled_food_connect.databinding.ActivityUserRegisterBinding
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
@@ -39,6 +44,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class UserRegisterActivity : AppCompatActivity() {
 
@@ -76,6 +82,18 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
 
+
+
+    //파이어베이스 전화번호 인증
+
+    lateinit var auth: FirebaseAuth
+    lateinit var storedVerificationId:String
+    lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
+    private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
+
+    var phone_auth_isFisished : String ="NO"
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -106,7 +124,8 @@ class UserRegisterActivity : AppCompatActivity() {
 
         //title = "KotlinApp"
 
-
+        // 카메라 및 이미지 권한체크
+        settingPermission()
 
         //이미지뷰를 누르면 사진을 변경할 수 있다.
         binding.userProfileIv.setOnClickListener {
@@ -137,24 +156,179 @@ class UserRegisterActivity : AppCompatActivity() {
             builder.show()
         }
 
-        binding.userRegisterBtn.setOnClickListener {
-            RegistUserInfo(profile_image_path)
 
 
+        //닉네임 글자수 10자 제한
+        binding.nicNameEt.setMaxLength(10)
+
+
+
+
+
+        //출생연도 선택버튼
+
+        //기본값은 ""
+        //값이 없는 경우, 가입 시 선택해주세요라는 토스트메시지가 생긴다..
+        birth_year = ""
+
+        binding.birthYearBtn.setOnClickListener {
+
+            val dialog = AlertDialog.Builder(this).create()
+            val edialog : LayoutInflater = LayoutInflater.from(this)
+            val mView : View = edialog.inflate(R.layout.dialog_datepicker,null)
+
+            val year : NumberPicker = mView.findViewById(R.id.yearpicker_datepicker)
+
+            val cancel : Button = mView.findViewById(R.id.cancel_button_datepicker)
+            val save : Button = mView.findViewById(R.id.save_button_datepicker)
+
+
+            //  순환 안되게 막기
+            year.wrapSelectorWheel = false
+
+
+            //  editText 설정 해제
+            year.descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+
+
+            //  최소값 설정
+            year.minValue = 1900
+            //  최대값 설정
+            year.maxValue = 2020
+
+            year.value = 1990
+
+
+
+            //  취소 버튼 클릭 시
+            cancel.setOnClickListener {
+                dialog.dismiss()
+                dialog.cancel()
+            }
+
+            //  완료 버튼 클릭 시
+            save.setOnClickListener {
+
+                birth_year =(year.value).toString()
+                binding.birthYearBtn.setText(birth_year+"년")
+                Log.d("나와", (year.value).toString() + "년")
+                // month_textview_statsfrag.text = (month.value).toString() + "월"
+
+                dialog.dismiss()
+                dialog.cancel()
+            }
+            dialog.setView(mView)
+            dialog.create()
+            dialog.show()
+
+        }
+
+        // 라디오 버튼 상태를 바꿨을때, 자동으로 나타나는 상태 표시(람다식)
+        binding.genderSelectRg.setOnCheckedChangeListener { radioGroup, i ->
+            when(i){
+                R.id.genderManRb ->
+                    user_gender = "MAN"
+                R.id.genderWomanRb ->
+                    user_gender = "WOMAN"
+
+            }
+            Log.d("무슨성별선택?", user_gender)
+        }
+
+
+        /*
+        파이어베이스 인증
+         */
+
+        auth=FirebaseAuth.getInstance()
+
+
+
+
+
+
+        binding.firebaseCodeSendBtn.setOnClickListener{
+            login()
+        }
+
+        // Callback function for Phone Auth
+        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                //Toast.makeText(applicationContext, "야호.", Toast.LENGTH_LONG).show()
+//                startActivity(Intent(applicationContext, Home::class.java))
+//                finish()
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                Toast.makeText(applicationContext, "[나는 로봇이 아닙니다] 인증을 해주세요.", Toast.LENGTH_LONG).show()
+            }
+
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
+            ) {
+
+                Log.d("TAG","onCodeSent:$verificationId")
+                if(verificationId!=null) {
+                    storedVerificationId = verificationId
+                    resendToken = token
+                    Toast.makeText(applicationContext, "코드를 발송했습니다.", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
+
+
+        binding.firebaseCodeCheckBtn.setOnClickListener{
+            var otp=binding.firebaseCodeInputEt.text.toString().trim()
+            if(!otp.isEmpty()){
+                val credential : PhoneAuthCredential = PhoneAuthProvider.getCredential(
+                    storedVerificationId.toString(), otp)
+                signInWithPhoneAuthCredential(credential)
+            }else{
+                Toast.makeText(this,"다시 입력해주세요.",Toast.LENGTH_SHORT).show()
+            }
         }
 
 
 
 
 
-//        //카메라 기능
-        settingPermission() // 권한체크 시작
-//
-//        binding.userProfileIv.setOnClickListener {
-//            startCapture()
-//        }
+        binding.userRegisterBtn.setOnClickListener {
 
 
+            if(imageUri == null){
+                Toast.makeText(this,"프로필 사진을 등록해주세요.",Toast.LENGTH_SHORT).show()
+            }
+            else if(TextUtils.isEmpty(binding.nicNameEt.text.toString().trim())){
+                Toast.makeText(this,"닉네임을 입력해주세요.",Toast.LENGTH_SHORT).show()
+            }
+            else if(birth_year.equals("")){
+                Toast.makeText(this,"출생연도를 선택해주세요.",Toast.LENGTH_SHORT).show()
+            }
+            else if(!binding.genderManRb.isChecked()&&!binding.genderWomanRb.isChecked()){
+                Toast.makeText(this,"성별을 선택해주세요.",Toast.LENGTH_SHORT).show()
+            }
+            else if(phone_auth_isFisished.equals("NO")){
+                Toast.makeText(this,"전화번호 인증을 완료해주세요.",Toast.LENGTH_SHORT).show()
+            }
+
+
+            else {
+
+               RegistUserInfo(profile_image_path)
+            }
+
+
+        }
+
+
+
+    }
+
+    fun EditText.setMaxLength(maxLength: Int){
+        filters = arrayOf<InputFilter>(InputFilter.LengthFilter(maxLength))
     }
 
     // onDestroy
@@ -246,9 +420,9 @@ class UserRegisterActivity : AppCompatActivity() {
         // 파일, 사용자 아이디, 파일이름
 
         nick_name = binding.nicNameEt.text.toString()
-        birth_year = binding.birthYearEt.text.toString()
-        user_gender = binding.userGenderEt.text.toString()
-        phone_number = binding.phoneNumberEt.text.toString()
+        //birth_year 데이터 피커에서 값을 받는다.
+        //user_gender = binding.userGenderEt.text.toString()
+        phone_number = binding.phoneNumberInputEt.text.toString()
 
         server.post_Porfile_Request(user_id,social_login_type, nick_name,birth_year,user_gender,phone_number, body).enqueue(object: Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
@@ -411,6 +585,78 @@ class UserRegisterActivity : AppCompatActivity() {
             currentPhotoPath = absolutePath
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    파이어베이스 인증에 사용되는 메서드
+     */
+
+
+
+    private fun login() {
+        val mobileNumber=binding.phoneNumberInputEt
+        var number=mobileNumber.text.toString().trim()
+
+        if(!number.isEmpty()){
+            number="+82"+number
+            sendVerificationcode (number)
+        }else{
+            Toast.makeText(this,"정확한 전화번호를 입력해주세요.",Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun sendVerificationcode(number: String) {
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(number) // Phone number to verify
+            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+            .setActivity(this) // Activity (for callback binding)
+            .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
+            .build()
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this,"인증되었습니다.",Toast.LENGTH_SHORT).show()
+
+                    binding.firebaseCodeCheckBtn.setEnabled(false)
+                    binding.firebaseCodeCheckBtn.setBackgroundColor(Color.GRAY)
+
+                    binding.firebaseCodeSendBtn.setEnabled(false)
+                    binding.firebaseCodeSendBtn.setBackgroundColor(Color.GRAY)
+                    binding.phoneNumberInputEt.setEnabled(false)
+                    binding.firebaseCodeInputEt.setEnabled(false)
+
+                    phone_auth_isFisished = "YES"
+
+// ...
+                } else {
+// Sign in failed, display a message and update the UI
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+// The verification code entered was invalid
+                        Toast.makeText(this,"인증코드를 다시 입력해주세요.",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+    }
+
+
+
 
 
 }

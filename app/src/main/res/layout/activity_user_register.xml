@@ -7,7 +7,11 @@
     tools:context=".UserRegisterActivity"
     android:orientation="vertical">
 
+
+
+
     <ImageView
+        android:layout_marginTop="30dp"
         android:layout_gravity="center"
         android:id="@+id/userProfileIv"
         android:layout_width="200dp"
@@ -16,14 +20,19 @@
 
 
     <LinearLayout
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:text="닉네임"/>
+
         <EditText
             android:id="@+id/nicNameEt"
             android:layout_width="match_parent"
@@ -32,54 +41,133 @@
 
 
     <LinearLayout
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:text="출생연도"/>
 
 
-
-
-        <EditText
-            android:id="@+id/birthYearEt"
+        <Button
+            android:id="@+id/birthYearBtn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:text="출생연도 선택"
+            app:backgroundTint="#FFFFFF" />
+
     </LinearLayout>
 
     <LinearLayout
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:text="성별"/>
-        <EditText
-            android:id="@+id/userGenderEt"
+
+
+        <RadioGroup
+            android:id="@+id/genderSelectRg"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:layout_gravity="center"
+
+                android:id="@+id/genderManRb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="남자" />
+
+            <RadioButton
+                android:id="@+id/genderWomanRb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="여자" />
+
+        </RadioGroup>
     </LinearLayout>
 
     <LinearLayout
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="전화번호"/>
+
+        <EditText
+            android:id="@+id/phoneNumberInputEt"
+            android:layout_width="wrap_content"
+            android:layout_weight="20"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/firebaseCodeSendBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:layout_weight="1"
+            android:text="코드발송" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
         <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="인증번호"/>
+
+        <EditText
+            android:id="@+id/firebaseCodeInputEt"
+            android:layout_width="wrap_content"
+            android:layout_weight="20"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/firebaseCodeCheckBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="전화번호"/>
-        <EditText
-            android:id="@+id/phoneNumberEt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_weight="1"
+            android:backgroundTint="@color/black"
+            android:text="코드확인" />
     </LinearLayout>
+
+
+
+
 
     <Button
         android:layout_gravity="center"
