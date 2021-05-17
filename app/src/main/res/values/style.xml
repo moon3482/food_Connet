@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--소셜로그인 버튼-->
     <style name="mainActivityLoginButton">
         <item name="android:layout_marginRight">20dp</item>
@@ -16,11 +16,15 @@
     <style name="MainToolbar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimaryDark">#09F6C7</item> <!-- Toolbar의 배경색-->
         <item name="colorPrimary">#09F6C7</item> <!-- Toolbar의 타이틀 텍스트-->
-<!--        <item name="subtitleTextAppearance">@style/ToolbarSubtitleStyle.Dark</item> &lt;!&ndash; Toolbar의 서브타이틀 텍스트&ndash;&gt;-->
+        <item name="subtitleTextAppearance">@color/white</item> <!-- Toolbar의 서브타이틀 텍스트-->
     </style>
+    <dimen name="design_fab_size_normal" tools:override="true">58dp</dimen>
+    <dimen name="design_fab_image_size" tools:override="true">40dp</dimen>
 
 
-    출처: https://jabstorage.tistory.com/31 [개발 잡동사니 저장소]
+
+
+
 
 
 <!--    &lt;!&ndash;카카오 소셜로그인 버튼&ndash;&gt;-->

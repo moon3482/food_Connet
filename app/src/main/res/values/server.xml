@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="server_ip">3.37.36.188</string>
+    <string name="http_request_base_url">http://3.37.36.188/</string>
+</resources>

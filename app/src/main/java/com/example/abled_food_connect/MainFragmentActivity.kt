@@ -6,14 +6,16 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.abled_food_connect.Fragments.*
+import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main_fragment.*
+import com.google.android.material.snackbar.Snackbar
+
 
 class MainFragmentActivity : AppCompatActivity(),
     BottomNavigationView.OnNavigationItemSelectedListener {
+    val binding by lazy { ActivityMainFragmentBinding.inflate(layoutInflater) }
     private lateinit var mainFragment: MainFragment
     private lateinit var reviewFragment: ReviewFragment
     private lateinit var rankingFragment: RankingFragment
@@ -26,68 +28,110 @@ class MainFragmentActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_fragment)
+        setContentView(binding.root)
         Log.d(TAG, "홈액티비티 onCreate()")
 
-        bottom_nav.setOnNavigationItemSelectedListener(onBottomOnNavigationItemSelectedListener)
-        setSupportActionBar(maintoolbar)
+        binding.bottomNav.setOnNavigationItemSelectedListener(
+            onBottomOnNavigationItemSelectedListener
+        )
+        setSupportActionBar(binding.maintoolbar)
         val tb = supportActionBar!!
         tb.setTitle("홈")
         mainFragment = MainFragment.newInstance()
-        supportFragmentManager.beginTransaction().add(R.id.view,mainFragment).commit()
+        binding.mainFragmentCreateReviewBtn.hide()
+        supportFragmentManager.beginTransaction().add(R.id.view, mainFragment).commit()
+
+
     }
+
 
     private val onBottomOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener {
 
-
-
+            showFloatingButton(it.itemId)
             when (it.itemId) {
+
                 R.id.menu_home -> {
                     Log.d(TAG, "메인 엑티비티 홈 버튼 클릭")
-                    setSupportActionBar(maintoolbar)
+
+                    setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("홈")
+
                     mainFragment = MainFragment.newInstance()
-                    supportFragmentManager.beginTransaction().replace(R.id.view,mainFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.view, mainFragment)
+                        .commit()
                 }
                 R.id.menu_review -> {
                     Log.d(TAG, "메인 엑티비티 리뷰 버튼 클릭")
-                    setSupportActionBar(maintoolbar)
+                    setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("리뷰")
+                    binding.mainFragmentCreateRoomBtn.hide()
                     reviewFragment = ReviewFragment.newInstance()
-                    supportFragmentManager.beginTransaction().replace(R.id.view,reviewFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.view, reviewFragment)
+                        .commit()
                 }
                 R.id.menu_ranking -> {
                     Log.d(TAG, "메인 엑티비티 랭킹 버튼 클릭")
-                    setSupportActionBar(maintoolbar)
+                    setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("랭킹")
+                    binding.mainFragmentCreateRoomBtn.hide()
                     rankingFragment = RankingFragment.newInstance()
-                    supportFragmentManager.beginTransaction().replace(R.id.view,rankingFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.view, rankingFragment)
+                        .commit()
                 }
                 R.id.menu_chat -> {
                     Log.d(TAG, "메인 엑티비티 채팅 버튼 클릭")
-                    setSupportActionBar(maintoolbar)
+                    setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("채팅")
+                    binding.mainFragmentCreateRoomBtn.hide()
                     chatingFragment = ChatingFragment.newInstance()
-                    supportFragmentManager.beginTransaction().replace(R.id.view,chatingFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.view, chatingFragment)
+                        .commit()
                 }
                 R.id.menu_mypage -> {
                     Log.d(TAG, "메인 엑티비티 마이페이지 버튼 클릭")
                     myPageFragment = MyPageFragment.newInstance()
-                    setSupportActionBar(maintoolbar)
+                    setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("마이페이지")
-                    supportFragmentManager.beginTransaction().replace(R.id.view,myPageFragment).commit()
+                    binding.mainFragmentCreateRoomBtn.hide()
+                    supportFragmentManager.beginTransaction().replace(R.id.view, myPageFragment)
+                        .commit()
                 }
 
             }
 
             true
         }
+    private fun showFloatingButton(itemid: Int){
+        when(itemid){
+            R.id.menu_home ->{
+                binding.mainFragmentCreateRoomBtn.show()
+                binding.mainFragmentCreateReviewBtn.hide()
+            }
+            R.id.menu_review ->{
+                binding.mainFragmentCreateRoomBtn.hide()
+                binding.mainFragmentCreateReviewBtn.show()
+            }
+            R.id.menu_ranking ->{
+                binding.mainFragmentCreateRoomBtn.hide()
+                binding.mainFragmentCreateReviewBtn.hide()
+            }
+            R.id.menu_chat ->{
+                binding.mainFragmentCreateRoomBtn.hide()
+                binding.mainFragmentCreateReviewBtn.hide()
+            }
+            R.id.menu_mypage ->{
+                binding.mainFragmentCreateRoomBtn.hide()
+                binding.mainFragmentCreateReviewBtn.hide()
+            }
+
+        }
+    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         TODO("Not yet implemented")
