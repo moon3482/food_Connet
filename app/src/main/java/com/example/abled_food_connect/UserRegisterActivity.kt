@@ -435,8 +435,13 @@ class UserRegisterActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response?.isSuccessful) {
-                    Toast.makeText(getApplicationContext(), "File Uploaded Successfully...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
                     Log.d("레트로핏 결과2",""+response?.body().toString())
+
+
+                    var nextIntent :Intent = Intent(this@UserRegisterActivity, MainActivity::class.java)
+                    startActivity(nextIntent)
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
                     Log.d("레트로핏 실패결과",""+response?.body().toString())
@@ -534,12 +539,12 @@ class UserRegisterActivity : AppCompatActivity() {
         var permis = object  : PermissionListener {
             //            어떠한 형식을 상속받는 익명 클래스의 객체를 생성하기 위해 다음과 같이 작성
             override fun onPermissionGranted() {
-                Toast.makeText(this@UserRegisterActivity, "권한 허가", Toast.LENGTH_SHORT)
-                    .show()
+//                Toast.makeText(this@UserRegisterActivity, "권한 허가", Toast.LENGTH_SHORT)
+//                    .show()
             }
 
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                Toast.makeText(this@UserRegisterActivity, "권한 거부", Toast.LENGTH_SHORT)
+                Toast.makeText(this@UserRegisterActivity, "앱 필수권한을 허용해주세요.", Toast.LENGTH_SHORT)
                     .show()
                 ActivityCompat.finishAffinity(this@UserRegisterActivity) // 권한 거부시 앱 종료
             }

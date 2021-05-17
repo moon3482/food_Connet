@@ -133,10 +133,12 @@ class MainActivity : AppCompatActivity(){
                                 "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}"+
                                 "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
 
-                        nextIntent.putExtra("user_id", user.id.toString())
-                        nextIntent.putExtra("social_login_type", "KAKAO")
+                        RegistUserInfo(user.id.toString(),"KAKAO")
 
-                        startActivity(nextIntent)
+//                        nextIntent.putExtra("user_id", user.id.toString())
+//                        nextIntent.putExtra("social_login_type", "KAKAO")
+//
+//                        startActivity(nextIntent)
                     }
                 }
                 Log.i(TAG, "로그인 성공 ${token.accessToken}")
@@ -343,10 +345,13 @@ class MainActivity : AppCompatActivity(){
                     Log.i("Facebook Id: ", facebookId.toString())
                     id = facebookId.toString()
 
-                    nextIntent.putExtra("user_id", id)
-                    nextIntent.putExtra("social_login_type", "FACEBOOK")
 
-                    startActivity(nextIntent)
+                    RegistUserInfo(id,"FACEBOOK")
+
+//                    nextIntent.putExtra("user_id", id)
+//                    nextIntent.putExtra("social_login_type", "FACEBOOK")
+//
+//                    startActivity(nextIntent)
 
 
                 } else {
@@ -509,10 +514,13 @@ class MainActivity : AppCompatActivity(){
                 Log.d("고유ID", id)
                 Log.d("프로필이미지", profile_image)
 
-                nextIntent.putExtra("user_id", id)
-                nextIntent.putExtra("social_login_type", "NAVER")
 
-                startActivity(nextIntent)
+                RegistUserInfo(id,"NAVER")
+
+//                nextIntent.putExtra("user_id", id)
+//                nextIntent.putExtra("social_login_type", "NAVER")
+//
+//                startActivity(nextIntent)
 
 
 
@@ -569,11 +577,11 @@ class MainActivity : AppCompatActivity(){
                     Log.d("프로필사진", photoUrl.toString())
                     Log.d("사용자 식별자 id", uid)
 
-                    RegistUserInfo(user.uid)
+                    RegistUserInfo(user.uid,"GOOGLE")
 
-                    nextIntent.putExtra("user_id", user.uid)
-                    nextIntent.putExtra("social_login_type", "GOOGLE")
-                    startActivity(nextIntent)
+//                    nextIntent.putExtra("user_id", user.uid)
+//                    nextIntent.putExtra("social_login_type", "GOOGLE")
+//                    startActivity(nextIntent)
 
                     //Toast.makeText(this, "success", Toast.LENGTH_LONG).show()
                     //startActivity(Intent (this, StudyRecommendActivity::class.java))
@@ -596,7 +604,7 @@ class MainActivity : AppCompatActivity(){
 
 
 
-    fun RegistUserInfo(userId:String){
+    fun RegistUserInfo(userId:String, social_login_type:String){
 
 
 
@@ -627,20 +635,27 @@ class MainActivity : AppCompatActivity(){
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response?.isSuccessful) {
                     if(response?.body().toString()=="true") {
-                        Toast.makeText(getApplicationContext(), "유저가 있습니다.", Toast.LENGTH_LONG)
+                        Toast.makeText(getApplicationContext(), "로그인 되었습니다.", Toast.LENGTH_LONG)
                             .show();
                         Log.d("성공",""+"유저가있습니다.")
+                        val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
+                        startActivity(mainFragmentJoin)
                     }
 
                     if(response?.body().toString()=="false") {
-                        Toast.makeText(getApplicationContext(), "유저가 없습니다.", Toast.LENGTH_LONG)
+                        Toast.makeText(getApplicationContext(), "회원가입을 해주세요.", Toast.LENGTH_LONG)
                             .show();
+
+
+                        nextIntent.putExtra("user_id", userId)
+                        nextIntent.putExtra("social_login_type", social_login_type)
+                        startActivity(nextIntent)
                     }
 
                     Log.d("레트로핏 성공결과",""+response?.body().toString())
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "유저가 없습니다.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "서버연결 실패.", Toast.LENGTH_LONG).show();
                     Log.d("레트로핏 실패결과",""+response?.body().toString())
                     Log.d("레트로핏 실패결과",""+call.request())
 
