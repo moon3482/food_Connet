@@ -34,6 +34,7 @@ import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -67,7 +68,7 @@ class UserRegisterActivity : AppCompatActivity() {
     lateinit var user_id : String
     lateinit var social_login_type  : String
     lateinit var nick_name  : String
-    lateinit var profile_image_path  : String
+    var profile_image_path  : String ="NOIMAGE"
     lateinit var birth_year  : String
     lateinit var user_gender  : String
     lateinit var phone_number  : String
@@ -302,7 +303,7 @@ class UserRegisterActivity : AppCompatActivity() {
         binding.userRegisterBtn.setOnClickListener {
 
 
-            if(imageUri == null){
+            if(profile_image_path == "NOIMAGE"){
                 Toast.makeText(this,"프로필 사진을 등록해주세요.",Toast.LENGTH_SHORT).show()
             }
             else if(TextUtils.isEmpty(binding.nicNameEt.text.toString().trim())){
@@ -401,7 +402,7 @@ class UserRegisterActivity : AppCompatActivity() {
         fileName = fileName+".png"
 
 
-        var requestBody : RequestBody = RequestBody.create(MediaType.parse("image/*"),file)
+        var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),file)
         var body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file",fileName,requestBody)
 
         //The gson builder
@@ -437,10 +438,9 @@ class UserRegisterActivity : AppCompatActivity() {
                 if (response?.isSuccessful) {
                     Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
                     Log.d("레트로핏 결과2",""+response?.body().toString())
-
-
                     var nextIntent :Intent = Intent(this@UserRegisterActivity, MainActivity::class.java)
                     startActivity(nextIntent)
+                    finish()
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();

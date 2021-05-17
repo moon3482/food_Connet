@@ -479,9 +479,9 @@ class MainActivity : AppCompatActivity(){
             if (success) {
 
                 //로그인 성공 토스트메시지
-                Toast.makeText(
-                    baseContext, "로그인 성공했습니다.", Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    baseContext, "로그인 성공했습니다.", Toast.LENGTH_SHORT
+//                ).show()
 
 
                 // android.os.NetworkOnMainThreadException 에러 저거
@@ -640,6 +640,8 @@ class MainActivity : AppCompatActivity(){
                         Log.d("성공",""+"유저가있습니다.")
                         val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
                         startActivity(mainFragmentJoin)
+                        finish()
+
                     }
 
                     if(response?.body().toString()=="false") {

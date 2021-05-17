@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
 }
 
@@ -49,6 +48,8 @@ android {
 
 dependencies {
 
+    implementation 'gun0912.ted:tedpermission:2.2.3'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
     //파이어베이스 구글로그인
     // Import the BoM for the Firebase platform
@@ -64,20 +65,16 @@ dependencies {
 
 
     // 네이버 아이디로 로그인
-    implementation 'com.naver.nid:naveridlogin-android-sdk:4.2.6'
+    implementation 'com.naver.nid:naveridlogin-android-sdk:4.2.5'
 
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
     // Retrofit2
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     // Json Parser
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
-
-
-    implementation 'gun0912.ted:tedpermission:2.2.3'
-
 
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -94,7 +91,5 @@ dependencies {
     }
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.kakao.sdk:v2-user:2.5.0'
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
-
     implementation 'io.github.chaosleung:pinview:1.4.4'
 }
