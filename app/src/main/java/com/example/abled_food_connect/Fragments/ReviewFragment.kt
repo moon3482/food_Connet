@@ -7,10 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.Adapter.MainFragmentAdapter
-import com.example.abled_food_connect.Data.MainFragmentItemData
+import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.R
 
 class ReviewFragment:Fragment() {
@@ -39,17 +40,17 @@ class ReviewFragment:Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
-        reviewFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","",0,0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","",0,0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","",0,0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","",0,0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","",0,0))
-
+        reviewFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","","male",0,20,"나야",0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","","male",0,20,"나야",1))
+        reviewFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","","male",0,20,"나야",2))
+        reviewFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","","male",0,20,"나야",6))
+        reviewFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",9))
 
 
         recyclerView = view.findViewById(R.id.reviewRcv) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = MainFragmentAdapter(requireContext(),reviewFragmentListArray)
+        recyclerView.addItemDecoration(DividerItemDecoration(recyclerView.context,LinearLayoutManager(this.context).orientation))
         return view
     }
 }
