@@ -35,8 +35,18 @@
 
         <EditText
             android:id="@+id/nicNameEt"
-            android:layout_width="match_parent"
+            android:layout_weight="20"
+            android:singleLine="true"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/nicNameCheckBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:layout_weight="1"
+            android:text="중복확인" />
     </LinearLayout>
 
 
@@ -126,7 +136,8 @@
             android:id="@+id/phoneNumberInputEt"
             android:layout_width="wrap_content"
             android:layout_weight="20"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
 
         <Button
             android:id="@+id/firebaseCodeSendBtn"
@@ -155,7 +166,8 @@
             android:id="@+id/firebaseCodeInputEt"
             android:layout_width="wrap_content"
             android:layout_weight="20"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
         <Button
             android:id="@+id/firebaseCodeCheckBtn"
             android:layout_width="wrap_content"

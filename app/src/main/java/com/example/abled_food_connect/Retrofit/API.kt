@@ -4,10 +4,7 @@ package com.example.abled_food_connect.Retrofit
 import com.example.abled_food_connect.Data.MainFragmentItemData
 import com.example.abled_food_connect.R
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 class API {
 
@@ -25,5 +22,14 @@ class API {
             @Query("minimumAge") minimumAge:Int,
             @Query("maximumAge") maximumAge:Int
         ):Call<MainFragmentItemData>
+    }
+
+
+    //회원가입시 닉네임이 중복되는지 확인한다.
+    interface nicNameCheck{
+        @FormUrlEncoded
+        @POST("user_info/nicname_duplicate_check.php")
+        fun checkNicName(
+            @Field("nick_name") nick_name:String ):Call<String>
     }
 }

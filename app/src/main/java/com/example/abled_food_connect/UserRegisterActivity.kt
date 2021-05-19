@@ -16,8 +16,10 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.text.Editable
 import android.text.InputFilter
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,7 +27,9 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import com.example.abled_food_connect.Interfaces.CheckingRegisteredUser
 import com.example.abled_food_connect.Interfaces.retrofit_interface
+import com.example.abled_food_connect.Retrofit.API
 import com.example.abled_food_connect.databinding.ActivityUserRegisterBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
@@ -62,6 +66,9 @@ class UserRegisterActivity : AppCompatActivity() {
     val REQUEST_IMAGE_CAPTURE = 1
     lateinit var currentPhotoPath : String
 
+
+    //닉네임 중복 체크했는지 확인하는 변수
+    var nicName_dup_check_str = "NO"
 
 
     //유저정보 테이블에 저장할 값
@@ -127,6 +134,7 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
 
+
         //title = "KotlinApp"
 
         // 카메라 및 이미지 권한체크
@@ -165,6 +173,32 @@ class UserRegisterActivity : AppCompatActivity() {
 
         //닉네임 글자수 10자 제한
         binding.nicNameEt.setMaxLength(10)
+
+
+        binding.nicNameCheckBtn.setOnClickListener(View.OnClickListener {
+
+            binding.nicNameEt.setText(binding.nicNameEt.text.toString().replace(" ",""))
+            if(binding.nicNameEt.text.toString().length>0){
+                    nicName_duplicate_check(binding.nicNameEt.text.toString())
+                    Log.d("이름", binding.nicNameEt.text.toString())
+            }else{
+                Toast.makeText(applicationContext, "닉네임을 입력해주세요.", Toast.LENGTH_LONG).show()
+            }
+
+        })
+
+
+        binding.nicNameEt.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                nicName_dup_check_str = "NO"
+            }
+        })
 
 
 
@@ -306,8 +340,8 @@ class UserRegisterActivity : AppCompatActivity() {
             if(profile_image_path == "NOIMAGE"){
                 Toast.makeText(this,"프로필 사진을 등록해주세요.",Toast.LENGTH_SHORT).show()
             }
-            else if(TextUtils.isEmpty(binding.nicNameEt.text.toString().trim())){
-                Toast.makeText(this,"닉네임을 입력해주세요.",Toast.LENGTH_SHORT).show()
+            else if(nicName_dup_check_str=="NO"){
+                Toast.makeText(this,"닉네임 중복확인을 해주세요.",Toast.LENGTH_SHORT).show()
             }
             else if(birth_year.equals("")){
                 Toast.makeText(this,"출생연도를 선택해주세요.",Toast.LENGTH_SHORT).show()
@@ -662,6 +696,69 @@ class UserRegisterActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+
+
+
+    //닉네임 중복 확인
+
+    fun nicName_duplicate_check(nick_name:String){
+
+        //The gson builder
+        var gson : Gson =  GsonBuilder()
+            .setLenient()
+            .create()
+
+        //creating retrofit object
+        var retrofit =
+            Retrofit.Builder()
+                .baseUrl("http://3.37.36.188/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+
+        //creating our api
+
+        var server = retrofit.create(API.nicNameCheck::class.java)
+
+        // 파일, 사용자 아이디, 파일이름
+        server.checkNicName(nick_name).enqueue(object:
+            Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                t.message?.let { Log.d("레트로핏 결과1", it) }
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response?.isSuccessful) {
+                    if(response?.body().toString()=="true") {
+                        Toast.makeText(getApplicationContext(), "이미 사용중인 닉네임입니다.", Toast.LENGTH_LONG)
+                            .show();
+
+                    }
+
+                    if(response?.body().toString()=="false") {
+                        Toast.makeText(getApplicationContext(), "사용할 수 있는 닉네임입니다.", Toast.LENGTH_LONG)
+                            .show();
+                        nicName_dup_check_str = "YES"
+
+                        binding.nicNameCheckBtn.setEnabled(false)
+                        binding.nicNameCheckBtn.setBackgroundColor(Color.GRAY)
+                        binding.nicNameEt.setEnabled(false)
+
+
+
+                    }
+
+                    Log.d("레트로핏 성공결과",""+response?.body().toString())
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "서버연결 실패.", Toast.LENGTH_LONG).show();
+                    Log.d("레트로핏 실패결과",""+response?.body().toString())
+                    Log.d("레트로핏 실패결과",""+call.request())
+
+                }
+            }
+        })
     }
 
 

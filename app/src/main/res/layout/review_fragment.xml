@@ -3,9 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/reviewRcv"
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/reviewRcv"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        />-->
+
+    <TextView
+        android:id="@+id/whatTv"
+        android:text="뭐냐"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent"/>
 </LinearLayout>

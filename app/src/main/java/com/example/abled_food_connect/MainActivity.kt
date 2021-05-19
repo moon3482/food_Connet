@@ -641,7 +641,6 @@ class MainActivity : AppCompatActivity(){
                         val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
                         startActivity(mainFragmentJoin)
                         finish()
-
                     }
 
                     if(response?.body().toString()=="false") {
