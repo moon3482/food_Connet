@@ -65,8 +65,10 @@ class CreateRoomActivity : AppCompatActivity() {
         list.add("1번")
         list.add("2번")
         binding.tagGroup.setTags(list)
-        binding.tagGroup.submitTag()
+       list.add("5번")
 
+        binding.tagGroup.setTags(list)
+        binding.tagGroup.inputTagText
         binding.tagGroup.setOnTagClickListener(object : TagGroup.OnTagClickListener {
             override fun onTagClick(tag: String?) {
 
