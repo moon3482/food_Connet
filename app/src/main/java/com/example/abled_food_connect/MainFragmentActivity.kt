@@ -1,12 +1,12 @@
 package com.example.abled_food_connect
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.AnimatorRes
 import com.example.abled_food_connect.data.MainFragmentItemData
-import com.example.abled_food_connect.Fragments.*
-import com.example.abled_food_connect.Retrofit.RoomAPI
+import com.example.abled_food_connect.fragments.*
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
@@ -56,11 +56,12 @@ class MainFragmentActivity : AppCompatActivity()
         supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).add(R.id.view, mainFragment).commit()
 
         //방만들기 플로팅 버튼 클릭리스너
-        binding.mainFragmentCreateRoomBtn.setOnClickListener({
-            registRoom()
+        binding.mainFragmentCreateRoomBtn.setOnClickListener {
+            moveToCreateRoomActivity()
+//            resistRoom()
 //            test()
 
-        })
+        }
     }
 
         //바텀네비게이션 프래그먼트 셀렉트 리스너
@@ -189,7 +190,7 @@ class MainFragmentActivity : AppCompatActivity()
 //    }
 */
         //방 등록 리퀘스트 메소드
-         fun registRoom() {
+         private fun resistRoom() {
         val gson: Gson = GsonBuilder()
             .setLenient()
             .create()
@@ -212,10 +213,10 @@ class MainFragmentActivity : AppCompatActivity()
             "빵집",
             "male",
             "22","33","호스트네임")
-            .enqueue(object :Callback<MainFragmentItemData>{
+            .enqueue(object :Callback<String>{
             override fun onResponse(
-                call: Call<MainFragmentItemData>,
-                response: Response<MainFragmentItemData>
+                call: Call<String>,
+                response: Response<String>
             ) {
                 if(response.isSuccessful)
                     Log.e("성공",response.body().toString())
@@ -223,12 +224,16 @@ class MainFragmentActivity : AppCompatActivity()
                     Log.e("실패",response.body().toString())
             }
 
-            override fun onFailure(call: Call<MainFragmentItemData>, t: Throwable) {
+            override fun onFailure(call: Call<String>, t: Throwable) {
 
             }
 
         })
     }
+         fun moveToCreateRoomActivity(){
+             val moveToCreateRoomActivityIntent = Intent(this@MainFragmentActivity,CreateRoomActivity::class.java)
+             startActivity(moveToCreateRoomActivityIntent)
+         }
 
 
 }

@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Fragments
+package com.example.abled_food_connect.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -9,22 +9,22 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.abled_food_connect.R
 
-class RankingFragment:Fragment() {
+class MyPageFragment:Fragment() {
     companion object{
-        const val TAG : String = "랭킹 프래그먼트 로그"
-        fun newInstance(): RankingFragment{
-            return RankingFragment()
+        const val TAG : String = "마이페이지 프래그먼트 로그"
+        fun newInstance(): MyPageFragment{
+            return MyPageFragment()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"랭킹프래그먼트 onCreate()")
+        Log.d(TAG,"마이페이지 onCreate()")
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.d(TAG,"랭킹프래그먼트 onAttach()")
+        Log.d(TAG,"마이페이지 onAttach()")
     }
 
     override fun onCreateView(
@@ -32,6 +32,6 @@ class RankingFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.ranking_fragments, container, false)
+        return inflater.inflate(R.layout.mypage_fragments, container, false)
     }
 }

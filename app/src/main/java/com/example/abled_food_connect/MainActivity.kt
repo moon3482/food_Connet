@@ -14,8 +14,6 @@ import com.facebook.login.LoginResult
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import android.content.Intent
-import android.view.MenuItem
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kakao.sdk.common.util.Utility
 
 class MainActivity : AppCompatActivity(){
@@ -250,10 +248,9 @@ class MainActivity : AppCompatActivity(){
             }).executeAsync()
     }
 
-    fun isLoggedIn(): Boolean {
+    private fun isLoggedIn(): Boolean {
         val accessToken = AccessToken.getCurrentAccessToken()
-        val isLoggedIn = accessToken != null && !accessToken.isExpired
-        return isLoggedIn
+        return accessToken != null && !accessToken.isExpired
     }
 
 

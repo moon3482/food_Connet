@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Adapter
+package com.example.abled_food_connect.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.MainFragmentItemData
 
 
-class MainFragmentAdapter(val context: Context, val list: ArrayList<MainFragmentItemData>) :
+class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
@@ -24,29 +24,37 @@ class MainFragmentAdapter(val context: Context, val list: ArrayList<MainFragment
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        val maindata: MainFragmentItemData = list.get(position)
+        val maindata: MainFragmentItemData = list[position]
         val testholder: CustomHolder = holder as CustomHolder
-        testholder.roomStatus.setText(maindata.title)
-        testholder.shopName.setText(maindata.info)
+        testholder.roomStatus.text = maindata.title
+        testholder.shopName.text = maindata.info
         if(maindata.roomStatus>5){
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
-            testholder.roomStatus.setText("모집중")
+            testholder.roomStatus.text = "모집중"
         }else if(maindata.roomStatus>0){
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
-            testholder.roomStatus.setText(maindata.roomStatus.toString()+"시간")
+            val text : String = context.getString(R.string.room_status_imminent_time)
+            testholder.roomStatus.text = String.format(text,maindata.roomStatus)
 
         }else{
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
-            testholder.roomStatus.setText("마감")
+            testholder.roomStatus.text = "마감"
         }
         if(maindata.gender.equals("male")){
             testholder.gender.setImageResource(R.drawable.ic_male)
         }
-        else if(maindata.gender.equals("female")){
+        else if(maindata.gender == "female"){
             testholder.gender.setImageResource(R.drawable.ic_female)
         }
         else{
             testholder.gender.setImageResource(R.drawable.ic_maleandfemale)
+        }
+
+        if (maindata.maximumAge == maindata.minimumAge){
+            testholder.roomAge.text = maindata.maximumAge.toString()
+        }else{
+            val text : String =context.getString(R.string.limit_age_badge)
+            testholder.roomAge.text = String.format(text,maindata.minimumAge,maindata.maximumAge)
         }
     }
 
@@ -63,6 +71,7 @@ class MainFragmentAdapter(val context: Context, val list: ArrayList<MainFragment
         var roomDateTime:TextView = view.findViewById(R.id.tvRoomDateTime)
         var roomLocation:TextView = view.findViewById(R.id.tvRoomLocation)
         var roomNumberOfPeople :TextView = view.findViewById(R.id.tvRoomNumberOfPeople)
+        var roomAge:TextView = view.findViewById(R.id.tvAge)
 
     }
 

@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Retrofit
+package com.example.abled_food_connect.retrofit
 
 
 import com.example.abled_food_connect.data.LoadingRoom
@@ -22,12 +22,12 @@ interface RoomAPI {
             @Field("minimumAge") minimumAge:String,
             @Field("maximumAge") maximumAge:String,
             @Field("hostName") hostName:String
-        ):Call<MainFragmentItemData>
+        ):Call<String>
 
 
         @FormUrlEncoded
     @POST("MainFragmentLoading.php")
-    fun loadingRoomget(
+    fun loadingRoomGet(
         @Field("userId") userId:String
 
     ):Call<LoadingRoom>

@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Fragments
+package com.example.abled_food_connect.fragments
 
 import android.content.Context
 import android.os.Bundle

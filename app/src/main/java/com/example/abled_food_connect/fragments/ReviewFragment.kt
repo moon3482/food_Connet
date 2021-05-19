@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Fragments
+package com.example.abled_food_connect.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.Adapter.MainFragmentAdapter
+import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.R
 

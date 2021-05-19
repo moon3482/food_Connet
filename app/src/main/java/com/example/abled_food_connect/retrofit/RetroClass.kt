@@ -1,10 +1,10 @@
-package com.example.abled_food_connect.Retrofit
+package com.example.abled_food_connect.retrofit
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetroClass {
-    const val BASE_URL = "http://3.37.36.188/"
+    private const val BASE_URL = "http://3.37.36.188/"
 
 
     private val retrofit = Retrofit.Builder()
@@ -13,6 +13,6 @@ object RetroClass {
         .build()
 
     private val _api = retrofit.create(RoomAPI::class.java)
-    val api
+    val api: RoomAPI
         get() = _api
 }

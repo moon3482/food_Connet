@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Fragments
+package com.example.abled_food_connect.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.Adapter.MainFragmentAdapter
+import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.Retrofit.RoomAPI
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.google.gson.Gson
@@ -83,6 +83,7 @@ class MainFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        load()
 
     }
     fun  load() {
@@ -99,7 +100,7 @@ class MainFragment : Fragment() {
 
         val server = retrofit.create(RoomAPI::class.java)
 
-        server.loadingRoomget("sD44E7xt7IXL4HcmgV09OPMI1oH2")
+        server.loadingRoomGet("5QG1D09RqpORYfb7-8VRda46wVfQ20lMrWfAUu9oE8s")
             .enqueue(object : Callback<LoadingRoom> {
                 override fun onResponse(
                     call: Call<LoadingRoom>,
@@ -108,7 +109,7 @@ class MainFragment : Fragment() {
 
                     val list : LoadingRoom = response.body()!!
                     val array : ArrayList<MainFragmentItemData> = list.roomList
-                    for(i in 0..array.size-1){
+                    for(i in 0 until  array.size){
                         mainFragmentListArray.add(array.get(i))
                         recyclerView.adapter!!.notifyDataSetChanged()
 
