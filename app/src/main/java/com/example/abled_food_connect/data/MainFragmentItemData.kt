@@ -28,7 +28,7 @@ data class MainFragmentItemData(
     @SerializedName("hostName")
     var hostName:String,
     @SerializedName("roomStatus")
-    var roomStatus:Int
+    var roomStatus:Double
 
 ){
 private fun CreateRoom(){

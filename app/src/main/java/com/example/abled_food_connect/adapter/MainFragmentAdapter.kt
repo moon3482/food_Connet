@@ -32,12 +32,16 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         if(maindata.roomStatus>5){
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
             testholder.roomStatus.text = "모집중"
-        }else if(maindata.roomStatus>0){
+        }else if(maindata.roomStatus>0.9){
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
             val text : String = context.getString(R.string.room_status_imminent_time)
-            testholder.roomStatus.text = String.format(text,maindata.roomStatus)
+            testholder.roomStatus.text = String.format(text,Math.round(maindata.roomStatus).toInt())
 
-        }else{
+        }else if(maindata.roomStatus<0.9&&maindata.roomStatus>0.0){
+            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+            testholder.roomStatus.text = "임박"
+
+        }else if(maindata.roomStatus<0){
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
             testholder.roomStatus.text = "마감"
         }
@@ -57,6 +61,10 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             val text : String =context.getString(R.string.limit_age_badge)
             testholder.roomAge.text = String.format(text,maindata.minimumAge,maindata.maximumAge)
         }
+        testholder.shopName.text=maindata.info
+        testholder.roomTitle.text = maindata.title
+        testholder.roomNumberOfPeople.text = "1/${(maindata.numOfPeople+1).toString()}명"
+        testholder.roomDateTime.text = maindata.date
     }
 
     override fun getItemCount(): Int {

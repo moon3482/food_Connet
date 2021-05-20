@@ -40,11 +40,11 @@ class ReviewFragment:Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
-        reviewFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","","male",0,20,"나야",0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","","male",0,20,"나야",1))
-        reviewFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","","male",0,20,"나야",2))
-        reviewFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","","male",0,20,"나야",6))
-        reviewFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",9))
+        reviewFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","","male",0,20,"나야",0.0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","","male",0,20,"나야",1.0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","","male",0,20,"나야",2.0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","","male",0,20,"나야",3.0))
+        reviewFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",9.0))
 
 
         recyclerView = view.findViewById(R.id.reviewRcv) as RecyclerView

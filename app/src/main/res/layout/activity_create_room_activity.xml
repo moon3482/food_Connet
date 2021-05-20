@@ -28,34 +28,12 @@
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/CreateRoomTitleInputLayout"
-                style="@style/LoginTextInputLayoutStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:counterEnabled="true"
-                app:counterMaxLength="30"
-                app:errorEnabled="true"
-                app:hintAnimationEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/CreateRoomActivityRoomTitleInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/create_room_activity_room_title_hint"
-                    android:textCursorDrawable="@drawable/edit_text_cursor_color"
-
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/CreateRoomInfoInputLayout"
                 style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 app:counterEnabled="true"
                 app:counterMaxLength="15"
@@ -67,6 +45,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/create_room_activity_room_info_hint"
+                    android:textCursorDrawable="@drawable/edit_text_cursor_color"
+
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/CreateRoomTitleInputLayout"
+                style="@style/LoginTextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="30"
+                app:errorEnabled="true"
+                app:hintAnimationEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/CreateRoomActivityRoomTitleInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/create_room_activity_room_title_hint"
                     android:textCursorDrawable="@drawable/edit_text_cursor_color"
 
                     />
@@ -105,6 +105,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+
             <TextView
                 android:id="@+id/CreateRoomActivityDateTextView"
                 style="@style/create_room_activity_text_view_style"
@@ -112,12 +113,12 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="20dp"
                 android:text="@string/create_room_activity_date_and_time" />
+
             <LinearLayout
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
 
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -134,12 +135,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
+                        android:hint="날짜"
                         android:inputType="none"
                         android:paddingTop="12dp"
                         android:paddingBottom="12dp"
-                        android:hint="날짜"
                         android:textCursorDrawable="@color/app_theme_color" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/time"
                     style="@style/LoginTextInputLayoutStyle"
@@ -153,11 +155,11 @@
                         android:id="@+id/CreateRoomActivityTimeInput"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center"
                         android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:hint="시간"
                         android:inputType="none"
                         android:paddingTop="12dp"
-                        android:hint="시간"
                         android:paddingBottom="12dp"
                         android:textCursorDrawable="@color/app_theme_color" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -331,6 +333,7 @@
                         android:id="@+id/CreateRoomActivityKeyWordInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:singleLine="true"
                         android:hint="키워드" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -360,7 +363,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/empty_key_word_text"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <co.lujun.androidtagview.TagContainerLayout
                     android:id="@+id/tagLayout"
