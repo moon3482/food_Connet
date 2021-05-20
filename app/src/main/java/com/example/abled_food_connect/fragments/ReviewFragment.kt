@@ -15,8 +15,7 @@ import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.R
 
 class ReviewFragment:Fragment() {
-    private val reviewFragmentListArray: ArrayList<MainFragmentItemData> = ArrayList()
-    lateinit var recyclerView: RecyclerView
+
     companion object{
         const val TAG : String = "리뷰 프래그먼트 로그"
         fun newInstance(): ReviewFragment{
@@ -40,17 +39,7 @@ class ReviewFragment:Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
-        reviewFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","","male",0,20,"나야",0.0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","","male",0,20,"나야",1.0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","","male",0,20,"나야",2.0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","","male",0,20,"나야",3.0))
-        reviewFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",9.0))
 
-
-        recyclerView = view.findViewById(R.id.reviewRcv) as RecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = MainFragmentAdapter(requireContext(),reviewFragmentListArray)
-        recyclerView.addItemDecoration(DividerItemDecoration(recyclerView.context,LinearLayoutManager(this.context).orientation))
         return view
     }
 }

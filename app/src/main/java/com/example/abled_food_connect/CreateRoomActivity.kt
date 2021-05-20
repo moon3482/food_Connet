@@ -51,117 +51,39 @@ class CreateRoomActivity : AppCompatActivity() {
         numOfPeople.setAdapter(setAdapter(numOfPeople()))
 
 
-        /*방만들기 버튼클릭*/
-        binding.CreateRoomButton.setOnClickListener {
-            if (inputCheck()) {
-                createRoom()
-            }
-        }
-        /*툴바 타이틀 세팅*/
-        binding.CreateRoomActivityToolbar.title = "방만들기"
-
-        /*성별 선택 남자 온클릭 리스너*/
-        binding.CreateRoomActivityMaleImageView.setOnClickListener {
-            genderMaleSelected = limitGender("male")
-        }
-        /*성별 선택 여자 온클릭 리스너*/
-        binding.CreateRoomActivityFemaleImageView.setOnClickListener {
-            genderFemaleSelected = limitGender("female")
-        }
-        /*성별 선택 상관없음 온클릭 리스너*/
-        binding.CreateRoomActivityGenderAnyImageView.setOnClickListener {
-            genderAnySelected = limitGender("any")
-        }
-
-
-        //태그 리스트 사이즈 0 이면 텍스트뷰 보이기
-        if (tagArray.size == 0) {
-            binding.emptyKeyWordTextView.visibility = View.VISIBLE
-        }
-        /*태그 입력창 온클릭 리스너*/
-        binding.CreateRoomActivityKeyWordInput.setOnClickListener {
-
-        }
-        /*날짜 텍스트박스에 포커스생겼을때*/
-        binding.CreateRoomActivityDateInput.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                dateCalendarDialog()
-            } else {
-
-            }
-        }
-        /*날짜 텍스트박스 온클릭리스너*/
-        binding.CreateRoomActivityDateInput.setOnClickListener {
-            dateCalendarDialog()
-        }
-        /*시간 텍스트박스에 포커스생겼을때*/
-        binding.CreateRoomActivityTimeInput.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                timeCalendarDialog()
-
-            } else {
-
-            }
-        }
-        /*시간 텍스트박스 온클릭리스너*/
-        binding.CreateRoomActivityTimeInput.setOnClickListener {
-            timeCalendarDialog()
-        }
-//        binding.time.setOnClickListener {
-//            timeCalendarDialog()
-//        }
-//        binding.date.setOnClickListener {
-//            dateCalendarDialog()
-//        }
-        /*태그 등록 버튼 온클릭리스너*/
-        binding.tagAddButton.setOnClickListener {
-            if (binding.CreateRoomActivityKeyWordInput.length() != 0) {
-                /*태그 레이아웃 추가*/
-                binding.tagLayout.addTag(binding.CreateRoomActivityKeyWordInput.text.toString())
-                /*태그 리스트에 키워드 추가*/
-                tagArray.add(binding.CreateRoomActivityKeyWordInput.text.toString())
-                /*태그 리스트 0초과 일 때 텍스트뷰 없애기*/
-                if (tagArray.size != 0) {
-                    binding.emptyKeyWordTextView.visibility = View.GONE
-                }
-                /*등록 완료 후 텍스트 입력창 초기화*/
-                binding.CreateRoomActivityKeyWordInput.setText("")
-                /*스크롤 내리기*/
-                binding.Scroll.smoothScrollTo(0, binding.CreateRoomButton.bottom)
-//                Toast.makeText(this, tagArray.toString(),Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        /*태그 온클릭 리스너*/
-        binding.tagLayout.setOnTagClickListener(object : TagView.OnTagClickListener {
-            override fun onTagClick(position: Int, text: String?) {
-
-            }
-
-            override fun onTagLongClick(position: Int, text: String?) {
-                /*태그 롱클릭시 제거*/
-                binding.tagLayout.removeTag(position)
-                /*태그 리스트에서 해당 포지션 제거*/
-                tagArray.removeAt(position)
-//                Toast.makeText(this@CreateRoomActivity, tagArray.toString(),Toast.LENGTH_SHORT).show()
-                /*태그 리스트가 0일 때 텍스트뷰 보이기*/
-                if (tagArray.size == 0) {
-                    binding.emptyKeyWordTextView.visibility = View.VISIBLE
-                }
-
-
-            }
-
-            override fun onSelectedTagDrag(position: Int, text: String?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onTagCrossClick(position: Int) {
-                TODO("Not yet implemented")
-            }
-        })
+        onClickListenerGroup()
 
     }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+    override fun onStop() {
+        super.onStop()
+        finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+
+    /*
+
+
+    메소드 구역
+
+
+
+    */
 
     /**
      * 나이 어댑터
@@ -242,10 +164,7 @@ class CreateRoomActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        finish()
-    }
+
 
     /**
      * 모집 성별 선택 메소드
@@ -461,6 +380,117 @@ class CreateRoomActivity : AppCompatActivity() {
         Log.e("결과", settingTime.after(transTime).toString())
         return settingTime.after(transTime)
 
+    }
+    private fun onClickListenerGroup(){
+        /*방만들기 버튼클릭*/
+        binding.CreateRoomButton.setOnClickListener {
+            if (inputCheck()) {
+                createRoom()
+            }
+        }
+        /*툴바 타이틀 세팅*/
+        binding.CreateRoomActivityToolbar.title = "방만들기"
+
+        /*성별 선택 남자 온클릭 리스너*/
+        binding.CreateRoomActivityMaleImageView.setOnClickListener {
+            genderMaleSelected = limitGender("male")
+        }
+        /*성별 선택 여자 온클릭 리스너*/
+        binding.CreateRoomActivityFemaleImageView.setOnClickListener {
+            genderFemaleSelected = limitGender("female")
+        }
+        /*성별 선택 상관없음 온클릭 리스너*/
+        binding.CreateRoomActivityGenderAnyImageView.setOnClickListener {
+            genderAnySelected = limitGender("any")
+        }
+
+
+        //태그 리스트 사이즈 0 이면 텍스트뷰 보이기
+        if (tagArray.size == 0) {
+            binding.emptyKeyWordTextView.visibility = View.VISIBLE
+        }
+        /*태그 입력창 온클릭 리스너*/
+        binding.CreateRoomActivityKeyWordInput.setOnClickListener {
+
+        }
+        /*날짜 텍스트박스에 포커스생겼을때*/
+        binding.CreateRoomActivityDateInput.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                dateCalendarDialog()
+            } else {
+
+            }
+        }
+        /*날짜 텍스트박스 온클릭리스너*/
+        binding.CreateRoomActivityDateInput.setOnClickListener {
+            dateCalendarDialog()
+        }
+        /*시간 텍스트박스에 포커스생겼을때*/
+        binding.CreateRoomActivityTimeInput.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                timeCalendarDialog()
+
+            } else {
+
+            }
+        }
+        /*시간 텍스트박스 온클릭리스너*/
+        binding.CreateRoomActivityTimeInput.setOnClickListener {
+            timeCalendarDialog()
+        }
+//        binding.time.setOnClickListener {
+//            timeCalendarDialog()
+//        }
+//        binding.date.setOnClickListener {
+//            dateCalendarDialog()
+//        }
+        /*태그 등록 버튼 온클릭리스너*/
+        binding.tagAddButton.setOnClickListener {
+            if (binding.CreateRoomActivityKeyWordInput.length() != 0) {
+                /*태그 레이아웃 추가*/
+                binding.tagLayout.addTag(binding.CreateRoomActivityKeyWordInput.text.toString())
+                /*태그 리스트에 키워드 추가*/
+                tagArray.add(binding.CreateRoomActivityKeyWordInput.text.toString())
+                /*태그 리스트 0초과 일 때 텍스트뷰 없애기*/
+                if (tagArray.size != 0) {
+                    binding.emptyKeyWordTextView.visibility = View.GONE
+                }
+                /*등록 완료 후 텍스트 입력창 초기화*/
+                binding.CreateRoomActivityKeyWordInput.setText("")
+                /*스크롤 내리기*/
+                binding.Scroll.smoothScrollTo(0, binding.CreateRoomButton.bottom)
+//                Toast.makeText(this, tagArray.toString(),Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        /*태그 온클릭 리스너*/
+        binding.tagLayout.setOnTagClickListener(object : TagView.OnTagClickListener {
+            override fun onTagClick(position: Int, text: String?) {
+
+            }
+
+            override fun onTagLongClick(position: Int, text: String?) {
+                /*태그 롱클릭시 제거*/
+                binding.tagLayout.removeTag(position)
+                /*태그 리스트에서 해당 포지션 제거*/
+                tagArray.removeAt(position)
+//                Toast.makeText(this@CreateRoomActivity, tagArray.toString(),Toast.LENGTH_SHORT).show()
+                /*태그 리스트가 0일 때 텍스트뷰 보이기*/
+                if (tagArray.size == 0) {
+                    binding.emptyKeyWordTextView.visibility = View.VISIBLE
+                }
+
+
+            }
+
+            override fun onSelectedTagDrag(position: Int, text: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onTagCrossClick(position: Int) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
 
