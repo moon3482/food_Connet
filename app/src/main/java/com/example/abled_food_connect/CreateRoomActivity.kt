@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.*
 import co.lujun.androidtagview.TagView
 import com.example.abled_food_connect.array.age
@@ -58,14 +59,21 @@ class CreateRoomActivity : AppCompatActivity() {
             genderAnySelected = limitGender("any")
         }
         var array: ArrayList<String> = ArrayList()
+        if(array.size==0){
+            binding.emptyKeyWordTextView.visibility = View.VISIBLE
+        }
         binding.CreateRoomActivityKeyWordInput.setOnClickListener {
 
               }
+
         binding.tagAddButton.setOnClickListener{
             if(binding.CreateRoomActivityKeyWordInput.length()!=0){
 
                 binding.tagLayout.addTag(binding.CreateRoomActivityKeyWordInput.text.toString())
                 array.add(binding.CreateRoomActivityKeyWordInput.text.toString())
+                if(array.size!=0){
+                    binding.emptyKeyWordTextView.visibility = View.GONE
+                }
                 binding.CreateRoomActivityKeyWordInput.setText("")
                 binding.Scroll.smoothScrollTo(0,binding.CreateRoomButton.bottom)
                 Toast.makeText(this,array.toString(),Toast.LENGTH_SHORT).show()
@@ -83,6 +91,9 @@ class CreateRoomActivity : AppCompatActivity() {
                 binding.tagLayout.removeTag(position)
                 array.removeAt(position)
                 Toast.makeText(this@CreateRoomActivity,array.toString(),Toast.LENGTH_SHORT).show()
+                if(array.size==0){
+                    binding.emptyKeyWordTextView.visibility = View.VISIBLE
+                }
 
 
             }

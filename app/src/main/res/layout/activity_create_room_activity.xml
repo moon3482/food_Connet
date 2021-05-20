@@ -294,8 +294,8 @@
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -319,8 +319,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:text="등 록"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -328,11 +327,19 @@
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/tag_area"
                 android:minHeight="30dp"
                 android:orientation="vertical"
-                android:layout_marginTop="10dp"
                 android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/emptyKeyWordTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/empty_key_word_text"
+                    android:visibility="gone"/>
 
                 <co.lujun.androidtagview.TagContainerLayout
                     android:id="@+id/tagLayout"
@@ -342,9 +349,9 @@
                     android:padding="10dp"
                     app:container_enable_drag="false"
                     app:horizontal_interval="10dp"
-                    app:vertical_interval="10dp"
                     app:tag_clickable="true"
-                    app:tag_theme="pure_teal" />
+                    app:tag_theme="pure_teal"
+                    app:vertical_interval="10dp" />
 
             </LinearLayout>
 

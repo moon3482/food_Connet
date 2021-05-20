@@ -33,6 +33,7 @@
     <string name="create_room_activity_age_limit">나이 제한</string>
     <string name="create_room_activity_minimum_age">최소</string>
     <string name="create_room_activity_maximum_age">최대</string>
+    <string name="empty_key_word_text">등록된 키워드가 없습니다.</string>
 
 
 </resources>
