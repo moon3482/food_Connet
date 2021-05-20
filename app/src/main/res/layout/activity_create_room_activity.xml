@@ -105,21 +105,20 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
-
+            <TextView
+                android:id="@+id/CreateRoomActivityDateTextView"
+                style="@style/create_room_activity_text_view_style"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:text="@string/create_room_activity_date_and_time" />
             <LinearLayout
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/textView3"
-                    style="@style/create_room_activity_text_view_style"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2"
-                    android:text="@string/create_room_activity_date" />
+
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/LoginTextInputLayoutStyle"
@@ -137,7 +136,27 @@
                         android:inputType="none"
                         android:paddingTop="12dp"
                         android:paddingBottom="12dp"
-                        android:text="aaa"
+                        android:hint="날짜"
+                        android:textCursorDrawable="@color/app_theme_color" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/LoginTextInputLayoutStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_weight="1">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/CreateRoomActivityTimeInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:inputType="none"
+                        android:paddingTop="12dp"
+                        android:hint="시간"
+                        android:paddingBottom="12dp"
                         android:textCursorDrawable="@color/app_theme_color" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
