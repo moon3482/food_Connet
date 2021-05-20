@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CreateRoomActivity"></activity>
+        <activity android:name=".CreateRoomActivity"
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity android:name=".MainFragmentActivity" />
 
         <meta-data

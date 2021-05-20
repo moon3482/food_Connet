@@ -331,13 +331,21 @@
                 android:background="@drawable/tag_area"
                 android:minHeight="30dp"
                 android:orientation="vertical"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:padding="5dp">
 
-                <me.gujun.android.taggroup.TagGroup
-                    android:id="@+id/tag_group"
-                    style="@style/TagGroup"
+                <co.lujun.androidtagview.TagContainerLayout
+                    android:id="@+id/tagLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:padding="10dp"
+                    app:container_enable_drag="false"
+                    app:horizontal_interval="10dp"
+                    app:vertical_interval="10dp"
+                    app:tag_clickable="true"
+                    app:tag_theme="pure_teal" />
+
             </LinearLayout>
 
             <Button

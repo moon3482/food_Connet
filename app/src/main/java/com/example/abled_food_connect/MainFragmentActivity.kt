@@ -64,6 +64,12 @@ class MainFragmentActivity : AppCompatActivity()
         }
     }
 
+         override fun onStart() {
+             super.onStart()
+             mainFragment = MainFragment.newInstance()
+             supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
+                 .commit()
+         }
         //바텀네비게이션 프래그먼트 셀렉트 리스너
     private val onBottomOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener {

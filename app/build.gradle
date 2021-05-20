@@ -9,6 +9,7 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
     buildFeatures {
+        dataBinding true
         viewBinding true}
     defaultConfig {
         applicationId "com.example.abled_food_connect"
@@ -36,9 +37,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    dataBinding {
-        enabled = true
-    }
+
 }
 
 dependencies {
@@ -63,5 +62,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
-    compile 'me.gujun.android.taggroup:library:1.4@aar'
+    implementation 'co.lujun:androidtagview:1.1.7'
+    implementation 'androidx.appcompat:appcompat:1.0.1'
 }

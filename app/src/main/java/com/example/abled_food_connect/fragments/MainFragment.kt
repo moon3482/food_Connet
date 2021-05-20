@@ -49,11 +49,12 @@ class MainFragment : Fragment() {
         Log.d(TAG, "메인프래그먼트 onAttach()")
     }
 
-    override fun onCreateView(
+    override fun onCreateView                (
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG, "메인프래그먼트 onCreateView()")
         val view = inflater.inflate(R.layout.main_fragment, container, false)
 //        mainFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","","male",0,20,"나야",0))
 //        mainFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","","female",0,20,"나야",1))
@@ -81,10 +82,54 @@ class MainFragment : Fragment() {
         return view
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        Log.d(TAG, "메인프래그먼트 onActivityCreated()")
+
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "메인프래그먼트 onViewCreated()")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "메인프래그먼트 onStart()")
+
+    }
+
     override fun onResume() {
         super.onResume()
-        load()
+        Log.d(TAG, "메인프래그먼트 onResume()")
 
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "메인프래그먼트 onPause()")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "메인프래그먼트 onStop()")
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d(TAG, "메인프래그먼트 onDestroyView()")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "메인프래그먼트 onDestroy()")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d(TAG, "메인프래그먼트 onDetach()")
     }
     fun  load() {
 

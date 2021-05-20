@@ -1,23 +1,16 @@
 package com.example.abled_food_connect
 
 import android.R
-import android.content.Intent
-import android.graphics.drawable.Drawable
-import android.nfc.NfcAdapter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.*
+import co.lujun.androidtagview.TagView
 import com.example.abled_food_connect.array.age
-import com.example.abled_food_connect.array.array
 import com.example.abled_food_connect.array.numOfPeople
-import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBinding
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import me.gujun.android.taggroup.TagGroup
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -35,6 +28,7 @@ class CreateRoomActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
+
         /*바인딩 뷰 변수화*/
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput
         val maximum = binding.maximumAgeTextView
@@ -61,19 +55,36 @@ class CreateRoomActivity : AppCompatActivity() {
         binding.CreateRoomActivityGenderAnyImageView.setOnClickListener {
             genderAnySelected = limitGender("any")
         }
-        var list = mutableListOf<String>()
-        list.add("1번")
-        list.add("2번")
-        binding.tagGroup.setTags(list)
-       list.add("5번")
+        var array: ArrayList<String> = ArrayList()
+        binding.tagAddButton.setOnClickListener{
+            if(binding.CreateRoomActivityKeyWordInput.length()!=0){
 
-        binding.tagGroup.setTags(list)
-        binding.tagGroup.inputTagText
-        binding.tagGroup.setOnTagClickListener(object : TagGroup.OnTagClickListener {
-            override fun onTagClick(tag: String?) {
+                binding.tagLayout.addTag(binding.CreateRoomActivityKeyWordInput.text.toString())
+                array.add(binding.CreateRoomActivityKeyWordInput.text.toString())
+                binding.CreateRoomActivityKeyWordInput.setText("")
+            }
+        }
+
+
+        binding.tagLayout.setOnTagClickListener(object :TagView.OnTagClickListener{
+            override fun onTagClick(position: Int, text: String?) {
 
             }
+
+            override fun onTagLongClick(position: Int, text: String?) {
+                binding.tagLayout.removeTag(position)
+                array.removeAt(position)
+            }
+
+            override fun onSelectedTagDrag(position: Int, text: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onTagCrossClick(position: Int) {
+                TODO("Not yet implemented")
+            }
         })
+
     }
 
     /**
