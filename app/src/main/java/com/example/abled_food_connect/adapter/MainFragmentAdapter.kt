@@ -14,7 +14,7 @@ import com.example.abled_food_connect.databinding.MainPageItemBinding
 
 class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-var binding by lazy { MainPageItemBinding.inflate() }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 

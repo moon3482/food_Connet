@@ -3,16 +3,16 @@ package com.example.abled_food_connect
 import android.R
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import co.lujun.androidtagview.TagView
 import com.example.abled_food_connect.array.age
 import com.example.abled_food_connect.array.numOfPeople
 import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBinding
 import com.example.abled_food_connect.retrofit.RoomAPI
-import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -26,11 +26,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+
 class CreateRoomActivity : AppCompatActivity() {
     val binding by lazy { ActivityCreateRoomActivityBinding.inflate(layoutInflater) }
     var genderMaleSelected: Boolean = false
     var genderFemaleSelected: Boolean = false
     var genderAnySelected: Boolean = false
+
     /*태그 리스트*/
     var tagArray: ArrayList<String> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,10 +83,10 @@ class CreateRoomActivity : AppCompatActivity() {
 
         }
         /*날짜 텍스트박스에 포커스생겼을때*/
-        binding.CreateRoomActivityDateInput.setOnFocusChangeListener{v,hasFocus ->
-            if (hasFocus){
+        binding.CreateRoomActivityDateInput.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
                 dateCalendarDialog()
-            }else{
+            } else {
 
             }
         }
@@ -205,6 +207,16 @@ class CreateRoomActivity : AppCompatActivity() {
             Toast.makeText(this, "날짜를 선택해주세요", Toast.LENGTH_LONG).show()
             binding.Scroll.scrollTo(0, binding.CreateRoomActivityNumOfPeopleInput.bottom)
             binding.CreateRoomActivityDateInput.requestFocus()
+            return false
+        } else if (binding.CreateRoomActivityTimeInput.length() == 0) {
+            Toast.makeText(this, "시간을 선택해주세요", Toast.LENGTH_LONG).show()
+            binding.Scroll.scrollTo(0, binding.CreateRoomActivityNumOfPeopleInput.bottom)
+            binding.CreateRoomActivityTimeInput.requestFocus()
+            return false
+        } else if (!timeCompare("${binding.CreateRoomActivityDateInput.text.toString()} ${binding.CreateRoomActivityTimeInput.text.toString()}")) {
+            Toast.makeText(this, "입력한 시간이 이미 지나간 시간입니다", Toast.LENGTH_LONG).show()
+            binding.Scroll.scrollTo(0, binding.CreateRoomActivityNumOfPeopleInput.bottom)
+
             return false
         } else if (!genderMaleSelected && !genderFemaleSelected && !genderAnySelected) {
             Toast.makeText(this, "모집 성별 선택해주세요", Toast.LENGTH_LONG).show()
@@ -406,19 +418,20 @@ class CreateRoomActivity : AppCompatActivity() {
     }
 
     private fun dateCalendarDialog() {
-        var calendar = Calendar.getInstance(Locale.KOREA)
+        var calendar = Calendar.getInstance()
         var year = calendar.get(Calendar.YEAR)
         var month = calendar.get(Calendar.MONTH)
         var day = calendar.get(Calendar.DAY_OF_MONTH)
 
         var datePicker = object : DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-                binding.CreateRoomActivityDateInput.setText("${year}-${month}-${dayOfMonth}")
+                binding.CreateRoomActivityDateInput.setText("${year}-${month+1}-${dayOfMonth}")
             }
         }
 
-        var builder = DatePickerDialog(this, datePicker, year, month, day)
-            builder.datePicker.minDate = System.currentTimeMillis()
+        var builder = DatePickerDialog(this, datePicker, year, month, day-1)
+
+        builder.datePicker.minDate = System.currentTimeMillis()
         builder.show()
 
     }
@@ -437,13 +450,16 @@ class CreateRoomActivity : AppCompatActivity() {
 
         builder.show()
     }
-    private fun timeCompare(time:String){
-        var simpleTime = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        var now:Long = System.currentTimeMillis()
-        var nowTime :String = simpleTime.format(Date(now))
-        var settingTime = time
 
-
+    private fun timeCompare(time: String): Boolean {
+        var simpleTime = SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.KOREA)
+        var now: Long = System.currentTimeMillis()
+        var nowTime = simpleTime.format(Date(now))
+        var transTime: Date = simpleTime.parse(nowTime)
+        var settingTime: Date = simpleTime.parse(time)
+        Log.e("날짜 비교", "${transTime}/${settingTime}")
+        Log.e("결과", settingTime.after(transTime).toString())
+        return settingTime.after(transTime)
 
     }
 
