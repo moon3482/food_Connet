@@ -1,10 +1,10 @@
 package com.example.abled_food_connect
 
 import android.R
-import android.content.Context
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import co.lujun.androidtagview.TagView
@@ -12,6 +12,7 @@ import com.example.abled_food_connect.array.age
 import com.example.abled_food_connect.array.numOfPeople
 import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBinding
 import com.example.abled_food_connect.retrofit.RoomAPI
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -21,12 +22,17 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CreateRoomActivity : AppCompatActivity() {
     val binding by lazy { ActivityCreateRoomActivityBinding.inflate(layoutInflater) }
     var genderMaleSelected: Boolean = false
     var genderFemaleSelected: Boolean = false
     var genderAnySelected: Boolean = false
+    /*태그 리스트*/
+    var tagArray: ArrayList<String> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
@@ -49,49 +55,95 @@ class CreateRoomActivity : AppCompatActivity() {
                 createRoom()
             }
         }
+        /*툴바 타이틀 세팅*/
+        binding.CreateRoomActivityToolbar.title = "방만들기"
+
+        /*성별 선택 남자 온클릭 리스너*/
         binding.CreateRoomActivityMaleImageView.setOnClickListener {
             genderMaleSelected = limitGender("male")
         }
+        /*성별 선택 여자 온클릭 리스너*/
         binding.CreateRoomActivityFemaleImageView.setOnClickListener {
             genderFemaleSelected = limitGender("female")
         }
+        /*성별 선택 상관없음 온클릭 리스너*/
         binding.CreateRoomActivityGenderAnyImageView.setOnClickListener {
             genderAnySelected = limitGender("any")
         }
-        var array: ArrayList<String> = ArrayList()
-        if(array.size==0){
+
+
+        //태그 리스트 사이즈 0 이면 텍스트뷰 보이기
+        if (tagArray.size == 0) {
             binding.emptyKeyWordTextView.visibility = View.VISIBLE
         }
+        /*태그 입력창 온클릭 리스너*/
         binding.CreateRoomActivityKeyWordInput.setOnClickListener {
 
-              }
+        }
+        /*날짜 텍스트박스에 포커스생겼을때*/
+        binding.CreateRoomActivityDateInput.setOnFocusChangeListener{v,hasFocus ->
+            if (hasFocus){
+                dateCalendarDialog()
+            }else{
 
-        binding.tagAddButton.setOnClickListener{
-            if(binding.CreateRoomActivityKeyWordInput.length()!=0){
+            }
+        }
+        /*날짜 텍스트박스 온클릭리스너*/
+        binding.CreateRoomActivityDateInput.setOnClickListener {
+            dateCalendarDialog()
+        }
+        /*시간 텍스트박스에 포커스생겼을때*/
+        binding.CreateRoomActivityTimeInput.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                timeCalendarDialog()
 
+            } else {
+
+            }
+        }
+        /*시간 텍스트박스 온클릭리스너*/
+        binding.CreateRoomActivityTimeInput.setOnClickListener {
+            timeCalendarDialog()
+        }
+//        binding.time.setOnClickListener {
+//            timeCalendarDialog()
+//        }
+//        binding.date.setOnClickListener {
+//            dateCalendarDialog()
+//        }
+        /*태그 등록 버튼 온클릭리스너*/
+        binding.tagAddButton.setOnClickListener {
+            if (binding.CreateRoomActivityKeyWordInput.length() != 0) {
+                /*태그 레이아웃 추가*/
                 binding.tagLayout.addTag(binding.CreateRoomActivityKeyWordInput.text.toString())
-                array.add(binding.CreateRoomActivityKeyWordInput.text.toString())
-                if(array.size!=0){
+                /*태그 리스트에 키워드 추가*/
+                tagArray.add(binding.CreateRoomActivityKeyWordInput.text.toString())
+                /*태그 리스트 0초과 일 때 텍스트뷰 없애기*/
+                if (tagArray.size != 0) {
                     binding.emptyKeyWordTextView.visibility = View.GONE
                 }
+                /*등록 완료 후 텍스트 입력창 초기화*/
                 binding.CreateRoomActivityKeyWordInput.setText("")
-                binding.Scroll.smoothScrollTo(0,binding.CreateRoomButton.bottom)
-                Toast.makeText(this,array.toString(),Toast.LENGTH_SHORT).show()
+                /*스크롤 내리기*/
+                binding.Scroll.smoothScrollTo(0, binding.CreateRoomButton.bottom)
+//                Toast.makeText(this, tagArray.toString(),Toast.LENGTH_SHORT).show()
             }
         }
 
-
-        binding.tagLayout.setOnTagClickListener(object :TagView.OnTagClickListener{
+        /*태그 온클릭 리스너*/
+        binding.tagLayout.setOnTagClickListener(object : TagView.OnTagClickListener {
             override fun onTagClick(position: Int, text: String?) {
 
             }
 
             override fun onTagLongClick(position: Int, text: String?) {
-
+                /*태그 롱클릭시 제거*/
                 binding.tagLayout.removeTag(position)
-                array.removeAt(position)
-                Toast.makeText(this@CreateRoomActivity,array.toString(),Toast.LENGTH_SHORT).show()
-                if(array.size==0){
+                /*태그 리스트에서 해당 포지션 제거*/
+                tagArray.removeAt(position)
+//                Toast.makeText(this@CreateRoomActivity, tagArray.toString(),Toast.LENGTH_SHORT).show()
+                /*태그 리스트가 0일 때 텍스트뷰 보이기*/
+                if (tagArray.size == 0) {
                     binding.emptyKeyWordTextView.visibility = View.VISIBLE
                 }
 
@@ -270,15 +322,18 @@ class CreateRoomActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 입력된 방정보 서버에 리퀘스트
+     */
     private fun createRoom() {
         val tile = binding.CreateRoomActivityRoomTitleInput.text.toString()
         val info = binding.CreateRoomActivityRoomInfoInput.text.toString()
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput.text.toString()
-        val date = "2021-05-20"
-        val time = "18:00:00"
+        val date = binding.CreateRoomActivityDateInput.text.toString()
+        val time = binding.CreateRoomActivityTimeInput.text.toString()
         val adress = "주소부분"
-        val shopName = "홍대돈부리"
-        val keyWord = "돈부리집"
+        val shopName = binding.CreateRoomActivityRoomInfoInput.text.toString()
+        val keyWord = tagArray.toString()
         var gender: String = ""
 
         if (genderMaleSelected) {
@@ -338,6 +393,9 @@ class CreateRoomActivity : AppCompatActivity() {
             })
     }
 
+    /**
+     * Retrofit.Builder Client 옵션 메소드
+     */
     private fun createOkHttpClient(): OkHttpClient {
         //Log.d ("TAG","OkhttpClient");
         val builder = OkHttpClient.Builder()
@@ -345,6 +403,48 @@ class CreateRoomActivity : AppCompatActivity() {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         builder.addInterceptor(interceptor)
         return builder.build()
+    }
+
+    private fun dateCalendarDialog() {
+        var calendar = Calendar.getInstance(Locale.KOREA)
+        var year = calendar.get(Calendar.YEAR)
+        var month = calendar.get(Calendar.MONTH)
+        var day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        var datePicker = object : DatePickerDialog.OnDateSetListener {
+            override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+                binding.CreateRoomActivityDateInput.setText("${year}-${month}-${dayOfMonth}")
+            }
+        }
+
+        var builder = DatePickerDialog(this, datePicker, year, month, day)
+            builder.datePicker.minDate = System.currentTimeMillis()
+        builder.show()
+
+    }
+
+    private fun timeCalendarDialog() {
+        var time = Calendar.getInstance(Locale.KOREA)
+        var hour = time.get(Calendar.HOUR)
+        var minute = time.get(Calendar.MINUTE)
+
+        var timePicker = object : TimePickerDialog.OnTimeSetListener {
+            override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+                binding.CreateRoomActivityTimeInput.setText("${hourOfDay}:${minute}")
+            }
+        }
+        var builder = TimePickerDialog(this, timePicker, hour, minute, true)
+
+        builder.show()
+    }
+    private fun timeCompare(time:String){
+        var simpleTime = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        var now:Long = System.currentTimeMillis()
+        var nowTime :String = simpleTime.format(Date(now))
+        var settingTime = time
+
+
+
     }
 
 
