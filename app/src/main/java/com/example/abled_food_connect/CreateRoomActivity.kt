@@ -1,8 +1,10 @@
 package com.example.abled_food_connect
 
 import android.R
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import co.lujun.androidtagview.TagView
 import com.example.abled_food_connect.array.age
@@ -56,12 +58,17 @@ class CreateRoomActivity : AppCompatActivity() {
             genderAnySelected = limitGender("any")
         }
         var array: ArrayList<String> = ArrayList()
+        binding.CreateRoomActivityKeyWordInput.setOnClickListener {
+
+              }
         binding.tagAddButton.setOnClickListener{
             if(binding.CreateRoomActivityKeyWordInput.length()!=0){
 
                 binding.tagLayout.addTag(binding.CreateRoomActivityKeyWordInput.text.toString())
                 array.add(binding.CreateRoomActivityKeyWordInput.text.toString())
                 binding.CreateRoomActivityKeyWordInput.setText("")
+                binding.Scroll.smoothScrollTo(0,binding.CreateRoomButton.bottom)
+                Toast.makeText(this,array.toString(),Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -72,8 +79,12 @@ class CreateRoomActivity : AppCompatActivity() {
             }
 
             override fun onTagLongClick(position: Int, text: String?) {
+
                 binding.tagLayout.removeTag(position)
                 array.removeAt(position)
+                Toast.makeText(this@CreateRoomActivity,array.toString(),Toast.LENGTH_SHORT).show()
+
+
             }
 
             override fun onSelectedTagDrag(position: Int, text: String?) {
@@ -348,4 +359,7 @@ class CreateRoomActivity : AppCompatActivity() {
     return list
     }
      */
+
 }
+
+
