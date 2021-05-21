@@ -336,6 +336,9 @@ class CreateRoomActivity : AppCompatActivity() {
         return builder.build()
     }
 
+    /**
+     * 오늘 날짜 까지 제한하여 데이트피커 띄우기
+     */
     private fun dateCalendarDialog() {
         var calendar = Calendar.getInstance()
         var year = calendar.get(Calendar.YEAR)
@@ -344,7 +347,7 @@ class CreateRoomActivity : AppCompatActivity() {
 
         var datePicker = object : DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-                binding.CreateRoomActivityDateInput.setText("${year}-${month+1}-${dayOfMonth}")
+                binding.CreateRoomActivityDateInput.setText("${year}-${plusZero(month+1)}-${plusZero(dayOfMonth)}")
             }
         }
 
@@ -355,6 +358,9 @@ class CreateRoomActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * 타임피커 띄우기
+     */
     private fun timeCalendarDialog() {
         var time = Calendar.getInstance(Locale.KOREA)
         var hour = time.get(Calendar.HOUR)
@@ -362,7 +368,8 @@ class CreateRoomActivity : AppCompatActivity() {
 
         var timePicker = object : TimePickerDialog.OnTimeSetListener {
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-                binding.CreateRoomActivityTimeInput.setText("${hourOfDay}:${minute}")
+
+                binding.CreateRoomActivityTimeInput.setText("${plusZero(hourOfDay)}:${plusZero(minute)}")
             }
         }
         var builder = TimePickerDialog(this, timePicker, hour, minute, true)
@@ -370,17 +377,36 @@ class CreateRoomActivity : AppCompatActivity() {
         builder.show()
     }
 
+    /**
+     * 현재 시스템시간과 설정한 약속시간 비교
+     */
     private fun timeCompare(time: String): Boolean {
         var simpleTime = SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.KOREA)
         var now: Long = System.currentTimeMillis()
         var nowTime = simpleTime.format(Date(now))
-        var transTime: Date = simpleTime.parse(nowTime)
+        var transNowTime: Date = simpleTime.parse(nowTime)
         var settingTime: Date = simpleTime.parse(time)
-        Log.e("날짜 비교", "${transTime}/${settingTime}")
-        Log.e("결과", settingTime.after(transTime).toString())
-        return settingTime.after(transTime)
+        Log.e("날짜 비교", "${transNowTime}/${settingTime}")
+        Log.e("결과", settingTime.after(transNowTime).toString())
+        return settingTime.after(transNowTime)
 
     }
+
+    /**
+     * 데이트/타임 피커에서 선택한 숫자가 10보다 낮을 경우
+     * 숫자 앞에 0을 븉여 두자릿수로 표현하는 메소드
+     */
+    private fun plusZero(int:Int):String {
+        return if (int<10){
+            "0$int"
+        }else{
+            int.toString()
+        }
+    }
+
+    /**
+     * 온클릭 메서드들 그룹
+     */
     private fun onClickListenerGroup(){
         /*방만들기 버튼클릭*/
         binding.CreateRoomButton.setOnClickListener {
