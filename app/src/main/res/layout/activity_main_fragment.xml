@@ -37,6 +37,10 @@
             android:layout_centerHorizontal="true"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/mainFragmentViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </FrameLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

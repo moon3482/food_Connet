@@ -4,7 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.example.abled_food_connect.data.MainFragmentItemData
+import androidx.viewpager.widget.ViewPager
+import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
@@ -36,7 +37,26 @@ class MainFragmentActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         Log.d(TAG, "홈액티비티 onCreate()")
-        //바텀네비게이션 클릭리스너 달기
+        binding.mainFragmentViewPager.adapter = MainFragmentAdapter(supportFragmentManager)
+        binding.mainFragmentViewPager.addOnPageChangeListener(object :ViewPager.OnPageChangeListener{
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                binding.bottomNav.menu.getItem(position).isChecked = true
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                TODO("Not yet implemented")
+            }
+        })
+
+
         binding.bottomNav.setOnNavigationItemSelectedListener(
             onBottomOnNavigationItemSelectedListener
         )
@@ -80,53 +100,58 @@ class MainFragmentActivity : AppCompatActivity()
                 R.id.menu_home -> {
                     Log.d(TAG, "메인 엑티비티 홈 버튼 클릭")
 
-                    setSupportActionBar(binding.maintoolbar)
-                    val tb = supportActionBar!!
-                    tb.setTitle("홈")
-
-                    mainFragment = MainFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
-                        .commit()
+//                    setSupportActionBar(binding.maintoolbar)
+//                    val tb = supportActionBar!!
+//                    tb.setTitle("홈")
+//
+//                    mainFragment = MainFragment.newInstance()
+//                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
+//                        .commit()
+                    binding.mainFragmentViewPager.currentItem = 0
                 }
                 R.id.menu_review -> {
                     Log.d(TAG, "메인 엑티비티 리뷰 버튼 클릭")
-                    setSupportActionBar(binding.maintoolbar)
-                    val tb = supportActionBar!!
-                    tb.setTitle("리뷰")
-                    binding.mainFragmentCreateRoomBtn.hide()
-                    reviewFragment = ReviewFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, reviewFragment)
-                        .commit()
+//                    setSupportActionBar(binding.maintoolbar)
+//                    val tb = supportActionBar!!
+//                    tb.setTitle("리뷰")
+//                    binding.mainFragmentCreateRoomBtn.hide()
+//                    reviewFragment = ReviewFragment.newInstance()
+//                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, reviewFragment)
+//                        .commit()
+                    binding.mainFragmentViewPager.currentItem = 1
                 }
                 R.id.menu_ranking -> {
                     Log.d(TAG, "메인 엑티비티 랭킹 버튼 클릭")
-                    setSupportActionBar(binding.maintoolbar)
-                    val tb = supportActionBar!!
-                    tb.setTitle("랭킹")
-                    binding.mainFragmentCreateRoomBtn.hide()
-                    rankingFragment = RankingFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, rankingFragment)
-                        .commit()
+//                    setSupportActionBar(binding.maintoolbar)
+//                    val tb = supportActionBar!!
+//                    tb.setTitle("랭킹")
+//                    binding.mainFragmentCreateRoomBtn.hide()
+//                    rankingFragment = RankingFragment.newInstance()
+//                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, rankingFragment)
+//                        .commit()
+                    binding.mainFragmentViewPager.currentItem = 2
                 }
                 R.id.menu_chat -> {
                     Log.d(TAG, "메인 엑티비티 채팅 버튼 클릭")
-                    setSupportActionBar(binding.maintoolbar)
-                    val tb = supportActionBar!!
-                    tb.setTitle("채팅")
-                    binding.mainFragmentCreateRoomBtn.hide()
-                    chatingFragment = ChatingFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, chatingFragment)
-                        .commit()
+//                    setSupportActionBar(binding.maintoolbar)
+//                    val tb = supportActionBar!!
+//                    tb.setTitle("채팅")
+//                    binding.mainFragmentCreateRoomBtn.hide()
+//                    chatingFragment = ChatingFragment.newInstance()
+//                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, chatingFragment)
+//                        .commit()
+                    binding.mainFragmentViewPager.currentItem = 3
                 }
                 R.id.menu_mypage -> {
                     Log.d(TAG, "메인 엑티비티 마이페이지 버튼 클릭")
-                    myPageFragment = MyPageFragment.newInstance()
-                    setSupportActionBar(binding.maintoolbar)
-                    val tb = supportActionBar!!
-                    tb.setTitle("마이페이지")
-                    binding.mainFragmentCreateRoomBtn.hide()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, myPageFragment)
-                        .commit()
+//                    myPageFragment = MyPageFragment.newInstance()
+//                    setSupportActionBar(binding.maintoolbar)
+//                    val tb = supportActionBar!!
+//                    tb.setTitle("마이페이지")
+//                    binding.mainFragmentCreateRoomBtn.hide()
+//                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, myPageFragment)
+//                        .commit()
+                    binding.mainFragmentViewPager.currentItem = 4
                 }
 
             }
