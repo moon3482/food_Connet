@@ -96,65 +96,8 @@ class ReviewFragment:Fragment() {
             }
         })
 
-
-
-
-
-//        reviewFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","",0,0))
-//        reviewFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","",0,0))
-//        reviewFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","",0,0))
-//        reviewFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","",0,0))
-//        reviewFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","",0,0))
-//
-//
-//
-//        recyclerView = view.findViewById(R.id.reviewRcv) as RecyclerView
-//        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//        recyclerView.adapter = MainFragmentAdapter(requireContext(),reviewFragmentListArray)
         return view
     }
 
 
-//    object ApiClient {
-//        private const val BASE_URL = "http://3.37.36.188/"
-//        private var retrofit: Retrofit? = null
-//        val apiClient: Retrofit?
-//            get() {
-//                val gson = GsonBuilder()
-//                    .setLenient()
-//                    .create()
-//                if (retrofit == null) {
-//                    retrofit = Retrofit.Builder()
-//                        .baseUrl(BASE_URL)
-//                        .addConverterFactory(ScalarsConverterFactory.create())
-//                        .addConverterFactory(GsonConverterFactory.create(gson))
-//                        .build()
-//                }
-//                return retrofit
-//            }
-//    }
-
-//    private fun getRvList() {
-//        val apiInterface: ReviewFragRvUsingInterface = apiClient!!.create(ReviewFragRvUsingInterface::class.java)
-//        val call: Call<List<ReviewFragRvUsingInterface.profile>> = apiInterface.review_frag_rv_using_interface()
-//        call.enqueue(object : Callback<List<ReviewFragRvUsingInterface.profile>?> {
-//
-//            override fun onResponse(
-//                call: Call<ReviewFragRvUsingInterface.profile?>,
-//                response: Response<List<ReviewFragRvUsingInterface.profile>?>
-//            ) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    val getted_name: String = response.body().toString()
-//                    Log.e(
-//                        "getNameHobby()",
-//                        "서버에서 이름 : getted_name"
-//                    )
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<List<ReviewFragRvUsingInterface.profile>?>, t: Throwable) {
-//                Log.e("getNameHobby()", "에러 : " + t.message)
-//            }
-//        })
-//    }
 }
