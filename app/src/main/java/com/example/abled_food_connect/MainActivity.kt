@@ -51,7 +51,7 @@ import java.security.NoSuchAlgorithmException
 
 class MainActivity : AppCompatActivity(){
     lateinit var callbackManager: CallbackManager
-  var TAG = "KAKAO"
+    var TAG = "KAKAO"
     var id = ""
     var firstName = ""
     var middleName = ""
@@ -250,7 +250,7 @@ class MainActivity : AppCompatActivity(){
 
 
         var btnNaverLogin : LinearLayout = findViewById(R.id.btnNaverLogin)
-            //네이버 로그인 버튼 연결
+        //네이버 로그인 버튼 연결
 
         //네이버에서 제공하는 버튼은 숨겨둔다.
         //그리고 커스텀 버튼에서 실행하게 했다.
@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity(){
 
 
         btnNaverLogin.setOnClickListener {
-                //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
+            //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
             buttonOAuthLoginImg.performClick()
         }
 

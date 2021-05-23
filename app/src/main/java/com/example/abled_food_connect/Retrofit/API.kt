@@ -1,8 +1,6 @@
 package com.example.abled_food_connect.Retrofit
 
 
-import com.example.abled_food_connect.Data.MainFragmentItemData
-import com.example.abled_food_connect.R
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
