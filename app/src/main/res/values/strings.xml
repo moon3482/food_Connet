@@ -1,18 +1,18 @@
 <resources>
     <string name="app_name">푸드 커넥트</string>
     <string name="join">입장</string>
-    
+
     <!--메인 액티비티사용 텍스트-->
     <string name="naver_login">네이버 로그인</string>
     <string name="kakao_login">카카오 로그인</string>
     <string name="google_login">구글 로그인</string>
     <string name="facebook_login">페이스북 로그인</string>
-    
+
     <!--API 키-->
     <string name="facebook_app_id">453824635710043</string>
     <string name="fb_login_protocol_scheme">fb453824635710043</string>
     <string name="kakao_native_appkey">79386308695f07328a0a5316dcb46a0a</string>
-    
+
     <!--메인프 래그먼트 액티비티사용 텍스트-->
     <string name="fragment_menu_home">홈</string>
     <string name="fragment_menu_review">리뷰</string>
@@ -22,7 +22,7 @@
     <string name="room_status_imminent_time">%d시간</string>
     <string name="create_room_name_edit_text_hint">방제목</string>
     <string name="limit_age_badge">%d~%d</string>
-    
+
     <!--방만들기 액티비티에서 사용 텍스트-->
     <string name="create_room_activity_recruitment_number">모집인원</string>
     <string name="create_room_activity_date_and_time">날짜/시간</string>

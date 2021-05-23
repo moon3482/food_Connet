@@ -192,12 +192,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="createRoomActivityMap"
-                        app:srcCompat="@drawable/ic_baseline_map_24" />
+                        app:srcCompat="@drawable/ic_baseline_map_24"
+                        tools:ignore="VectorDrawableCompat" />
                 </LinearLayout>
 
             </LinearLayout>
 
-            <com.google.android.gms.maps.MapView
+            <RelativeLayout
                 android:id="@+id/mapView"
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
@@ -232,7 +233,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:contentDescription="createRoomActivityGenderLimitMale"
-                        app:srcCompat="@drawable/ic_male_not_focus" />
+                        app:srcCompat="@drawable/ic_male_not_focus"
+                        tools:ignore="VectorDrawableCompat" />
 
                     <ImageView
                         android:id="@+id/CreateRoomActivityFemaleImageView"
@@ -242,7 +244,8 @@
                         android:layout_marginEnd="20dp"
                         android:layout_weight="1"
                         android:contentDescription="createRoomActivityGenderLimitFemale"
-                        app:srcCompat="@drawable/ic_female_not_focus" />
+                        app:srcCompat="@drawable/ic_female_not_focus"
+                        tools:ignore="VectorDrawableCompat" />
 
                     <ImageView
                         android:id="@+id/CreateRoomActivityGenderAnyImageView"
@@ -250,7 +253,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:contentDescription="createRoomActivityGenderLimitAny"
-                        app:srcCompat="@drawable/ic_maleandfemale_not_focus" />
+                        app:srcCompat="@drawable/ic_maleandfemale_not_focus"
+                        tools:ignore="VectorDrawableCompat" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -325,9 +329,9 @@
                     style="@style/LoginTextInputLayoutStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="5dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/CreateRoomActivityKeyWordInput"
@@ -375,7 +379,8 @@
                     app:horizontal_interval="10dp"
                     app:tag_clickable="true"
                     app:tag_theme="pure_teal"
-                    app:vertical_interval="10dp" />
+                    app:vertical_interval="10dp"
+                    tools:ignore="MissingClass" />
 
             </LinearLayout>
 

@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import co.lujun.androidtagview.TagView
@@ -25,6 +26,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import net.daum.android.map.*
+import net.daum.mf.map.api.MapView
 
 
 class CreateRoomActivity : AppCompatActivity() {
@@ -39,7 +42,10 @@ class CreateRoomActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
-
+        /*카카오 맵 API*/
+        var map = MapView(this)
+        var mapview :ViewGroup = binding.mapView
+        mapview.addView(map)
         /*바인딩 뷰 변수화*/
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput
         val maximum = binding.maximumAgeTextView
