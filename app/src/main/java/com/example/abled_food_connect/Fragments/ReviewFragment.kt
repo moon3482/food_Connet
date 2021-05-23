@@ -87,6 +87,8 @@ class ReviewFragment:Fragment() {
                    println(a.get(i).title);
                 }
 
+
+
             }
 
             override fun onFailure(call: Call<ReviewFragmentItemData>, t: Throwable) {
@@ -97,6 +99,7 @@ class ReviewFragment:Fragment() {
 
         return view
     }
+
 
 
 }
