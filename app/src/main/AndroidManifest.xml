@@ -22,8 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ReviewWriting"></activity>
         <activity android:name=".UserRegisterActivity" />
-        <activity android:name=".MainFragmentActivity"/>
+        <activity android:name=".MainFragmentActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

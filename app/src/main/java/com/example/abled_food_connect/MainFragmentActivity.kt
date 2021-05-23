@@ -1,5 +1,6 @@
 package com.example.abled_food_connect
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -40,6 +41,13 @@ class MainFragmentActivity : AppCompatActivity(),
         mainFragment = MainFragment.newInstance()
         binding.mainFragmentCreateReviewBtn.hide()
         supportFragmentManager.beginTransaction().add(R.id.view, mainFragment).commit()
+
+        binding.mainFragmentCreateReviewBtn.setOnClickListener(View.OnClickListener {
+
+            val nextIntent = Intent(this, ReviewWriting::class.java)
+            startActivity(nextIntent)
+
+        })
 
 
     }
