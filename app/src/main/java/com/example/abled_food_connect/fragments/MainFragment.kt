@@ -19,6 +19,7 @@ import com.example.abled_food_connect.data.MainFragmentItemData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
+import okhttp3.internal.notify
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
@@ -79,6 +80,7 @@ class MainFragment : Fragment() {
             )
         )
         load()
+
         return view
     }
 

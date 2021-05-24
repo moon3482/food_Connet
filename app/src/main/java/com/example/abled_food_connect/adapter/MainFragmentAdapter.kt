@@ -1,6 +1,7 @@
 package com.example.abled_food_connect.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.RoomInfomationActivity
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.databinding.MainPageItemBinding
 
@@ -29,42 +31,47 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         val testholder: CustomHolder = holder as CustomHolder
         testholder.roomStatus.text = maindata.title
         testholder.shopName.text = maindata.info
-        if(maindata.roomStatus>5){
+        if (maindata.roomStatus > 5) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
             testholder.roomStatus.text = "모집중"
-        }else if(maindata.roomStatus>0.9){
+        } else if (maindata.roomStatus > 0.9) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
-            val text : String = context.getString(R.string.room_status_imminent_time)
-            testholder.roomStatus.text = String.format(text,Math.round(maindata.roomStatus).toInt())
+            val text: String = context.getString(R.string.room_status_imminent_time)
+            testholder.roomStatus.text =
+                String.format(text, Math.round(maindata.roomStatus).toInt())
 
-        }else if(maindata.roomStatus<0.9&&maindata.roomStatus>0.0){
+        } else if (maindata.roomStatus < 0.9 && maindata.roomStatus > 0.0) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
             testholder.roomStatus.text = "임박"
 
-        }else if(maindata.roomStatus<0){
+        } else if (maindata.roomStatus < 0) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
             testholder.roomStatus.text = "마감"
         }
-        if(maindata.gender.equals("male")){
+        if (maindata.gender.equals("male")) {
             testholder.gender.setImageResource(R.drawable.ic_male)
-        }
-        else if(maindata.gender == "female"){
+        } else if (maindata.gender == "female") {
             testholder.gender.setImageResource(R.drawable.ic_female)
-        }
-        else{
+        } else {
             testholder.gender.setImageResource(R.drawable.ic_maleandfemale)
         }
 
-        if (maindata.maximumAge == maindata.minimumAge){
+        if (maindata.maximumAge == maindata.minimumAge) {
             testholder.roomAge.text = maindata.maximumAge.toString()
-        }else{
-            val text : String =context.getString(R.string.limit_age_badge)
-            testholder.roomAge.text = String.format(text,maindata.minimumAge,maindata.maximumAge)
+        } else {
+            val text: String = context.getString(R.string.limit_age_badge)
+            testholder.roomAge.text = String.format(text, maindata.minimumAge, maindata.maximumAge)
         }
-        testholder.shopName.text=maindata.info
+        testholder.shopName.text = maindata.info
         testholder.roomTitle.text = maindata.title
-        testholder.roomNumberOfPeople.text = "1/${(maindata.numOfPeople+1).toString()}명"
+        testholder.roomNumberOfPeople.text = "1/${(maindata.numOfPeople + 1).toString()}명"
         testholder.roomDateTime.text = maindata.date
+        testholder.itemView.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                context.startActivity(Intent(context, RoomInfomationActivity::class.java))
+            }
+        })
+
     }
 
     override fun getItemCount(): Int {
@@ -72,15 +79,17 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         return list.size
     }
 
+
     class CustomHolder(view: View) : RecyclerView.ViewHolder(view) {
         var roomStatus: TextView = view.findViewById(R.id.tvRoomStatus)
         var shopName: TextView = view.findViewById(R.id.tvShopName)
         var gender: ImageView = view.findViewById(R.id.ivGender)
         var roomTitle: TextView = view.findViewById(R.id.tvRoomTitle)
-        var roomDateTime:TextView = view.findViewById(R.id.tvRoomDateTime)
-        var roomLocation:TextView = view.findViewById(R.id.tvRoomLocation)
-        var roomNumberOfPeople :TextView = view.findViewById(R.id.tvRoomNumberOfPeople)
-        var roomAge:TextView = view.findViewById(R.id.tvAge)
+        var roomDateTime: TextView = view.findViewById(R.id.tvRoomDateTime)
+        var roomLocation: TextView = view.findViewById(R.id.tvRoomLocation)
+        var roomNumberOfPeople: TextView = view.findViewById(R.id.tvRoomNumberOfPeople)
+        var roomAge: TextView = view.findViewById(R.id.tvAge)
+
 
     }
 
