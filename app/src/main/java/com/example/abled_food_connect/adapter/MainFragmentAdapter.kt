@@ -9,9 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.RoomInfomationActivity
+import com.example.abled_food_connect.RoomInformationActivity
 import com.example.abled_food_connect.data.MainFragmentItemData
-import com.example.abled_food_connect.databinding.MainPageItemBinding
 
 
 class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
@@ -31,6 +30,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         val testholder: CustomHolder = holder as CustomHolder
         testholder.roomStatus.text = maindata.title
         testholder.shopName.text = maindata.info
+        testholder.roomStatus
         if (maindata.roomStatus > 5) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
             testholder.roomStatus.text = "모집중"
@@ -68,7 +68,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomDateTime.text = maindata.date
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                context.startActivity(Intent(context, RoomInfomationActivity::class.java))
+                context.startActivity(Intent(context, RoomInformationActivity::class.java))
             }
         })
 

@@ -1,13 +1,12 @@
 package com.example.abled_food_connect
 
-import android.graphics.Color
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import com.example.abled_food_connect.databinding.ActivityRoomInfomationBinding
+import com.example.abled_food_connect.databinding.ActivityRoomInformationBinding
 
-class RoomInfomationActivity : AppCompatActivity() {
-    val binding by lazy { ActivityRoomInfomationBinding.inflate(layoutInflater) }
+class RoomInformationActivity : AppCompatActivity() {
+    val binding by lazy { ActivityRoomInformationBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var view = binding.root

@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RoomInfomationActivity"></activity>
+        <activity android:name=".RoomInformationActivity"></activity>
         <activity android:name=".CreateRoomMapSearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
