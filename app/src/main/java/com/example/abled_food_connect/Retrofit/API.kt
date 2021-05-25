@@ -47,9 +47,6 @@ class API {
             @Part("rating_star_taste") rating_star_taste: Int,
             @Part("rating_star_service") rating_star_service: Int,
             @Part("rating_star_clean") rating_star_clean: Int,
-            @Part("rating_star_interior") rating_star_interior: Int,
-            @Part("review_picture_1") review_picture_1: String,
-            @Part("review_picture_2") review_picture_2: String,
-            @Part("review_picture_3") review_picture_3: String): Call<String>
+            @Part("rating_star_interior") rating_star_interior: Int): Call<String>
     }
 }

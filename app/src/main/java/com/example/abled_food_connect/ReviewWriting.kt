@@ -30,6 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -61,7 +62,7 @@ class ReviewWriting : AppCompatActivity() {
 
     //다중이미지 선택 변수
     private var selectedUriList: List<Uri>? = null
-    private lateinit var imgAddBtn : ImageButton
+    private lateinit var imgAddBtn : Button
     private lateinit var img_change_btn : ImageButton
 
 
@@ -73,6 +74,8 @@ class ReviewWriting : AppCompatActivity() {
     var interiorStarPoint : Int = 0
 
 
+    //리뷰 내용
+    lateinit var review_description : String
 
 
     //서버로 보낼 이미지 어래이
@@ -176,8 +179,58 @@ class ReviewWriting : AppCompatActivity() {
         }
 
 
+
+
         binding.writingFinishBtn.setOnClickListener(View.OnClickListener {
-            UserReviewWriting("t");
+
+            Log.d("사이즈뭐야", selectedUriList?.size.toString())
+
+            if(selectedUriList?.size  == null||selectedUriList?.size  == 0){
+                Toast.makeText(this@ReviewWriting, "리뷰 이미지를 선택해주세요", Toast.LENGTH_SHORT).show()
+            }else if(tasteStarPoint == 0){
+                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+            }else if(serviceStarPoint == 0){
+                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+            }else if(cleanStarPoint == 0){
+                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+            }else if(interiorStarPoint == 0){
+                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+            }else if(binding.reveiwDescriptionEt.getText().toString().replace(" ", "").equals("")){
+                Toast.makeText(this@ReviewWriting, "리뷰를 작성해주세요", Toast.LENGTH_SHORT).show()
+            }
+            else {
+
+                for (i in selectedUriList?.indices!!) {
+
+                    var currentImageUri: Uri? = selectedUriList?.get(i)
+
+                    val uriPathHelper = URIPathHelper()
+                    myPath = currentImageUri?.let { uriPathHelper.getPath(this, it) }.toString()
+
+                    val file = File(myPath)
+
+
+                    //이미지의 확장자를 구한다.
+                    val extension = MimeTypeMap.getFileExtensionFromUrl(currentImageUri.toString())
+
+
+                    var requestBody: RequestBody =
+                        RequestBody.create("image/*".toMediaTypeOrNull(), file);
+                    var body: MultipartBody.Part =
+                        MultipartBody.Part.createFormData(
+                            "itemphoto${i}",
+                            "itemphoto${i}.${extension}",
+                            requestBody
+                        )
+                    itemphoto.add(body)
+
+                }
+
+                review_description = binding.reveiwDescriptionEt.text.toString()
+
+
+                UserReviewWriting();
+            }
         })
 
 
@@ -186,107 +239,6 @@ class ReviewWriting : AppCompatActivity() {
 
 
     }
-
-//    //이미지 갤러리 열기
-//    private  fun openGallery(){
-//        val intent : Intent = Intent(Intent.ACTION_GET_CONTENT)
-//        intent.setType("image/*")
-//        startActivityForResult(intent,OPEN_GALLERY)
-//    }
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if(resultCode == Activity.RESULT_OK){
-//            if(requestCode == OPEN_GALLERY){
-//                var currentImageUri : Uri? = data?.data
-//
-//                try {
-//                    val bitmap = MediaStore.Images.Media.getBitmap(contentResolver,currentImageUri)
-//
-//                    if(imageview_control_num == 1 ){
-//                        binding.imageViewOne.setImageBitmap(bitmap)
-//
-//                        val uriPathHelper = UserRegisterActivity.URIPathHelper()
-//                        myPath = currentImageUri?.let { uriPathHelper.getPath(this, it) }.toString()
-//
-//                        val file = File(myPath)
-//
-//
-//                        var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file);
-//                        var body : MultipartBody.Part = MultipartBody.Part.createFormData("itemphoto1","photo1",requestBody)
-//                        itemphoto.add(body)
-//
-//                        Log.d("패스", itemphoto.toString())
-//
-//
-////                        val uriPathHelper = UserRegisterActivity.URIPathHelper()
-////                        myPath = currentImageUri?.let { uriPathHelper.getPath(this, it) }.toString()
-////
-////                        Log.d("패스", myPath)
-////                        val file = File(myPath)
-////                        var surveyBody : RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-////                        itemphoto.add(MultipartBody.Part.createFormData("itemphoto", file.name, surveyBody))
-//
-//
-//
-//                    } else if(imageview_control_num == 2 ){
-//                        binding.imageViewTwo.setImageBitmap(bitmap)
-////                        val file = File()
-////                        var surveyBody : RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-////                        itemphoto.add(MultipartBody.Part.createFormData("itemphoto", file.name, surveyBody))
-//
-//                        val uriPathHelper = UserRegisterActivity.URIPathHelper()
-//                        myPath = currentImageUri?.let { uriPathHelper.getPath(this, it) }.toString()
-//
-//                        val file = File(myPath)
-//                        var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file);
-//                        var body : MultipartBody.Part = MultipartBody.Part.createFormData("itemphoto2","photo2",requestBody)
-//                        itemphoto.add(body)
-//                        Log.d("패스", itemphoto.toString())
-//
-//
-//                    } else if(imageview_control_num == 3 ){
-//                        binding.imageViewThree.setImageBitmap(bitmap)
-//
-////                        val file = File()
-////                        var surveyBody : RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-////                        itemphoto.add(MultipartBody.Part.createFormData("itemphoto", file.name, surveyBody))
-//
-//                        val uriPathHelper = UserRegisterActivity.URIPathHelper()
-//                        myPath = currentImageUri?.let { uriPathHelper.getPath(this, it) }.toString()
-//
-//                        val file = File(myPath)
-//                        var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file);
-//                        var body : MultipartBody.Part = MultipartBody.Part.createFormData("itemphoto3","photo3",requestBody)
-//                        itemphoto.add(body)
-//
-//
-//
-////                        var surveyBody : RequestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-////                        itemphoto.add(MultipartBody.Part.createFormData("itemphoto", file.name, surveyBody))
-//                        Log.d("패스", itemphoto.toString())
-//                    }
-//
-//                }catch (e:Exception){
-//                    e.printStackTrace()
-//                }
-//            }
-//        }
-//    }
-
-//    private fun prepareFilePart(partName: String, fileUri: Uri): Part? {
-//        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
-//        // use the FileUtils to get the actual file by uri
-//        val file: File = FileUtils.getFile(this, fileUri)
-//
-//        // create RequestBody instance from file
-//        val requestFile: RequestBody = create(MediaType.parse(contentResolver.getType(fileUri)), file)
-//
-//        // MultipartBody.Part is used to send also the actual file name
-//        return createFormData.createFormData(partName, file.name, requestFile)
-//    }
-
 
 
     // 다중이미지 선택 메서드
@@ -307,17 +259,11 @@ class ReviewWriting : AppCompatActivity() {
             val itemImageBinding = ReviewWritingItemImageBinding.inflate(LayoutInflater.from(this))
             Glide.with(this)
                 .load(it)
-                .apply(RequestOptions().fitCenter())
+                .apply(RequestOptions().centerCrop())
                 .into(itemImageBinding.ivMedia)
             itemImageBinding.root.layoutParams = FrameLayout.LayoutParams(viewSize, viewSize)
 
             val createMarginBinding = ReviewWritingCreateMarginBinding.inflate(LayoutInflater.from(this))
-//            Glide.with(this)
-//                .load(it)
-//                .apply(RequestOptions().fitCenter())
-//                .into(itemImageBinding.ivMedia)
-//            itemImageBinding.root.layoutParams = FrameLayout.LayoutParams(viewSize, viewSize)
-
 
             binding.containerSelectedPhotos.addView(itemImageBinding.root)
             binding.containerSelectedPhotos.addView(createMarginBinding.root)
@@ -325,6 +271,7 @@ class ReviewWriting : AppCompatActivity() {
         }
 
         if(uriList.size<3){
+            imgAddBtn.setText("사진 "+uriList.size+"/3")
             imgAddBtn.visibility = View.VISIBLE
             img_change_btn.visibility = View.GONE
         }else{
@@ -338,12 +285,12 @@ class ReviewWriting : AppCompatActivity() {
         var permis = object  : PermissionListener {
             //            어떠한 형식을 상속받는 익명 클래스의 객체를 생성하기 위해 다음과 같이 작성
             override fun onPermissionGranted() {
-                Toast.makeText(this@ReviewWriting, "권한 허가", Toast.LENGTH_SHORT)
-                    .show()
+//                Toast.makeText(this@ReviewWriting, "권한 허가", Toast.LENGTH_SHORT)
+//                    .show()
             }
 
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                Toast.makeText(this@ReviewWriting, "권한 거부", Toast.LENGTH_SHORT)
+                Toast.makeText(this@ReviewWriting, "카메라 권한 설정에 동의해주세요", Toast.LENGTH_SHORT)
                     .show()
                 ActivityCompat.finishAffinity(this@ReviewWriting) // 권한 거부시 앱 종료
             }
@@ -439,16 +386,7 @@ class ReviewWriting : AppCompatActivity() {
 
 
 
-    fun UserReviewWriting(path:String){
-
-//            //creating a file
-//            val file = File(myPath)
-//            var fileName = myPath.replace("@","").replace(".","")
-//            fileName = fileName+".png"
-//
-//
-//            var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),file)
-//            var body : MultipartBody.Part = MultipartBody.Part.createFormData("itemphoto",fileName,requestBody)
+    fun UserReviewWriting(){
 
         //The gson builder
         var gson : Gson =  GsonBuilder()
@@ -474,7 +412,7 @@ class ReviewWriting : AppCompatActivity() {
 //            //user_gender = binding.userGenderEt.text.toString()
 //            phone_number = binding.phoneNumberInputEt.text.toString()
 
-        server.review_Writing_Request(itemphoto,1,"t","tt","d","d","2021-05-19 14:57:42","2021-05-19","14:57:42","d",tasteStarPoint,serviceStarPoint,cleanStarPoint,interiorStarPoint,"d","d","d").enqueue(object:
+        server.review_Writing_Request(itemphoto,1,"sD44E7xt7IXL4HcmgV09OPMI1oH2","구름","d","d","2021-05-19 14:57:42","2021-05-19","14:57:42",review_description,tasteStarPoint,serviceStarPoint,cleanStarPoint,interiorStarPoint).enqueue(object:
             Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
