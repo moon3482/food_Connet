@@ -1,16 +1,20 @@
 package com.example.abled_food_connect.Fragments
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.Data.ReviewFragmentLoadingData
-import com.example.abled_food_connect.Data.ReviewFragmentLodingDataItem
+import com.example.abled_food_connect.Datas.ReviewFragmentLoadingData
+import com.example.abled_food_connect.Datas.ReviewFragmentLodingDataItem
+import com.example.abled_food_connect.Adapters.ReviewFragmentGridViewAdapter
 import com.example.abled_food_connect.Interfaces.ReviewFragRvUsingInterface
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.MainFragmentItemData
@@ -23,8 +27,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ReviewFragment:Fragment() {
     private val reviewFragmentListArray: ArrayList<MainFragmentItemData> = ArrayList()
-    lateinit var recyclerView: RecyclerView
-    lateinit var textView: TextView
+
+
+    //리사이클러뷰 어래이리스트
+    private lateinit var gridView_arrayList : ArrayList<ReviewFragmentLodingDataItem>
+
+    //리사이클러뷰
+    lateinit var rv : RecyclerView
+
+
+    //
+    lateinit var mAdapter : ReviewFragmentGridViewAdapter
+
     companion object{
         const val TAG : String = "리뷰 프래그먼트 로그"
         fun newInstance(): ReviewFragment{
@@ -49,12 +63,35 @@ class ReviewFragment:Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
 
-        textView = view.findViewById(R.id.whatTv)
 
-        textView.setText("tt")
-
+        reviewDbLoading()
 
 
+
+
+        rv = view.findViewById<RecyclerView>(R.id.rv)
+        //rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        rv.layoutManager = GridLayoutManager(context,3)
+
+
+        //리사이클러뷰 구분선
+
+
+        rv.addItemDecoration(HorizontalItemDecorator(5))
+        rv.addItemDecoration(VerticalItemDecorator(5))
+
+
+        rv.setHasFixedSize(true)
+
+
+
+
+
+        return view
+    }
+
+
+    fun reviewDbLoading(){
         val retrofit = Retrofit.Builder()
             .baseUrl("http://3.37.36.188/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -77,11 +114,16 @@ class ReviewFragment:Fragment() {
                 Log.d(TAG, "성공 : ${items!!.roomList}")
 
 
-                var a : List<ReviewFragmentLodingDataItem> = items!!.roomList
+                gridView_arrayList = items!!.roomList as ArrayList<ReviewFragmentLodingDataItem>
 
-                for(i in a.indices){
-                    println(a.get(i).review_picture_0);
+                for(i in gridView_arrayList.indices){
+                    println(gridView_arrayList.get(i).review_picture_0);
+
+
                 }
+
+                mAdapter =  ReviewFragmentGridViewAdapter(gridView_arrayList)
+                rv.adapter = mAdapter
 
 
 
@@ -91,9 +133,26 @@ class ReviewFragment:Fragment() {
                 Log.d(TAG, "실패 : $t")
             }
         })
+    }
 
+    class HorizontalItemDecorator(private val divHeight : Int) : RecyclerView.ItemDecoration() {
 
-        return view
+        @Override
+        override fun getItemOffsets(outRect: Rect, view: View, parent : RecyclerView, state : RecyclerView.State) {
+            super.getItemOffsets(outRect, view, parent, state)
+            outRect.left = divHeight
+            outRect.right = divHeight
+        }
+    }
+
+    class VerticalItemDecorator(private val divHeight : Int) : RecyclerView.ItemDecoration() {
+
+        @Override
+        override fun getItemOffsets(outRect: Rect, view: View, parent : RecyclerView, state : RecyclerView.State) {
+            super.getItemOffsets(outRect, view, parent, state)
+            outRect.top = divHeight
+            outRect.bottom = divHeight
+        }
     }
 
 

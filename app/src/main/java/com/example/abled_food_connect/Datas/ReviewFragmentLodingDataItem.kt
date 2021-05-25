@@ -1,12 +1,12 @@
-package com.example.abled_food_connect.Data
+package com.example.abled_food_connect.Datas
 
 import com.google.gson.annotations.SerializedName
 
 data class ReviewFragmentLodingDataItem(
     @SerializedName("id")
-    val id : String,
+    val id : Int,
     @SerializedName("room_tb_id")
-    val room_tb_id : String,
+    val room_tb_id : Int,
     @SerializedName("writer_uid")
     val writer_uid : String,
     @SerializedName("writer_nicname")
@@ -24,13 +24,13 @@ data class ReviewFragmentLodingDataItem(
     @SerializedName("review_description")
     val review_description : String,
     @SerializedName("rating_star_taste")
-    val rating_star_taste : String,
+    val rating_star_taste : Int,
     @SerializedName("rating_star_service")
-    val rating_star_service : String,
+    val rating_star_service : Int,
     @SerializedName("rating_star_clean")
-    val rating_star_clean : String,
+    val rating_star_clean : Int,
     @SerializedName("rating_star_interior")
-    val rating_star_interior : String,
+    val rating_star_interior : Int,
     @SerializedName("review_picture_0")
     val review_picture_0 : String,
     @SerializedName("review_picture_1")
