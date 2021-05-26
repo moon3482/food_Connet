@@ -4,8 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import com.example.abled_food_connect.fragments.ReviewFragment
+import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
@@ -20,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainFragmentActivity : AppCompatActivity()
-{
+     {
     val binding by lazy { ActivityMainFragmentBinding.inflate(layoutInflater) }
     private lateinit var mainFragment: MainFragment
     private lateinit var reviewFragment: ReviewFragment
@@ -63,9 +62,16 @@ class MainFragmentActivity : AppCompatActivity()
 //            test()
 
         }
-
+    }
         binding.mainFragmentCreateReviewBtn.setOnClickListener(View.OnClickListener {
 
+         override fun onStart() {
+             super.onStart()
+             mainFragment = MainFragment.newInstance()
+             supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
+                 .commit()
+         }
+        //바텀네비게이션 프래그먼트 셀렉트 리스너
             val nextIntent = Intent(this, ReviewWriting::class.java)
             startActivity(nextIntent)
 
@@ -142,7 +148,7 @@ class MainFragmentActivity : AppCompatActivity()
             true
         }
 
-    //프래그먼트에 따라 플로팅버튼 보여주기
+         //프래그먼트에 따라 플로팅버튼 보여주기
     private fun showFloatingButtonVisible(itemid: Int) {
         when (itemid) {
             R.id.menu_home -> {
@@ -169,42 +175,42 @@ class MainFragmentActivity : AppCompatActivity()
         }
     }
 
-    /** 바텀네비게이션아이템 리스너 오버라이드 2021-05-17부로 코드중복으로 필요없음.
-    //    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-    //        TODO("Not yet implemented")
-    //        val tb: Toolbar = findViewById(R.id.maintoolbar)
-    //        tb.visibility = View.VISIBLE
-    //        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-    //
-    //        when (item.itemId) {
-    //            R.id.menu_home -> {
-    //                Log.d(TAG, "메인 엑티비티 홈 버튼 클릭")
-    //                val fragmentHoem = MainFragment()
-    //
-    //                transaction.replace(R.id.view, fragmentHoem, "home")
-    //            }
-    //            R.id.menu_review -> {
-    //                Log.d(TAG, "메인 엑티비티 리뷰 버튼 클릭")
-    //
-    //            }
-    //            R.id.menu_ranking -> {
-    //                Log.d(TAG, "메인 엑티비티 랭킹 버튼 클릭")
-    //
-    //            }
-    //            R.id.menu_chat -> {
-    //                Log.d(TAG, "메인 엑티비티 채팅 버튼 클릭")
-    //
-    //            }
-    //            R.id.menu_mypage -> {
-    //                Log.d(TAG, "메인 엑티비티 마이페이지 버튼 클릭")
-    //
-    //            }
-    //
-    //        }
-    //    }
-     */
-    //방 등록 리퀘스트 메소드
-    private fun resistRoom() {
+         /** 바텀네비게이션아이템 리스너 오버라이드 2021-05-17부로 코드중복으로 필요없음.
+//    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+//        TODO("Not yet implemented")
+//        val tb: Toolbar = findViewById(R.id.maintoolbar)
+//        tb.visibility = View.VISIBLE
+//        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+//
+//        when (item.itemId) {
+//            R.id.menu_home -> {
+//                Log.d(TAG, "메인 엑티비티 홈 버튼 클릭")
+//                val fragmentHoem = MainFragment()
+//
+//                transaction.replace(R.id.view, fragmentHoem, "home")
+//            }
+//            R.id.menu_review -> {
+//                Log.d(TAG, "메인 엑티비티 리뷰 버튼 클릭")
+//
+//            }
+//            R.id.menu_ranking -> {
+//                Log.d(TAG, "메인 엑티비티 랭킹 버튼 클릭")
+//
+//            }
+//            R.id.menu_chat -> {
+//                Log.d(TAG, "메인 엑티비티 채팅 버튼 클릭")
+//
+//            }
+//            R.id.menu_mypage -> {
+//                Log.d(TAG, "메인 엑티비티 마이페이지 버튼 클릭")
+//
+//            }
+//
+//        }
+//    }
+*/
+        //방 등록 리퀘스트 메소드
+         private fun resistRoom() {
         val gson: Gson = GsonBuilder()
             .setLenient()
             .create()
@@ -228,26 +234,26 @@ class MainFragmentActivity : AppCompatActivity()
             "male",
             "22","33","호스트네임")
             .enqueue(object :Callback<String>{
-                override fun onResponse(
-                    call: Call<String>,
-                    response: Response<String>
-                ) {
-                    if(response.isSuccessful)
-                        Log.e("성공",response.body().toString())
-                    else
-                        Log.e("실패",response.body().toString())
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if(response.isSuccessful)
+                    Log.e("성공",response.body().toString())
+                else
+                    Log.e("실패",response.body().toString())
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+
                 }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
-
-                }
-
-            })
+        })
     }
-    fun moveToCreateRoomActivity(){
-        val moveToCreateRoomActivityIntent = Intent(this@MainFragmentActivity,CreateRoomActivity::class.java)
-        startActivity(moveToCreateRoomActivityIntent)
-    }
+         fun moveToCreateRoomActivity(){
+             val moveToCreateRoomActivityIntent = Intent(this@MainFragmentActivity,CreateRoomActivity::class.java)
+             startActivity(moveToCreateRoomActivityIntent)
+         }
 
 
 }

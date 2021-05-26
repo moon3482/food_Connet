@@ -3,9 +3,11 @@ package com.example.abled_food_connect
 import android.R
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import co.lujun.androidtagview.TagView
@@ -25,6 +27,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import net.daum.android.map.*
+import net.daum.mf.map.api.MapView
 
 
 class CreateRoomActivity : AppCompatActivity() {
@@ -32,14 +36,20 @@ class CreateRoomActivity : AppCompatActivity() {
     var genderMaleSelected: Boolean = false
     var genderFemaleSelected: Boolean = false
     var genderAnySelected: Boolean = false
+    private lateinit var map: MapView
+    private lateinit var mapview: ViewGroup
 
     /*태그 리스트*/
     var tagArray: ArrayList<String> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
-        setContentView(view)
 
+        setContentView(view)
+        /*카카오 맵 API*/
+//        map = MapView(this)
+//        mapview = binding.mapView
+//        mapview.addView(map)
         /*바인딩 뷰 변수화*/
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput
         val maximum = binding.maximumAgeTextView
@@ -49,7 +59,6 @@ class CreateRoomActivity : AppCompatActivity() {
         maximum.setAdapter(setAdapter(age()))
         minimum.setAdapter(setAdapter(age()))
         numOfPeople.setAdapter(setAdapter(numOfPeople()))
-
 
         onClickListenerGroup()
 
@@ -65,9 +74,12 @@ class CreateRoomActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+
     }
+
     override fun onStop() {
         super.onStop()
+
         finish()
     }
 
@@ -163,7 +175,6 @@ class CreateRoomActivity : AppCompatActivity() {
             return true
         }
     }
-
 
 
     /**
@@ -347,11 +358,17 @@ class CreateRoomActivity : AppCompatActivity() {
 
         var datePicker = object : DatePickerDialog.OnDateSetListener {
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-                binding.CreateRoomActivityDateInput.setText("${year}-${plusZero(month+1)}-${plusZero(dayOfMonth)}")
+                binding.CreateRoomActivityDateInput.setText(
+                    "${year}-${plusZero(month + 1)}-${
+                        plusZero(
+                            dayOfMonth
+                        )
+                    }"
+                )
             }
         }
 
-        var builder = DatePickerDialog(this, datePicker, year, month, day-1)
+        var builder = DatePickerDialog(this, datePicker, year, month, day - 1)
 
         builder.datePicker.minDate = System.currentTimeMillis()
         builder.show()
@@ -369,7 +386,13 @@ class CreateRoomActivity : AppCompatActivity() {
         var timePicker = object : TimePickerDialog.OnTimeSetListener {
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
 
-                binding.CreateRoomActivityTimeInput.setText("${plusZero(hourOfDay)}:${plusZero(minute)}")
+                binding.CreateRoomActivityTimeInput.setText(
+                    "${plusZero(hourOfDay)}:${
+                        plusZero(
+                            minute
+                        )
+                    }"
+                )
             }
         }
         var builder = TimePickerDialog(this, timePicker, hour, minute, true)
@@ -381,7 +404,7 @@ class CreateRoomActivity : AppCompatActivity() {
      * 현재 시스템시간과 설정한 약속시간 비교
      */
     private fun timeCompare(time: String): Boolean {
-        var simpleTime = SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.KOREA)
+        var simpleTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA)
         var now: Long = System.currentTimeMillis()
         var nowTime = simpleTime.format(Date(now))
         var transNowTime: Date = simpleTime.parse(nowTime)
@@ -396,10 +419,10 @@ class CreateRoomActivity : AppCompatActivity() {
      * 데이트/타임 피커에서 선택한 숫자가 10보다 낮을 경우
      * 숫자 앞에 0을 븉여 두자릿수로 표현하는 메소드
      */
-    private fun plusZero(int:Int):String {
-        return if (int<10){
+    private fun plusZero(int: Int): String {
+        return if (int < 10) {
             "0$int"
-        }else{
+        } else {
             int.toString()
         }
     }
@@ -407,7 +430,7 @@ class CreateRoomActivity : AppCompatActivity() {
     /**
      * 온클릭 메서드들 그룹
      */
-    private fun onClickListenerGroup(){
+    private fun onClickListenerGroup() {
         /*방만들기 버튼클릭*/
         binding.CreateRoomButton.setOnClickListener {
             if (inputCheck()) {
@@ -517,6 +540,11 @@ class CreateRoomActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         })
+
+        binding.CreateRoomMapSearchButton.setOnClickListener {
+            startActivity(Intent(this, CreateRoomMapSearchActivity::class.java))
+
+        }
     }
 
 

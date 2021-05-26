@@ -90,8 +90,19 @@
         <item name="android:textStyle">normal</item>
         <item name="android:gravity">center</item>
     </style>
+<!--        구분선-->
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+    </style>
+<!--    방 정보 -->
+<style name="room_information_style">
+    <item name="android:layout_marginEnd">20dp</item>
+    <item name="android:layout_marginStart">20dp</item>
+    <item name="android:layout_marginTop">20dp</item>
 
-
+</style>
 
     <!--2021-05-04 스타일 사용을 못하게되어 주석처리 -->
     <!--    &lt;!&ndash;카카오 소셜로그인 버튼&ndash;&gt;-->
