@@ -44,11 +44,12 @@ class CreateRoomActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
+
         setContentView(view)
         /*카카오 맵 API*/
-        map = MapView(this)
-        mapview = binding.mapView
-        mapview.addView(map)
+//        map = MapView(this)
+//        mapview = binding.mapView
+//        mapview.addView(map)
         /*바인딩 뷰 변수화*/
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput
         val maximum = binding.maximumAgeTextView
@@ -73,7 +74,7 @@ class CreateRoomActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        mapview.removeView(map)
+
     }
 
     override fun onStop() {

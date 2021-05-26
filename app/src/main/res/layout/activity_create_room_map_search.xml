@@ -75,14 +75,15 @@
     <!--            android:src="@drawable/ic_baseline_search_24"/>-->
     <!--    </LinearLayout>-->
 
-    <FrameLayout
+    <fragment
         android:id="@+id/CreateRoomMapSearchMapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:name="com.naver.maps.map.MapFragment"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
 
-    </FrameLayout>
+    </fragment>
 
 
 </LinearLayout>
