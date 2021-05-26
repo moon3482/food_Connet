@@ -128,32 +128,56 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/room_information_style"
                     android:id="@+id/RoomInfoTitleTextView"
+                    style="@style/room_information_category_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="제목" />
 
                 <TextView
-                    style="@style/room_information_style"
+                    android:id="@+id/RoomInformationCategoryTitleTextview"
+                    style="@style/room_information_textview_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
                     android:id="@+id/RoomInfoInfoTextView"
+                    style="@style/room_information_category_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="소개" />
 
                 <TextView
-                    style="@style/room_information_style"
-                    android:id="@+id/RoomInfoAdressTextView"
+                    android:id="@+id/RoomInformationCategoryIntroduceTextview"
+                    style="@style/room_information_textview_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/RoomInfoAddressTextView"
+                    style="@style/room_information_category_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="주소" />
 
                 <TextView
-                    style="@style/room_information_style"
+                    android:id="@+id/RoomInformationCategoryAddressTextview"
+                    style="@style/room_information_textview_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
                     android:id="@+id/RoomInfoNumOfPeopleTextView"
+                    style="@style/room_information_category_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="인원" />
+
+                <TextView
+                    android:id="@+id/RoomInformationCategoryNumOfPeopleTextview"
+                    style="@style/room_information_textview_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
         </LinearLayout>

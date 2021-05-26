@@ -34,9 +34,7 @@
         <activity android:name=".MainFragmentActivity" />
         <activity android:name=".ReviewWriting"></activity>
         <activity android:name=".UserRegisterActivity" />
-        <activity android:name=".CreateRoomActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
-        <activity android:name=".MainFragmentActivity" />
+
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"

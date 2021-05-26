@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.example.abled_food_connect.data.MainFragmentItemData
+import android.view.View
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
@@ -18,8 +18,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MainFragmentActivity : AppCompatActivity()
-     {
+class MainFragmentActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainFragmentBinding.inflate(layoutInflater) }
     private lateinit var mainFragment: MainFragment
     private lateinit var reviewFragment: ReviewFragment
@@ -53,7 +52,12 @@ class MainFragmentActivity : AppCompatActivity()
         binding.mainFragmentCreateReviewBtn.hide()
 
         //프래그먼트 매니저에 메인프래그먼트 등록
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).add(R.id.view, mainFragment).commit()
+        supportFragmentManager.beginTransaction().setCustomAnimations(
+            R.animator.fade_in,
+            R.animator.fade_out,
+            R.animator.fade_in,
+            R.animator.fade_out
+        ).add(R.id.view, mainFragment).commit()
 
         //방만들기 플로팅 버튼 클릭리스너
         binding.mainFragmentCreateRoomBtn.setOnClickListener {
@@ -62,21 +66,18 @@ class MainFragmentActivity : AppCompatActivity()
 //            test()
 
         }
-    }
-        binding.mainFragmentCreateReviewBtn.setOnClickListener(View.OnClickListener {
-
-         override fun onStart() {
-             super.onStart()
-             mainFragment = MainFragment.newInstance()
-             supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
-                 .commit()
-         }
-        //바텀네비게이션 프래그먼트 셀렉트 리스너
+        binding.mainFragmentCreateReviewBtn.setOnClickListener(
+            View.OnClickListener
+        {
+            //바텀네비게이션 프래그먼트 셀렉트 리스너
             val nextIntent = Intent(this, ReviewWriting::class.java)
             startActivity(nextIntent)
 
         })
     }
+
+
+
 
     override fun onStart() {
         super.onStart()

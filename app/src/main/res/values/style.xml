@@ -96,13 +96,20 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
-<!--    방 정보 -->
-<style name="room_information_style">
+<!--    방 정보 액티비티  카테고리 마진-->
+<style name="room_information_category_style">
     <item name="android:layout_marginEnd">20dp</item>
     <item name="android:layout_marginStart">20dp</item>
     <item name="android:layout_marginTop">20dp</item>
-
 </style>
+<!--    방 정보 액티비티 카테고리별 텍스트 뷰 마진-->
+    <style name="room_information_textview_style">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+    </style>
 
     <!--2021-05-04 스타일 사용을 못하게되어 주석처리 -->
     <!--    &lt;!&ndash;카카오 소셜로그인 버튼&ndash;&gt;-->

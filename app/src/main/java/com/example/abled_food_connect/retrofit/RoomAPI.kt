@@ -15,7 +15,7 @@ interface RoomAPI {
             @Field("numOfPeople")numOfPeople:String,
             @Field("date") date:String,
             @Field("time") time:String,
-            @Field("adress") adress:String,
+            @Field("address") address:String,
             @Field("shopName") shopName:String,
             @Field("keyWords") keyWords:String,
             @Field("gender") gender:String,

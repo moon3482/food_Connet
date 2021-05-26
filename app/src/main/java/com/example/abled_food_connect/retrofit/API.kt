@@ -13,7 +13,7 @@ class API {
             @Query("info") info:String,
             @Query("numOfPeople")numOfPeople:Int,
             @Query("date") date:String,
-            @Query("adress") adress:String,
+            @Query("address") address:String,
             @Query("shopName") shopName:String,
             @Query("keyWords") keyWords:String,
             @Query("gender") gender:String,

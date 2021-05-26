@@ -13,8 +13,8 @@ data class MainFragmentItemData(
     var date : String,
     @SerializedName("time")
     var time : String,
-    @SerializedName("adress")
-    var adress: String,
+    @SerializedName("address")
+    var address: String,
     @SerializedName("shopName")
     var shopName: String,
     @SerializedName("keyWords")
