@@ -1,10 +1,7 @@
-package com.example.abled_food_connect.Interfaces
+package com.example.abled_food_connect.interfaces
 
-import com.example.abled_food_connect.Data.ReviewFragmentItemData
-import com.google.gson.annotations.SerializedName
+import com.example.abled_food_connect.data.ReviewFragmentItemData
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface ReviewFragRvUsingInterface {

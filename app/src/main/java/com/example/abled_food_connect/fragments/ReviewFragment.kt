@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Fragments
+package com.example.abled_food_connect.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.Data.Items
-import com.example.abled_food_connect.Data.ReviewFragmentItemData
-import com.example.abled_food_connect.Interfaces.ReviewFragRvUsingInterface
+import com.example.abled_food_connect.data.Items
+import com.example.abled_food_connect.data.ReviewFragmentItemData
+import com.example.abled_food_connect.interfaces.ReviewFragRvUsingInterface
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.MainFragmentItemData
 import retrofit2.Call

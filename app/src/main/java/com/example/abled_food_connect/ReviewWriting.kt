@@ -16,7 +16,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.example.abled_food_connect.Retrofit.API
+import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.databinding.ActivityReviewWritingBinding
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

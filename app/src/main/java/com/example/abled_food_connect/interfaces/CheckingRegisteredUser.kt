@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Interfaces
+package com.example.abled_food_connect.interfaces
 
 import retrofit2.Call
 import retrofit2.http.Field

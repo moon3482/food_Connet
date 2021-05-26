@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.example.abled_food_connect.Fragments.ReviewFragment
-import com.example.abled_food_connect.data.MainFragmentItemData
+import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding

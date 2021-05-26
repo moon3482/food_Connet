@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Interfaces
+package com.example.abled_food_connect.interfaces
 
 import okhttp3.MultipartBody
 import retrofit2.Call
