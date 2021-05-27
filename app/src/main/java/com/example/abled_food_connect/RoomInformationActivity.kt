@@ -5,6 +5,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import coil.load
 import com.example.abled_food_connect.databinding.ActivityRoomInformationBinding
 
 class RoomInformationActivity : AppCompatActivity() {
@@ -24,6 +25,7 @@ class RoomInformationActivity : AppCompatActivity() {
         val roomStatus = intent.getDoubleExtra("roomStatus", 0.0);
         val numOfPeople = intent.getStringExtra("numOfPeople")
         val keyWords = intent.getStringExtra("keyWords")
+        val imageUrl = intent.getStringExtra("imageUrl")
 
 
         if (roomStatus > 5) {
@@ -43,6 +45,7 @@ class RoomInformationActivity : AppCompatActivity() {
             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
             binding.RoomInformationStatus.text = "마감"
         }
+        binding.RankingCircleView.load(getString(R.string.http_request_base_url) + imageUrl)
         binding.RoomInformationCategoryTitleTextview.text = title
         binding.RoomInfomationDate.text = date
         binding.RoomInformationCategoryIntroduceTextview.text = info
@@ -52,9 +55,9 @@ class RoomInformationActivity : AppCompatActivity() {
 
 
         binding.RankingCircleView.borderWidth = 20
-        binding.RankingGold.visibility = View.VISIBLE
-//        binding.RankingCircleView.borderColor = getColor(R.color.app_theme_color)
-        binding.RankingCircleView.borderColor = Color.parseColor("#ffcd00")
+//        binding.RankingGold.visibility = View.VISIBLE
+        binding.RankingCircleView.borderColor = getColor(R.color.app_theme_color)
+//        binding.RankingCircleView.borderColor = Color.parseColor("#ffcd00")
 
 
     }

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.MainFragmentActivity
 import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.R
@@ -148,7 +149,7 @@ class MainFragment : Fragment() {
 
         val server = retrofit.create(RoomAPI::class.java)
 
-        server.loadingRoomGet("5QG1D09RqpORYfb7-8VRda46wVfQ20lMrWfAUu9oE8s")
+        server.loadingRoomGet(MainActivity.loginUserId)
             .enqueue(object : Callback<LoadingRoom> {
                 override fun onResponse(
                     call: Call<LoadingRoom>,

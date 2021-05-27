@@ -8,9 +8,19 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.RoomInformationActivity
+import com.example.abled_food_connect.data.JoinRoomCheck
 import com.example.abled_food_connect.data.MainFragmentItemData
+import com.example.abled_food_connect.retrofit.RoomAPI
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
@@ -68,18 +78,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomDateTime.text = maindata.date
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                val intent = Intent(context, RoomInformationActivity::class.java)
-                intent.putExtra("roomId",maindata.roomId)
-                intent.putExtra("title",maindata.title)
-                intent.putExtra("info",maindata.info)
-                intent.putExtra("hostName",maindata.hostName)
-                intent.putExtra("address",maindata.address)
-                intent.putExtra("date",maindata.date)
-                intent.putExtra("shopName",maindata.shopName)
-                intent.putExtra("roomStatus",maindata.roomStatus)
-                intent.putExtra("numOfPeople",maindata.numOfPeople.toString())
-                intent.putExtra("keyWords",maindata.keyWords)
-                context.startActivity(intent)
+                joinRoomCheckMethod(maindata)
             }
         })
 
@@ -102,6 +101,56 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         var roomAge: TextView = view.findViewById(R.id.tvAge)
 
 
+    }
+    fun joinRoomCheckMethod(mainData:MainFragmentItemData){
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(context.getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java)
+        server.joinRoomCheck(mainData.roomId,MainActivity.loginUserId,mainData.hostName).enqueue(object : Callback<JoinRoomCheck>{
+            override fun onResponse(call: Call<JoinRoomCheck>, response: Response<JoinRoomCheck>) {
+                    val joinRoomCheck = response.body()
+                if(joinRoomCheck!!.success){
+                    val intent = Intent(context, RoomInformationActivity::class.java)
+                    intent.putExtra("roomId",mainData.roomId)
+                    intent.putExtra("title",mainData.title)
+                    intent.putExtra("info",mainData.info)
+                    intent.putExtra("hostName",mainData.hostName)
+                    intent.putExtra("address",mainData.address)
+                    intent.putExtra("date",mainData.date)
+                    intent.putExtra("shopName",mainData.shopName)
+                    intent.putExtra("roomStatus",mainData.roomStatus)
+                    intent.putExtra("numOfPeople",mainData.numOfPeople.toString())
+                    intent.putExtra("keyWords",mainData.keyWords)
+                    intent.putExtra("imageUrl",joinRoomCheck.imageUrl)
+                    context.startActivity(intent)
+                }else{
+                    val intent = Intent(context, RoomInformationActivity::class.java)
+                    intent.putExtra("roomId",mainData.roomId)
+                    context.startActivity(intent)
+
+                }
+            }
+
+            override fun onFailure(call: Call<JoinRoomCheck>, t: Throwable) {
+
+            }
+        })
+
+
+
+    }
+    private fun createOkHttpClient(): OkHttpClient {
+        //Log.d ("TAG","OkhttpClient");
+        val builder = OkHttpClient.Builder()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        builder.addInterceptor(interceptor)
+        return builder.build()
     }
 
 }

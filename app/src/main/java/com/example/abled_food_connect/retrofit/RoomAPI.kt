@@ -1,6 +1,7 @@
 package com.example.abled_food_connect.retrofit
 
 
+import com.example.abled_food_connect.data.JoinRoomCheck
 import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MainFragmentItemData
 import retrofit2.Call
@@ -34,10 +35,12 @@ interface RoomAPI {
 
 
     @FormUrlEncoded
-    @POST
+    @POST("RoomJoinCheck.php")
     fun joinRoomCheck(
         @Field("roomId") roomId: String,
-        @Field("userId") userId: String
+        @Field("userId") userId: String,
+        @Field("hostName") hostName: String
 
-    ): Call<String>
+
+    ): Call<JoinRoomCheck>
 }
