@@ -6,41 +6,66 @@
     tools:context=".ReviewWriting"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="vertical">
 
 
-        <LinearLayout
-            android:layout_marginBottom="20dp"
+        <HorizontalScrollView
+            android:layout_marginTop="20dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="center"
+            android:id="@+id/hsv_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:id="@+id/container_selected_photos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:animateLayoutChanges="true"
+                    android:gravity="start"
+                    android:orientation="horizontal"
+                    android:visibility="visible" >
 
 
-            <ImageView
-                android:id="@+id/imageViewOne"
-                android:src="@drawable/ic_baseline_add_photo_alternate_24"
-                android:layout_width="100dp"
-                android:layout_height="100dp"/>
-            <ImageView
-                android:id="@+id/imageViewTwo"
-                android:src="@drawable/ic_baseline_add_photo_alternate_24"
-                android:layout_width="100dp"
-                android:layout_height="100dp"/>
-            <ImageView
-                android:id="@+id/imageViewThree"
-                android:src="@drawable/ic_baseline_add_photo_alternate_24"
-                android:layout_width="100dp"
-                android:layout_height="100dp"/>
+                </LinearLayout>
+
+                <Button
+                    android:drawableTop="@drawable/ic_baseline_add_48"
+                    android:text="사진 0/3"
+                    android:textColor="@color/black"
+                    android:backgroundTint="@color/white"
+                    android:id="@+id/img_add_btn"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    />
+
+                <ImageButton
+                    android:visibility="gone"
+                    android:src="@drawable/ic_baseline_autorenew_24"
+                    android:id="@+id/img_change_btn"
+                    android:backgroundTint="@color/white"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    />
+
+            </LinearLayout>
 
 
-        </LinearLayout>
+
+        </HorizontalScrollView>
 
 
 
@@ -197,6 +222,7 @@
             android:orientation="vertical">
 
             <EditText
+                android:id="@+id/reveiwDescriptionEt"
                 android:hint="리뷰를 작성해주세요"
                 android:lines="8"
                 android:layout_width="match_parent"
