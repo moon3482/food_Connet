@@ -3,6 +3,8 @@ package com.example.abled_food_connect.data
 import com.google.gson.annotations.SerializedName
 
 data class MainFragmentItemData(
+    @SerializedName("roomId")
+    var roomId: String,
     @SerializedName("title")
     var title: String,
     @SerializedName("info")

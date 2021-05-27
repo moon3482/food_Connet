@@ -13,6 +13,17 @@ class RoomInformationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         var view = binding.root
         setContentView(view)
+        val intent = intent
+        val title = intent.getStringExtra("title")
+        val info = intent.getStringExtra("info")
+        val hostName = intent.getStringExtra("hostName")
+        val address = intent.getStringExtra("address")
+        val date = intent.getStringExtra("date")
+        val shopName = intent.getStringExtra("shopName")
+        val roomStatus = intent.getDoubleExtra("roomStatus",0.0);
+        val numOfPeople = intent.getStringExtra("numOfPeople")
+        val keyWords = intent.getStringExtra("keyWords")
+
 
         binding.RankingCircleView.borderWidth = 20
         binding.RankingGold.visibility = View.VISIBLE
@@ -21,4 +32,5 @@ class RoomInformationActivity : AppCompatActivity() {
 
 
     }
+
 }

@@ -9,26 +9,35 @@ import retrofit2.http.*
 interface RoomAPI {
     @FormUrlEncoded
     @POST("createRoom.php")
-        fun createRoom(
-            @Field("title") title:String,
-            @Field("info") info:String,
-            @Field("numOfPeople")numOfPeople:String,
-            @Field("date") date:String,
-            @Field("time") time:String,
-            @Field("address") address:String,
-            @Field("shopName") shopName:String,
-            @Field("keyWords") keyWords:String,
-            @Field("gender") gender:String,
-            @Field("minimumAge") minimumAge:String,
-            @Field("maximumAge") maximumAge:String,
-            @Field("hostName") hostName:String
-        ):Call<String>
+    fun createRoom(
+        @Field("title") title: String,
+        @Field("info") info: String,
+        @Field("numOfPeople") numOfPeople: String,
+        @Field("date") date: String,
+        @Field("time") time: String,
+        @Field("address") address: String,
+        @Field("shopName") shopName: String,
+        @Field("keyWords") keyWords: String,
+        @Field("gender") gender: String,
+        @Field("minimumAge") minimumAge: String,
+        @Field("maximumAge") maximumAge: String,
+        @Field("hostName") hostName: String
+    ): Call<String>
 
 
-        @FormUrlEncoded
+    @FormUrlEncoded
     @POST("MainFragmentLoading.php")
     fun loadingRoomGet(
-        @Field("userId") userId:String
+        @Field("userId") userId: String
 
-    ):Call<LoadingRoom>
-    }
+    ): Call<LoadingRoom>
+
+
+    @FormUrlEncoded
+    @POST
+    fun joinRoomCheck(
+        @Field("roomId") roomId: String,
+        @Field("userId") userId: String
+
+    ): Call<String>
+}
