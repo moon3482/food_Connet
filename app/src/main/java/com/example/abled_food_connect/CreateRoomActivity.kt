@@ -288,7 +288,7 @@ class CreateRoomActivity : AppCompatActivity() {
 
         val minAge = binding.minimumAgeTextView.text.toString()
         val maxAge = binding.maximumAgeTextView.text.toString()
-        val hostName = "호스트네임"
+        val hostName = MainActivity.loginUserNickname
 
         val gson: Gson = GsonBuilder()
             .setLenient()
@@ -324,7 +324,8 @@ class CreateRoomActivity : AppCompatActivity() {
                 ) {
                     if (response?.body().toString() == "true") {
                         Toast.makeText(this@CreateRoomActivity, "방 생성", Toast.LENGTH_SHORT).show()
-                        onBackPressed()
+                        startActivity(Intent(this@CreateRoomActivity,MainFragmentActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
+                        finish()
                     }
                 }
 

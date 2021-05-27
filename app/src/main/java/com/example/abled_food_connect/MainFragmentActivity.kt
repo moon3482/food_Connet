@@ -29,8 +29,7 @@ class MainFragmentActivity : AppCompatActivity() {
     //태그 생성
     companion object obuserid {
         const val TAG: String = "홈 액티비티 로그"
-        var userId:String = ""
-        var userNickname = ""
+
 
     }
 
@@ -39,7 +38,7 @@ class MainFragmentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         Log.d(TAG, "홈액티비티 onCreate()")
-        userId = intent.getStringExtra("LoginId")!!
+
 
         //바텀네비게이션 클릭리스너 달기
         binding.bottomNav.setOnNavigationItemSelectedListener(
@@ -87,9 +86,15 @@ class MainFragmentActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        mainFragment = MainFragment.newInstance()
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
-            .commit()
+        if(intent.hasExtra("review")){
+            reviewFragment = ReviewFragment.newInstance()
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, reviewFragment)
+                .commit()
+            binding.bottomNav.selectedItemId = R.id.menu_review
+        }else{  mainFragment = MainFragment.newInstance()
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
+                .commit()}
+
     }
     //바텀네비게이션 프래그먼트 셀렉트 리스너
     private val onBottomOnNavigationItemSelectedListener =

@@ -73,6 +73,11 @@ class MainActivity : AppCompatActivity() {
     //애플리케이션 컨텍스트
     lateinit var mContext: Context
 
+    companion object {
+
+        var loginUserId: String = ""
+        var loginUserNickname = ""
+    }
 
     /*
     구글 로그인
@@ -598,11 +603,14 @@ class MainActivity : AppCompatActivity() {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
             }
 
-            override fun onResponse(call: Call<LoginDataClass>, response: Response<LoginDataClass>) {
+            override fun onResponse(
+                call: Call<LoginDataClass>,
+                response: Response<LoginDataClass>
+            ) {
                 if (response.isSuccessful) {
 
 
-                    val userlogin:LoginDataClass = response.body()!!
+                    val userlogin: LoginDataClass = response.body()!!
 
 
 
@@ -615,7 +623,8 @@ class MainActivity : AppCompatActivity() {
                         Log.d("성공", "" + "유저가있습니다.")
                         val mainFragmentJoin =
                             Intent(this@MainActivity, MainFragmentActivity::class.java)
-                        mainFragmentJoin.putExtra("LoginId", loginId)
+                        loginUserId = loginId
+                        loginUserNickname = loginNickname
                         mainFragmentJoin.putExtra("LoginNickname", loginNickname)
                         startActivity(mainFragmentJoin)
                         finish()
