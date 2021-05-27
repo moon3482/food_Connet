@@ -75,9 +75,20 @@ class MainFragmentActivity : AppCompatActivity()
 
     override fun onStart() {
         super.onStart()
-        mainFragment = MainFragment.newInstance()
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
-            .commit()
+
+        //21년 5월 28일 리뷰작성 엑티비티 또는 리뷰 상세보기 엑티비티에서 백버튼을 눌렀을 경우를 위해 마련한 대책.
+
+        //ㅋㅋ 이것도 다 추억이겠지.. 창규야 힘내라
+        //화이팅!! 내일 발표인에 아웃풋없다고 짜증난 창규에게 ㅋㅋㅋㅋ
+        //너 진짜 잘하고 있음. 이번주 지도api 선택하느라 고생했어.
+        if(intent.hasExtra("review")){
+            reviewFragment = ReviewFragment.newInstance()
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, reviewFragment)
+                .commit()
+            binding.bottomNav.selectedItemId = R.id.menu_review
+        }else{  mainFragment = MainFragment.newInstance()
+            supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
+                .commit()}
     }
     //바텀네비게이션 프래그먼트 셀렉트 리스너
     private val onBottomOnNavigationItemSelectedListener =

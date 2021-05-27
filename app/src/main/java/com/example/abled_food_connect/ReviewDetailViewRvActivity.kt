@@ -1,5 +1,6 @@
 package com.example.abled_food_connect
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -111,6 +112,14 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })
+    }
+
+
+    //21년 5월 28일 리뷰작성 엑티비티 또는 리뷰 상세보기 엑티비티에서 백버튼을 눌렀을 경우를 위해 마련한 대책.
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this,MainFragmentActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("review","review"))
     }
 
 }
