@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.Fragments
+package com.example.abled_food_connect.fragments
 
 import android.content.Context
 import android.graphics.Rect
@@ -7,15 +7,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.Datas.ReviewFragmentLoadingData
-import com.example.abled_food_connect.Datas.ReviewFragmentLodingDataItem
-import com.example.abled_food_connect.Adapters.ReviewFragmentGridViewAdapter
-import com.example.abled_food_connect.Interfaces.ReviewFragRvUsingInterface
+import com.example.abled_food_connect.data.ReviewFragmentLoadingData
+import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
+import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
+import com.example.abled_food_connect.interfaces.ReviewFragRvUsingInterface
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.MainFragmentItemData
 import retrofit2.Call
@@ -36,8 +34,9 @@ class ReviewFragment:Fragment() {
     lateinit var rv : RecyclerView
 
 
-    //
+    //그리드뷰 어댑터
     lateinit var mAdapter : ReviewFragmentGridViewAdapter
+
 
     companion object{
         const val TAG : String = "리뷰 프래그먼트 로그"
@@ -62,6 +61,7 @@ class ReviewFragment:Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
+
 
 
         reviewDbLoading()

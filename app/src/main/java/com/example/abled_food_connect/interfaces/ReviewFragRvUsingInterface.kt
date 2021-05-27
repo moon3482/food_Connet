@@ -1,6 +1,6 @@
-package com.example.abled_food_connect.Interfaces
+package com.example.abled_food_connect.interfaces
 
-import com.example.abled_food_connect.Datas.ReviewFragmentLoadingData
+import com.example.abled_food_connect.data.ReviewFragmentLoadingData
 import retrofit2.Call
 import retrofit2.http.POST
 

@@ -1,14 +1,19 @@
-package com.example.abled_food_connect.Adapters
+package com.example.abled_food_connect.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.abled_food_connect.Datas.ReviewFragmentLodingDataItem
+import com.example.abled_food_connect.MainFragmentActivity
+import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.ReviewDetailViewRvActivity
 
 class ReviewFragmentGridViewAdapter (val profileList: ArrayList<ReviewFragmentLodingDataItem>) : RecyclerView.Adapter<ReviewFragmentGridViewAdapter.CustromViewHolder>(){
 
@@ -28,16 +33,20 @@ class ReviewFragmentGridViewAdapter (val profileList: ArrayList<ReviewFragmentLo
 
 
 
-        Glide.with(holder.gender.context)
+        Glide.with(holder.reveiwPicture.context)
             .load("http://3.37.36.188/"+profileList.get(position).review_picture_0)
             .apply(RequestOptions().centerCrop())
-            .into(holder.gender)
+            .into(holder.reveiwPicture)
+
+
+        holder.reveiwPicture.setOnClickListener(View.OnClickListener {
+            var reviewDetailViewIntent = Intent(holder.reveiwPicture.context, ReviewDetailViewRvActivity::class.java)
+            reviewDetailViewIntent.putExtra("review_id", profileList.get(position).review_id.toString())
+            startActivity(holder.reveiwPicture.context,reviewDetailViewIntent,null)
+        })
 
 
 
-        holder.gender.setOnClickListener {
-                view-> removeItem(position)
-        }
     }
 
     fun addItem(prof: ReviewFragmentLodingDataItem){
@@ -47,16 +56,11 @@ class ReviewFragmentGridViewAdapter (val profileList: ArrayList<ReviewFragmentLo
 
     }
 
-    fun removeItem(position : Int){
-        profileList.removeAt(position)
-        notifyDataSetChanged()
-    }
-
 
 
 
     class CustromViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val gender = itemView.findViewById<ImageView>(R.id.gender_Iv)
+        val reveiwPicture = itemView.findViewById<ImageView>(R.id.reveiwPicture)
 
     }
 

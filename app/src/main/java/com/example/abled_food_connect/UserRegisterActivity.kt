@@ -18,7 +18,6 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputFilter
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,9 +26,8 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import com.example.abled_food_connect.Interfaces.CheckingRegisteredUser
-import com.example.abled_food_connect.Interfaces.retrofit_interface
-import com.example.abled_food_connect.Retrofit.API
+import com.example.abled_food_connect.interfaces.retrofit_interface
+import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.databinding.ActivityUserRegisterBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
@@ -37,7 +35,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.example.abled_food_connect.Fragments.ReviewFragment
+import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
@@ -66,6 +66,7 @@ class MainFragmentActivity : AppCompatActivity()
         }
 
         binding.mainFragmentCreateReviewBtn.setOnClickListener(View.OnClickListener {
+
 
             val nextIntent = Intent(this, ReviewWriting::class.java)
             startActivity(nextIntent)

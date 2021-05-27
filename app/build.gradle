@@ -48,7 +48,15 @@ android {
 
 dependencies {
 
-    
+
+    //뷰페이저 2
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    //뷰페이저 하단 인디케이터(몇개의 사진이 있고, 몇번째 사진을 보는지 알려주는 점.)
+    implementation 'me.relex:circleindicator:2.1.6'
+
+    //원형 이미지뷰
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     // TedImagePicker 라이브러리 사용(리뷰 사진 업로드) - 다중 사진 선택 가능하게 해줌.
     implementation 'gun0912.ted:tedimagepicker:1.0.8'

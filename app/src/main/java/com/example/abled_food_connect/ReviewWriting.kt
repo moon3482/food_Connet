@@ -1,6 +1,5 @@
 package com.example.abled_food_connect
 
-import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
@@ -16,7 +15,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.example.abled_food_connect.Retrofit.API
+import com.example.abled_food_connect.retrofit.API
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -35,14 +34,12 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.app.ActivityCompat
-import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.abled_food_connect.databinding.*
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import gun0912.tedimagepicker.builder.TedImagePicker
-import gun0912.tedimagepicker.builder.TedRxImagePicker
 import gun0912.tedimagepicker.builder.type.MediaType
 
 
@@ -421,6 +418,10 @@ class ReviewWriting : AppCompatActivity() {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response?.isSuccessful) {
                     Toast.makeText(getApplicationContext(), "리뷰를 작성했습니다.", Toast.LENGTH_LONG).show();
+                    var nextIntent : Intent = Intent(this@ReviewWriting, ReviewDetailViewRvActivity::class.java)
+                    nextIntent.putExtra("review_id", response?.body().toString())
+                    startActivity(nextIntent)
+                    finish()
                     Log.d("레트로핏 결과2",""+response?.body().toString())
 
 

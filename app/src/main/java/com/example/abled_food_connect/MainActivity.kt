@@ -1,4 +1,5 @@
 package com.example.abled_food_connect
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -13,8 +14,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.example.abled_food_connect.Interfaces.CheckingRegisteredUser
-import com.example.abled_food_connect.Interfaces.retrofit_interface
+import com.example.abled_food_connect.data.LoginDataClass
+import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
@@ -36,20 +37,19 @@ import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
     lateinit var callbackManager: CallbackManager
     var TAG = "KAKAO"
     var id = ""
@@ -68,11 +68,10 @@ class MainActivity : AppCompatActivity(){
     작성자 박의조
      */
     //OAuthLogin 객체
-    lateinit var mOAuthLoginInstance : OAuthLogin
+    lateinit var mOAuthLoginInstance: OAuthLogin
+
     //애플리케이션 컨텍스트
     lateinit var mContext: Context
-
-
 
 
     /*
@@ -82,34 +81,28 @@ class MainActivity : AppCompatActivity(){
      */
     // Firebase Authentication 관리 클래스
     // firebase 인증을 위한 변수
-    var auth : FirebaseAuth ? = null
+    var auth: FirebaseAuth? = null
 
     // 구글 로그인 연동에 필요한 변수
-    var googleSignInClient : GoogleSignInClient ? = null
+    var googleSignInClient: GoogleSignInClient? = null
     var GOOGLE_LOGIN_CODE = 9001
 
 
-
-
-    lateinit var nextIntent : Intent
-
-
-
+    lateinit var nextIntent: Intent
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val btnFacebookLogin : LinearLayout = findViewById(R.id.btnFacebookLogin)
-        val btnKakaoLogin : LinearLayout = findViewById(R.id.btnKakaoLogin)
+        val btnFacebookLogin: LinearLayout = findViewById(R.id.btnFacebookLogin)
+        val btnKakaoLogin: LinearLayout = findViewById(R.id.btnKakaoLogin)
 
 
         nextIntent = Intent(this, UserRegisterActivity::class.java)
 
         val keyHash = Utility.getKeyHash(this)
-        Log.e("해시",keyHash)
-
+        Log.e("해시", keyHash)
 
 
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -118,22 +111,21 @@ class MainActivity : AppCompatActivity(){
 
                 Log.e(TAG, "로그인 실패", error)
 
-            }
-
-            else if (token != null) {
+            } else if (token != null) {
                 UserApiClient.instance.me { user, error ->
                     if (error != null) {
                         Log.e(TAG, "사용자 정보 요청 실패", error)
-                    }
-                    else if (user != null) {
-                        Log.i(TAG, "사용자 정보 요청 성공" +
-                                "\n회원번호: ${user.id}" +
-                                "\n이메일: ${user.kakaoAccount?.email}" +
-                                "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                                "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}"+
-                                "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+                    } else if (user != null) {
+                        Log.i(
+                            TAG, "사용자 정보 요청 성공" +
+                                    "\n회원번호: ${user.id}" +
+                                    "\n이메일: ${user.kakaoAccount?.email}" +
+                                    "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                                    "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}" +
+                                    "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+                        )
 
-                        RegistUserInfo(user.id.toString(),"KAKAO")
+                        RegistUserInfo(user.id.toString(), "KAKAO")
 
 //                        nextIntent.putExtra("user_id", user.id.toString())
 //                        nextIntent.putExtra("social_login_type", "KAKAO")
@@ -150,9 +142,9 @@ class MainActivity : AppCompatActivity(){
 
 
         btnKakaoLogin.setOnClickListener {
-            if(UserApiClient.instance.isKakaoTalkLoginAvailable(this)){
+            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
                 UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
-            }else{
+            } else {
                 UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
             }
         }
@@ -222,12 +214,6 @@ class MainActivity : AppCompatActivity(){
             })
 
 
-
-
-
-
-
-
         /*
         네이버 로그인 구현
          */
@@ -248,13 +234,12 @@ class MainActivity : AppCompatActivity(){
         mOAuthLoginInstance.init(mContext, naver_client_id, naver_client_secret, naver_client_name)
 
 
-
-        var btnNaverLogin : LinearLayout = findViewById(R.id.btnNaverLogin)
+        var btnNaverLogin: LinearLayout = findViewById(R.id.btnNaverLogin)
         //네이버 로그인 버튼 연결
 
         //네이버에서 제공하는 버튼은 숨겨둔다.
         //그리고 커스텀 버튼에서 실행하게 했다.
-        val buttonOAuthLoginImg : OAuthLoginButton = findViewById(R.id.buttonOAuthLoginImg)
+        val buttonOAuthLoginImg: OAuthLoginButton = findViewById(R.id.buttonOAuthLoginImg)
         buttonOAuthLoginImg.setOAuthLoginHandler(mOAuthLoginHandler)
 
 
@@ -263,7 +248,6 @@ class MainActivity : AppCompatActivity(){
             //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
             buttonOAuthLoginImg.performClick()
         }
-
 
 
         /*
@@ -275,10 +259,10 @@ class MainActivity : AppCompatActivity(){
 
         // xml에서 구글 로그인 버튼 코드 가져오기
 
-        val btn_googleSignIn : SignInButton = findViewById(R.id.btn_googleSignIn)
+        val btn_googleSignIn: SignInButton = findViewById(R.id.btn_googleSignIn)
 
 
-        var btnGoogleLogin : LinearLayout = findViewById(R.id.btnGoogleLogin)
+        var btnGoogleLogin: LinearLayout = findViewById(R.id.btnGoogleLogin)
 
 
         btnGoogleLogin.setOnClickListener {
@@ -346,7 +330,7 @@ class MainActivity : AppCompatActivity(){
                     id = facebookId.toString()
 
 
-                    RegistUserInfo(id,"FACEBOOK")
+                    RegistUserInfo(id, "FACEBOOK")
 
 //                    nextIntent.putExtra("user_id", id)
 //                    nextIntent.putExtra("social_login_type", "FACEBOOK")
@@ -433,7 +417,6 @@ class MainActivity : AppCompatActivity(){
                 val facebookId = jsonObject.getString("id")
 
 
-
             }).executeAsync()
     }
 
@@ -452,10 +435,10 @@ class MainActivity : AppCompatActivity(){
         callbackManager.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(requestCode == GOOGLE_LOGIN_CODE) {
+        if (requestCode == GOOGLE_LOGIN_CODE) {
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result != null) {
-                if(result.isSuccess) {
+                if (result.isSuccess) {
 
                     var account = result.signInAccount
                     firebaseAuthWithGoogle(account)
@@ -463,9 +446,6 @@ class MainActivity : AppCompatActivity(){
             }
         } //if
     }
-
-
-
 
 
     /*
@@ -515,13 +495,12 @@ class MainActivity : AppCompatActivity(){
                 Log.d("프로필이미지", profile_image)
 
 
-                RegistUserInfo(id,"NAVER")
+                RegistUserInfo(id, "NAVER")
 
 //                nextIntent.putExtra("user_id", id)
 //                nextIntent.putExtra("social_login_type", "NAVER")
 //
 //                startActivity(nextIntent)
-
 
 
 //                val accessToken: String = mOAuthLoginModule.getAccessToken(baseContext)
@@ -545,7 +524,6 @@ class MainActivity : AppCompatActivity(){
     }
 
 
-
     /*
         구글 로그인 메서드
     */
@@ -557,13 +535,12 @@ class MainActivity : AppCompatActivity(){
     } // googleLogin
 
 
-
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
         var credential = GoogleAuthProvider.getCredential(account?.idToken, null)
 
         auth?.signInWithCredential(credential)
             ?.addOnCompleteListener { task ->
-                if(task.isSuccessful) {
+                if (task.isSuccessful) {
                     // 로그인 성공 시
                     val user = Firebase.auth.currentUser
                     val name = user.displayName
@@ -577,7 +554,7 @@ class MainActivity : AppCompatActivity(){
                     Log.d("프로필사진", photoUrl.toString())
                     Log.d("사용자 식별자 id", uid)
 
-                    RegistUserInfo(user.uid,"GOOGLE")
+                    RegistUserInfo(user.uid, "GOOGLE")
 
 //                    nextIntent.putExtra("user_id", user.uid)
 //                    nextIntent.putExtra("social_login_type", "GOOGLE")
@@ -593,23 +570,11 @@ class MainActivity : AppCompatActivity(){
     } //firebaseAuthWithGoogle
 
 
-
-
-
-
-
-
-
-
-
-
-
-    fun RegistUserInfo(userId:String, social_login_type:String){
-
+    fun RegistUserInfo(userId: String, social_login_type: String) {
 
 
         //The gson builder
-        var gson : Gson =  GsonBuilder()
+        var gson: Gson = GsonBuilder()
             .setLenient()
             .create()
 
@@ -619,6 +584,7 @@ class MainActivity : AppCompatActivity(){
             Retrofit.Builder()
                 .baseUrl("http://3.37.36.188/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(createOkHttpClient())
                 .build()
 
         //creating our api
@@ -626,26 +592,38 @@ class MainActivity : AppCompatActivity(){
         var server = retrofit.create(CheckingRegisteredUser::class.java)
 
         // 파일, 사용자 아이디, 파일이름
-        server.post_checking_register_user(userId).enqueue(object:
-            Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
+        server.post_checking_register_user(userId).enqueue(object : Callback<LoginDataClass> {
+            override fun onFailure(call: Call<LoginDataClass>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
             }
 
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                if (response?.isSuccessful) {
-                    if(response?.body().toString()=="true") {
-                        Toast.makeText(getApplicationContext(), "로그인 되었습니다.", Toast.LENGTH_LONG)
+            override fun onResponse(call: Call<LoginDataClass>, response: Response<LoginDataClass>) {
+                if (response.isSuccessful) {
+
+
+                    val userlogin:LoginDataClass = response.body()!!
+
+
+
+
+                    if (userlogin.success) {
+                        val loginId = userlogin.userId
+                        val loginNickname = userlogin.userNickname
+                        Toast.makeText(applicationContext, "로그인 되었습니다.", Toast.LENGTH_LONG)
                             .show();
-                        Log.d("성공",""+"유저가있습니다.")
-                        val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
+                        Log.d("성공", "" + "유저가있습니다.")
+                        val mainFragmentJoin =
+                            Intent(this@MainActivity, MainFragmentActivity::class.java)
+                        mainFragmentJoin.putExtra("LoginId", loginId)
+                        mainFragmentJoin.putExtra("LoginNickname", loginNickname)
                         startActivity(mainFragmentJoin)
                         finish()
-                    }
-
-                    if(response?.body().toString()=="false") {
-                        Toast.makeText(getApplicationContext(), "회원가입을 해주세요.", Toast.LENGTH_LONG)
-                            .show();
+                    } else {
+                        Toast.makeText(
+                            getApplicationContext(),
+                            "회원가입을 해주세요.",
+                            Toast.LENGTH_LONG
+                        ).show();
 
 
                         nextIntent.putExtra("user_id", userId)
@@ -653,12 +631,13 @@ class MainActivity : AppCompatActivity(){
                         startActivity(nextIntent)
                     }
 
-                    Log.d("레트로핏 성공결과",""+response?.body().toString())
+                    Log.d("레트로핏 성공결과", "" + response?.body().toString())
+
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "서버연결 실패.", Toast.LENGTH_LONG).show();
-                    Log.d("레트로핏 실패결과",""+response?.body().toString())
-                    Log.d("레트로핏 실패결과",""+call.request())
+                    Toast.makeText(applicationContext, "서버연결 실패.", Toast.LENGTH_LONG).show();
+                    Log.d("레트로핏 실패결과", "" + response?.body().toString())
+                    Log.d("레트로핏 실패결과", "" + call.request())
 
                 }
             }
@@ -666,7 +645,14 @@ class MainActivity : AppCompatActivity(){
     }
 
 
-
-
+    private fun createOkHttpClient(): OkHttpClient {
+        //Log.d ("TAG","OkhttpClient");
+        val builder = OkHttpClient.Builder()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        builder.addInterceptor(interceptor)
+        return builder.build()
+    }
 
 }
+
