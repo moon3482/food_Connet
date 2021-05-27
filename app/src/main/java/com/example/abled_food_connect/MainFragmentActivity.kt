@@ -215,47 +215,49 @@ class MainFragmentActivity : AppCompatActivity() {
 //        }
 //    }
 */
-        //방 등록 리퀘스트 메소드
-         private fun resistRoom() {
-        val gson: Gson = GsonBuilder()
-            .setLenient()
-            .create()
 
-        val retrofit =
-            Retrofit.Builder()
-                .baseUrl("http://3.37.36.188/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
-
-        val server = retrofit.create(RoomAPI::class.java)
-
-        server.createRoom("하이",
-            "바이2222",
-            "5",
-            "2021-05-18",
-            "18:00:00",
-            "서울시관악구",
-            "빵집",
-            "빵집",
-            "male",
-            "22","33","호스트네임")
-            .enqueue(object :Callback<String>{
-            override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
-            ) {
-                if(response.isSuccessful)
-                    Log.e("성공",response.body().toString())
-                else
-                    Log.e("실패",response.body().toString())
-            }
-
-            override fun onFailure(call: Call<String>, t: Throwable) {
-
-                }
-
-        })
-    }
+         /** test 방생성 코트 2021-24일부로 방생성 기능 구현으로 주석처리
+//        방 등록 리퀘스트 메소드
+//         private fun resistRoom() {
+//        val gson: Gson = GsonBuilder()
+//            .setLenient()
+//            .create()
+//
+//        val retrofit =
+//            Retrofit.Builder()
+//                .baseUrl("http://3.37.36.188/")
+//                .addConverterFactory(GsonConverterFactory.create(gson))
+//                .build()
+//
+//        val server = retrofit.create(RoomAPI::class.java)
+//
+//        server.createRoom("하이",
+//            "바이2222",
+//            "5",
+//            "2021-05-18",
+//            "18:00:00",
+//            "서울시관악구",
+//            "빵집",
+//            "빵집",
+//            "male",
+//            "22","33","호스트네임")
+//            .enqueue(object :Callback<String>{
+//            override fun onResponse(
+//                call: Call<String>,
+//                response: Response<String>
+//            ) {
+//                if(response.isSuccessful)
+//                    Log.e("성공",response.body().toString())
+//                else
+//                    Log.e("실패",response.body().toString())
+//            }
+//
+//            override fun onFailure(call: Call<String>, t: Throwable) {
+//
+//                }
+//
+//        })
+    }*/
          fun moveToCreateRoomActivity(){
              val moveToCreateRoomActivityIntent = Intent(this@MainFragmentActivity,CreateRoomActivity::class.java)
              startActivity(moveToCreateRoomActivityIntent)
