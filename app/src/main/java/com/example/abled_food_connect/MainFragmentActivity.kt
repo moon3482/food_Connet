@@ -30,6 +30,7 @@ class MainFragmentActivity : AppCompatActivity() {
     companion object obuserid {
         const val TAG: String = "홈 액티비티 로그"
         var userId:String = ""
+        var userNickname = ""
 
     }
 
@@ -38,7 +39,7 @@ class MainFragmentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         Log.d(TAG, "홈액티비티 onCreate()")
-        userId = intent.getStringExtra("userId")!!
+        userId = intent.getStringExtra("LoginId")!!
 
         //바텀네비게이션 클릭리스너 달기
         binding.bottomNav.setOnNavigationItemSelectedListener(
