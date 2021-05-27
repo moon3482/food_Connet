@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.MainFragmentActivity
 import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.retrofit.RoomAPI
@@ -50,7 +51,7 @@ class MainFragment : Fragment() {
         Log.d(TAG, "메인프래그먼트 onAttach()")
     }
 
-    override fun onCreateView                (
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,7 +68,6 @@ class MainFragment : Fragment() {
 //        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
 //        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
 //        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
-
 
 
         recyclerView = view.findViewById(R.id.mainRcv) as RecyclerView
@@ -89,6 +89,7 @@ class MainFragment : Fragment() {
         Log.d(TAG, "메인프래그먼트 onActivityCreated()")
 
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "메인프래그먼트 onViewCreated()")
@@ -103,7 +104,6 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "메인프래그먼트 onResume()")
-
 
 
     }
@@ -133,7 +133,8 @@ class MainFragment : Fragment() {
         super.onDetach()
         Log.d(TAG, "메인프래그먼트 onDetach()")
     }
-    fun  load() {
+
+    fun load() {
 
         val gson: Gson = GsonBuilder()
             .setLenient()
@@ -154,26 +155,30 @@ class MainFragment : Fragment() {
                     response: Response<LoadingRoom>
                 ) {
 
-                    val list : LoadingRoom = response.body()!!
-                    val array : ArrayList<MainFragmentItemData> = list.roomList
-                    for(i in 0 until  array.size){
+                    val list: LoadingRoom = response.body()!!
+                    val array: ArrayList<MainFragmentItemData> = list.roomList
+                    for (i in 0 until array.size) {
                         mainFragmentListArray.add(array.get(i))
                         recyclerView.adapter!!.notifyDataSetChanged()
 
                     }
 
 
-
                 }
 
                 override fun onFailure(call: Call<LoadingRoom>, t: Throwable) {
-                    Toast.makeText(requireContext(),"통신실패:"+t.printStackTrace(),Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "통신실패:" + t.printStackTrace(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
             })
 
 
     }
+
     private fun createOkHttpClient(): OkHttpClient {
         //Log.d ("TAG","OkhttpClient");
         val builder = OkHttpClient.Builder()

@@ -68,7 +68,17 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomDateTime.text = maindata.date
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                context.startActivity(Intent(context, RoomInformationActivity::class.java))
+                val intent = Intent(context, RoomInformationActivity::class.java)
+                intent.putExtra("title",maindata.title)
+                intent.putExtra("title",maindata.info)
+                intent.putExtra("title",maindata.hostName)
+                intent.putExtra("",maindata.address)
+                intent.putExtra("title",maindata.date)
+                intent.putExtra("title",maindata.shopName)
+                intent.putExtra("title",maindata.roomStatus)
+                intent.putExtra("title",maindata.numOfPeople)
+                intent.putExtra("title",maindata.keyWords)
+                context.startActivity(intent)
             }
         })
 

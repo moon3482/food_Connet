@@ -634,6 +634,7 @@ class MainActivity : AppCompatActivity(){
                             .show();
                         Log.d("성공",""+"유저가있습니다.")
                         val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
+                        mainFragmentJoin.putExtra("LoginId",userId)
                         startActivity(mainFragmentJoin)
                         finish()
                     }
