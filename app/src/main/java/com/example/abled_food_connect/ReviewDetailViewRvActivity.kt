@@ -97,6 +97,7 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
 
 
                 }
+                
 
                 mAdapter =  ReviewDetailViewRvAdapter(DetailRv_arrayList)
                 mAdapter.notifyDataSetChanged()
