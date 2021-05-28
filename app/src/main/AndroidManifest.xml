@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.abled_food_connect">
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
@@ -22,7 +23,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RoomInformationActivity"></activity>
+        <activity android:name=".ChatRoomActivity"></activity>
+        <activity android:name=".RoomInformationActivity" />
         <activity android:name=".CreateRoomMapSearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -32,9 +34,8 @@
             android:name=".CreateRoomActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".MainFragmentActivity" />
-        <activity android:name=".ReviewWriting"></activity>
+        <activity android:name=".ReviewWriting" />
         <activity android:name=".UserRegisterActivity" />
-
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"

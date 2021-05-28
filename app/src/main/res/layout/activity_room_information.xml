@@ -36,6 +36,17 @@
                     android:layout_margin="10dp" />
 
                 <TextView
+                    android:id="@+id/RoomInfoShopName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:layout_weight="1"/>
+
+                <TextView
                     android:id="@+id/RoomInfomationDate"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -55,10 +66,10 @@
                     android:id="@+id/RankingCircleView"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
-                    android:paddingStart="70dp"
-                    android:paddingTop="70dp"
-                    android:paddingEnd="70dp"
-                    android:paddingBottom="20dp"
+                    android:paddingStart="100dp"
+                    android:paddingTop="20dp"
+                    android:paddingEnd="100dp"
+                    android:paddingBottom="10dp"
                     android:src="@drawable/naver_logo"
                     app:civ_border_color="@color/app_theme_color"
                     app:civ_border_width="5dp" />
@@ -139,7 +150,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="제목"
-                    android:textSize="10sp" />
+                    />
 
                 <LinearLayout
                     style="@style/Divider"
@@ -162,7 +173,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="소개"
-                    android:textSize="10sp" />
+                    />
 
                 <LinearLayout
                     style="@style/Divider"
@@ -185,7 +196,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="주소"
-                    android:textSize="10sp" />
+                     />
 
                 <LinearLayout
                     style="@style/Divider"
@@ -207,8 +218,8 @@
                     style="@style/room_information_category_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="모집 인원"
-                    android:textSize="10sp" />
+                    android:text="인원"
+                     />
 
                 <LinearLayout
                     style="@style/Divider"

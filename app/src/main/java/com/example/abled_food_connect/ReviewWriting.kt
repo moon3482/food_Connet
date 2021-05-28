@@ -367,6 +367,6 @@ class ReviewWriting : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        startActivity(Intent(this,MainFragmentActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("review","review"))
+//        startActivity(Intent(this,MainFragmentActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("review","review"))
     }
 }

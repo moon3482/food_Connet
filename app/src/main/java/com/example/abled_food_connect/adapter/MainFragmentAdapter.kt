@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.MainActivity
-import com.example.abled_food_connect.R
-import com.example.abled_food_connect.RoomInformationActivity
+import com.example.abled_food_connect.*
 import com.example.abled_food_connect.data.JoinRoomCheck
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.retrofit.RoomAPI
@@ -72,13 +70,20 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             val text: String = context.getString(R.string.limit_age_badge)
             testholder.roomAge.text = String.format(text, maindata.minimumAge, maindata.maximumAge)
         }
-        testholder.shopName.text = maindata.info
+        testholder.shopName.text = maindata.shopName
         testholder.roomTitle.text = maindata.title
         testholder.roomNumberOfPeople.text = "1/${(maindata.numOfPeople + 1).toString()}명"
         testholder.roomDateTime.text = maindata.date
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                joinRoomCheckMethod(maindata)
+                if(maindata.hostName == MainActivity.loginUserNickname){
+
+                    context.startActivity(Intent(context,ChatRoomActivity::class.java))
+                }else{
+
+                    joinRoomCheckMethod(maindata)
+                }
+
             }
         })
 

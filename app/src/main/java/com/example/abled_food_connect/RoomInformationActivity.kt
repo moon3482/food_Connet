@@ -1,12 +1,13 @@
 package com.example.abled_food_connect
 
 
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import coil.load
 import com.example.abled_food_connect.databinding.ActivityRoomInformationBinding
+import com.example.abled_food_connect.retrofit.API
 
 class RoomInformationActivity : AppCompatActivity() {
     val binding by lazy { ActivityRoomInformationBinding.inflate(layoutInflater) }
@@ -44,6 +45,7 @@ class RoomInformationActivity : AppCompatActivity() {
         } else if (roomStatus < 0) {
             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
             binding.RoomInformationStatus.text = "마감"
+            binding.RoomInfoJoinRoomBtn.isEnabled = false
         }
         binding.RankingCircleView.load(getString(R.string.http_request_base_url) + imageUrl)
         binding.RoomInformationCategoryTitleTextview.text = title
@@ -52,6 +54,7 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RoomInformationCategoryAddressTextview.text = address
         binding.RoomInformationCategoryNumOfPeopleTextview.text = numOfPeople + "명"
         binding.RoomInfoHostIdTextView.text = hostName
+        binding.RoomInfoShopName.text = shopName
 
 
         binding.RankingCircleView.borderWidth = 20
@@ -59,7 +62,19 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RankingCircleView.borderColor = getColor(R.color.app_theme_color)
 //        binding.RankingCircleView.borderColor = Color.parseColor("#ffcd00")
 
+        binding.RoomInfoJoinRoomBtn.setOnClickListener(View.OnClickListener {
+            val join = API()
+            Log.e("룸아디",roomId.toString())
+            Log.e("유저아디",MainActivity.loginUserId)
+            join.joinRoom(this, roomId.toString(), MainActivity.loginUserId)
+
+        })
+
 
     }
 
+    override fun onStop() {
+        super.onStop()
+        finish()
+    }
 }

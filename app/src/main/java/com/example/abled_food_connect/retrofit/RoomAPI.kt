@@ -41,6 +41,13 @@ interface RoomAPI {
         @Field("userId") userId: String,
         @Field("hostName") hostName: String
 
-
     ): Call<JoinRoomCheck>
+
+    @FormUrlEncoded
+    @POST("RoomJoin.php")
+    fun joinRoom(
+        @Field("roomId") roomId: String,
+        @Field("userId") userId: String
+
+    ): Call<API.joinRoomClass>
 }

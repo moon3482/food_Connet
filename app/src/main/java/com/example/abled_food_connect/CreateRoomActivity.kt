@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -61,6 +62,7 @@ class CreateRoomActivity : AppCompatActivity() {
         numOfPeople.setAdapter(setAdapter(numOfPeople()))
 
         onClickListenerGroup()
+
 
     }
 
@@ -124,17 +126,22 @@ class CreateRoomActivity : AppCompatActivity() {
 
         if (binding.CreateRoomActivityRoomTitleInput.length() == 0) {
             Toast.makeText(this, "방 제목을 입력해주세요", Toast.LENGTH_LONG).show()
-            binding.Scroll.scrollTo(0, 0)
+            binding.Scroll.scrollTo(0, binding.CreateRoomShopNameInputLayout.bottom)
             binding.CreateRoomTitleInputLayout.requestFocus()
             return false
-        } else if (binding.CreateRoomActivityRoomInfoInput.length() == 0) {
+        } else if (binding.CreateRoomActivityRoomShopNameInput.length() == 0) {
+            Toast.makeText(this, "매장 이름을 입력해주세요", Toast.LENGTH_LONG).show()
+            binding.Scroll.scrollTo(0, 0)
+            binding.CreateRoomShopNameInputLayout.requestFocus()
+            return false
+        } else if (binding.CreateRoomActivityRoomInformationInput.length() == 0) {
             Toast.makeText(this, "방 소개를 입력해주세요", Toast.LENGTH_LONG).show()
             binding.Scroll.scrollTo(0, binding.CreateRoomTitleInputLayout.bottom)
-            binding.CreateRoomInfoInputLayout.requestFocus()
+            binding.CreateRoomInformationInputLayout.requestFocus()
             return false
         } else if (binding.CreateRoomActivityNumOfPeopleInput.length() == 0) {
             Toast.makeText(this, "모집 인원수를 선택해주세요", Toast.LENGTH_LONG).show()
-            binding.Scroll.scrollTo(0, binding.CreateRoomInfoInputLayout.bottom)
+            binding.Scroll.scrollTo(0, binding.CreateRoomInformationInputLayout.bottom)
             binding.CreateRoomActivityNumOfPeopleInput.requestFocus()
             return false
         } else if (binding.CreateRoomActivityDateInput.length() == 0) {
@@ -269,12 +276,12 @@ class CreateRoomActivity : AppCompatActivity() {
      */
     private fun createRoom() {
         val tile = binding.CreateRoomActivityRoomTitleInput.text.toString()
-        val info = binding.CreateRoomActivityRoomInfoInput.text.toString()
+        val info = binding.CreateRoomActivityRoomInformationInput.text.toString()
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput.text.toString()
         val date = binding.CreateRoomActivityDateInput.text.toString()
         val time = binding.CreateRoomActivityTimeInput.text.toString()
         val adress = "주소부분"
-        val shopName = binding.CreateRoomActivityRoomInfoInput.text.toString()
+        val shopName = binding.CreateRoomActivityRoomShopNameInput.text.toString()
         val keyWord = tagArray.toString()
         var gender: String = ""
 
