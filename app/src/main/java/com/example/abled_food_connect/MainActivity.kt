@@ -39,7 +39,6 @@ import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -76,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
 
         var loginUserId: String = ""
-        var loginUserNickname = ""
+        var loginUserNickname : String = ""
     }
 
     /*
@@ -625,7 +624,6 @@ class MainActivity : AppCompatActivity() {
                             Intent(this@MainActivity, MainFragmentActivity::class.java)
                         loginUserId = loginId
                         loginUserNickname = loginNickname
-                        mainFragmentJoin.putExtra("LoginNickname", loginNickname)
                         startActivity(mainFragmentJoin)
                         finish()
                     } else {

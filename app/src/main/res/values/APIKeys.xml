@@ -3,5 +3,5 @@
     <string name="naver_api_key">kqfai8b97u</string>
     <string name="naver_open_api_id">s6TmKIlZZS3KMP1wn0eU</string>
     <string name="naver_open_api_secret">JqAxztl_KG</string>
-
+    <string name="kakao_rest_api_key">KakaoAK f910b306e193da1e813e0f8e59c63c06</string>
 </resources>

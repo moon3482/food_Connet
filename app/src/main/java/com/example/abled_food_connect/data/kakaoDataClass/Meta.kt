@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.data
+package com.example.abled_food_connect.data.kakaoDataClass
 
 
 import com.google.gson.annotations.SerializedName
