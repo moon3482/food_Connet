@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="naver_api_key">kqfai8b97u</string>
+    <string name="naver_open_api_id">s6TmKIlZZS3KMP1wn0eU</string>
+    <string name="naver_open_api_secret">JqAxztl_KG</string>
 
 </resources>

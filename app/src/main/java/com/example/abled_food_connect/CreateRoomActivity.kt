@@ -6,7 +6,6 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -18,6 +17,8 @@ import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBind
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import net.daum.android.map.*
+import net.daum.mf.map.api.MapView
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -28,8 +29,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import net.daum.android.map.*
-import net.daum.mf.map.api.MapView
 
 
 class CreateRoomActivity : AppCompatActivity() {
@@ -45,7 +44,6 @@ class CreateRoomActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
-
         setContentView(view)
         /*카카오 맵 API*/
 //        map = MapView(this)
