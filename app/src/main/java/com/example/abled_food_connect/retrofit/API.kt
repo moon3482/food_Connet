@@ -1,6 +1,7 @@
 package com.example.abled_food_connect.retrofit
 
 
+import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -48,5 +49,16 @@ class API {
             @Part("rating_star_service") rating_star_service: Int,
             @Part("rating_star_clean") rating_star_clean: Int,
             @Part("rating_star_interior") rating_star_interior: Int): Call<String>
+    }
+
+    interface reviewLikeBtnClick{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("review/review_like_btn_click.php")
+        fun review_Like_Btn_Click(
+            @Part("what_click_review_tb_id") what_click_review_tb_id: Int,
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("my_user_tb_user_id") my_user_tb_user_id: String,
+            ): Call<ReviewLikeBtnClickData>
     }
 }

@@ -1,23 +1,17 @@
 package com.example.abled_food_connect
 
-import android.content.Intent
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.adapter.ReviewDetailViewRvAdapter
-import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
 import com.example.abled_food_connect.data.ReviewDetailViewRvData
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
-import com.example.abled_food_connect.data.ReviewFragmentLoadingData
-import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.interfaces.ReviewDetailRvInterface
-import com.example.abled_food_connect.interfaces.ReviewFragRvUsingInterface
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -56,6 +50,8 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
         detail_rv.setHasFixedSize(true)
 
 
+        Log.d("테이블id", MainActivity.user_table_id.toString())
+        Log.d("아이디", MainActivity.loginUserId)
 
         val dividerItemDecoration =
             DividerItemDecoration(detail_rv.context, LinearLayoutManager(this).orientation)
@@ -73,7 +69,7 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(ReviewDetailRvInterface::class.java)
-        val review_Detail_rv_using = api.review_Detail_rv_using_interface(review_id)
+        val review_Detail_rv_using = api.review_Detail_rv_using_interface(review_id,MainActivity.user_table_id)
 
 
         review_Detail_rv_using.enqueue(object : Callback<ReviewDetailViewRvData> {
@@ -94,16 +90,12 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
 
                 for(i in DetailRv_arrayList.indices){
                     println(DetailRv_arrayList.get(i).review_picture_0);
-
-
                 }
-                
+
 
                 mAdapter =  ReviewDetailViewRvAdapter(DetailRv_arrayList)
                 mAdapter.notifyDataSetChanged()
                 detail_rv.adapter = mAdapter
-
-
 
 
 
@@ -115,12 +107,5 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
         })
     }
 
-
-    //21년 5월 28일 리뷰작성 엑티비티 또는 리뷰 상세보기 엑티비티에서 백버튼을 눌렀을 경우를 위해 마련한 대책.
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        startActivity(Intent(this,MainFragmentActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("review","review"))
-    }
 
 }

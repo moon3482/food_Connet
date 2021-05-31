@@ -1,22 +1,29 @@
 package com.example.abled_food_connect.adapter
-import android.opengl.Visibility
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageSwitcher
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
+import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
+import com.example.abled_food_connect.data.*
+import com.example.abled_food_connect.fragments.ReviewFragment
+import com.example.abled_food_connect.retrofit.API
+import com.google.gson.Gson
 import me.relex.circleindicator.CircleIndicator3
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class ReviewDetailViewRvAdapter (val ReviewDetailList: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<ReviewDetailViewRvAdapter.CustromViewHolder>(){
+class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<ReviewDetailViewRvAdapter.CustromViewHolder>(){
 
 
 
@@ -98,8 +105,25 @@ class ReviewDetailViewRvAdapter (val ReviewDetailList: ArrayList<ReviewDetailVie
         //리뷰 작성 내용
         holder.reviewDescriptionTv.text = ReviewDetailList.get(position).review_description
 
+
+        //좋아요 리니어 레이아웃 좋아요 버튼을 클릭
+        holder.likeBtn.setOnClickListener(View.OnClickListener {
+            RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).review_id,position)
+
+            Log.d("무엇", ReviewDetailList.get(position).review_id.toString()+MainActivity.user_table_id+MainActivity.loginUserId)
+        })
+
         //좋아요 개수
         holder.likeCountTv.text = ReviewDetailList.get(position).like_count
+
+        //좋아요 하트 변경
+
+        if(ReviewDetailList.get(position).heart_making == true) {
+            holder.heartIv.setColorFilter(Color.parseColor("#55ff0000"))
+        }else{
+            holder.heartIv.setColorFilter(Color.parseColor("#55111111"))
+        }
+
 
         //댓글 개수
         holder.commentCountTv.text = ReviewDetailList.get(position).comment_count
@@ -156,12 +180,73 @@ class ReviewDetailViewRvAdapter (val ReviewDetailList: ArrayList<ReviewDetailVie
         //리뷰 작성 내용
         val reviewDescriptionTv = itemView.findViewById<TextView>(R.id.reviewDescriptionTv)
 
+        //좋아요 리니어레이아웃
+        val likeBtn = itemView.findViewById<LinearLayout>(R.id.likeBtn)
+
         //좋아요 수
         val likeCountTv = itemView.findViewById<TextView>(R.id.likeCountTv)
+
+        //좋아요 하트
+        val heartIv = itemView.findViewById<ImageView>(R.id.heartIv)
 
         //댓글 수
         val commentCountTv = itemView.findViewById<TextView>(R.id.commentCountTv)
 
+    }
+
+
+
+
+
+    fun RvAdapterReviewLikeBtnClick(what_click_review_tb_id:Int,position : Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://3.37.36.188/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.reviewLikeBtnClick::class.java)
+        val review_Like_Btn_Click = api.review_Like_Btn_Click(what_click_review_tb_id,MainActivity.user_table_id,MainActivity.loginUserId)
+
+
+        review_Like_Btn_Click.enqueue(object : Callback<ReviewLikeBtnClickData> {
+            override fun onResponse(
+                call: Call<ReviewLikeBtnClickData>,
+                response: Response<ReviewLikeBtnClickData>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                if(response.body() != null) {
+                    val ReviewLikeBtnClickData: ReviewLikeBtnClickData = response.body()!!
+
+                    var heart_making = ReviewLikeBtnClickData.heart_making
+                    var how_many_like_count: Int = ReviewLikeBtnClickData.how_many_like_count
+                    var isSuccess: Boolean = ReviewLikeBtnClickData.success
+
+                    Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
+                    Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
+
+                    ReviewDetailList.get(position).like_count = how_many_like_count.toString()
+
+                    if(heart_making == true){
+                        ReviewDetailList.get(position).heart_making = true
+                        Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
+                    }else if(heart_making == false){
+                        ReviewDetailList.get(position).heart_making = false
+                        Log.d(ReviewFragment.TAG, "false : ${heart_making}")
+                    }
+
+                    notifyItemChanged(position)
+
+
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<ReviewLikeBtnClickData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
     }
 
 }

@@ -73,6 +73,11 @@ class MainActivity : AppCompatActivity() {
     //애플리케이션 컨텍스트
     lateinit var mContext: Context
 
+    companion object {
+        var user_table_id : Int = 0
+        var loginUserId: String = ""
+        var loginUserNickname = ""
+    }
 
     /*
     구글 로그인
@@ -592,21 +597,26 @@ class MainActivity : AppCompatActivity() {
         var server = retrofit.create(CheckingRegisteredUser::class.java)
 
         // 파일, 사용자 아이디, 파일이름
-        server.post_checking_register_user(userId).enqueue(object : Callback<LoginDataClass> {
+        server.post_checking_register_user(userId).enqueue(object :
+            Callback<LoginDataClass> {
             override fun onFailure(call: Call<LoginDataClass>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
             }
 
-            override fun onResponse(call: Call<LoginDataClass>, response: Response<LoginDataClass>) {
+            override fun onResponse(
+                call: Call<LoginDataClass>,
+                response: Response<LoginDataClass>
+            ) {
                 if (response.isSuccessful) {
 
 
-                    val userlogin:LoginDataClass = response.body()!!
+                    val userlogin: LoginDataClass = response.body()!!
 
 
 
 
                     if (userlogin.success) {
+                        val get_user_table_id = userlogin.id
                         val loginId = userlogin.userId
                         val loginNickname = userlogin.userNickname
                         Toast.makeText(applicationContext, "로그인 되었습니다.", Toast.LENGTH_LONG)
@@ -614,8 +624,9 @@ class MainActivity : AppCompatActivity() {
                         Log.d("성공", "" + "유저가있습니다.")
                         val mainFragmentJoin =
                             Intent(this@MainActivity, MainFragmentActivity::class.java)
-                        mainFragmentJoin.putExtra("LoginId", loginId)
-                        mainFragmentJoin.putExtra("LoginNickname", loginNickname)
+                        user_table_id = get_user_table_id
+                        loginUserId = loginId
+                        loginUserNickname = loginNickname
                         startActivity(mainFragmentJoin)
                         finish()
                     } else {

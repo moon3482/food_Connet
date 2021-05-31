@@ -38,7 +38,9 @@ data class ReviewDetailViewRvDataItem(
     @SerializedName("review_picture_2")
     val review_picture_2 : String,
     @SerializedName("like_count")
-    val like_count : String,
+    var like_count : String,
+    @SerializedName("heart_making")
+    var heart_making : Boolean,
     @SerializedName("comment_count")
     val comment_count : String,
     @SerializedName("nick_name")

@@ -11,7 +11,8 @@ interface ReviewDetailRvInterface {
     @Multipart
     @POST("review/review_detail_rv_list_get.php")
     fun review_Detail_rv_using_interface(
-        @Part("review_id") review_id: String
+        @Part("review_id") review_id: String,
+        @Part("user_tb_id") user_tb_id: Int
     ): Call<ReviewDetailViewRvData>
 
 }
