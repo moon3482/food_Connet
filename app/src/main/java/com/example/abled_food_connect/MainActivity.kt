@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mContext: Context
 
     companion object {
-
+        var user_table_id : Int = 0
         var loginUserId: String = ""
         var loginUserNickname : String = ""
     }
@@ -607,14 +607,9 @@ class MainActivity : AppCompatActivity() {
                 response: Response<LoginDataClass>
             ) {
                 if (response.isSuccessful) {
-
-
                     val userlogin: LoginDataClass = response.body()!!
-
-
-
-
                     if (userlogin.success) {
+                        val get_user_table_id = userlogin.id
                         val loginId = userlogin.userId
                         val loginNickname = userlogin.userNickname
                         Toast.makeText(applicationContext, "로그인 되었습니다.", Toast.LENGTH_LONG)
@@ -622,6 +617,7 @@ class MainActivity : AppCompatActivity() {
                         Log.d("성공", "" + "유저가있습니다.")
                         val mainFragmentJoin =
                             Intent(this@MainActivity, MainFragmentActivity::class.java)
+                        user_table_id = get_user_table_id
                         loginUserId = loginId
                         loginUserNickname = loginNickname
                         startActivity(mainFragmentJoin)
@@ -632,21 +628,15 @@ class MainActivity : AppCompatActivity() {
                             "회원가입을 해주세요.",
                             Toast.LENGTH_LONG
                         ).show();
-
-
                         nextIntent.putExtra("user_id", userId)
                         nextIntent.putExtra("social_login_type", social_login_type)
                         startActivity(nextIntent)
                     }
-
                     Log.d("레트로핏 성공결과", "" + response?.body().toString())
-
-
                 } else {
                     Toast.makeText(applicationContext, "서버연결 실패.", Toast.LENGTH_LONG).show();
                     Log.d("레트로핏 실패결과", "" + response?.body().toString())
                     Log.d("레트로핏 실패결과", "" + call.request())
-
                 }
             }
         })

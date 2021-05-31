@@ -1,15 +1,14 @@
 package com.example.abled_food_connect
 
 import android.Manifest
-import android.R
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -21,8 +20,11 @@ import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBind
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
 import net.daum.android.map.*
-import net.daum.mf.map.api.MapView
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -35,20 +37,29 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class CreateRoomActivity : AppCompatActivity() {
+class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
+    lateinit var mapFragment: MapFragment
     val binding by lazy { ActivityCreateRoomActivityBinding.inflate(layoutInflater) }
-    var genderMaleSelected: Boolean = false
-    var genderFemaleSelected: Boolean = false
-    var genderAnySelected: Boolean = false
-    private lateinit var map: MapView
-    private lateinit var mapview: ViewGroup
-    val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+    private var genderMaleSelected: Boolean = false
+    private var genderFemaleSelected: Boolean = false
+    private var genderAnySelected: Boolean = false
+    private val SEARCHMAPRESULTCODE = 110
+    private val REQUIRED_PERMISSIONS = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
     /*태그 리스트*/val PERMISSIONS_REQUEST_CODE = 100
     var tagArray: ArrayList<String> = ArrayList()
+    lateinit var marker: Marker
+    lateinit var shopName: String
+    lateinit var address: String
+    lateinit var roadaddress:String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
+        marker = Marker()
         /*카카오 맵 API*/
 //        map = MapView(this)
 //        mapview = binding.mapView
@@ -57,7 +68,7 @@ class CreateRoomActivity : AppCompatActivity() {
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput
         val maximum = binding.maximumAgeTextView
         val minimum = binding.minimumAgeTextView
-
+        shopName = String()
         /*드롭다운 어댑터 설정*/
         maximum.setAdapter(setAdapter(age()))
         minimum.setAdapter(setAdapter(age()))
@@ -66,11 +77,11 @@ class CreateRoomActivity : AppCompatActivity() {
         onClickListenerGroup()
         checkPermissions()
 
-
-
+        val fm = supportFragmentManager
+        mapFragment = fm.findFragmentById(R.id.CreateRoomActivityMapView) as MapFragment?
+            ?: MapFragment.newInstance()
+                .also { fm.beginTransaction().add(R.id.CreateRoomActivityMapView, it).commit() }
     }
-
-
 
 
     override fun onStart() {
@@ -89,7 +100,7 @@ class CreateRoomActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
-        finish()
+
     }
 
     override fun onDestroy() {
@@ -156,17 +167,25 @@ class CreateRoomActivity : AppCompatActivity() {
         var rejectedPermissionList = ArrayList<String>()
 
         //필요한 퍼미션들을 하나씩 끄집어내서 현재 권한을 받았는지 체크
-        for(permission in REQUIRED_PERMISSIONS){
-            if(ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+        for (permission in REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 //만약 권한이 없다면 rejectedPermissionList에 추가
                 rejectedPermissionList.add(permission)
             }
         }
         //거절된 퍼미션이 있다면...
-        if(rejectedPermissionList.isNotEmpty()){
+        if (rejectedPermissionList.isNotEmpty()) {
             //권한 요청!
             val array = arrayOfNulls<String>(rejectedPermissionList.size)
-            ActivityCompat.requestPermissions(this, rejectedPermissionList.toArray(array), PERMISSIONS_REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                rejectedPermissionList.toArray(array),
+                PERMISSIONS_REQUEST_CODE
+            )
         }
     }
 
@@ -176,7 +195,7 @@ class CreateRoomActivity : AppCompatActivity() {
     private fun setAdapter(age: age): ArrayAdapter<Int> {
 
 
-        return ArrayAdapter(this, R.layout.simple_list_item_1, age.numArray())
+        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray())
 
     }
 
@@ -186,7 +205,11 @@ class CreateRoomActivity : AppCompatActivity() {
     private fun setAdapter(numOfPeople: numOfPeople): ArrayAdapter<Int> {
 
 
-        return ArrayAdapter(this, R.layout.simple_list_item_1, numOfPeople.numArray())
+        return ArrayAdapter(
+            this,
+            R.layout.support_simple_spinner_dropdown_item,
+            numOfPeople.numArray()
+        )
 
     }
 
@@ -229,6 +252,10 @@ class CreateRoomActivity : AppCompatActivity() {
             Toast.makeText(this, "입력한 시간이 이미 지나간 시간입니다", Toast.LENGTH_LONG).show()
             binding.Scroll.scrollTo(0, binding.CreateRoomActivityNumOfPeopleInput.bottom)
 
+            return false
+        } else if (shopName.isEmpty()) {
+            Toast.makeText(this, "지도 버튼을 통해 모임장소를 선택해주세요", Toast.LENGTH_LONG).show()
+            binding.Scroll.scrollTo(0, binding.CreateRoomActivityTimeInput.bottom)
             return false
         } else if (!genderMaleSelected && !genderFemaleSelected && !genderAnySelected) {
             Toast.makeText(this, "모집 성별 선택해주세요", Toast.LENGTH_LONG).show()
@@ -351,7 +378,7 @@ class CreateRoomActivity : AppCompatActivity() {
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput.text.toString()
         val date = binding.CreateRoomActivityDateInput.text.toString()
         val time = binding.CreateRoomActivityTimeInput.text.toString()
-        val adress = "주소부분"
+        val address = "주소부분"
         val shopName = binding.CreateRoomActivityRoomShopNameInput.text.toString()
         val keyWord = tagArray.toString()
         var gender: String = ""
@@ -387,7 +414,8 @@ class CreateRoomActivity : AppCompatActivity() {
             numOfPeople,
             date,
             time,
-            adress,
+            address,
+            roadaddress,
             shopName,
             keyWord,
             gender,
@@ -402,7 +430,12 @@ class CreateRoomActivity : AppCompatActivity() {
                 ) {
                     if (response?.body().toString() == "true") {
                         Toast.makeText(this@CreateRoomActivity, "방 생성", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@CreateRoomActivity,MainFragmentActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
+                        startActivity(
+                            Intent(
+                                this@CreateRoomActivity,
+                                MainFragmentActivity::class.java
+                            ).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        )
                         finish()
                     }
                 }
@@ -586,7 +619,15 @@ class CreateRoomActivity : AppCompatActivity() {
                 /*등록 완료 후 텍스트 입력창 초기화*/
                 binding.CreateRoomActivityKeyWordInput.setText("")
                 /*스크롤 내리기*/
-                binding.Scroll.smoothScrollTo(0, binding.CreateRoomButton.bottom)
+                val scroll = Handler()
+                scroll.post(Runnable {
+
+                    binding.Scroll.fullScroll(ScrollView.FOCUS_DOWN);
+                    binding.CreateRoomActivityKeyWordInput.requestFocus()
+
+                })
+
+
 //                Toast.makeText(this, tagArray.toString(),Toast.LENGTH_SHORT).show()
             }
         }
@@ -619,13 +660,53 @@ class CreateRoomActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         })
-
+        /*지도 이미지 버튼 클릭 리스너*/
         binding.CreateRoomMapSearchButton.setOnClickListener {
-            startActivity(Intent(this, CreateRoomMapSearchActivity::class.java))
+            val intent = Intent(this, CreateRoomMapSearchActivity::class.java)
+            startActivityForResult(intent, SEARCHMAPRESULTCODE)
 
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                SEARCHMAPRESULTCODE -> {
+                    val x = data?.getDoubleExtra("x", 0.0)
+                    val y = data?.getDoubleExtra("y", 0.0)
+                    shopName = data?.getStringExtra("shopName").toString()
+                    address = data?.getStringExtra("address").toString()
+                    roadaddress = data?.getStringExtra("roadAddress").toString()
+                    mapFragment.getMapAsync {
+                        marker.position = LatLng(y!!, x!!)
+
+
+                        val infoWindow = InfoWindow()
+                        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(this) {
+                            override fun getText(p0: InfoWindow): CharSequence {
+                                return shopName
+                            }
+                        }
+                        marker.map = it
+                        infoWindow.open(marker)
+
+                        it.moveCamera(
+                            CameraUpdate.scrollTo(LatLng(y, x)).animate(CameraAnimation.Easing)
+                        )
+
+                    }
+
+                }
+
+
+            }
+        }
+    }
+
+    override fun onMapReady(p0: NaverMap) {
+        TODO("Not yet implemented")
+    }
 
     /* 나이제한 배열 생성 2021-05-19 기능을 인터페이스로 전환하여 사용 불필요
      private fun ageArrayList(): ArrayList<Int> {

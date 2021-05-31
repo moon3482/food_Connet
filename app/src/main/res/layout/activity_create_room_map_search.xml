@@ -77,13 +77,20 @@
 
     <fragment
         android:id="@+id/CreateRoomMapSearchMapView"
+        android:name="com.naver.maps.map.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.naver.maps.map.MapFragment"
+        android:layout_weight="1"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
 
     </fragment>
+
+    <Button
+        android:id="@+id/CreateRoomMapSearchSelectButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="선택 완료" />
 
 
 </LinearLayout>

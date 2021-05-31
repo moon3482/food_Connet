@@ -1,17 +1,21 @@
 package com.example.abled_food_connect
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.abled_food_connect.data.ClusterDataClass
 import com.example.abled_food_connect.data.kakaoDataClass.KakaoLocalSearch
 import com.example.abled_food_connect.data.naverDataClass.NaverSearchLocal
 import com.example.abled_food_connect.databinding.ActivityCreateRoomMapSearchBinding
 import com.example.abled_food_connect.retrofit.MapSearch
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.MarkerIcons
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,19 +24,26 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ted.gun0912.clustering.naver.TedNaverClustering
 
 
 class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var mapFragment: MapFragment
     private val binding by lazy { ActivityCreateRoomMapSearchBinding.inflate(layoutInflater) }
     lateinit var naverMap: NaverMap
+    lateinit var markerList: ArrayList<Marker>
+    lateinit var selectMarker: Marker
+    var intentX: Double = 0.0
+    var intentY: Double = 0.0
+    lateinit var intentShopName: String
+    lateinit var intentAddress: String
+    lateinit var intentRoadAddress: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
-
-
+        markerList = ArrayList()
+        selectMarker = Marker()
         val fm = supportFragmentManager
         mapFragment = fm.findFragmentById(R.id.CreateRoomMapSearchMapView) as MapFragment?
             ?: MapFragment.newInstance()
@@ -58,6 +69,25 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
+        binding.CreateRoomMapSearchSelectButton.setOnClickListener(View.OnClickListener {
+            if (intentShopName.isNotEmpty()) {
+
+                val intent = Intent(this, CreateRoomActivity::class.java)
+                intent.putExtra("x", intentX)
+                intent.putExtra("y", intentY)
+                intent.putExtra("shopName", intentShopName)
+                intent.putExtra("address", intentAddress)
+                intent.putExtra("roadAddress", intentRoadAddress)
+
+                setResult(RESULT_OK, intent)
+                finish()
+            } else {
+                val dialog = AlertDialog.Builder(this)
+                dialog.setTitle("장소가 선택되지 않았습니다.")
+                dialog.setPositiveButton("확인", null)
+                dialog.show()
+            }
+        })
 
     }
 
@@ -101,11 +131,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun kakaoSearch(query: String) {
-        var mapFragment: MapFragment
-        val fm = supportFragmentManager
-        mapFragment = fm.findFragmentById(R.id.CreateRoomMapSearchMapView) as MapFragment?
-            ?: MapFragment.newInstance()
-                .also { fm.beginTransaction().add(R.id.CreateRoomMapSearchMapView, it).commit() }
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://dapi.kakao.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -121,59 +147,93 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 ) {
                     val list: KakaoLocalSearch? = response.body()!!
                     val documents = list?.documents
-                    var markerList: ArrayList<ClusterDataClass>
-                    mapFragment.getMapAsync {
 
+                    mapFragment.getMapAsync {
+                        for (index in markerList.indices) {
+                            markerList[index].map = null
+                        }
+                        markerList.clear()
 
                         var x: Double = 0.0
                         var y: Double = 0.0
-                        markerList = ArrayList()
+
                         for (index in list?.documents!!.indices) {
 
 
                             x += documents!![index].x.toDouble()
                             y += documents[index].y.toDouble()
-                            val marker = ClusterDataClass(
-
+                            val marker = Marker()
+                            marker.position = LatLng(
                                 documents!![index].y.toDouble(),
-                                documents!![index].x.toDouble(),
-                                documents[index].placeName,
-                                documents[index].placeName
+                                documents!![index].x.toDouble()
                             )
-                            markerList.add(marker)
+                            marker.map = it
+                            val infoWindow = InfoWindow()
+                            infoWindow.adapter = object :
+                                InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                override fun getText(p0: InfoWindow): CharSequence {
+                                    return documents[index].placeName
+                                }
+                            }
+                            infoWindow.open(marker)
+                            marker.onClickListener = object : Overlay.OnClickListener {
+                                override fun onClick(p0: Overlay): Boolean {
+                                    p0.map!!.moveCamera(
+                                        CameraUpdate.scrollTo(
+                                            LatLng(
+                                                documents!![index].y.toDouble(),
+                                                documents!![index].x.toDouble()
+                                            )
+                                        ).animate(CameraAnimation.Easing)
+                                    )
+                                    selectMarker.icon = MarkerIcons.GREEN
+                                    selectMarker = marker
+                                    selectMarker.icon = MarkerIcons.RED
+                                    selectMarker.map = it
+                                    intentY = documents[index].y.toDouble()
+                                    intentX = documents[index].x.toDouble()
+                                    intentShopName = documents[index].placeName
+                                    intentAddress = documents[index].addressName
+                                    intentRoadAddress = documents[index].roadAddressName
 
+                                    return true
+                                }
+                            }
+
+                            markerList.add(marker)
+                            Log.e("어레이 사이즈", markerList.size.toString())
 
                         }
-                        TedNaverClustering.with<ClusterDataClass>(
-                            this@CreateRoomMapSearchActivity,
-                            it
-                        )
-                            .customMarker { clusterItem ->
-                          val marker = Marker(clusterItem.position)
-                                marker.apply {
-                                    this.icon = MarkerIcons.GREEN
-
-                                }
-
-
-
-
-                            }.markerClickListener {
-
-
-                            }
+//                        TedNaverClustering.with<ClusterDataClass>(
+//                            this@CreateRoomMapSearchActivity,
+//                            it
+//                        )
+//                            .customMarker { clusterItem ->
+//                          val marker = Marker(clusterItem.position)
+//                                marker.apply {
+//                                    this.icon = MarkerIcons.GREEN
+//
+//                                }
 //
 //
-//                        }.customCluster {
-//                            TextView(this@CreateRoomMapSearchActivity).apply {
-//                                setBackgroundColor(
-//                                    Color.GREEN
-//                                )
-//                                text = "${it.size}"
-//                                setPadding(10, 10, 10, 10)
+//
+//
+//                            }.markerClickListener {
+//
+//
 //                            }
-//                        }.clusterText { "테스트" }
-                            .items(getItems(it, markerList)).make()
+////
+////
+////                        }.customCluster {
+////                            TextView(this@CreateRoomMapSearchActivity).apply {
+////                                setBackgroundColor(
+////                                    Color.GREEN
+////                                )
+////                                text = "${it.size}"
+////                                setPadding(10, 10, 10, 10)
+////                            }
+////                        }.clusterText { "테스트" }
+//                            .items(getItems(it)).make()
 
                         if (documents != null) {
                             Log.e(
@@ -213,13 +273,13 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         return builder.build()
     }
 
-    private fun getItems(
-        naverMap: NaverMap,
-        list: ArrayList<ClusterDataClass>
-    ): ArrayList<ClusterDataClass> {
-        val bounds = naverMap.contentBounds
-        return list
-    }
+//    private fun getItems(
+//        naverMap: NaverMap,
+//        list: ArrayList<ClusterDataClass>
+//    ): ArrayList<ClusterDataClass> {
+//        val bounds = naverMap.contentBounds
+//        return list
+//    }
 }
 
 

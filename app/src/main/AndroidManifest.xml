@@ -26,8 +26,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ChatRoomActivity"></activity>
         <activity android:name=".RoomInformationActivity" />
+        <activity android:name=".ChatRoomActivity"/>
         <activity android:name=".CreateRoomMapSearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

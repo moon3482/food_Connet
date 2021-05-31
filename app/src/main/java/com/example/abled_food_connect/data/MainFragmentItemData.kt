@@ -17,6 +17,8 @@ data class MainFragmentItemData(
     var time : String,
     @SerializedName("address")
     var address: String,
+    @SerializedName("roadAddress")
+    var roadAddress: String,
     @SerializedName("shopName")
     var shopName: String,
     @SerializedName("keyWords")

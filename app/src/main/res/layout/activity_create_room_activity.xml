@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context=".CreateRoomActivity">
 
 
@@ -233,7 +234,7 @@
             </LinearLayout>
 
             <fragment
-                android:id="@+id/mapView"
+                android:id="@+id/CreateRoomActivityMapView"
                 android:name="com.naver.maps.map.MapFragment"
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"

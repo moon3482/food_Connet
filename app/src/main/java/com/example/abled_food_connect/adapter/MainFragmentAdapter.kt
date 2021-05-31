@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.*
+import com.example.abled_food_connect.ChatRoomActivity
+import com.example.abled_food_connect.MainActivity
+import com.example.abled_food_connect.R
+import com.example.abled_food_connect.RoomInformationActivity
 import com.example.abled_food_connect.data.JoinRoomCheck
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.retrofit.RoomAPI
@@ -134,7 +137,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                     intent.putExtra("imageUrl",joinRoomCheck.imageUrl)
                     context.startActivity(intent)
                 }else{
-                    val intent = Intent(context, RoomInformationActivity::class.java)
+                    val intent = Intent(context, ChatRoomActivity::class.java)
                     intent.putExtra("roomId",mainData.roomId)
                     context.startActivity(intent)
 

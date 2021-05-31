@@ -12,16 +12,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.MainActivity
-import com.example.abled_food_connect.MainFragmentActivity
-import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.retrofit.RoomAPI
+import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MainFragmentItemData
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
-import okhttp3.internal.notify
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
@@ -105,7 +103,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "메인프래그먼트 onResume()")
-
+        load()
 
     }
 
@@ -159,7 +157,7 @@ class MainFragment : Fragment() {
                     val list: LoadingRoom = response.body()!!
                     val array: ArrayList<MainFragmentItemData> = list.roomList
                     for (i in 0 until array.size) {
-                        mainFragmentListArray.add(array.get(i))
+                        mainFragmentListArray.add(array[i])
                         recyclerView.adapter!!.notifyDataSetChanged()
 
                     }
