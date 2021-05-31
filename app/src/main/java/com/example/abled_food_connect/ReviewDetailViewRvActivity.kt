@@ -93,6 +93,7 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
                 }
 
 
+
                 mAdapter =  ReviewDetailViewRvAdapter(DetailRv_arrayList)
                 mAdapter.notifyDataSetChanged()
                 detail_rv.adapter = mAdapter
