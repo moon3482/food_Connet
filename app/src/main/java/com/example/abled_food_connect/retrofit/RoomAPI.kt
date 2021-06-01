@@ -19,6 +19,7 @@ interface RoomAPI {
         @Field("time") time: String,
         @Field("address") address: String,
         @Field("roadAddress") roadaddress: String,
+        @Field("placeName") placeName:String,
         @Field("shopName") shopName: String,
         @Field("keyWords") keyWords: String,
         @Field("gender") gender: String,

@@ -51,9 +51,9 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
     /*태그 리스트*/val PERMISSIONS_REQUEST_CODE = 100
     var tagArray: ArrayList<String> = ArrayList()
     lateinit var marker: Marker
-    lateinit var shopName: String
+    lateinit var placeName: String
     lateinit var address: String
-    lateinit var roadaddress:String
+    lateinit var roadAddress: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +68,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput
         val maximum = binding.maximumAgeTextView
         val minimum = binding.minimumAgeTextView
-        shopName = String()
+        placeName = String()
         /*드롭다운 어댑터 설정*/
         maximum.setAdapter(setAdapter(age()))
         minimum.setAdapter(setAdapter(age()))
@@ -81,6 +81,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment = fm.findFragmentById(R.id.CreateRoomActivityMapView) as MapFragment?
             ?: MapFragment.newInstance()
                 .also { fm.beginTransaction().add(R.id.CreateRoomActivityMapView, it).commit() }
+
     }
 
 
@@ -253,7 +254,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
             binding.Scroll.scrollTo(0, binding.CreateRoomActivityNumOfPeopleInput.bottom)
 
             return false
-        } else if (shopName.isEmpty()) {
+        } else if (placeName.isEmpty()) {
             Toast.makeText(this, "지도 버튼을 통해 모임장소를 선택해주세요", Toast.LENGTH_LONG).show()
             binding.Scroll.scrollTo(0, binding.CreateRoomActivityTimeInput.bottom)
             return false
@@ -378,7 +379,9 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         val numOfPeople = binding.CreateRoomActivityNumOfPeopleInput.text.toString()
         val date = binding.CreateRoomActivityDateInput.text.toString()
         val time = binding.CreateRoomActivityTimeInput.text.toString()
-        val address = "주소부분"
+        val address = address
+        val roadAddress = roadAddress
+        val placeName = placeName
         val shopName = binding.CreateRoomActivityRoomShopNameInput.text.toString()
         val keyWord = tagArray.toString()
         var gender: String = ""
@@ -415,7 +418,8 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
             date,
             time,
             address,
-            roadaddress,
+            roadAddress,
+            placeName,
             shopName,
             keyWord,
             gender,
@@ -675,9 +679,9 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
                 SEARCHMAPRESULTCODE -> {
                     val x = data?.getDoubleExtra("x", 0.0)
                     val y = data?.getDoubleExtra("y", 0.0)
-                    shopName = data?.getStringExtra("shopName").toString()
+                    placeName = data?.getStringExtra("shopName").toString()
                     address = data?.getStringExtra("address").toString()
-                    roadaddress = data?.getStringExtra("roadAddress").toString()
+                    roadAddress = data?.getStringExtra("roadAddress").toString()
                     mapFragment.getMapAsync {
                         marker.position = LatLng(y!!, x!!)
 
@@ -685,7 +689,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
                         val infoWindow = InfoWindow()
                         infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(this) {
                             override fun getText(p0: InfoWindow): CharSequence {
-                                return shopName
+                                return placeName
                             }
                         }
                         marker.map = it

@@ -77,6 +77,14 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomTitle.text = maindata.title
         testholder.roomNumberOfPeople.text = "1/${(maindata.numOfPeople + 1).toString()}명"
         testholder.roomDateTime.text = maindata.date
+        val splitAddress = maindata.address.toString().split("구")
+        val splitAddress2 = splitAddress[0].split(" ")
+        var location:String = ""
+        for (index in splitAddress2.indices){
+            location += splitAddress2[index]+">"
+        }
+        location = location.substring(0,location.length-1)+"구"
+        testholder.roomLocation.text = location
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 if(maindata.hostName == MainActivity.loginUserNickname){
@@ -84,7 +92,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                     context.startActivity(Intent(context,ChatRoomActivity::class.java))
                 }else{
 
-                    joinRoomCheckMethod(maindata)
+                    joinRoomCheckMethod(maindata,location)
                 }
 
             }
@@ -110,7 +118,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
 
 
     }
-    fun joinRoomCheckMethod(mainData:MainFragmentItemData){
+    fun joinRoomCheckMethod(mainData:MainFragmentItemData,addressParse:String){
 
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
@@ -128,7 +136,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                     intent.putExtra("title",mainData.title)
                     intent.putExtra("info",mainData.info)
                     intent.putExtra("hostName",mainData.hostName)
-                    intent.putExtra("address",mainData.address)
+                    intent.putExtra("address",addressParse)
                     intent.putExtra("date",mainData.date)
                     intent.putExtra("shopName",mainData.shopName)
                     intent.putExtra("roomStatus",mainData.roomStatus)
