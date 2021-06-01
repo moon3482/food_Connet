@@ -3,6 +3,8 @@ package com.example.abled_food_connect.data
 import com.google.gson.annotations.SerializedName
 
 data class MainFragmentItemData(
+    @SerializedName("roomId")
+    var roomId: String,
     @SerializedName("title")
     var title: String,
     @SerializedName("info")
@@ -13,10 +15,14 @@ data class MainFragmentItemData(
     var date : String,
     @SerializedName("time")
     var time : String,
-    @SerializedName("adress")
-    var adress: String,
+    @SerializedName("address")
+    var address: String,
+    @SerializedName("roadAddress")
+    var roadAddress: String,
     @SerializedName("shopName")
     var shopName: String,
+    @SerializedName("placeName")
+    var placeName:String,
     @SerializedName("keyWords")
     var keyWords: String,
     @SerializedName("gender")

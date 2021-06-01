@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.example.abled_food_connect.fragments.ReviewFragment
-import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
@@ -20,8 +18,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MainFragmentActivity : AppCompatActivity()
-{
+class MainFragmentActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainFragmentBinding.inflate(layoutInflater) }
     private lateinit var mainFragment: MainFragment
     private lateinit var reviewFragment: ReviewFragment
@@ -30,14 +27,19 @@ class MainFragmentActivity : AppCompatActivity()
     private lateinit var myPageFragment: MyPageFragment
 
     //태그 생성
-    companion object {
+    companion object obuserid {
         const val TAG: String = "홈 액티비티 로그"
+
+
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         Log.d(TAG, "홈액티비티 onCreate()")
+
+
         //바텀네비게이션 클릭리스너 달기
         binding.bottomNav.setOnNavigationItemSelectedListener(
             onBottomOnNavigationItemSelectedListener
@@ -55,7 +57,12 @@ class MainFragmentActivity : AppCompatActivity()
         binding.mainFragmentCreateReviewBtn.hide()
 
         //프래그먼트 매니저에 메인프래그먼트 등록
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).add(R.id.view, mainFragment).commit()
+        supportFragmentManager.beginTransaction().setCustomAnimations(
+            R.animator.fade_in,
+            R.animator.fade_out,
+            R.animator.fade_in,
+            R.animator.fade_out
+        ).add(R.id.view, mainFragment).commit()
 
         //방만들기 플로팅 버튼 클릭리스너
         binding.mainFragmentCreateRoomBtn.setOnClickListener {
@@ -64,19 +71,29 @@ class MainFragmentActivity : AppCompatActivity()
 //            test()
 
         }
+        binding.mainFragmentCreateReviewBtn.setOnClickListener(
+            View.OnClickListener
+            {
+                //바텀네비게이션 프래그먼트 셀렉트 리스너
+                val nextIntent = Intent(this, ReviewWriting::class.java)
+                startActivity(nextIntent)
 
-        binding.mainFragmentCreateReviewBtn.setOnClickListener(View.OnClickListener {
-
-            val nextIntent = Intent(this, ReviewWriting::class.java)
-            startActivity(nextIntent)
-
-        })
+            })
     }
+
 
     override fun onStart() {
         super.onStart()
 
     }
+
+    override fun onStop() {
+        super.onStop()
+        if (intent.hasExtra("review")) {
+            intent.removeExtra("review")
+        }
+    }
+
     //바텀네비게이션 프래그먼트 셀렉트 리스너
     private val onBottomOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener {
@@ -92,7 +109,12 @@ class MainFragmentActivity : AppCompatActivity()
                     tb.setTitle("홈")
 
                     mainFragment = MainFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, mainFragment)
+                    supportFragmentManager.beginTransaction().setCustomAnimations(
+                        R.animator.fade_in,
+                        R.animator.fade_out,
+                        R.animator.fade_in,
+                        R.animator.fade_out
+                    ).replace(R.id.view, mainFragment)
                         .commit()
                 }
                 R.id.menu_review -> {
@@ -102,7 +124,12 @@ class MainFragmentActivity : AppCompatActivity()
                     tb.setTitle("리뷰")
                     binding.mainFragmentCreateRoomBtn.hide()
                     reviewFragment = ReviewFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, reviewFragment)
+                    supportFragmentManager.beginTransaction().setCustomAnimations(
+                        R.animator.fade_in,
+                        R.animator.fade_out,
+                        R.animator.fade_in,
+                        R.animator.fade_out
+                    ).replace(R.id.view, reviewFragment)
                         .commit()
                 }
                 R.id.menu_ranking -> {
@@ -112,7 +139,12 @@ class MainFragmentActivity : AppCompatActivity()
                     tb.setTitle("랭킹")
                     binding.mainFragmentCreateRoomBtn.hide()
                     rankingFragment = RankingFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, rankingFragment)
+                    supportFragmentManager.beginTransaction().setCustomAnimations(
+                        R.animator.fade_in,
+                        R.animator.fade_out,
+                        R.animator.fade_in,
+                        R.animator.fade_out
+                    ).replace(R.id.view, rankingFragment)
                         .commit()
                 }
                 R.id.menu_chat -> {
@@ -122,7 +154,12 @@ class MainFragmentActivity : AppCompatActivity()
                     tb.setTitle("채팅")
                     binding.mainFragmentCreateRoomBtn.hide()
                     chatingFragment = ChatingFragment.newInstance()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, chatingFragment)
+                    supportFragmentManager.beginTransaction().setCustomAnimations(
+                        R.animator.fade_in,
+                        R.animator.fade_out,
+                        R.animator.fade_in,
+                        R.animator.fade_out
+                    ).replace(R.id.view, chatingFragment)
                         .commit()
                 }
                 R.id.menu_mypage -> {
@@ -132,7 +169,12 @@ class MainFragmentActivity : AppCompatActivity()
                     val tb = supportActionBar!!
                     tb.setTitle("마이페이지")
                     binding.mainFragmentCreateRoomBtn.hide()
-                    supportFragmentManager.beginTransaction().setCustomAnimations(R.animator.fade_in,R.animator.fade_out,R.animator.fade_in,R.animator.fade_out).replace(R.id.view, myPageFragment)
+                    supportFragmentManager.beginTransaction().setCustomAnimations(
+                        R.animator.fade_in,
+                        R.animator.fade_out,
+                        R.animator.fade_in,
+                        R.animator.fade_out
+                    ).replace(R.id.view, myPageFragment)
                         .commit()
                 }
 
@@ -202,49 +244,52 @@ class MainFragmentActivity : AppCompatActivity()
     //        }
     //    }
      */
-    //방 등록 리퀘스트 메소드
-    private fun resistRoom() {
-        val gson: Gson = GsonBuilder()
-            .setLenient()
-            .create()
 
-        val retrofit =
-            Retrofit.Builder()
-                .baseUrl("http://3.37.36.188/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build()
-
-        val server = retrofit.create(RoomAPI::class.java)
-
-        server.createRoom("하이",
-            "바이2222",
-            "5",
-            "2021-05-18",
-            "18:00:00",
-            "서울시관악구",
-            "빵집",
-            "빵집",
-            "male",
-            "22","33","호스트네임")
-            .enqueue(object :Callback<String>{
-                override fun onResponse(
-                    call: Call<String>,
-                    response: Response<String>
-                ) {
-                    if(response.isSuccessful)
-                        Log.e("성공",response.body().toString())
-                    else
-                        Log.e("실패",response.body().toString())
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-
-                }
-
-            })
-    }
-    fun moveToCreateRoomActivity(){
-        val moveToCreateRoomActivityIntent = Intent(this@MainFragmentActivity,CreateRoomActivity::class.java)
+    /** test 방생성 코트 2021-24일부로 방생성 기능 구현으로 주석처리
+    //        방 등록 리퀘스트 메소드
+    //         private fun resistRoom() {
+    //        val gson: Gson = GsonBuilder()
+    //            .setLenient()
+    //            .create()
+    //
+    //        val retrofit =
+    //            Retrofit.Builder()
+    //                .baseUrl("http://3.37.36.188/")
+    //                .addConverterFactory(GsonConverterFactory.create(gson))
+    //                .build()
+    //
+    //        val server = retrofit.create(RoomAPI::class.java)
+    //
+    //        server.createRoom("하이",
+    //            "바이2222",
+    //            "5",
+    //            "2021-05-18",
+    //            "18:00:00",
+    //            "서울시관악구",
+    //            "빵집",
+    //            "빵집",
+    //            "male",
+    //            "22","33","호스트네임")
+    //            .enqueue(object :Callback<String>{
+    //            override fun onResponse(
+    //                call: Call<String>,
+    //                response: Response<String>
+    //            ) {
+    //                if(response.isSuccessful)
+    //                    Log.e("성공",response.body().toString())
+    //                else
+    //                    Log.e("실패",response.body().toString())
+    //            }
+    //
+    //            override fun onFailure(call: Call<String>, t: Throwable) {
+    //
+    //                }
+    //
+    //        })
+    }*/
+    fun moveToCreateRoomActivity() {
+        val moveToCreateRoomActivityIntent =
+            Intent(this@MainFragmentActivity, CreateRoomActivity::class.java)
         startActivity(moveToCreateRoomActivityIntent)
     }
 

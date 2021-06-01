@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         var user_table_id : Int = 0
         var loginUserId: String = ""
-        var loginUserNickname = ""
+        var loginUserNickname : String = ""
     }
 
     /*
@@ -253,6 +253,7 @@ class MainActivity : AppCompatActivity() {
             //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
             buttonOAuthLoginImg.performClick()
         }
+
 
 
         /*

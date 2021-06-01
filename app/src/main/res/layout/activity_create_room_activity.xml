@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context=".CreateRoomActivity">
 
 
@@ -15,6 +16,7 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/MainToolbar" />
+
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/Scroll"
@@ -28,7 +30,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/CreateRoomInfoInputLayout"
+                android:id="@+id/CreateRoomShopNameInputLayout"
                 style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,10 +43,10 @@
                 app:hintAnimationEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/CreateRoomActivityRoomInfoInput"
+                    android:id="@+id/CreateRoomActivityRoomShopNameInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/create_room_activity_room_info_hint"
+                    android:hint="@string/create_room_activity_room_shop_name_hint"
                     android:textCursorDrawable="@drawable/edit_text_cursor_color"
 
                     />
@@ -71,6 +73,39 @@
 
                     />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/CreateRoomInformationInputLayout"
+                    style="@style/LoginTextInputLayoutStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+
+                    app:counterEnabled="true"
+                    app:counterMaxLength="300"
+                    app:errorEnabled="true"
+                    app:hintAnimationEnabled="true">
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/CreateRoomActivityRoomInformationInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/create_room_activity_room_info_hint"
+                        android:maxHeight="150dp"
+                        android:overScrollMode="always"
+                        android:textCursorDrawable="@drawable/edit_text_cursor_color"
+
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+            </androidx.core.widget.NestedScrollView>
+
 
             <LinearLayout
                 style="@style/create_room_margin"
@@ -188,17 +223,19 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/imageView"
+                        android:id="@+id/CreateRoomMapSearchButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="createRoomActivityMap"
-                        app:srcCompat="@drawable/ic_baseline_map_24" />
+                        app:srcCompat="@drawable/ic_baseline_map_24"
+                        tools:ignore="VectorDrawableCompat" />
                 </LinearLayout>
 
             </LinearLayout>
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/mapView"
+            <fragment
+                android:id="@+id/CreateRoomActivityMapView"
+                android:name="com.naver.maps.map.MapFragment"
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
@@ -232,7 +269,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:contentDescription="createRoomActivityGenderLimitMale"
-                        app:srcCompat="@drawable/ic_male_not_focus" />
+                        app:srcCompat="@drawable/ic_male_not_focus"
+                        tools:ignore="VectorDrawableCompat" />
 
                     <ImageView
                         android:id="@+id/CreateRoomActivityFemaleImageView"
@@ -242,7 +280,8 @@
                         android:layout_marginEnd="20dp"
                         android:layout_weight="1"
                         android:contentDescription="createRoomActivityGenderLimitFemale"
-                        app:srcCompat="@drawable/ic_female_not_focus" />
+                        app:srcCompat="@drawable/ic_female_not_focus"
+                        tools:ignore="VectorDrawableCompat" />
 
                     <ImageView
                         android:id="@+id/CreateRoomActivityGenderAnyImageView"
@@ -250,7 +289,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:contentDescription="createRoomActivityGenderLimitAny"
-                        app:srcCompat="@drawable/ic_maleandfemale_not_focus" />
+                        app:srcCompat="@drawable/ic_maleandfemale_not_focus"
+                        tools:ignore="VectorDrawableCompat" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -325,16 +365,16 @@
                     style="@style/LoginTextInputLayoutStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="5dp"
                     android:layout_weight="1">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/CreateRoomActivityKeyWordInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:singleLine="true"
-                        android:hint="키워드" />
+                        android:hint="키워드"
+                        android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
@@ -375,7 +415,8 @@
                     app:horizontal_interval="10dp"
                     app:tag_clickable="true"
                     app:tag_theme="pure_teal"
-                    app:vertical_interval="10dp" />
+                    app:vertical_interval="10dp"
+                    tools:ignore="MissingClass" />
 
             </LinearLayout>
 
