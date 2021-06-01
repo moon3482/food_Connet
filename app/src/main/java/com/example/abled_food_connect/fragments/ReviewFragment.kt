@@ -10,12 +10,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.R
+import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
+import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.data.ReviewFragmentLoadingData
 import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
-import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
 import com.example.abled_food_connect.interfaces.ReviewFragRvUsingInterface
-import com.example.abled_food_connect.R
-import com.example.abled_food_connect.data.MainFragmentItemData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -64,7 +64,7 @@ class ReviewFragment:Fragment() {
 
 
 
-        reviewDbLoading()
+//        reviewDbLoading()
 
 
 
@@ -88,6 +88,11 @@ class ReviewFragment:Fragment() {
 
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        reviewDbLoading()
     }
 
 
