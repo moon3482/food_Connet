@@ -7,7 +7,7 @@ class GlobalApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        KakaoSdk.init(this, getString(R.string.kakao_native_appkey))
+        KakaoSdk.init(this, getString(R.string.kakao_login_api_key))
 
 
     }
