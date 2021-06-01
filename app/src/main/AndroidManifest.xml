@@ -34,7 +34,7 @@
         <activity
             android:name=".CreateRoomActivity"
             android:windowSoftInputMode="adjustResize" />
-        android:usesCleartextTraffic="true">
+
         <activity android:name=".RoomInformationActivity" />
         <activity android:name=".ChatRoomActivity"/>
         <activity android:name=".CreateRoomMapSearchActivity">
@@ -44,12 +44,9 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/map_search"/>
         </activity>
-        <activity
-            android:name=".CreateRoomActivity"
-            android:windowSoftInputMode="adjustResize" />
+
         <activity android:name=".MainFragmentActivity" />
-        <activity android:name=".ReviewWriting" />
-        <activity android:name=".UserRegisterActivity" />
+
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
@@ -59,7 +56,7 @@
             android:value="@string/facebook_app_id" />
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="79386308695f07328a0a5316dcb46a0a" />
+            android:value="@string/kakao_login_api_key" />
 
         <activity
             android:name="com.facebook.FacebookActivity"

@@ -4,4 +4,7 @@
     <string name="naver_open_api_id">s6TmKIlZZS3KMP1wn0eU</string>
     <string name="naver_open_api_secret">JqAxztl_KG</string>
     <string name="kakao_rest_api_key">KakaoAK f910b306e193da1e813e0f8e59c63c06</string>
+    <string name="kakao_login_api_key">79386308695f07328a0a5316dcb46a0a</string>
+    <string name="facebook_app_id">453824635710043</string>
+    <string name="fb_login_protocol_scheme">fb453824635710043</string>
 </resources>
