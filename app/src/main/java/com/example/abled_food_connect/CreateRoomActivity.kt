@@ -27,6 +27,7 @@ import com.naver.maps.map.overlay.Marker
 import net.daum.android.map.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -432,13 +433,17 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
                     call: Call<String>,
                     response: Response<String>
                 ) {
-                    if (response?.body().toString() == "true") {
+
+                    val response = JSONObject(response.body().toString())
+                    val success = response.getBoolean("success")
+                    if (success) {
                         Toast.makeText(this@CreateRoomActivity, "방 생성", Toast.LENGTH_SHORT).show()
                         startActivity(
                             Intent(
                                 this@CreateRoomActivity,
-                                MainFragmentActivity::class.java
-                            ).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                                ChatRoomActivity::class.java
+                            ).putExtra("roomId", response.getString("roomId").toString())
+                                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
                         )
                         finish()
                     }

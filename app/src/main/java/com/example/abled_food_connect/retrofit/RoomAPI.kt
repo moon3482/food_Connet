@@ -50,7 +50,7 @@ interface RoomAPI {
     @POST("RoomJoin.php")
     fun joinRoom(
         @Field("roomId") roomId: String,
-        @Field("userId") userId: String
+        @Field("nickName") nickName: String
 
     ): Call<API.joinRoomClass>
 }

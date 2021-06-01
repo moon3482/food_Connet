@@ -74,7 +74,7 @@ class API {
             ): Call<ReviewLikeBtnClickData>
     }
 
-    fun joinRoom(context:Context,roomId:String,userId:String){
+    fun joinRoom(context:Context,roomId:String,nickName:String){
 
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
@@ -83,7 +83,7 @@ class API {
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.joinRoom(roomId,userId).enqueue(object: Callback<joinRoomClass>{
+        server.joinRoom(roomId,nickName).enqueue(object: Callback<joinRoomClass>{
             override fun onResponse(call: Call<joinRoomClass>, response: Response<joinRoomClass>) {
                 val success : joinRoomClass = response.body()!!
                 if (success.success){

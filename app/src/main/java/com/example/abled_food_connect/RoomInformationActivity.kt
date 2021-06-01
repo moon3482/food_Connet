@@ -1,10 +1,9 @@
 package com.example.abled_food_connect
 
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import coil.load
 import com.example.abled_food_connect.databinding.ActivityRoomInformationBinding
 import com.example.abled_food_connect.retrofit.API
@@ -64,9 +63,7 @@ class RoomInformationActivity : AppCompatActivity() {
 
         binding.RoomInfoJoinRoomBtn.setOnClickListener(View.OnClickListener {
             val join = API()
-            Log.e("룸아디",roomId.toString())
-            Log.e("유저아디",MainActivity.loginUserId)
-            join.joinRoom(this, roomId.toString(), MainActivity.loginUserId)
+            join.joinRoom(this, roomId.toString(), MainActivity.loginUserNickname)
 
         })
 
