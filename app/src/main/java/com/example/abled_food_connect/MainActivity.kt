@@ -39,6 +39,7 @@ import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -252,6 +253,7 @@ class MainActivity : AppCompatActivity() {
             //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
             buttonOAuthLoginImg.performClick()
         }
+
 
 
         /*
@@ -607,7 +609,13 @@ class MainActivity : AppCompatActivity() {
                 response: Response<LoginDataClass>
             ) {
                 if (response.isSuccessful) {
+
+
                     val userlogin: LoginDataClass = response.body()!!
+
+
+
+
                     if (userlogin.success) {
                         val get_user_table_id = userlogin.id
                         val loginId = userlogin.userId
@@ -628,15 +636,21 @@ class MainActivity : AppCompatActivity() {
                             "회원가입을 해주세요.",
                             Toast.LENGTH_LONG
                         ).show();
+
+
                         nextIntent.putExtra("user_id", userId)
                         nextIntent.putExtra("social_login_type", social_login_type)
                         startActivity(nextIntent)
                     }
+
                     Log.d("레트로핏 성공결과", "" + response?.body().toString())
+
+
                 } else {
                     Toast.makeText(applicationContext, "서버연결 실패.", Toast.LENGTH_LONG).show();
                     Log.d("레트로핏 실패결과", "" + response?.body().toString())
                     Log.d("레트로핏 실패결과", "" + call.request())
+
                 }
             }
         })

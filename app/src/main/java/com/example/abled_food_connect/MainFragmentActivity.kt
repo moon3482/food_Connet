@@ -84,26 +84,6 @@ class MainFragmentActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-//        if (intent.hasExtra("review")) {
-//            reviewFragment = ReviewFragment.newInstance()
-//            supportFragmentManager.beginTransaction().setCustomAnimations(
-//                R.animator.fade_in,
-//                R.animator.fade_out,
-//                R.animator.fade_in,
-//                R.animator.fade_out
-//            ).replace(R.id.view, reviewFragment)
-//                .commit()
-//            binding.bottomNav.selectedItemId = R.id.menu_review
-//        } else {
-//            mainFragment = MainFragment.newInstance()
-//            supportFragmentManager.beginTransaction().setCustomAnimations(
-//                R.animator.fade_in,
-//                R.animator.fade_out,
-//                R.animator.fade_in,
-//                R.animator.fade_out
-//            ).replace(R.id.view, mainFragment)
-//                .commit()
-//        }
 
     }
 

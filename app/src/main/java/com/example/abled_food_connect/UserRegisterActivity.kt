@@ -603,7 +603,7 @@ class UserRegisterActivity : AppCompatActivity() {
                 photoFile?.also{
                     val photoURI : Uri = FileProvider.getUriForFile(
                         this,
-                        "com.example.abled_food_connect.fileprovider",
+                        "com.example.abled_food_connect.provider",
                         it
                     )
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
