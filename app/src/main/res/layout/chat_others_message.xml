@@ -2,9 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    android:paddingStart="5dp"
+ >
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/chatOthersImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:src="@drawable/ic_facebook_logo" />
@@ -16,7 +21,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/chatMyNickName"
+            android:id="@+id/chatOthersNickName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="아이디" />
@@ -32,13 +37,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/chat_you_message_background"
+                android:elevation="30dp"
                 android:maxWidth="300dp"
                 android:padding="10dp"
                 android:textColor="@color/white"
-                tools:text="dsds" />
+                android:outlineProvider="none"
+                tools:text="" />
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/chatOthersTimeStamp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="bottom|end"
