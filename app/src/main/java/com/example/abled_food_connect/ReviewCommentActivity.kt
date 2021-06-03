@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -45,7 +46,15 @@ class ReviewCommentActivity : AppCompatActivity() {
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
+
     private var review_id : Int = 0
+    //이전 액티비티 좋아요, 댓글 개수 변화
+    //이전 엑티비티로 값 넘겨줌
+    private var review_detail_view_rv_position : Int = 0
+    private lateinit var review_detail_view_like_count : String
+    private var review_detail_view_like_btn_click_check : Boolean = false
+    private lateinit var review_detail_view_comment_count : String
+
 
     private lateinit var comment_content : String
     private var comment_class : Int = 0
@@ -103,16 +112,21 @@ class ReviewCommentActivity : AppCompatActivity() {
 
         // 이제부터 binding 바인딩 변수를 활용하여 마음 껏 xml 파일 내의 뷰 id 접근이 가능해집니다.
         // 뷰 id도 파스칼케이스 + 카멜케이스의 네이밍규칙 적용으로 인해서 tv_message -> tvMessage 로 자동 변환 되었습니다.
-        //binding.tvMessage.setText("안녕하세요 홍드로이드 입니다.")
 
 
         review_id = intent.getIntExtra("review_id",0)
+        review_detail_view_rv_position = intent.getIntExtra("review_detail_view_rv_position",0)
         //리뷰 정보를 가져온다
         reviewContentLoading(review_id)
 
 
 
 
+        binding.contentCommentBtn.setOnClickListener(View.OnClickListener {
+            writingCommentEt.requestFocus()
+            binding.contentCommentBtn.hideKeyboard()
+            binding.contentCommentBtn.showKeyboard()
+        })
 
 
 
@@ -147,37 +161,44 @@ class ReviewCommentActivity : AppCompatActivity() {
         binding.sendCommentBtn.setOnClickListener(View.OnClickListener {
             comment_content = binding.writingCommentEt.text.toString()
 
+            binding.writingCommentEt.setText(binding.writingCommentEt.text.toString().replace(" ",""))
+            if(binding.writingCommentEt.text.toString().length>0){
+
+                if(childOrParent == 0) {
+                    sendTargetUserTable_id = WriterUserTbId
+                    sendTargetUserNicName = writerNicname
+                    //부모는 -1을 넘겨주고, 서버에서 그룹넘버를 부여받는다.
+                    groupNum = -1
+
+                } else if(childOrParent  == 1){
+                    //sendTargetUserTable_id와 sendTargetUserNicName,groupNum은 클릭 리스너에서 받는다.
+                    //자식은 부모와 동일한 groupNum를 클릭리스너에서 받는다.
+                }
+
+                //부모 댓글을 남겼는가? 자식 댓글을 남겼는가. 포지션 위치 구하기 위함
+                last_child_or_parent = childOrParent
+
+                CommentWritingBtnClick(review_id,comment_content,childOrParent,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
 
 
-            if(childOrParent == 0) {
-                sendTargetUserTable_id = WriterUserTbId
-                sendTargetUserNicName = writerNicname
-                //부모는 -1을 넘겨주고, 서버에서 그룹넘버를 부여받는다.
-                groupNum = -1
 
-            } else if(childOrParent  == 1){
-                //sendTargetUserTable_id와 sendTargetUserNicName,groupNum은 클릭 리스너에서 받는다.
-                //자식은 부모와 동일한 groupNum를 클릭리스너에서 받는다.
+                binding.sendCommentBtn.hideKeyboard()
+                childCommentCloseBtn.performClick()
+
+
+                //부모 댓글인지, 자식댓글인지 확인하는 변수를 0으로 초기화시킨다.
+                //0은 부모, 1은 자식
+                childOrParent = 0
+                //댓글을 달면 댓글이없어요 라고 적혀있는 텍스트뷰를 안보이게 처리한다.
+                binding.noCommentTv.visibility = View.GONE
+                //댓글 내용을 입력했던 Edittext를 비워준다.
+                binding.writingCommentEt.setText(null)
+
+            }else{
+                Toast.makeText(applicationContext, "답글을 입력해주세요.", Toast.LENGTH_LONG).show()
             }
 
-            //부모 댓글을 남겼는가? 자식 댓글을 남겼는가. 포지션 위치 구하기 위함
-            last_child_or_parent = childOrParent
 
-            CommentWritingBtnClick(review_id,comment_content,childOrParent,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
-
-
-
-            binding.sendCommentBtn.hideKeyboard()
-            childCommentCloseBtn.performClick()
-
-
-            //부모 댓글인지, 자식댓글인지 확인하는 변수를 0으로 초기화시킨다.
-            //0은 부모, 1은 자식
-            childOrParent = 0
-            //댓글을 달면 댓글이없어요 라고 적혀있는 텍스트뷰를 안보이게 처리한다.
-            binding.noCommentTv.visibility = View.GONE
-            //댓글 내용을 입력했던 Edittext를 비워준다.
-            binding.writingCommentEt.setText(null)
         })
 
 
@@ -289,10 +310,16 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                     Log.d(ReviewFragment.TAG, "목록불러와 ${reviewCommentGetData.CommentList}")
                     Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
+                    Log.d(ReviewFragment.TAG, "목록불러와 : ${reviewCommentGetData.comment_count}")
+
+
+                    binding.contentCommentCountTv.text = reviewCommentGetData.comment_count
 
                     review_comment_rv_adapter =  ReviewCommentRvAdapter(comment_ArrayList,writerNicname)
                     review_comment_rv_adapter.notifyDataSetChanged()
                     reviewCommentRv.adapter = review_comment_rv_adapter
+
+
 
                     //클릭리스너 등록
                     review_comment_rv_adapter.setItemClickListener( object : ReviewCommentRvAdapter.ItemClickListener{
@@ -369,9 +396,15 @@ class ReviewCommentActivity : AppCompatActivity() {
                     if(heart_making == true){
                         binding.contentHeartIv.setColorFilter(Color.parseColor("#55ff0000"))
                         Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
+
+                        //이전 엑티비티로 값 넘겨줌
+                        review_detail_view_like_btn_click_check = true;
                     }else if(heart_making == false){
                         binding.contentHeartIv.setColorFilter(Color.parseColor("#55111111"))
                         Log.d(ReviewFragment.TAG, "false : ${heart_making}")
+
+                        //이전 엑티비티로 값 넘겨줌
+                        review_detail_view_like_btn_click_check = false;
                     }
 
 
@@ -493,8 +526,15 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                 if(items!!.roomList.get(0).heart_making == true) {
                     binding.contentHeartIv.setColorFilter(Color.parseColor("#55ff0000"))
+
+
+                    //이전 엑티비티로 값 넘겨줌
+                    review_detail_view_like_btn_click_check = true
                 }else{
                     binding.contentHeartIv.setColorFilter(Color.parseColor("#55111111"))
+
+                    //이전 엑티비티로 값 넘겨줌
+                    review_detail_view_like_btn_click_check = false
                 }
 
 
@@ -536,6 +576,26 @@ class ReviewCommentActivity : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+        //super.onBackPressed()
+
+
+
+        review_detail_view_like_count = binding.contentLikeCountTv.text.toString()
+
+        review_detail_view_comment_count = binding.contentCommentCountTv.text.toString()
+
+        intent.putExtra("review_id", review_id)
+        intent.putExtra("review_detail_view_rv_position", review_detail_view_rv_position)
+
+        intent.putExtra("review_detail_view_like_count", review_detail_view_like_count)
+        intent.putExtra("review_detail_view_like_btn_click_check", review_detail_view_like_btn_click_check)
+        intent.putExtra("review_detail_view_comment_count", review_detail_view_comment_count)
+
+        setResult(1, intent);
+        finish()
+
+    }
 
 
 

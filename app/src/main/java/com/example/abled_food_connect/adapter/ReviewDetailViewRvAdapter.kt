@@ -1,4 +1,5 @@
 package com.example.abled_food_connect.adapter
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -136,8 +138,9 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
         holder.commentBtn.setOnClickListener(View.OnClickListener {
 
             var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
+            toMoveCommentActivity.putExtra("review_detail_view_rv_position", position)
             toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
-            startActivity(holder.commentBtn.context,toMoveCommentActivity,null)
+            startActivityForResult(holder.commentBtn.context as Activity,toMoveCommentActivity,1,null)
 
 
         })
