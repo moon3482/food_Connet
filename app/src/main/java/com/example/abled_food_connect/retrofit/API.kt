@@ -6,6 +6,8 @@ import android.content.Intent
 import android.widget.Toast
 import com.example.abled_food_connect.ChatActivity
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.data.ReviewCommentGetData
+import com.example.abled_food_connect.data.ReviewDetailViewRvData
 import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -49,6 +51,7 @@ class API {
             //@Part itemphoto: ArrayList<MultipartBody.Part>,
             @Part itemphoto: List<MultipartBody.Part>,
             @Part("room_tb_id") room_tb_id: Int,
+            @Part("writer_user_tb_id") writer_user_tb_id: Int,
             @Part("writer_uid") writer_uid: String,
             @Part("writer_nicname") writer_nicname: String,
             @Part("restaurant_address") restaurant_address: String,
@@ -63,6 +66,21 @@ class API {
             @Part("rating_star_interior") rating_star_interior: Int): Call<String>
     }
 
+
+    //리뷰에서 코멘트 버튼을 눌렀을때, 리뷰내역 가져오기
+
+    interface reviewCommentReviewContentGet {
+
+        @Multipart
+        @POST("review/review_comment_activity_review_content_get.php")
+        fun review_comment_review_content_get_interface(
+            @Part("review_id") review_id: Int,
+            //사용자 id는 좋아요 정보를 조회할때 사용한다.
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<ReviewDetailViewRvData>
+
+    }
+
     interface reviewLikeBtnClick{
         // 좋아요 버튼 클릭
         @Multipart
@@ -72,6 +90,32 @@ class API {
             @Part("my_user_tb_id") my_user_tb_id: Int,
             @Part("my_user_tb_user_id") my_user_tb_user_id: String,
             ): Call<ReviewLikeBtnClickData>
+    }
+
+
+    interface reviewPageCommentListGet{
+        // 댓글 목록 가져오기
+        @Multipart
+        @POST("review/review_comment_list_get.php")
+        fun reviewPageCommentListGetCalling(
+            @Part("review_id") review_id: Int,
+        ): Call<ReviewCommentGetData>
+    }
+
+
+    interface reviewPageCommentWriting{
+        // 리뷰보다가 댓글(코멘트)작성
+        @Multipart
+        @POST("review/review_comment_writing.php")
+        fun review_comment_send_btn_click(
+            @Part("review_id") review_id: Int,
+            @Part("writing_user_id") writing_user_id: Int,
+            @Part("comment_content") comment: String,
+            @Part("comment_class") comment_class: Int,
+            @Part("sendTargetUserTable_id") sendTargetUserTable_id: Int,
+            @Part("sendTargetUserNicName") sendTargetUserNicName: String,
+            @Part("groupNum") groupNum: Int
+        ): Call<ReviewCommentGetData>
     }
 
     fun joinRoom(context:Context,roomId:String,userId:String){

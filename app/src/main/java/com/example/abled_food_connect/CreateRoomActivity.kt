@@ -404,7 +404,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val retrofit =
             Retrofit.Builder()
-                .baseUrl("http://3.37.36.188/")
+                .baseUrl(getString(R.string.http_request_base_url))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(createOkHttpClient())
                 .build()

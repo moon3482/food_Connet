@@ -41,9 +41,11 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
 
         if (review_id != null) {
             Log.d("review_id", review_id)
-            reviewDbLoading(review_id)
+            reviewDbLoading(review_id.toString())
         }
 
+
+        //리사이클러뷰
         detail_rv = findViewById<RecyclerView>(R.id.review_Detail_rv)
         detail_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
@@ -53,10 +55,13 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
         Log.d("테이블id", MainActivity.user_table_id.toString())
         Log.d("아이디", MainActivity.loginUserId)
 
+
+        //리사이클러뷰 구분선
         val dividerItemDecoration =
             DividerItemDecoration(detail_rv.context, LinearLayoutManager(this).orientation)
 
         detail_rv.addItemDecoration(dividerItemDecoration)
+
 
 
     }
@@ -65,7 +70,7 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
 
     fun reviewDbLoading(review_id:String){
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://3.37.36.188/")
+            .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(ReviewDetailRvInterface::class.java)

@@ -1,4 +1,6 @@
 package com.example.abled_food_connect.adapter
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,11 +9,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.ReviewCommentActivity
+import com.example.abled_food_connect.ReviewDetailViewRvActivity
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
@@ -24,7 +29,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<ReviewDetailViewRvAdapter.CustromViewHolder>(){
-
 
 
 
@@ -47,7 +51,7 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
         //프로필 이미지
         Glide.with(holder.profileDetailIv.context)
-            .load("http://3.37.36.188/"+ReviewDetailList.get(position).profile_image)
+            .load(holder.profileDetailIv.context.getString(R.string.http_request_base_url)+ReviewDetailList.get(position).profile_image)
             .circleCrop()
             .into(holder.profileDetailIv)
 
@@ -108,7 +112,7 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
         //좋아요 리니어 레이아웃 좋아요 버튼을 클릭
         holder.likeBtn.setOnClickListener(View.OnClickListener {
-            RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).review_id,position)
+            RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).review_id,position,holder.likeBtn.context)
 
             Log.d("무엇", ReviewDetailList.get(position).review_id.toString()+MainActivity.user_table_id+MainActivity.loginUserId)
         })
@@ -127,6 +131,17 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
         //댓글 개수
         holder.commentCountTv.text = ReviewDetailList.get(position).comment_count
+
+        //ReviewCommentActivity
+        holder.commentBtn.setOnClickListener(View.OnClickListener {
+
+            var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
+            toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
+            startActivity(holder.commentBtn.context,toMoveCommentActivity,null)
+
+
+        })
+
 
 
 
@@ -192,15 +207,18 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
         //댓글 수
         val commentCountTv = itemView.findViewById<TextView>(R.id.commentCountTv)
 
+        //댓글 버튼
+        val commentBtn = itemView.findViewById<LinearLayout>(R.id.commentBtn)
+
     }
 
 
 
 
 
-    fun RvAdapterReviewLikeBtnClick(what_click_review_tb_id:Int,position : Int){
+    fun RvAdapterReviewLikeBtnClick(what_click_review_tb_id:Int,position : Int, context: Context){
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://3.37.36.188/")
+            .baseUrl(context.getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewLikeBtnClick::class.java)
