@@ -31,6 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainFragment : Fragment() {
     private var mainFragmentListArray: ArrayList<MainFragmentItemData> = ArrayList()
     lateinit var recyclerView: RecyclerView
+    lateinit var recyclerViewAdapter: MainFragmentAdapter
 
     companion object {
         const val TAG: String = "홈 프래그먼트 로그"
@@ -42,6 +43,7 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "메인프래그먼트 onCreate()")
+
 
     }
 
@@ -71,7 +73,6 @@ class MainFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.mainRcv) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = MainFragmentAdapter(requireContext(), mainFragmentListArray)
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
@@ -156,12 +157,9 @@ class MainFragment : Fragment() {
 
                     val list: LoadingRoom = response.body()!!
                     val array: ArrayList<MainFragmentItemData> = list.roomList
-                    for (i in 0 until array.size) {
-                        mainFragmentListArray.add(array[i])
-                        recyclerView.adapter!!.notifyDataSetChanged()
-
-                    }
-
+                    mainFragmentListArray = list.roomList as ArrayList<MainFragmentItemData>
+                    recyclerViewAdapter = MainFragmentAdapter(requireContext(),mainFragmentListArray)
+                    recyclerView.adapter = recyclerViewAdapter
 
                 }
 

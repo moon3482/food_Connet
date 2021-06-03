@@ -98,7 +98,7 @@ class ReviewFragment:Fragment() {
 
     fun reviewDbLoading(){
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://3.37.36.188/")
+            .baseUrl("http://52.78.107.230/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(ReviewFragRvUsingInterface::class.java)

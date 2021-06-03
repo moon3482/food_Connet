@@ -4,7 +4,7 @@ package com.example.abled_food_connect.retrofit
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import com.example.abled_food_connect.ChatActivity
+import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.google.gson.annotations.SerializedName
@@ -87,7 +87,7 @@ class API {
             override fun onResponse(call: Call<joinRoomClass>, response: Response<joinRoomClass>) {
                 val success : joinRoomClass = response.body()!!
                 if (success.success){
-                    val intent = Intent(context,ChatActivity::class.java)
+                    val intent = Intent(context,ChatRoomActivity::class.java)
                     context.startActivity(intent)
 
                 }else{
@@ -114,5 +114,11 @@ class API {
     data class joinRoomClass(
         @SerializedName("success")
         val success: Boolean
+    )
+    data class createRoomHost(
+        @SerializedName("success")
+        val success :Boolean,
+        @SerializedName("roomId")
+        val roomId:String
     )
 }

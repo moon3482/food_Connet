@@ -73,9 +73,9 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             val text: String = context.getString(R.string.limit_age_badge)
             testholder.roomAge.text = String.format(text, maindata.minimumAge, maindata.maximumAge)
         }
-        testholder.shopName.text = maindata.shopName
+        testholder.shopName.text = maindata.placeName
         testholder.roomTitle.text = maindata.title
-        testholder.roomNumberOfPeople.text = "1/${(maindata.numOfPeople + 1).toString()}명"
+        testholder.roomNumberOfPeople.text = "${maindata.nowNumOfPeople.toString()}/${(maindata.numOfPeople).toString()}명"
         testholder.roomDateTime.text = maindata.date
         val splitAddress = maindata.address.toString().split("구")
         val splitAddress2 = splitAddress[0].split(" ")
@@ -87,13 +87,8 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomLocation.text = location
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                if(maindata.hostName == MainActivity.loginUserNickname){
-
-                    context.startActivity(Intent(context,ChatRoomActivity::class.java))
-                }else{
 
                     joinRoomCheckMethod(maindata,location)
-                }
 
             }
         })
@@ -127,7 +122,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.joinRoomCheck(mainData.roomId,MainActivity.loginUserId,mainData.hostName).enqueue(object : Callback<JoinRoomCheck>{
+        server.joinRoomCheck(mainData.roomId,MainActivity.loginUserNickname,mainData.hostName).enqueue(object : Callback<JoinRoomCheck>{
             override fun onResponse(call: Call<JoinRoomCheck>, response: Response<JoinRoomCheck>) {
                     val joinRoomCheck = response.body()
                 if(joinRoomCheck!!.success){

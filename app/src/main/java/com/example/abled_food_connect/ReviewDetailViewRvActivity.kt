@@ -65,7 +65,7 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
 
     fun reviewDbLoading(review_id:String){
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://3.37.36.188/")
+            .baseUrl("http://52.78.107.230/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(ReviewDetailRvInterface::class.java)

@@ -39,7 +39,7 @@ class Review_Detail_ViewPagerAdapter(private var images : List<String>) : Recycl
     override fun onBindViewHolder(holder: Review_Detail_ViewPagerAdapter.Pager2ViewHolder, position: Int){
 
         Glide.with(holder.itemImage.context)
-            .load("http://3.37.36.188/"+images[position])
+            .load("http://52.78.107.230/"+images[position])
             .optionalFitCenter()
             //.apply(RequestOptions().cen())
             .into(holder.itemImage)

@@ -12,6 +12,7 @@ import com.example.abled_food_connect.data.naverDataClass.NaverSearchLocal
 import com.example.abled_food_connect.databinding.ActivityCreateRoomMapSearchBinding
 import com.example.abled_food_connect.retrofit.MapSearch
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
@@ -50,7 +51,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                 .also { fm.beginTransaction().add(R.id.CreateRoomMapSearchMapView, it).commit() }
 
         mapFragment.getMapAsync(this)
-
+        intentShopName = ""
 
 
 
@@ -70,7 +71,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
         binding.CreateRoomMapSearchSelectButton.setOnClickListener(View.OnClickListener {
-            if (intentShopName.isNotEmpty()) {
+            if (intentShopName.length != 0) {
 
                 val intent = Intent(this, CreateRoomActivity::class.java)
                 intent.putExtra("x", intentX)
@@ -149,6 +150,8 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                     val documents = list?.documents
 
                     mapFragment.getMapAsync {
+                        var builder = LatLngBounds.Builder()
+
                         for (index in markerList.indices) {
                             markerList[index].map = null
                         }
@@ -163,10 +166,12 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                             x += documents!![index].x.toDouble()
                             y += documents[index].y.toDouble()
                             val marker = Marker()
-                            marker.position = LatLng(
+                            val position = LatLng(
                                 documents!![index].y.toDouble(),
                                 documents!![index].x.toDouble()
                             )
+                            builder.include(position)
+                            marker.position = position
                             marker.map = it
                             val infoWindow = InfoWindow()
                             infoWindow.adapter = object :
@@ -175,6 +180,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                     return documents[index].placeName
                                 }
                             }
+
                             infoWindow.open(marker)
                             marker.onClickListener = object : Overlay.OnClickListener {
                                 override fun onClick(p0: Overlay): Boolean {
@@ -234,19 +240,14 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 ////                            }
 ////                        }.clusterText { "테스트" }
 //                            .items(getItems(it)).make()
-
+                        val buildMap :LatLngBounds = builder.build()
                         if (documents != null) {
                             Log.e(
                                 "마커 로그 평균",
                                 "x : " + x / documents.size + "y : " + y / documents.size
                             )
                             it.moveCamera(
-                                CameraUpdate.scrollTo(
-                                    LatLng(
-                                        y / documents.size,
-                                        x / documents.size
-                                    )
-                                )
+                              CameraUpdate.fitBounds(buildMap,300).animate(CameraAnimation.Easing)
                             )
                         }
                     }

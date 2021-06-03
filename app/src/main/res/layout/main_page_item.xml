@@ -27,7 +27,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1.25"
+                android:layout_weight="1.6"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -35,16 +35,15 @@
                     android:id="@+id/tvRoomStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
                     android:background="@drawable/main_fragment_rooms_status_recruitment"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
                     android:text="모집중"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
                     android:textSize="15sp"
-                    android:gravity="center"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
@@ -54,6 +53,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="가게이름"
+                android:singleLine="true"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -62,8 +62,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_weight="1"
-                android:paddingStart="40dp">
+                android:layout_weight="1.5">
 
                 <ImageView
                     android:id="@+id/ivGender"

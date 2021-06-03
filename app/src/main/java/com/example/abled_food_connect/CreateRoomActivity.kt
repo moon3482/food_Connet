@@ -15,8 +15,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import co.lujun.androidtagview.TagView
 import com.example.abled_food_connect.array.age
+import com.example.abled_food_connect.array.maximumAge
+import com.example.abled_food_connect.array.minimumAge
 import com.example.abled_food_connect.array.numOfPeople
 import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBinding
+import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -27,7 +30,6 @@ import com.naver.maps.map.overlay.Marker
 import net.daum.android.map.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -201,6 +203,19 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
+    private fun setAdapter(age: minimumAge,num:Int): ArrayAdapter<Int> {
+
+
+        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
+
+    }
+    private fun setAdapter(age: maximumAge,num:Int): ArrayAdapter<Int> {
+
+
+        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
+
+    }
+
     /**
      * 모집인원 어댑터
      * */
@@ -210,7 +225,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         return ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item,
-            numOfPeople.numArray()
+            numOfPeople.numArray(3)
         )
 
     }
@@ -222,13 +237,8 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (binding.CreateRoomActivityRoomTitleInput.length() == 0) {
             Toast.makeText(this, "방 제목을 입력해주세요", Toast.LENGTH_LONG).show()
-            binding.Scroll.scrollTo(0, binding.CreateRoomShopNameInputLayout.bottom)
-            binding.CreateRoomTitleInputLayout.requestFocus()
-            return false
-        } else if (binding.CreateRoomActivityRoomShopNameInput.length() == 0) {
-            Toast.makeText(this, "매장 이름을 입력해주세요", Toast.LENGTH_LONG).show()
             binding.Scroll.scrollTo(0, 0)
-            binding.CreateRoomShopNameInputLayout.requestFocus()
+            binding.CreateRoomTitleInputLayout.requestFocus()
             return false
         } else if (binding.CreateRoomActivityRoomInformationInput.length() == 0) {
             Toast.makeText(this, "방 소개를 입력해주세요", Toast.LENGTH_LONG).show()
@@ -383,7 +393,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         val address = address
         val roadAddress = roadAddress
         val placeName = placeName
-        val shopName = binding.CreateRoomActivityRoomShopNameInput.text.toString()
+        val shopName = placeName
         val keyWord = tagArray.toString()
         var gender: String = ""
 
@@ -405,8 +415,8 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val retrofit =
             Retrofit.Builder()
-                .baseUrl("http://3.37.36.188/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .baseUrl("http://52.78.107.230/")
+                .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()
 
@@ -428,28 +438,28 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
             maxAge,
             hostName
         )
-            .enqueue(object : Callback<String> {
+            .enqueue(object : Callback<API.createRoomHost> {
                 override fun onResponse(
-                    call: Call<String>,
-                    response: Response<String>
+                    call: Call<API.createRoomHost>,
+                    response: Response<API.createRoomHost>
                 ) {
 
-                    val response = JSONObject(response.body().toString())
-                    val success = response.getBoolean("success")
-                    if (success) {
+                    val room: API.createRoomHost? = response.body()
+
+                    if (room!!.success) {
                         Toast.makeText(this@CreateRoomActivity, "방 생성", Toast.LENGTH_SHORT).show()
                         startActivity(
                             Intent(
                                 this@CreateRoomActivity,
                                 ChatRoomActivity::class.java
-                            ).putExtra("roomId", response.getString("roomId").toString())
-                                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            ).putExtra("roomId", room.roomId)
+
                         )
                         finish()
                     }
                 }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
+                override fun onFailure(call: Call<API.createRoomHost>, t: Throwable) {
 
                 }
 
@@ -674,6 +684,23 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
             val intent = Intent(this, CreateRoomMapSearchActivity::class.java)
             startActivityForResult(intent, SEARCHMAPRESULTCODE)
 
+        }
+
+        binding.minimumAgeTextView.setOnItemClickListener(object:AdapterView.OnItemClickListener{
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val num = binding.minimumAgeTextView.text.toString().toInt()
+                binding.maximumAgeTextView.setAdapter(setAdapter(maximumAge(),num))
+            }
+        })
+
+        binding.maximumAgeTextView.setOnItemClickListener { parent, view, position, id ->
+            val num = binding.maximumAgeTextView.text.toString().toInt()
+            binding.minimumAgeTextView.setAdapter(setAdapter(minimumAge(),num))
         }
     }
 

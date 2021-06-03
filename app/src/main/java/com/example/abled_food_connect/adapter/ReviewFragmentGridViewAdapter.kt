@@ -34,7 +34,7 @@ class ReviewFragmentGridViewAdapter (val profileList: ArrayList<ReviewFragmentLo
 
 
         Glide.with(holder.reveiwPicture.context)
-            .load("http://3.37.36.188/"+profileList.get(position).review_picture_0)
+            .load("http://52.78.107.230/"+profileList.get(position).review_picture_0)
             .apply(RequestOptions().centerCrop())
             .into(holder.reveiwPicture)
 

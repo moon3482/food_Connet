@@ -30,29 +30,6 @@
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/CreateRoomShopNameInputLayout"
-                style="@style/LoginTextInputLayoutStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:counterEnabled="true"
-                app:counterMaxLength="15"
-                app:errorEnabled="true"
-                app:hintAnimationEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/CreateRoomActivityRoomShopNameInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/create_room_activity_room_shop_name_hint"
-                    android:textCursorDrawable="@drawable/edit_text_cursor_color"
-
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/CreateRoomTitleInputLayout"
                 style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
@@ -61,6 +38,7 @@
                 android:layout_marginEnd="20dp"
                 app:counterEnabled="true"
                 app:counterMaxLength="30"
+                android:layout_marginTop="20dp"
                 app:errorEnabled="true"
                 app:hintAnimationEnabled="true">
 

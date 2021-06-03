@@ -39,7 +39,6 @@ import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -588,7 +587,7 @@ class MainActivity : AppCompatActivity() {
         //creating retrofit object
         var retrofit =
             Retrofit.Builder()
-                .baseUrl("http://3.37.36.188/")
+                .baseUrl("http://52.78.107.230/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(createOkHttpClient())
                 .build()

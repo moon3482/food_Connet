@@ -254,7 +254,7 @@ class MainFragmentActivity : AppCompatActivity() {
     //
     //        val retrofit =
     //            Retrofit.Builder()
-    //                .baseUrl("http://3.37.36.188/")
+    //                .baseUrl("http://52.78.107.230/")
     //                .addConverterFactory(GsonConverterFactory.create(gson))
     //                .build()
     //

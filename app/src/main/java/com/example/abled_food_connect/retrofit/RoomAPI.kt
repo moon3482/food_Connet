@@ -18,7 +18,7 @@ interface RoomAPI {
         @Field("date") date: String,
         @Field("time") time: String,
         @Field("address") address: String,
-        @Field("roadAddress") roadaddress: String,
+        @Field("roadAddress") roadAddress: String,
         @Field("placeName") placeName:String,
         @Field("shopName") shopName: String,
         @Field("keyWords") keyWords: String,
@@ -26,7 +26,7 @@ interface RoomAPI {
         @Field("minimumAge") minimumAge: String,
         @Field("maximumAge") maximumAge: String,
         @Field("hostName") hostName: String
-    ): Call<String>
+    ): Call<API.createRoomHost>
 
 
     @FormUrlEncoded
@@ -41,7 +41,7 @@ interface RoomAPI {
     @POST("RoomJoinCheck.php")
     fun joinRoomCheck(
         @Field("roomId") roomId: String,
-        @Field("userId") userId: String,
+        @Field("nickName") nickName: String,
         @Field("hostName") hostName: String
 
     ): Call<JoinRoomCheck>

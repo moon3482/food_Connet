@@ -47,7 +47,7 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
         //프로필 이미지
         Glide.with(holder.profileDetailIv.context)
-            .load("http://3.37.36.188/"+ReviewDetailList.get(position).profile_image)
+            .load("http://52.78.107.230/"+ReviewDetailList.get(position).profile_image)
             .circleCrop()
             .into(holder.profileDetailIv)
 
@@ -200,7 +200,7 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
     fun RvAdapterReviewLikeBtnClick(what_click_review_tb_id:Int,position : Int){
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://3.37.36.188/")
+            .baseUrl("http://52.78.107.230/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewLikeBtnClick::class.java)
