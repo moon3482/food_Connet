@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
@@ -25,6 +26,7 @@ class MainFragmentActivity : AppCompatActivity() {
     private lateinit var rankingFragment: RankingFragment
     private lateinit var chatingFragment: ChatingFragment
     private lateinit var myPageFragment: MyPageFragment
+    private var BackPressTime: Long =0
 
     //태그 생성
     companion object obuserid {
@@ -291,6 +293,19 @@ class MainFragmentActivity : AppCompatActivity() {
         val moveToCreateRoomActivityIntent =
             Intent(this@MainFragmentActivity, CreateRoomActivity::class.java)
         startActivity(moveToCreateRoomActivityIntent)
+    }
+
+    override fun onBackPressed() {
+
+
+        if (System.currentTimeMillis() > BackPressTime + 2000) {
+            BackPressTime = System.currentTimeMillis()
+            Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show()
+            return
+        }else{
+            super.onBackPressed()
+        }
+
     }
 
 
