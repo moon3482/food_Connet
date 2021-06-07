@@ -365,39 +365,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/childToCommentAlertTextBar"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:layout_height="35dp"
-            android:layout_width="match_parent"
-            android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tosendTargetUserNicName"
-            android:textSize="20dp"
-            android:text="닉네임"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:textSize="20dp"
-            android:layout_weight="1"
-            android:text="님에게 답글 남기는 중"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/childCommentCloseBtn"
-                android:textSize="25dp"
-                android:textStyle="bold"
-                android:text="X"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
 
 
         <LinearLayout

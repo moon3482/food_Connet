@@ -6,9 +6,7 @@ import android.content.Intent
 import android.widget.Toast
 import com.example.abled_food_connect.ChatActivity
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.data.ReviewCommentGetData
-import com.example.abled_food_connect.data.ReviewDetailViewRvData
-import com.example.abled_food_connect.data.ReviewLikeBtnClickData
+import com.example.abled_food_connect.data.*
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -88,18 +86,72 @@ class API {
         fun review_Like_Btn_Click(
             @Part("what_click_review_tb_id") what_click_review_tb_id: Int,
             @Part("my_user_tb_id") my_user_tb_id: Int,
-            @Part("my_user_tb_user_id") my_user_tb_user_id: String,
+            @Part("my_user_tb_user_id") my_user_tb_user_id: String
             ): Call<ReviewLikeBtnClickData>
     }
 
 
-    interface reviewPageCommentListGet{
+    interface reviewParentPageCommentListGet{
+        // 부모 페이지 에서 댓글 목록 가져오기
+        @Multipart
+        @POST("review/review_parent_page_comment_list_get.php")
+        fun reviewParentPageCommentListCalling(
+            @Part("review_id") review_id: Int
+        ): Call<ReviewParentPageCommentGetData>
+    }
+
+    interface reviewParentPageCommentWriting{
+        // 부모페이지에서 댓글 작성
+        @Multipart
+        @POST("review/review_parent_page_comment_writing.php")
+        fun reviewParentPageCommentWritingSend(
+            @Part("review_id") review_id: Int,
+            @Part("writing_user_id") writing_user_id: Int,
+            @Part("comment_content") comment: String,
+            @Part("comment_class") comment_class: Int,
+            @Part("sendTargetUserTable_id") sendTargetUserTable_id: Int,
+            @Part("sendTargetUserNicName") sendTargetUserNicName: String,
+            @Part("groupNum") groupNum: Int
+        ): Call<ReviewParentPageCommentGetData>
+    }
+
+
+
+    interface reviewChildPageCommentListGet{
         // 댓글 목록 가져오기
         @Multipart
-        @POST("review/review_comment_list_get.php")
-        fun reviewPageCommentListGetCalling(
+        @POST("review/review_child_page_comment_list_get.php")
+        fun reviewChildPageCommentListGetCalling(
             @Part("review_id") review_id: Int,
-        ): Call<ReviewCommentGetData>
+            @Part("groupNum") groupNum: Int
+        ): Call<ReviewChildPageCommentGetData>
+    }
+
+
+    interface reviewChildPageCommentWriting{
+        // 자식 댓글(코멘트)작성
+        @Multipart
+        @POST("review/review_child_page_comment_writing.php")
+        fun review_child_page_comment_send_btn_click(
+            @Part("review_id") review_id: Int,
+            @Part("writing_user_id") writing_user_id: Int,
+            @Part("comment_content") comment: String,
+            @Part("comment_class") comment_class: Int,
+            @Part("sendTargetUserTable_id") sendTargetUserTable_id: Int,
+            @Part("sendTargetUserNicName") sendTargetUserNicName: String,
+            @Part("groupNum") groupNum: Int
+        ): Call<ReviewChildPageCommentGetData>
+    }
+
+
+    interface reviewDetailViewLikeAndCommentCountCheck{
+        // 리뷰 목록에서 댓글을 작성했다가 다시 뒤로 왔을때, 리뷰개수나 댓글개수가 변화가 있을 경우 올라가야함.
+        @Multipart
+        @POST("review/review_detail_view_like_and_commentcount_check.php")
+        fun reviewDetailViewLikeAndCommentCountCheckGetCalling(
+            @Part("review_tb_id") review_id: Int,
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<ReviewDetailViewLikeAndCommentCountCheckData>
     }
 
 
@@ -115,7 +167,7 @@ class API {
             @Part("sendTargetUserTable_id") sendTargetUserTable_id: Int,
             @Part("sendTargetUserNicName") sendTargetUserNicName: String,
             @Part("groupNum") groupNum: Int
-        ): Call<ReviewCommentGetData>
+        ): Call<ReviewChildPageCommentGetData>
     }
 
 

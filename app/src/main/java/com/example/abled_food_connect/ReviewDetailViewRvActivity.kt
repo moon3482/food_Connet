@@ -2,17 +2,17 @@ package com.example.abled_food_connect
 
 
 import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.adapter.ReviewDetailViewRvAdapter
+import com.example.abled_food_connect.data.ReviewDetailViewLikeAndCommentCountCheckData
 import com.example.abled_food_connect.data.ReviewDetailViewRvData
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
-import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.interfaces.ReviewDetailRvInterface
 import com.example.abled_food_connect.retrofit.API
@@ -37,6 +37,10 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
     lateinit var mAdapter : ReviewDetailViewRvAdapter
 
 
+    private var whatClickPostion : Int = 0
+    private var whatClickReviewId : Int = 0
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_review_detail_view_rv)
@@ -53,7 +57,8 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
         detail_rv = findViewById<RecyclerView>(R.id.review_Detail_rv)
         detail_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        detail_rv.setHasFixedSize(true)
+
+        detail_rv.setHasFixedSize(false)
 
 
         Log.d("테이블id", MainActivity.user_table_id.toString())
@@ -107,6 +112,15 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
                 mAdapter.notifyDataSetChanged()
                 detail_rv.adapter = mAdapter
 
+                //클릭리스너 등록
+                mAdapter.setItemClickListener( object : ReviewDetailViewRvAdapter.ItemClickListener{
+                    override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
+                        whatClickPostion = position
+                        this@ReviewDetailViewRvActivity.whatClickReviewId = whatClickReviewId
+
+                    }
+                })
+
 
 
             }
@@ -118,28 +132,78 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onRestart() {
+        super.onRestart()
+        Log.d("리스타트", whatClickPostion.toString())
 
-        if (resultCode == 1) {
-            var review_id = data?.getIntExtra("review_id",0)!!
-            var review_detail_view_rv_position = data?.getIntExtra("review_detail_view_rv_position",0)!!
-            var review_detail_view_like_count = data?.getStringExtra("review_detail_view_like_count")!!
-            var review_detail_view_comment_count = data?.getStringExtra("review_detail_view_comment_count")!!
-            var review_detail_view_like_btn_click_check = data?.getBooleanExtra("review_detail_view_like_btn_click_check",false)!!
-            Log.d("돌아옴", review_detail_view_rv_position.toString())
-            Log.d("돌아옴", review_id.toString())
 
-            DetailRv_arrayList.get(review_detail_view_rv_position).like_count = review_detail_view_like_count
-            DetailRv_arrayList.get(review_detail_view_rv_position).comment_count = review_detail_view_comment_count
-            DetailRv_arrayList.get(review_detail_view_rv_position).heart_making = review_detail_view_like_btn_click_check
 
-            mAdapter =  ReviewDetailViewRvAdapter(DetailRv_arrayList)
-            mAdapter.notifyItemChanged(review_detail_view_rv_position)
-            detail_rv.adapter = mAdapter
 
-        }
+        ReviewDetailViewLikeAndCommentCountCheck(whatClickReviewId,applicationContext)
+
     }
+
+
+
+    fun ReviewDetailViewLikeAndCommentCountCheck(what_click_review_tb_id:Int, context: Context){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(context.getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.reviewDetailViewLikeAndCommentCountCheck::class.java)
+        val review_Like_And_CommentCount_Check = api.reviewDetailViewLikeAndCommentCountCheckGetCalling(what_click_review_tb_id,MainActivity.user_table_id)
+
+
+        review_Like_And_CommentCount_Check.enqueue(object : Callback<ReviewDetailViewLikeAndCommentCountCheckData> {
+            override fun onResponse(
+                call: Call<ReviewDetailViewLikeAndCommentCountCheckData>,
+                response: Response<ReviewDetailViewLikeAndCommentCountCheckData>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                if(response.body() != null) {
+                    val reviewDetailViewLikeAndCommentCountCheckData: ReviewDetailViewLikeAndCommentCountCheckData = response.body()!!
+
+                    var islikeClicked = reviewDetailViewLikeAndCommentCountCheckData.islikeClicked
+                    var like_count = reviewDetailViewLikeAndCommentCountCheckData.like_count
+                    var comment_count = reviewDetailViewLikeAndCommentCountCheckData.comment_count
+
+                    Log.d(ReviewFragment.TAG, "나오시오 : ${reviewDetailViewLikeAndCommentCountCheckData}")
+
+
+                    DetailRv_arrayList.get(whatClickPostion).heart_making = islikeClicked
+                    DetailRv_arrayList.get(whatClickPostion).like_count = like_count.toString()
+                    DetailRv_arrayList.get(whatClickPostion).comment_count = comment_count.toString()
+
+                    mAdapter =  ReviewDetailViewRvAdapter(DetailRv_arrayList)
+                    mAdapter.notifyItemChanged(whatClickPostion)
+                    detail_rv.adapter = mAdapter
+
+                    detail_rv.getLayoutManager()?.scrollToPosition(whatClickPostion)
+
+                    //클릭리스너 등록
+                    mAdapter.setItemClickListener( object : ReviewDetailViewRvAdapter.ItemClickListener{
+                        override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
+                            whatClickPostion = position
+                            this@ReviewDetailViewRvActivity.whatClickReviewId = whatClickReviewId
+
+                        }
+                    })
+
+
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<ReviewDetailViewLikeAndCommentCountCheckData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+
 
 
 

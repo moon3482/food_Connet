@@ -1,7 +1,6 @@
 package com.example.abled_food_connect
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,24 +10,15 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.example.abled_food_connect.adapter.ReviewCommentRvAdapter
-import com.example.abled_food_connect.adapter.ReviewDetailViewRvAdapter
+import com.example.abled_food_connect.adapter.ReviewParentPageCommentRvAdapter
 import com.example.abled_food_connect.adapter.Review_Detail_ViewPagerAdapter
-import com.example.abled_food_connect.data.ReviewCommentGetData
-import com.example.abled_food_connect.data.ReviewCommentGetDataItem
-import com.example.abled_food_connect.data.ReviewDetailViewRvData
-import com.example.abled_food_connect.data.ReviewLikeBtnClickData
+import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.databinding.ActivityReviewCommentBinding
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
@@ -37,7 +27,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.concurrent.timer
 
 class ReviewCommentActivity : AppCompatActivity() {
 
@@ -48,12 +37,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
     private var review_id : Int = 0
-    //이전 액티비티 좋아요, 댓글 개수 변화
-    //이전 엑티비티로 값 넘겨줌
-    private var review_detail_view_rv_position : Int = 0
-    private lateinit var review_detail_view_like_count : String
-    private var review_detail_view_like_btn_click_check : Boolean = false
-    private lateinit var review_detail_view_comment_count : String
+
 
 
     private lateinit var comment_content : String
@@ -68,28 +52,26 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
     //코멘트 리사이클러뷰
-    lateinit var review_comment_rv_adapter: ReviewCommentRvAdapter
-    var comment_ArrayList = ArrayList<ReviewCommentGetDataItem>()
+    lateinit var review_comment_Child_rv_adapter: ReviewParentPageCommentRvAdapter
+    var comment_ArrayList = ArrayList<ReviewParentPageCommentGetDataItem>()
     lateinit var reviewCommentRv : RecyclerView
 
 
     //하단 댓글 edittext창
-    lateinit var childToCommentAlertTextBar :LinearLayout
-    lateinit var tosendTargetUserNicName : TextView
-    lateinit var childCommentCloseBtn : TextView
+
+
     lateinit var writingCommentEt : EditText
 
     //부모로 등록되는 댓글인지, 자식으로 등록되는 댓글인지 구별
+    //이 페이지에서는 무조건 부모로 등록되므로 0으로 설정
     var childOrParent : Int = 0
 
 
+    //부모는 -1을 넘겨주고, 서버에서 그룹넘버를 부여받는다.
     //groupNum 몇번째 부모에 속해있는 자식 코멘트인가.
     //db에 저장될때 자식 코멘트는 부모와 동일한 groupNum을 가진다.
     var groupNum : Int = -1
 
-
-    //마지막에 어떤 댓글을 등록했는가. 스크롤바 움직이게 하기위함.
-    var last_child_or_parent : Int = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,8 +80,6 @@ class ReviewCommentActivity : AppCompatActivity() {
 
         //키보드가 화면 안가리게함
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-
 
 
         // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
@@ -115,7 +95,6 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
         review_id = intent.getIntExtra("review_id",0)
-        review_detail_view_rv_position = intent.getIntExtra("review_detail_view_rv_position",0)
         //리뷰 정보를 가져온다
         reviewContentLoading(review_id)
 
@@ -139,21 +118,16 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
 
+        //리사이클러뷰 구분선
+        val dividerItemDecoration =
+            DividerItemDecoration(reviewCommentRv.context, LinearLayoutManager(this).orientation)
+
+        reviewCommentRv.addItemDecoration(dividerItemDecoration)
 
 
 
 
         //하단 댓글 코멘트 남기는 창
-        childToCommentAlertTextBar = binding.childToCommentAlertTextBar
-        tosendTargetUserNicName = binding.tosendTargetUserNicName
-        childCommentCloseBtn =binding.childCommentCloseBtn
-
-        childCommentCloseBtn.setOnClickListener(View.OnClickListener {
-            childToCommentAlertTextBar.visibility = View.GONE
-
-            //0일경우 부모코멘트로 등록됨
-            childOrParent = 0
-        })
         writingCommentEt= binding.writingCommentEt
 
 
@@ -164,35 +138,24 @@ class ReviewCommentActivity : AppCompatActivity() {
             binding.writingCommentEt.setText(binding.writingCommentEt.text.toString().replace(" ",""))
             if(binding.writingCommentEt.text.toString().length>0){
 
-                if(childOrParent == 0) {
-                    sendTargetUserTable_id = WriterUserTbId
-                    sendTargetUserNicName = writerNicname
-                    //부모는 -1을 넘겨주고, 서버에서 그룹넘버를 부여받는다.
-                    groupNum = -1
 
-                } else if(childOrParent  == 1){
-                    //sendTargetUserTable_id와 sendTargetUserNicName,groupNum은 클릭 리스너에서 받는다.
-                    //자식은 부모와 동일한 groupNum를 클릭리스너에서 받는다.
-                }
-
-                //부모 댓글을 남겼는가? 자식 댓글을 남겼는가. 포지션 위치 구하기 위함
-                last_child_or_parent = childOrParent
+                //부모로 등록되는 댓글인지, 자식으로 등록되는 댓글인지 구별
+                //이 페이지에서는 무조건 부모로 등록되므로 0으로 설정
+                childOrParent = 0
 
                 CommentWritingBtnClick(review_id,comment_content,childOrParent,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
 
 
 
+                //작성버튼을 누르면 키보드를 안보이게 한다
                 binding.sendCommentBtn.hideKeyboard()
-                childCommentCloseBtn.performClick()
 
 
-                //부모 댓글인지, 자식댓글인지 확인하는 변수를 0으로 초기화시킨다.
-                //0은 부모, 1은 자식
-                childOrParent = 0
                 //댓글을 달면 댓글이없어요 라고 적혀있는 텍스트뷰를 안보이게 처리한다.
                 binding.noCommentTv.visibility = View.GONE
                 //댓글 내용을 입력했던 Edittext를 비워준다.
                 binding.writingCommentEt.setText(null)
+
 
             }else{
                 Toast.makeText(applicationContext, "답글을 입력해주세요.", Toast.LENGTH_LONG).show()
@@ -202,64 +165,38 @@ class ReviewCommentActivity : AppCompatActivity() {
         })
 
 
-
-
-
-
-
-
     }
 
-
-
-
     //댓글 목록 불러오기
-    fun CommentLoading(review_id:Int){
+    fun ParentCommentLoading(review_id:Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val api = retrofit.create(API.reviewPageCommentListGet::class.java)
-        val reviewCommentListGet = api.reviewPageCommentListGetCalling(review_id)
-        reviewCommentListGet.enqueue(object : Callback<ReviewCommentGetData> {
+        val api = retrofit.create(API.reviewParentPageCommentListGet::class.java)
+        val reviewParentCommentListGet = api.reviewParentPageCommentListCalling(review_id)
+        reviewParentCommentListGet.enqueue(object : Callback<ReviewParentPageCommentGetData> {
             override fun onResponse(
-                call: Call<ReviewCommentGetData>,
-                response: Response<ReviewCommentGetData>
+                call: Call<ReviewParentPageCommentGetData>,
+                response: Response<ReviewParentPageCommentGetData>
             ) {
 
                 if(response.body() != null) {
-                    val reviewCommentGetData: ReviewCommentGetData = response.body()!!
-                    var isSuccess: Boolean = reviewCommentGetData.success
+                    val reviewParentPageCommentGetData: ReviewParentPageCommentGetData = response.body()!!
+                    var isSuccess: Boolean = reviewParentPageCommentGetData.success
 
-                    comment_ArrayList = reviewCommentGetData.CommentList as ArrayList<ReviewCommentGetDataItem>
+                    comment_ArrayList = reviewParentPageCommentGetData.commentList as ArrayList<ReviewParentPageCommentGetDataItem>
 
 
 
-                    Log.d(ReviewFragment.TAG, "목록불러와 ${reviewCommentGetData.CommentList}")
+                    Log.d(ReviewFragment.TAG, "목록불러와 ${reviewParentPageCommentGetData.commentList}")
                     Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
 
-                    review_comment_rv_adapter =  ReviewCommentRvAdapter(comment_ArrayList,writerNicname)
-                    review_comment_rv_adapter.notifyDataSetChanged()
-                    reviewCommentRv.adapter = review_comment_rv_adapter
+                    review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(comment_ArrayList,writerNicname)
+                    review_comment_Child_rv_adapter.notifyDataSetChanged()
+                    reviewCommentRv.adapter = review_comment_Child_rv_adapter
 
-                    //클릭리스너 등록
-                    review_comment_rv_adapter.setItemClickListener( object : ReviewCommentRvAdapter.ItemClickListener{
-                        override fun onClick(view: View, commentWriterUserTbId: Int, commentWriterUserNicname: String, childOrParent : Int, groupNum : Int) {
-                            childToCommentAlertTextBar.visibility =View.VISIBLE
-                            tosendTargetUserNicName.text = commentWriterUserNicname
-                            writingCommentEt.requestFocus()
-                            view.hideKeyboard()
-                            view.showKeyboard()
 
-                            this@ReviewCommentActivity.sendTargetUserTable_id = commentWriterUserTbId
-                            this@ReviewCommentActivity.sendTargetUserNicName = commentWriterUserNicname
-                            this@ReviewCommentActivity.groupNum = groupNum
-
-                            //1일 경우 자식 댓글(코멘트로 등록됨)
-                            this@ReviewCommentActivity.childOrParent = 1
-
-                        }
-                    })
 
 
                     Handler().postDelayed(Runnable {
@@ -275,11 +212,14 @@ class ReviewCommentActivity : AppCompatActivity() {
 
             }
 
-            override fun onFailure(call: Call<ReviewCommentGetData>, t: Throwable) {
+            override fun onFailure(call: Call<ReviewParentPageCommentGetData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })
     }
+
+
+
 
 
 
@@ -290,64 +230,43 @@ class ReviewCommentActivity : AppCompatActivity() {
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val api = retrofit.create(API.reviewPageCommentWriting::class.java)
-        val review_Like_Btn_Click = api.review_comment_send_btn_click(review_id,MainActivity.user_table_id,comment,comment_class,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
-        review_Like_Btn_Click.enqueue(object : Callback<ReviewCommentGetData> {
+        val api = retrofit.create(API.reviewParentPageCommentWriting::class.java)
+        val review_Like_Btn_Click = api.reviewParentPageCommentWritingSend(review_id,MainActivity.user_table_id,comment,comment_class,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
+        review_Like_Btn_Click.enqueue(object : Callback<ReviewParentPageCommentGetData> {
             override fun onResponse(
-                call: Call<ReviewCommentGetData>,
-                response: Response<ReviewCommentGetData>
+                call: Call<ReviewParentPageCommentGetData>,
+                response: Response<ReviewParentPageCommentGetData>
             ) {
                 Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
 
                 if(response.body() != null) {
-                    val reviewCommentGetData: ReviewCommentGetData = response.body()!!
-                    var isSuccess: Boolean = reviewCommentGetData.success
+                    val reviewParentPageCommentGetData: ReviewParentPageCommentGetData = response.body()!!
+                    var isSuccess: Boolean = reviewParentPageCommentGetData.success
+                    var how_many_like_count = reviewParentPageCommentGetData.comment_count
 
-                    comment_ArrayList = reviewCommentGetData.CommentList as ArrayList<ReviewCommentGetDataItem>
+                    comment_ArrayList = reviewParentPageCommentGetData.commentList as ArrayList<ReviewParentPageCommentGetDataItem>
 
 
+                    binding.contentCommentCountTv.text = how_many_like_count
 
-                    Log.d(ReviewFragment.TAG, "목록불러와 ${reviewCommentGetData.CommentList}")
+                    Log.d(ReviewFragment.TAG, "목록불러와 ${reviewParentPageCommentGetData.commentList}")
                     Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
-                    Log.d(ReviewFragment.TAG, "목록불러와 : ${reviewCommentGetData.comment_count}")
 
-
-                    binding.contentCommentCountTv.text = reviewCommentGetData.comment_count
-
-                    review_comment_rv_adapter =  ReviewCommentRvAdapter(comment_ArrayList,writerNicname)
-                    review_comment_rv_adapter.notifyDataSetChanged()
-                    reviewCommentRv.adapter = review_comment_rv_adapter
+                    review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(comment_ArrayList,writerNicname)
+                    review_comment_Child_rv_adapter.notifyDataSetChanged()
+                    reviewCommentRv.adapter = review_comment_Child_rv_adapter
 
 
 
-                    //클릭리스너 등록
-                    review_comment_rv_adapter.setItemClickListener( object : ReviewCommentRvAdapter.ItemClickListener{
-                        override fun onClick(view: View, commentWriterUserTbId: Int, commentWriterUserNicname: String, childOrParent : Int, groupNum:Int) {
-                            childToCommentAlertTextBar.visibility =View.VISIBLE
-                            tosendTargetUserNicName.text = commentWriterUserNicname
-                            writingCommentEt.requestFocus()
-                            view.hideKeyboard()
-                            view.showKeyboard()
 
-                            this@ReviewCommentActivity.sendTargetUserTable_id = commentWriterUserTbId
-                            this@ReviewCommentActivity.sendTargetUserNicName = commentWriterUserNicname
-                            this@ReviewCommentActivity.groupNum = groupNum
 
-                            //1일 경우 자식 댓글(코멘트로 등록됨)
-                            this@ReviewCommentActivity.childOrParent = 1
 
-                        }
-                    })
 
-                    if(last_child_or_parent == 0) {
-                        Handler().postDelayed(Runnable {
-                            binding.nestedScroll.scrollTo(0, reviewCommentRv.bottom)
-                        }, 500)
-
-                    }else if(last_child_or_parent ==1){
-
-                    }
+                    Handler().postDelayed(Runnable {
+                        //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
+                        binding.nestedScroll.scrollTo(0, reviewCommentRv.bottom)
+                    }, 500)
 
 
 
@@ -357,7 +276,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
             }
 
-            override fun onFailure(call: Call<ReviewCommentGetData>, t: Throwable) {
+            override fun onFailure(call: Call<ReviewParentPageCommentGetData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })
@@ -388,6 +307,9 @@ class ReviewCommentActivity : AppCompatActivity() {
                     var how_many_like_count: Int = ReviewLikeBtnClickData.how_many_like_count
                     var isSuccess: Boolean = ReviewLikeBtnClickData.success
 
+
+
+
                     Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
                     Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
 
@@ -397,14 +319,12 @@ class ReviewCommentActivity : AppCompatActivity() {
                         binding.contentHeartIv.setColorFilter(Color.parseColor("#55ff0000"))
                         Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
 
-                        //이전 엑티비티로 값 넘겨줌
-                        review_detail_view_like_btn_click_check = true;
+
                     }else if(heart_making == false){
                         binding.contentHeartIv.setColorFilter(Color.parseColor("#55111111"))
                         Log.d(ReviewFragment.TAG, "false : ${heart_making}")
 
-                        //이전 엑티비티로 값 넘겨줌
-                        review_detail_view_like_btn_click_check = false;
+
                     }
 
 
@@ -437,8 +357,8 @@ class ReviewCommentActivity : AppCompatActivity() {
                 call: Call<ReviewDetailViewRvData>,
                 response: Response<ReviewDetailViewRvData>
             ) {
-                Log.d(ReviewFragment.TAG, "리뷰 코멘트 성공 : ${response.raw()}")
-                Log.d(ReviewFragment.TAG, "리뷰 코멘트 성공 : ${response.body().toString()}")
+                Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.body().toString()}")
 
                 var items : ReviewDetailViewRvData? =  response.body()
 
@@ -454,9 +374,16 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                 //작성자 유저테이블 id
                 WriterUserTbId = items!!.roomList.get(0).writer_user_tb_id
+                //댓글 작성시 누구에게 보내는지 알려주기 위함
+                sendTargetUserTable_id = items!!.roomList.get(0).writer_user_tb_id
+
+
 
                 //작성자 닉네임
                 binding.contentNicNameDetailTv.text = items!!.roomList.get(0).writer_nicname
+                //댓글 작성시 누구에게 보내는지 알려주기 위함
+                sendTargetUserNicName = items!!.roomList.get(0).writer_nicname
+
                 writerNicname = items!!.roomList.get(0).writer_nicname
 
                 //리뷰 작성일
@@ -527,14 +454,9 @@ class ReviewCommentActivity : AppCompatActivity() {
                 if(items!!.roomList.get(0).heart_making == true) {
                     binding.contentHeartIv.setColorFilter(Color.parseColor("#55ff0000"))
 
-
-                    //이전 엑티비티로 값 넘겨줌
-                    review_detail_view_like_btn_click_check = true
                 }else{
                     binding.contentHeartIv.setColorFilter(Color.parseColor("#55111111"))
 
-                    //이전 엑티비티로 값 넘겨줌
-                    review_detail_view_like_btn_click_check = false
                 }
 
 
@@ -550,7 +472,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
                 //댓글목록을 가져온다
-                CommentLoading(review_id)
+                ParentCommentLoading(review_id)
 
 
             }
@@ -576,26 +498,6 @@ class ReviewCommentActivity : AppCompatActivity() {
     }
 
 
-    override fun onBackPressed() {
-        //super.onBackPressed()
-
-
-
-        review_detail_view_like_count = binding.contentLikeCountTv.text.toString()
-
-        review_detail_view_comment_count = binding.contentCommentCountTv.text.toString()
-
-        intent.putExtra("review_id", review_id)
-        intent.putExtra("review_detail_view_rv_position", review_detail_view_rv_position)
-
-        intent.putExtra("review_detail_view_like_count", review_detail_view_like_count)
-        intent.putExtra("review_detail_view_like_btn_click_check", review_detail_view_like_btn_click_check)
-        intent.putExtra("review_detail_view_comment_count", review_detail_view_comment_count)
-
-        setResult(1, intent);
-        finish()
-
-    }
 
 
 

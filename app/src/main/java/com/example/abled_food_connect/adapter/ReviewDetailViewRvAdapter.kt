@@ -34,6 +34,21 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
 
 
+    //클릭리스너
+
+    //클릭 인터페이스 정의
+    interface ItemClickListener {
+        fun onClick(view: View, DetailViewPosition: Int, Review_id : Int)
+    }
+
+    //클릭리스너 선언
+    private lateinit var itemClickListner: ItemClickListener
+
+    //클릭리스너 등록 매소드
+    fun setItemClickListener(itemClickListener: ItemClickListener) {
+        this.itemClickListner = itemClickListener
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustromViewHolder {
 
@@ -137,10 +152,12 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
         //ReviewCommentActivity
         holder.commentBtn.setOnClickListener(View.OnClickListener {
 
+
+            itemClickListner.onClick(it,position,ReviewDetailList.get(position).review_id)
+
             var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
-            toMoveCommentActivity.putExtra("review_detail_view_rv_position", position)
             toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
-            startActivityForResult(holder.commentBtn.context as Activity,toMoveCommentActivity,1,null)
+            startActivity(holder.commentBtn.context as Activity,toMoveCommentActivity,null)
 
 
         })

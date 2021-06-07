@@ -2,7 +2,7 @@ package com.example.abled_food_connect.data
 
 import com.google.gson.annotations.SerializedName
 
-data class ReviewCommentGetDataItem(
+data class ReviewParentPageCommentGetDataItem(
     @SerializedName("nick_name")
     val nick_name : String,
     @SerializedName("profile_image")
@@ -28,7 +28,10 @@ data class ReviewCommentGetDataItem(
     @SerializedName("sendTargetUserNicName")
     val sendTargetUserNicName : String,
     @SerializedName("deleteCheck")
-    val deleteCheck : Int
+    val deleteCheck : Int,
+    @SerializedName("comment_class_child_count")
+    val comment_class_child_count : Int
+
 
 
 )
