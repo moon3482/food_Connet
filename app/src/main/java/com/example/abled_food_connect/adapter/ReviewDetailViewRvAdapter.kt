@@ -111,17 +111,19 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
             Log.d("보여준다", imagesList.size.toString())
 
         }
-        //맛 평가 별점
-        holder.ratingStarTasteDetailTv.text = ReviewDetailList.get(position).rating_star_taste.toString()
 
-        //서비스 평가 별점
-        holder.ratingStarServiceDetailTv.text = ReviewDetailList.get(position).rating_star_service.toString()
-
-        //위생 평가 별점
-        holder.ratingStarCleanDetailTv.text = ReviewDetailList.get(position).rating_star_clean.toString()
-
-        //인테리어 평가 별점
-        holder.ratingStarInteriorDetailTv.text =ReviewDetailList.get(position).rating_star_interior.toString()
+//        별점 삭제
+//        //맛 평가 별점
+//        holder.ratingStarTasteDetailTv.text = ReviewDetailList.get(position).rating_star_taste.toString()
+//
+//        //서비스 평가 별점
+//        holder.ratingStarServiceDetailTv.text = ReviewDetailList.get(position).rating_star_service.toString()
+//
+//        //위생 평가 별점
+//        holder.ratingStarCleanDetailTv.text = ReviewDetailList.get(position).rating_star_clean.toString()
+//
+//        //인테리어 평가 별점
+//        holder.ratingStarInteriorDetailTv.text =ReviewDetailList.get(position).rating_star_interior.toString()
 
         //리뷰 작성 내용
         holder.reviewDescriptionTv.text = ReviewDetailList.get(position).review_description
@@ -199,18 +201,18 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
 
 
-
-        //맛 평가 별점
-        val ratingStarTasteDetailTv = itemView.findViewById<TextView>(R.id.ratingStarTasteDetailTv)
-
-        //서비스 평가 별점
-        val ratingStarServiceDetailTv = itemView.findViewById<TextView>(R.id.ratingStarServiceDetailTv)
-
-        //위생 평가 별점
-        val ratingStarCleanDetailTv = itemView.findViewById<TextView>(R.id.ratingStarCleanDetailTv)
-
-        //인테리어 평가 별점
-        val ratingStarInteriorDetailTv = itemView.findViewById<TextView>(R.id.ratingStarInteriorDetailTv)
+//        별점 삭제
+//        //맛 평가 별점
+//        val ratingStarTasteDetailTv = itemView.findViewById<TextView>(R.id.ratingStarTasteDetailTv)
+//
+//        //서비스 평가 별점
+//        val ratingStarServiceDetailTv = itemView.findViewById<TextView>(R.id.ratingStarServiceDetailTv)
+//
+//        //위생 평가 별점
+//        val ratingStarCleanDetailTv = itemView.findViewById<TextView>(R.id.ratingStarCleanDetailTv)
+//
+//        //인테리어 평가 별점
+//        val ratingStarInteriorDetailTv = itemView.findViewById<TextView>(R.id.ratingStarInteriorDetailTv)
 
         //리뷰 작성 내용
         val reviewDescriptionTv = itemView.findViewById<TextView>(R.id.reviewDescriptionTv)

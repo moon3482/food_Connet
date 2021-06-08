@@ -109,106 +109,106 @@
 
     </RelativeLayout>
 
+<!--별점 삭제 -->
+<!--    <LinearLayout-->
+<!--        android:layout_marginLeft="20dp"-->
+<!--        android:layout_marginRight="10dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center">-->
 
-    <LinearLayout
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+<!--        <TextView-->
+<!--            android:text="맛"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
-        <TextView
-            android:text="맛"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <ImageView-->
+<!--            android:src="@drawable/ic_baseline_star_rate_24"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
-        <ImageView
-            android:src="@drawable/ic_baseline_star_rate_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/ratingStarTasteDetailTv"
-            android:text="5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-
-        <TextView
-            android:text="     "
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <TextView-->
+<!--            android:id="@+id/ratingStarTasteDetailTv"-->
+<!--            android:text="5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
 
-        <TextView
-            android:text="서비스"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <ImageView
-            android:src="@drawable/ic_baseline_star_rate_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/ratingStarServiceDetailTv"
-            android:text="5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <TextView-->
+<!--            android:text="     "-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
 
+<!--        <TextView-->
+<!--            android:text="서비스"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
-        <TextView
-            android:text="     "
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <ImageView-->
+<!--            android:src="@drawable/ic_baseline_star_rate_24"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
-
-        <TextView
-            android:text="위생"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <ImageView
-            android:src="@drawable/ic_baseline_star_rate_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <TextView-->
+<!--            android:id="@+id/ratingStarServiceDetailTv"-->
+<!--            android:text="5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
 
 
-        <TextView
-            android:id="@+id/ratingStarCleanDetailTv"
-            android:text="5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <TextView-->
+<!--            android:text="     "-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+
+
+<!--        <TextView-->
+<!--            android:text="위생"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+
+<!--        <ImageView-->
+<!--            android:src="@drawable/ic_baseline_star_rate_24"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
 
 
-        <TextView
-            android:text="     "
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <TextView-->
+<!--            android:id="@+id/ratingStarCleanDetailTv"-->
+<!--            android:text="5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
 
-        <TextView
-            android:text="인테리어"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
-        <ImageView
-            android:src="@drawable/ic_baseline_star_rate_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/ratingStarInteriorDetailTv"
-            android:text="5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+<!--        <TextView-->
+<!--            android:text="     "-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
 
 
-    </LinearLayout>
+<!--        <TextView-->
+<!--            android:text="인테리어"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+
+<!--        <ImageView-->
+<!--            android:src="@drawable/ic_baseline_star_rate_24"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/ratingStarInteriorDetailTv"-->
+<!--            android:text="5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"/>-->
+
+
+<!--    </LinearLayout>-->
 
     <TextView
         android:id="@+id/reviewDescriptionTv"

@@ -155,25 +155,25 @@ class ReviewWriting : AppCompatActivity() {
 
 
 
-        binding.ratingStarTaste.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            tasteStarPoint = rating.toInt()
-            Log.d("레이팅스타 맛", "${tasteStarPoint}점")
-        }
-
-        binding.ratingStarService.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            serviceStarPoint = rating.toInt()
-            Log.d("레이팅스타 서비스", "${serviceStarPoint}점")
-        }
-
-        binding.ratingStarClean.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            cleanStarPoint= rating.toInt()
-            Log.d("레이팅스타 위생", "${cleanStarPoint}점")
-        }
-
-        binding.ratingStarInterior.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            interiorStarPoint= rating.toInt()
-            Log.d("레이팅스타 인테리어", "${interiorStarPoint}점")
-        }
+//        binding.ratingStarTaste.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+//            tasteStarPoint = rating.toInt()
+//            Log.d("레이팅스타 맛", "${tasteStarPoint}점")
+//        }
+//
+//        binding.ratingStarService.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+//            serviceStarPoint = rating.toInt()
+//            Log.d("레이팅스타 서비스", "${serviceStarPoint}점")
+//        }
+//
+//        binding.ratingStarClean.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+//            cleanStarPoint= rating.toInt()
+//            Log.d("레이팅스타 위생", "${cleanStarPoint}점")
+//        }
+//
+//        binding.ratingStarInterior.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+//            interiorStarPoint= rating.toInt()
+//            Log.d("레이팅스타 인테리어", "${interiorStarPoint}점")
+//        }
 
 
 
@@ -184,15 +184,20 @@ class ReviewWriting : AppCompatActivity() {
 
             if(selectedUriList?.size  == null||selectedUriList?.size  == 0){
                 Toast.makeText(this@ReviewWriting, "리뷰 이미지를 선택해주세요", Toast.LENGTH_SHORT).show()
-            }else if(tasteStarPoint == 0){
-                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
-            }else if(serviceStarPoint == 0){
-                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
-            }else if(cleanStarPoint == 0){
-                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
-            }else if(interiorStarPoint == 0){
-                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
-            }else if(binding.reveiwDescriptionEt.getText().toString().replace(" ", "").equals("")){
+            }
+
+            //별점기능 제거
+//            else if(tasteStarPoint == 0){
+//                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+//            }else if(serviceStarPoint == 0){
+//                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+//            }else if(cleanStarPoint == 0){
+//                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+//            }else if(interiorStarPoint == 0){
+//                Toast.makeText(this@ReviewWriting, "별점을 선택해주세요", Toast.LENGTH_SHORT).show()
+//            }
+
+            else if(binding.reveiwDescriptionEt.getText().toString().replace(" ", "").equals("")){
                 Toast.makeText(this@ReviewWriting, "리뷰를 작성해주세요", Toast.LENGTH_SHORT).show()
             }
             else {

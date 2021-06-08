@@ -201,7 +201,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                     Handler().postDelayed(Runnable {
                         //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
-                        binding.nestedScroll.scrollTo(0,binding.RatingStarLinearLayout.top)
+                        binding.nestedScroll.scrollTo(0,binding.contentReviewDescriptionTv.top)
                     }, 500)
 
 
@@ -424,17 +424,18 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                 }
 
-                //맛 평가 별점
-                binding.contentRatingStarTasteDetailTv.text = items!!.roomList.get(0).rating_star_taste.toString()
-
-                //서비스 평가 별점
-                binding.contentRatingStarServiceDetailTv.text = items!!.roomList.get(0).rating_star_service.toString()
-
-                //위생 평가 별점
-                binding.contentRatingStarCleanDetailTv.text = items!!.roomList.get(0).rating_star_clean.toString()
-
-                //인테리어 평가 별점
-                binding.contentRatingStarInteriorDetailTv.text = items!!.roomList.get(0).rating_star_interior.toString()
+                //별점 삭제
+//                //맛 평가 별점
+//                binding.contentRatingStarTasteDetailTv.text = items!!.roomList.get(0).rating_star_taste.toString()
+//
+//                //서비스 평가 별점
+//                binding.contentRatingStarServiceDetailTv.text = items!!.roomList.get(0).rating_star_service.toString()
+//
+//                //위생 평가 별점
+//                binding.contentRatingStarCleanDetailTv.text = items!!.roomList.get(0).rating_star_clean.toString()
+//
+//                //인테리어 평가 별점
+//                binding.contentRatingStarInteriorDetailTv.text = items!!.roomList.get(0).rating_star_interior.toString()
 
 
                 //리뷰 작성 내용

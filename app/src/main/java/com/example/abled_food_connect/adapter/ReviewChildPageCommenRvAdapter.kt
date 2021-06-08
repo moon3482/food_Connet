@@ -80,8 +80,6 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
 
 
 
-
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (datas[position].comment_class) {
             0 -> {
