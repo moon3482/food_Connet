@@ -1,6 +1,7 @@
 package com.example.abled_food_connect.adapter
 
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.SpannableString
@@ -14,9 +15,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.ReviewChildPageCommentGetDataItem
 
 class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewChildPageCommentGetDataItem>, reviewWriterNicname : String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -113,7 +116,31 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
                 //.apply(RequestOptions().cen())
                 .into(commentProfileIv)
 
+            //프로필 이미지 클릭시 프로필엑티비티로 이동
+            commentProfileIv.setOnClickListener(View.OnClickListener {
+                var toMoveUserProfileActivity : Intent = Intent(commentProfileIv.context, UserProfileActivity::class.java)
+                toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
+                ContextCompat.startActivity(
+                    commentProfileIv.context,
+                    toMoveUserProfileActivity,
+                    null
+                )
+            })
+
             commentNicnameTv.text = itemChildPage.nick_name
+
+
+            //닉네임 클릭시 프로필엑티비티로 이동
+            commentNicnameTv.setOnClickListener(View.OnClickListener {
+                var toMoveUserProfileActivity : Intent = Intent(commentNicnameTv.context, UserProfileActivity::class.java)
+                toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
+                ContextCompat.startActivity(
+                    commentNicnameTv.context,
+                    toMoveUserProfileActivity,
+                    null
+                )
+            })
+
             if(itemChildPage.nick_name == reviewWriterNicname){
                 isReveiwWriterTv.visibility = View.VISIBLE
             }
@@ -145,7 +172,33 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
                 //.apply(RequestOptions().cen())
                 .into(commentProfileIv)
 
+            //프로필 이미지 클릭시 프로필엑티비티로 이동
+            commentProfileIv.setOnClickListener(View.OnClickListener {
+                var toMoveUserProfileActivity : Intent = Intent(commentProfileIv.context, UserProfileActivity::class.java)
+                toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
+                ContextCompat.startActivity(
+                    commentProfileIv.context,
+                    toMoveUserProfileActivity,
+                    null
+                )
+            })
+
             commentNicnameTv.text = itemChildPage.nick_name
+
+
+            //닉네임 클릭시 프로필엑티비티로 이동
+            commentNicnameTv.setOnClickListener(View.OnClickListener {
+                var toMoveUserProfileActivity : Intent = Intent(commentNicnameTv.context, UserProfileActivity::class.java)
+                toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
+                ContextCompat.startActivity(
+                    commentNicnameTv.context,
+                    toMoveUserProfileActivity,
+                    null
+                )
+            })
+
+
+
             if(itemChildPage.nick_name == reviewWriterNicname){
                 isReveiwWriterTv.visibility = View.VISIBLE
             }
@@ -166,7 +219,13 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
             val spannableString = SpannableString(text)
             val nameClickableSpan = object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    Toast.makeText(widget.context, itemChildPage.sendTargetUserNicName, Toast.LENGTH_SHORT).show();
+                    var toMoveUserProfileActivity : Intent = Intent(commentWritingTimeTv.context, UserProfileActivity::class.java)
+                    toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.sendTargetUserTable_id)
+                    ContextCompat.startActivity(
+                        commentWritingTimeTv.context,
+                        toMoveUserProfileActivity,
+                        null
+                    )
                 }
 
                 override fun updateDrawState(ds: TextPaint) {

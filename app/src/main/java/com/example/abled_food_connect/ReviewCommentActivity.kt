@@ -1,6 +1,8 @@
 package com.example.abled_food_connect
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +13,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -106,6 +109,8 @@ class ReviewCommentActivity : AppCompatActivity() {
             binding.contentCommentBtn.hideKeyboard()
             binding.contentCommentBtn.showKeyboard()
         })
+
+
 
 
 
@@ -372,15 +377,39 @@ class ReviewCommentActivity : AppCompatActivity() {
                     .circleCrop()
                     .into(binding.contentProfileDetailIv)
 
+
                 //작성자 유저테이블 id
                 WriterUserTbId = items!!.roomList.get(0).writer_user_tb_id
                 //댓글 작성시 누구에게 보내는지 알려주기 위함
                 sendTargetUserTable_id = items!!.roomList.get(0).writer_user_tb_id
 
+                binding.contentProfileDetailIv.setOnClickListener(View.OnClickListener {
+                    var toMoveUserProfileActivity : Intent = Intent(applicationContext, UserProfileActivity::class.java)
+                    toMoveUserProfileActivity.putExtra("writer_user_tb_id", WriterUserTbId)
+                    ContextCompat.startActivity(
+                        applicationContext,
+                        toMoveUserProfileActivity,
+                        null
+                    )
+                })
+
 
 
                 //작성자 닉네임
                 binding.contentNicNameDetailTv.text = items!!.roomList.get(0).writer_nicname
+
+
+
+                binding.contentNicNameDetailTv.setOnClickListener(View.OnClickListener {
+                    var toMoveUserProfileActivity : Intent = Intent(applicationContext, UserProfileActivity::class.java)
+                    toMoveUserProfileActivity.putExtra("writer_user_tb_id", WriterUserTbId)
+                    ContextCompat.startActivity(
+                        applicationContext,
+                        toMoveUserProfileActivity,
+                        null
+                    )
+                })
+
                 //댓글 작성시 누구에게 보내는지 알려주기 위함
                 sendTargetUserNicName = items!!.roomList.get(0).writer_nicname
 

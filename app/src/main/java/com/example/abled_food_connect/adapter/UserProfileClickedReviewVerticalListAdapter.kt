@@ -15,10 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.example.abled_food_connect.MainActivity
-import com.example.abled_food_connect.R
-import com.example.abled_food_connect.ReviewCommentActivity
-import com.example.abled_food_connect.UserProfileClickedReviewGridListActivity
+import com.example.abled_food_connect.*
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
 import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.example.abled_food_connect.fragments.ReviewFragment
@@ -77,11 +74,11 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
 
             itemClickListner.onClick(it,position,ReviewDetailList.get(position).review_id)
 
-            var toUserProfileClickedReviewGridListActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileClickedReviewGridListActivity::class.java)
-            toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
+            var toMoveUserProfileActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileActivity::class.java)
+            toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
             ContextCompat.startActivity(
                 holder.profileDetailIv.context as Activity,
-                toUserProfileClickedReviewGridListActivity,
+                toMoveUserProfileActivity,
                 null
             )
 
@@ -96,11 +93,12 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
 
             itemClickListner.onClick(it,position,ReviewDetailList.get(position).review_id)
 
-            var toUserProfileClickedReviewGridListActivity : Intent = Intent(holder.nicNameDetailTv.context, UserProfileClickedReviewGridListActivity::class.java)
-            toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
+
+            var toMoveUserProfileActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileActivity::class.java)
+            toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
             ContextCompat.startActivity(
-                holder.nicNameDetailTv.context as Activity,
-                toUserProfileClickedReviewGridListActivity,
+                holder.profileDetailIv.context as Activity,
+                toMoveUserProfileActivity,
                 null
             )
 

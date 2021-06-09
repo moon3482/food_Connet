@@ -9,7 +9,7 @@ interface retrofit_interface {
 
     // 프로필 이미지 보내기
     @Multipart
-    @POST("upload_image_test.php")
+    @POST("user_info/user_register.php")
     fun post_Porfile_Request(
         @Part("user_id") user_id: String,
         @Part("social_login_type") social_login_type: String,

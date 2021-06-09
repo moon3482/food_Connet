@@ -72,9 +72,9 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
             itemClickListner.onClick(it,position,ReviewDetailList.get(position).review_id)
 
-            var toUserProfileClickedReviewGridListActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileClickedReviewGridListActivity::class.java)
-            toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            startActivity(holder.profileDetailIv.context as Activity,toUserProfileClickedReviewGridListActivity,null)
+            var toMoveUserProfileActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileActivity::class.java)
+            toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
+            startActivity(holder.profileDetailIv.context as Activity,toMoveUserProfileActivity,null)
 
 
         })
@@ -87,9 +87,9 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
             itemClickListner.onClick(it,position,ReviewDetailList.get(position).review_id)
 
-            var toUserProfileClickedReviewGridListActivity : Intent = Intent(holder.nicNameDetailTv.context, UserProfileClickedReviewGridListActivity::class.java)
-            toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            startActivity(holder.nicNameDetailTv.context as Activity,toUserProfileClickedReviewGridListActivity,null)
+            var toMoveUserProfileActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileActivity::class.java)
+            toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
+            startActivity(holder.profileDetailIv.context as Activity,toMoveUserProfileActivity,null)
 
 
         })

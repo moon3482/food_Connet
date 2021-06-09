@@ -9,12 +9,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.ReviewCommentChildActivity
+import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.ReviewParentPageCommentGetDataItem
 
 class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewParentPageCommentGetDataItem>,var reviewWritingUserNicname : String) : RecyclerView.Adapter<ReviewParentPageCommentRvAdapter.CustromViewHolder>(){
@@ -37,7 +39,31 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
             .circleCrop()
             .into(holder.commentProfileIv)
 
+        //프로필 이미지 클릭시 프로필보기
+        holder.commentProfileIv.setOnClickListener(View.OnClickListener {
+            var toMoveUserProfileActivity : Intent = Intent(holder.commentProfileIv.context, UserProfileActivity::class.java)
+            toMoveUserProfileActivity.putExtra("writer_user_tb_id", childCommentList.get(position).writing_user_id)
+            startActivity(
+                holder.commentProfileIv.context,
+                toMoveUserProfileActivity,
+                null
+            )
+        })
+
+
         holder.commentNicnameTv.text = childCommentList.get(position).nick_name
+
+        //닉네임 클릭시 프로필보기
+        holder.commentNicnameTv.setOnClickListener(View.OnClickListener {
+            var toMoveUserProfileActivity : Intent = Intent(holder.commentNicnameTv.context, UserProfileActivity::class.java)
+            toMoveUserProfileActivity.putExtra("writer_user_tb_id", childCommentList.get(position).writing_user_id)
+            startActivity(
+                holder.commentNicnameTv.context,
+                toMoveUserProfileActivity,
+                null
+            )
+        })
+
         if(childCommentList.get(position).nick_name == reviewWritingUserNicname){
             holder.isReveiwWriterTv.visibility = View.VISIBLE
         }

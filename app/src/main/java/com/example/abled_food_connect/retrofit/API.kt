@@ -170,6 +170,15 @@ class API {
         ): Call<ReviewChildPageCommentGetData>
     }
 
+    interface UserProfileDataInterface{
+        // UserProfileActivity에서 유저정보 가져오기
+        @Multipart
+        @POST("user_info/user_profile_data_get.php")
+        fun user_profile_data_get(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<UserProfileData>
+    }
+
 
     interface UserProfileClickedReviewGridListRvInterface {
 
