@@ -1,4 +1,5 @@
 package com.example.abled_food_connect.adapter
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -10,12 +11,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
-import com.example.abled_food_connect.*
-import com.example.abled_food_connect.data.*
+import com.example.abled_food_connect.MainActivity
+import com.example.abled_food_connect.R
+import com.example.abled_food_connect.ReviewCommentActivity
+import com.example.abled_food_connect.UserProfileClickedReviewGridListActivity
+import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
+import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
 import me.relex.circleindicator.CircleIndicator3
@@ -25,7 +30,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<ReviewDetailViewRvAdapter.CustromViewHolder>(){
+class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<UserProfileClickedReviewVerticalListAdapter.CustromViewHolder>(){
 
 
 
@@ -74,13 +79,17 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
             var toUserProfileClickedReviewGridListActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileClickedReviewGridListActivity::class.java)
             toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            startActivity(holder.profileDetailIv.context as Activity,toUserProfileClickedReviewGridListActivity,null)
+            ContextCompat.startActivity(
+                holder.profileDetailIv.context as Activity,
+                toUserProfileClickedReviewGridListActivity,
+                null
+            )
 
 
         })
 
         //닉네임
-       holder.nicNameDetailTv.text = ReviewDetailList.get(position).writer_nicname
+        holder.nicNameDetailTv.text = ReviewDetailList.get(position).writer_nicname
 
         //닉네임 클릭시, 닉네임 사용자의 리뷰 리스트 엑티비티로 이동
         holder.nicNameDetailTv.setOnClickListener(View.OnClickListener {
@@ -89,7 +98,11 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
             var toUserProfileClickedReviewGridListActivity : Intent = Intent(holder.nicNameDetailTv.context, UserProfileClickedReviewGridListActivity::class.java)
             toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            startActivity(holder.nicNameDetailTv.context as Activity,toUserProfileClickedReviewGridListActivity,null)
+            ContextCompat.startActivity(
+                holder.nicNameDetailTv.context as Activity,
+                toUserProfileClickedReviewGridListActivity,
+                null
+            )
 
 
         })
@@ -154,7 +167,7 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
         holder.likeBtn.setOnClickListener(View.OnClickListener {
             RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).review_id,position,holder.likeBtn.context)
 
-            Log.d("무엇", ReviewDetailList.get(position).review_id.toString()+MainActivity.user_table_id+MainActivity.loginUserId)
+            Log.d("무엇", ReviewDetailList.get(position).review_id.toString()+ MainActivity.user_table_id+ MainActivity.loginUserId)
         })
 
         //좋아요 개수
@@ -180,7 +193,11 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
             var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
             toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
-            startActivity(holder.commentBtn.context as Activity,toMoveCommentActivity,null)
+            ContextCompat.startActivity(
+                holder.commentBtn.context as Activity,
+                toMoveCommentActivity,
+                null
+            )
 
 
         })
@@ -265,7 +282,9 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewLikeBtnClick::class.java)
-        val review_Like_Btn_Click = api.review_Like_Btn_Click(what_click_review_tb_id,MainActivity.user_table_id,MainActivity.loginUserId)
+        val review_Like_Btn_Click = api.review_Like_Btn_Click(what_click_review_tb_id,
+            MainActivity.user_table_id,
+            MainActivity.loginUserId)
 
 
         review_Like_Btn_Click.enqueue(object : Callback<ReviewLikeBtnClickData> {

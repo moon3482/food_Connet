@@ -102,9 +102,7 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
 
                 DetailRv_arrayList = items!!.roomList as ArrayList<ReviewDetailViewRvDataItem>
 
-                for(i in DetailRv_arrayList.indices){
-                    println(DetailRv_arrayList.get(i).review_picture_0);
-                }
+
 
 
 
@@ -135,10 +133,9 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
     override fun onRestart() {
         super.onRestart()
         Log.d("리스타트", whatClickPostion.toString())
+        Log.d("리스타트", whatClickReviewId.toString())
 
-
-
-
+        //리사이클러뷰를 갱신한다.리뷰를 보고 돌아왔을때, 좋아요를 클릭하거나 댓글을 달았다면, 숫자가 변경되어 있어야한다.
         ReviewDetailViewLikeAndCommentCountCheck(whatClickReviewId,applicationContext)
 
     }

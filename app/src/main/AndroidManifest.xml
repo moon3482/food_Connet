@@ -27,7 +27,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ReviewCommentChildActivity"></activity>
+        <activity android:name=".UserProfileActivity"></activity>
+        <activity android:name=".UserProfileClickedReviewVerticalListActivity" />
+        <activity android:name=".UserProfileClickedReviewGridListActivity" />
+        <activity android:name=".ReviewCommentChildActivity" />
         <activity android:name=".ReviewCommentActivity" />
         <activity android:name=".ReviewDetailViewRvActivity" />
         <activity android:name=".ReviewWriting" />

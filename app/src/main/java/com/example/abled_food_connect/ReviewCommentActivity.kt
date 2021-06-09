@@ -316,7 +316,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                     binding.contentLikeCountTv.text = how_many_like_count.toString()
 
                     if(heart_making == true){
-                        binding.contentHeartIv.setColorFilter(Color.parseColor("#55ff0000"))
+                        binding.contentHeartIv.setColorFilter(Color.parseColor("#77ff0000"))
                         Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
 
 
@@ -453,7 +453,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                 //좋아요 하트 변경
 
                 if(items!!.roomList.get(0).heart_making == true) {
-                    binding.contentHeartIv.setColorFilter(Color.parseColor("#55ff0000"))
+                    binding.contentHeartIv.setColorFilter(Color.parseColor("#77ff0000"))
 
                 }else{
                     binding.contentHeartIv.setColorFilter(Color.parseColor("#55111111"))

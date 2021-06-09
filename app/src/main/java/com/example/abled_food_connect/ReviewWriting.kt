@@ -414,7 +414,7 @@ class ReviewWriting : AppCompatActivity() {
 //            //user_gender = binding.userGenderEt.text.toString()
 //            phone_number = binding.phoneNumberInputEt.text.toString()
 
-        server.review_Writing_Request(itemphoto,1,MainActivity.user_table_id,"sD44E7xt7IXL4HcmgV09OPMI1oH2","구름","d","d","2021-05-19 14:57:42","2021-05-19","14:57:42",review_description,tasteStarPoint,serviceStarPoint,cleanStarPoint,interiorStarPoint).enqueue(object:
+        server.review_Writing_Request(itemphoto,1,MainActivity.user_table_id,MainActivity.loginUserId,MainActivity.loginUserNickname,"d","d","2021-05-19 14:57:42","2021-05-19","14:57:42",review_description,tasteStarPoint,serviceStarPoint,cleanStarPoint,interiorStarPoint).enqueue(object:
             Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }

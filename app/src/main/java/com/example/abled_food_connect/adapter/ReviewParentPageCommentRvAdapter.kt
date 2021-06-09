@@ -56,7 +56,7 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
             toMoveChildCommentActivity.putExtra("review_id", childCommentList.get(position).review_id)
             toMoveChildCommentActivity.putExtra("groupNum", childCommentList.get(position).groupNum)
             toMoveChildCommentActivity.putExtra("writing_user_id", childCommentList.get(position).writing_user_id)
-            toMoveChildCommentActivity.putExtra("reviewWritingUserNicname",reviewWritingUserNicname)
+            toMoveChildCommentActivity.putExtra("reviewWritingUserNicname",childCommentList.get(position).nick_name)
             toMoveChildCommentActivity.putExtra("commentEtOpen",true)
             startActivity(holder.childCommentWrtingBtn.context as Activity,toMoveChildCommentActivity,null)
         })
@@ -67,7 +67,7 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
             toMoveChildCommentActivity.putExtra("review_id", childCommentList.get(position).review_id)
             toMoveChildCommentActivity.putExtra("groupNum", childCommentList.get(position).groupNum)
             toMoveChildCommentActivity.putExtra("writing_user_id", childCommentList.get(position).writing_user_id)
-            toMoveChildCommentActivity.putExtra("reviewWritingUserNicname",reviewWritingUserNicname)
+            toMoveChildCommentActivity.putExtra("reviewWritingUserNicname",childCommentList.get(position).nick_name)
             startActivity(holder.childCommentWrtingBtn.context as Activity,toMoveChildCommentActivity,null)
         })
 

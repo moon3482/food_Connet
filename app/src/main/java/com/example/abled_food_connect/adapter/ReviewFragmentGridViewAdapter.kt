@@ -1,9 +1,12 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.Context.WINDOW_SERVICE
 import android.content.Intent
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
@@ -16,6 +19,9 @@ import com.example.abled_food_connect.R
 import com.example.abled_food_connect.ReviewDetailViewRvActivity
 
 class ReviewFragmentGridViewAdapter (val profileList: ArrayList<ReviewFragmentLodingDataItem>) : RecyclerView.Adapter<ReviewFragmentGridViewAdapter.CustromViewHolder>(){
+
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustromViewHolder {
@@ -31,11 +37,10 @@ class ReviewFragmentGridViewAdapter (val profileList: ArrayList<ReviewFragmentLo
 
     override fun onBindViewHolder(holder: CustromViewHolder, position: Int) {
 
-
-
         Glide.with(holder.reveiwPicture.context)
             .load(holder.reveiwPicture.context.getString(R.string.http_request_base_url)+profileList.get(position).review_picture_0)
             .apply(RequestOptions().centerCrop())
+            .override(700)
             .into(holder.reveiwPicture)
 
 

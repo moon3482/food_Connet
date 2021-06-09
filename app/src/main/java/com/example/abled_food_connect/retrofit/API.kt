@@ -171,6 +171,18 @@ class API {
     }
 
 
+    interface UserProfileClickedReviewGridListRvInterface {
+
+        @Multipart
+        @POST("review/user_profile_clicked_review_grid_rv_list_get.php")
+        fun user_profile_clicked_review_grid_list_get(
+            @Part("clicked_user_tb_id") clicked_user_tb_id: String,
+            @Part("my_user_tb_id") my_user_tb_id: Int
+        ): Call<ReviewDetailViewRvData>
+
+    }
+
+
 
     fun joinRoom(context:Context,roomId:String,userId:String){
 

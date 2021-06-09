@@ -116,11 +116,7 @@ class ReviewFragment:Fragment() {
 
                 gridView_arrayList = items!!.roomList as ArrayList<ReviewFragmentLodingDataItem>
 
-                for(i in gridView_arrayList.indices){
-                    println(gridView_arrayList.get(i).review_picture_0);
 
-
-                }
 
                 mAdapter =  ReviewFragmentGridViewAdapter(gridView_arrayList)
                 rv.adapter = mAdapter
