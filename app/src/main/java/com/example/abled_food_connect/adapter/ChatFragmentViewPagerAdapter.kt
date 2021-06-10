@@ -13,7 +13,7 @@ import com.example.abled_food_connect.fragments.ChatingFragment
 import com.example.abled_food_connect.fragments.MyPageFragment
 
 
-class ChatListViewPager(fragment: FragmentActivity) :
+class ChatFragmentViewPagerAdapter(fragment: FragmentActivity) :
     FragmentStateAdapter(fragment) {
     val fragments = ArrayList<Fragment>()
     private lateinit var chatDMFragment: ChatDMFragment

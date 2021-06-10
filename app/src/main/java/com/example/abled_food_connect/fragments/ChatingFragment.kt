@@ -7,12 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.adapter.ChatListViewPager
-import com.example.abled_food_connect.databinding.ActivityCreateRoomMapSearchBinding
-import com.example.abled_food_connect.databinding.ChatingFragmentsBinding
+import com.example.abled_food_connect.adapter.ChatFragmentViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -56,7 +53,7 @@ class ChatingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val pagerAdapter = ChatListViewPager(requireActivity())
+        val pagerAdapter = ChatFragmentViewPagerAdapter(requireActivity())
         pagerAdapter.addFragment(ChatDMFragment())
         pagerAdapter.addFragment(ChatGroupFragment())
         viewPager.adapter = pagerAdapter

@@ -3,10 +3,9 @@ package com.example.abled_food_connect.retrofit
 
 import com.example.abled_food_connect.data.JoinRoomCheck
 import com.example.abled_food_connect.data.LoadingRoom
+import com.example.abled_food_connect.data.Message
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface RoomAPI {
     @FormUrlEncoded
@@ -53,4 +52,9 @@ interface RoomAPI {
         @Field("nickName") nickName: String
 
     ): Call<API.joinRoomClass>
+
+
+    @retrofit2.http.Multipart
+    @POST("/upload")  open
+    fun uploadImage(@Part image: Part?): Call<Message?>?
 }

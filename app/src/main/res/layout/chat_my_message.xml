@@ -22,7 +22,7 @@
             android:gravity="bottom">
 
             <TextView
-                android:id="@+id/chatOthersTimeStamp"
+                android:id="@+id/chatMyTimeStamp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="bottom|end"
@@ -30,16 +30,16 @@
                 tools:text="20:21" />
 
             <TextView
-                android:id="@+id/chatOthersMessageText"
+                android:id="@+id/chatMyMessageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/chat_you_message_background"
+                android:background="@drawable/chat_my_message_background"
                 android:elevation="30dp"
                 android:maxWidth="300dp"
                 android:outlineProvider="none"
                 android:padding="10dp"
                 android:textColor="@color/white"
-                tools:text="dsadsadsadddsadsadasdsadsadasdsadsadadadadsadsadsadsadsadsaddsadsadsada" />
+                tools:text="" />
 
         </LinearLayout>
 
