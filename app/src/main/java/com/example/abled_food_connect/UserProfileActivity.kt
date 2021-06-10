@@ -28,6 +28,7 @@ class UserProfileActivity : AppCompatActivity() {
     private val binding get() = mBinding!!
 
     private var clicked_user_tb_id : Int = 0
+    private lateinit var clicked_user_NicName : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +60,13 @@ class UserProfileActivity : AppCompatActivity() {
 
 
 
+        binding.toMoveDirectMessageActivityBtn.setOnClickListener(View.OnClickListener {
+            var toDirectMessageActivity : Intent = Intent(applicationContext, DirectMessageActivity::class.java)
+            toDirectMessageActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
+            toDirectMessageActivity.putExtra("clicked_user_NicName", clicked_user_NicName)
+            ContextCompat.startActivity(applicationContext, toDirectMessageActivity, null)
+        })
+
 
         binding.toMoveWrittenReviewListActivityBtn.setOnClickListener(View.OnClickListener {
             var toUserProfileClickedReviewGridListActivity : Intent = Intent(applicationContext, UserProfileClickedReviewGridListActivity::class.java)
@@ -78,7 +86,7 @@ class UserProfileActivity : AppCompatActivity() {
         val api = retrofit.create(API.UserProfileDataInterface::class.java)
 
         //어떤 리뷰를 선택했는지 확인하는 변수 + 좋아요 클릭여부를 확인하기 위하여 사용자 id보냄
-        val user_profile_data_get = api.user_profile_data_get(clicked_user_tb_id)
+        val user_profile_data_get = api.user_profile_data_get(user_tb_id)
 
 
         user_profile_data_get.enqueue(object : Callback<UserProfileData> {
@@ -99,6 +107,7 @@ class UserProfileActivity : AppCompatActivity() {
                     .into(binding.userProfileIv)
 
                 binding.userProfileNicNameTv.text = items!!.nick_name
+                clicked_user_NicName = items!!.nick_name
 
                 if(items!!.introduction == null) {
                     binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."

@@ -67,7 +67,7 @@
 
             <Button
                 android:gravity="center"
-                android:id="@+id/btn_pass"
+                android:id="@+id/toMoveDirectMessageActivityBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/message_btn_radius"
