@@ -130,7 +130,7 @@ dependencies {
     implementation 'com.naver.maps:map-sdk:3.11.0'
 
     implementation 'io.coil-kt:coil:1.2.1'
-    implementation 'gun0912.ted:tedclustering-naver:1.0.2'
+//    implementation 'gun0912.ted:tedclustering-naver:1.0.2'
 
 
 

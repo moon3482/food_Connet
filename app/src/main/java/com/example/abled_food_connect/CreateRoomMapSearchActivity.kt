@@ -2,12 +2,10 @@ package com.example.abled_food_connect
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.abled_food_connect.data.ClusterDataClass
 import com.example.abled_food_connect.data.kakaoDataClass.KakaoLocalSearch
@@ -17,6 +15,7 @@ import com.example.abled_food_connect.retrofit.MapSearch
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.MarkerIcons
 import okhttp3.OkHttpClient
@@ -32,7 +31,6 @@ import ted.gun0912.clustering.naver.TedNaverClustering
 class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var mapFragment: MapFragment
     private val binding by lazy { ActivityCreateRoomMapSearchBinding.inflate(layoutInflater) }
-    lateinit var naverMap: NaverMap
     lateinit var markerList: ArrayList<Marker>
     lateinit var selectMarker: Marker
     var intentX: Double = 0.0
@@ -40,12 +38,16 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var intentShopName: String
     lateinit var intentAddress: String
     lateinit var intentRoadAddress: String
-
+    lateinit var cluster: TedNaverClustering<ClusterDataClass>
+    lateinit var CLlist: ArrayList<ClusterDataClass>
+    lateinit var infoWindow: InfoWindow
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
         markerList = ArrayList()
+        infoWindow = InfoWindow()
+        CLlist = ArrayList()
         selectMarker = Marker()
         val fm = supportFragmentManager
         mapFragment = fm.findFragmentById(R.id.CreateRoomMapSearchMapView) as MapFragment?
@@ -151,12 +153,14 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                     val list: KakaoLocalSearch? = response.body()!!
                     val documents = list?.documents
 
-                    mapFragment.getMapAsync {
+                    mapFragment.getMapAsync { naverMap ->
                         var builder = LatLngBounds.Builder()
-                        var CLlist = ArrayList<ClusterDataClass>()
-                        for (index in markerList.indices) {
-                            markerList[index].map = null
+
+                        for (index in CLlist.indices) {
+//                            markerList[index].map = null
+
                         }
+
                         markerList.clear()
 
                         var x: Double = 0.0
@@ -213,23 +217,38 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 //                            Log.e("어레이 사이즈", markerList.size.toString())
 
                         }
-                        TedNaverClustering.with<ClusterDataClass>(
+
+                        cluster = TedNaverClustering.with<ClusterDataClass>(
                             this@CreateRoomMapSearchActivity,
-                            it
+                            naverMap
                         ).customMarker { clusterItem ->
                             val marker = Marker(clusterItem.position)
                             marker.apply {
                                 this.icon = MarkerIcons.GREEN
 
                             }
-                        }.items(getItems(it, CLlist)).make()
+                        }.markerClickListener {
+
+                            if (infoWindow.isAdded) {
+                                infoWindow.close()
+                            }
+                            infoWindow.adapter = object :
+                                InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                override fun getText(p0: InfoWindow): CharSequence {
+                                    return it.name
+                                }
+                            }
+                            infoWindow.position = it.position
+                            infoWindow.open(naverMap)
+                        }.items(getItems(naverMap, CLlist)).make()
+
                         val buildMap: LatLngBounds = builder.build()
                         if (documents != null) {
                             Log.e(
                                 "마커 로그 평균",
                                 "x : " + x / documents.size + "y : " + y / documents.size
                             )
-                            it.moveCamera(
+                            naverMap.moveCamera(
                                 CameraUpdate.fitBounds(buildMap, 300)
                                     .animate(CameraAnimation.Easing)
                             )

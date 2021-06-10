@@ -1,10 +1,13 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.abled_food_connect.R
@@ -45,6 +48,15 @@ class ChatAdapter(context: Context, arrayList: ArrayList<ChatItem>) :
             leftHolder.nickname.text = chatItem.name
             leftHolder.time.text = chatItem.sendTime
             leftHolder.profileImage.load(context.getString(R.string.http_request_base_url)+chatItem.ThumbnailImage)
+            leftHolder.message.setOnLongClickListener(object : View.OnLongClickListener{
+                override fun onLongClick(v: View?): Boolean {
+                    val clipboardManager:ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData:ClipData = ClipData.newPlainText("",leftHolder.message.text.toString())
+                    clipboardManager.setPrimaryClip(clipData)
+                    Toast.makeText(context,"클립보드에 복사되었습니다.",Toast.LENGTH_SHORT).show()
+                    return true
+                }
+            })
 
         } else {
 
@@ -52,6 +64,15 @@ class ChatAdapter(context: Context, arrayList: ArrayList<ChatItem>) :
             var rightHolder = (holder as RightMessage)
             rightHolder.message.text = chatItem.content
             rightHolder.time.text = chatItem.sendTime
+            rightHolder.message.setOnLongClickListener(object : View.OnLongClickListener{
+                override fun onLongClick(v: View?): Boolean {
+                    val clipboardManager:ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData:ClipData = ClipData.newPlainText("",rightHolder.message.text.toString())
+                    clipboardManager.setPrimaryClip(clipData)
+                    Toast.makeText(context,"클립보드에 복사되었습니다.",Toast.LENGTH_SHORT).show()
+                    return true
+                }
+            })
         }
     }
 
