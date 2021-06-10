@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.ChatItem
 import com.example.abled_food_connect.data.ItemType
@@ -43,6 +44,7 @@ class ChatAdapter(context: Context, arrayList: ArrayList<ChatItem>) :
             leftHolder.message.text = chatItem.content
             leftHolder.nickname.text = chatItem.name
             leftHolder.time.text = chatItem.sendTime
+            leftHolder.profileImage.load(context.getString(R.string.http_request_base_url)+chatItem.ThumbnailImage)
 
         } else {
 

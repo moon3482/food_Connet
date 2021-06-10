@@ -33,6 +33,7 @@
                 android:id="@+id/chatMyMessageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:background="@drawable/chat_my_message_background"
                 android:elevation="30dp"
                 android:maxWidth="300dp"

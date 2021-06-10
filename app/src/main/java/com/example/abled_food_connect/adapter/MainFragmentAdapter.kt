@@ -52,7 +52,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                 String.format(text, Math.round(maindata.roomStatus).toInt())
 
         } else if (maindata.roomStatus < 0.9 && maindata.roomStatus > 0.0) {
-            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
             testholder.roomStatus.text = "임박"
 
         } else if (maindata.roomStatus < 0) {
@@ -88,7 +88,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
 
-                    joinRoomCheckMethod(maindata,location)
+                    joinRoomCheckMethod(maindata,maindata.address)
 
             }
         })

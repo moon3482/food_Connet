@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         var user_table_id : Int = 0
         var loginUserId: String = ""
         var loginUserNickname : String = ""
+        var userThumbnailImage : String = ""
     }
 
     /*
@@ -619,6 +620,7 @@ class MainActivity : AppCompatActivity() {
                         val get_user_table_id = userlogin.id
                         val loginId = userlogin.userId
                         val loginNickname = userlogin.userNickname
+                        val loginThumbnailImage = userlogin.userThumbnailImage
                         Toast.makeText(applicationContext, "로그인 되었습니다.", Toast.LENGTH_LONG)
                             .show();
                         Log.d("성공", "" + "유저가있습니다.")
@@ -627,6 +629,7 @@ class MainActivity : AppCompatActivity() {
                         user_table_id = get_user_table_id
                         loginUserId = loginId
                         loginUserNickname = loginNickname
+                        userThumbnailImage =loginThumbnailImage
                         startActivity(mainFragmentJoin)
                         finish()
                     } else {

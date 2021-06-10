@@ -38,7 +38,7 @@ class RoomInformationActivity : AppCompatActivity() {
                 String.format(text, Math.round(roomStatus).toInt())
 
         } else if (roomStatus < 0.9 && roomStatus > 0.0) {
-            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
             binding.RoomInformationStatus.text = "임박"
 
         } else if (roomStatus < 0) {

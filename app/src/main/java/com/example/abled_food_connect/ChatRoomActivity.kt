@@ -1,5 +1,6 @@
 package com.example.abled_food_connect
 
+import android.media.ThumbnailUtils
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -27,6 +28,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var chatClient: ChatClient
     private lateinit var userName: String
     private lateinit var roomId: String
+    private lateinit var thumbnailImage :String
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var gson: Gson
     private lateinit var chatList: ArrayList<ChatItem>
@@ -40,6 +42,7 @@ class ChatRoomActivity : AppCompatActivity() {
         binding.chatDrawerLinear.setOnTouchListener { _, _ -> true }
         roomId = intent.getStringExtra("roomId").toString()
         userName = MainActivity.loginUserNickname.toString()
+        thumbnailImage = MainActivity.userThumbnailImage.toString()
         Log.e("유져 정보", roomId.toString()+userName)
         chatList = ArrayList()
         gson = Gson()
@@ -144,7 +147,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     "MESSAGE",
                     userName,
                     roomId,
-                    binding.groupChatInputMessageEditText.text.toString(),
+                    binding.groupChatInputMessageEditText.text.toString(),thumbnailImage,
                     System.currentTimeMillis()
                 )
             )
@@ -152,6 +155,7 @@ class ChatRoomActivity : AppCompatActivity() {
         chatList.add(
             ChatItem(
                 userName,
+                thumbnailImage,
                 binding.groupChatInputMessageEditText.text.toString(),
                 toDate(System.currentTimeMillis()),
                 ItemType.RIGHT_MESSAGE
@@ -162,7 +166,7 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private fun toDate(long: Long): String {
-        return SimpleDateFormat("hh:mm a").format(Date(long))
+        return SimpleDateFormat("a hh:mm").format(Date(long))
     }
 
     private fun addChat(messageData: MessageData) {
@@ -175,6 +179,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 chatList.add(
                     ChatItem(
                         messageData.from,
+                        messageData.thumbnailImage,
                         messageData.content,
                         toDate(messageData.sendTime),
                         ItemType.LEFT_MESSAGE
