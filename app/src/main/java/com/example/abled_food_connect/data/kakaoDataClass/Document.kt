@@ -5,27 +5,58 @@ import com.google.gson.annotations.SerializedName
 
 data class Document(
     @SerializedName("address_name")
-    val addressName: String,
+    var addressName: String,
     @SerializedName("category_group_code")
-    val categoryGroupCode: String,
+    var categoryGroupCode: String,
     @SerializedName("category_group_name")
-    val categoryGroupName: String,
+    var categoryGroupName: String,
     @SerializedName("category_name")
-    val categoryName: String,
+    var categoryName: String,
     @SerializedName("distance")
-    val distance: String,
+    var distance: String,
     @SerializedName("id")
-    val id: String,
+    var id: String,
     @SerializedName("phone")
-    val phone: String,
+    var phone: String,
     @SerializedName("place_name")
-    val placeName: String,
+    var placeName: String,
     @SerializedName("place_url")
-    val placeUrl: String,
+    var placeUrl: String,
     @SerializedName("road_address_name")
-    val roadAddressName: String,
+    var roadAddressName: String,
     @SerializedName("x")
-    val x: String,
+    var x: String,
     @SerializedName("y")
-    val y: String
-)
+    var y: String
+) {
+    fun Document(
+        addressName: String,
+        categoryGroupCode: String,
+        categoryGroupName: String,
+        categoryName: String,
+        distance: String,
+        id: String,
+        phone: String,
+        placeName: String,
+        placeUrl: String,
+        roadAddressName: String,
+        x: String,
+        y: String
+    ) {
+        this.addressName = addressName
+        this.categoryGroupCode = categoryGroupCode
+        this.categoryGroupName = categoryGroupName
+        this.categoryName = categoryName
+        this.distance = distance
+        this.id = id
+        this.phone = phone
+        this.placeName = placeName
+        this.placeUrl = placeUrl
+        this.roadAddressName = roadAddressName
+        this.x = x
+        this.y = y
+
+    }
+
+
+}

@@ -2,11 +2,14 @@ package com.example.abled_food_connect
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.abled_food_connect.data.ClusterDataClass
 import com.example.abled_food_connect.data.kakaoDataClass.KakaoLocalSearch
 import com.example.abled_food_connect.data.naverDataClass.NaverSearchLocal
 import com.example.abled_food_connect.databinding.ActivityCreateRoomMapSearchBinding
@@ -14,9 +17,7 @@ import com.example.abled_food_connect.retrofit.MapSearch
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
-import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.MarkerIcons
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,6 +26,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ted.gun0912.clustering.naver.TedNaverClustering
 
 
 class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -151,7 +153,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     mapFragment.getMapAsync {
                         var builder = LatLngBounds.Builder()
-
+                        var CLlist = ArrayList<ClusterDataClass>()
                         for (index in markerList.indices) {
                             markerList[index].map = null
                         }
@@ -165,89 +167,71 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
                             x += documents!![index].x.toDouble()
                             y += documents[index].y.toDouble()
-                            val marker = Marker()
+//                            val marker = Marker()
                             val position = LatLng(
                                 documents!![index].y.toDouble(),
                                 documents!![index].x.toDouble()
                             )
                             builder.include(position)
-                            marker.position = position
-                            marker.map = it
-                            val infoWindow = InfoWindow()
-                            infoWindow.adapter = object :
-                                InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
-                                override fun getText(p0: InfoWindow): CharSequence {
-                                    return documents[index].placeName
-                                }
-                            }
-
-                            infoWindow.open(marker)
-                            marker.onClickListener = object : Overlay.OnClickListener {
-                                override fun onClick(p0: Overlay): Boolean {
-                                    p0.map!!.moveCamera(
-                                        CameraUpdate.scrollTo(
-                                            LatLng(
-                                                documents!![index].y.toDouble(),
-                                                documents!![index].x.toDouble()
-                                            )
-                                        ).animate(CameraAnimation.Easing)
-                                    )
-                                    selectMarker.icon = MarkerIcons.GREEN
-                                    selectMarker = marker
-                                    selectMarker.icon = MarkerIcons.RED
-                                    selectMarker.map = it
-                                    intentY = documents[index].y.toDouble()
-                                    intentX = documents[index].x.toDouble()
-                                    intentShopName = documents[index].placeName
-                                    intentAddress = documents[index].addressName
-                                    intentRoadAddress = documents[index].roadAddressName
-
-                                    return true
-                                }
-                            }
-
-                            markerList.add(marker)
-                            Log.e("어레이 사이즈", markerList.size.toString())
+                            CLlist.add(ClusterDataClass(position, documents[index].placeName))
+//                            marker.position = position
+//                            marker.map = it
+//                            val infoWindow = InfoWindow()
+//                            infoWindow.adapter = object :
+//                                InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+//                                override fun getText(p0: InfoWindow): CharSequence {
+//                                    return documents[index].placeName
+//                                }
+//                            }
+//
+//                            infoWindow.open(marker)
+//                            marker.onClickListener = object : Overlay.OnClickListener {
+//                                override fun onClick(p0: Overlay): Boolean {
+//                                    p0.map!!.moveCamera(
+//                                        CameraUpdate.scrollTo(
+//                                            LatLng(
+//                                                documents!![index].y.toDouble(),
+//                                                documents!![index].x.toDouble()
+//                                            )
+//                                        ).animate(CameraAnimation.Easing)
+//                                    )
+//                                    selectMarker.icon = MarkerIcons.GREEN
+//                                    selectMarker = marker
+//                                    selectMarker.icon = MarkerIcons.RED
+//                                    selectMarker.map = it
+//                                    intentY = documents[index].y.toDouble()
+//                                    intentX = documents[index].x.toDouble()
+//                                    intentShopName = documents[index].placeName
+//                                    intentAddress = documents[index].addressName
+//                                    intentRoadAddress = documents[index].roadAddressName
+//
+//                                    return true
+//                                }
+//                            }
+//
+//                            markerList.add(marker)
+//                            Log.e("어레이 사이즈", markerList.size.toString())
 
                         }
-//                        TedNaverClustering.with<ClusterDataClass>(
-//                            this@CreateRoomMapSearchActivity,
-//                            it
-//                        )
-//                            .customMarker { clusterItem ->
-//                          val marker = Marker(clusterItem.position)
-//                                marker.apply {
-//                                    this.icon = MarkerIcons.GREEN
-//
-//                                }
-//
-//
-//
-//
-//                            }.markerClickListener {
-//
-//
-//                            }
-////
-////
-////                        }.customCluster {
-////                            TextView(this@CreateRoomMapSearchActivity).apply {
-////                                setBackgroundColor(
-////                                    Color.GREEN
-////                                )
-////                                text = "${it.size}"
-////                                setPadding(10, 10, 10, 10)
-////                            }
-////                        }.clusterText { "테스트" }
-//                            .items(getItems(it)).make()
-                        val buildMap :LatLngBounds = builder.build()
+                        TedNaverClustering.with<ClusterDataClass>(
+                            this@CreateRoomMapSearchActivity,
+                            it
+                        ).customMarker { clusterItem ->
+                            val marker = Marker(clusterItem.position)
+                            marker.apply {
+                                this.icon = MarkerIcons.GREEN
+
+                            }
+                        }.items(getItems(it, CLlist)).make()
+                        val buildMap: LatLngBounds = builder.build()
                         if (documents != null) {
                             Log.e(
                                 "마커 로그 평균",
                                 "x : " + x / documents.size + "y : " + y / documents.size
                             )
                             it.moveCamera(
-                              CameraUpdate.fitBounds(buildMap,300).animate(CameraAnimation.Easing)
+                                CameraUpdate.fitBounds(buildMap, 300)
+                                    .animate(CameraAnimation.Easing)
                             )
                         }
                     }
@@ -274,13 +258,13 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         return builder.build()
     }
 
-//    private fun getItems(
-//        naverMap: NaverMap,
-//        list: ArrayList<ClusterDataClass>
-//    ): ArrayList<ClusterDataClass> {
-//        val bounds = naverMap.contentBounds
-//        return list
-//    }
+    private fun getItems(
+        naverMap: NaverMap,
+        list: ArrayList<ClusterDataClass>
+    ): ArrayList<ClusterDataClass> {
+        val bounds = naverMap.contentBounds
+        return list
+    }
 }
 
 

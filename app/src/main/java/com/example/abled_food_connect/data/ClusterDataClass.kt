@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.data
 
+import com.example.abled_food_connect.data.kakaoDataClass.Document
 import com.naver.maps.geometry.LatLng
 import ted.gun0912.clustering.clustering.TedClusterItem
 import ted.gun0912.clustering.geometry.TedLatLng
@@ -19,7 +20,8 @@ class ClusterDataClass(val position:LatLng, val name :String ):TedClusterItem {
      */
     var snippet: String? = null
 
-    constructor(lat: Double, lng: Double) : this(LatLng(lat, lng), String()) {
+    constructor(lat: Double, lng: Double) : this(LatLng(lat, lng), String()
+    ) {
         title = null
         snippet = null
     }
@@ -29,5 +31,8 @@ class ClusterDataClass(val position:LatLng, val name :String ):TedClusterItem {
     ) {
         this.title = title
         this.snippet = snippet
+    }
+    fun getname():String{
+        return name
     }
 }
