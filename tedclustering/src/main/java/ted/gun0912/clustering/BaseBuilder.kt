@@ -42,6 +42,7 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
         } ?: map.getMarker())
             .also {
                 it.position = clusterItem.getTedLatLng()
+
             }
     }
 

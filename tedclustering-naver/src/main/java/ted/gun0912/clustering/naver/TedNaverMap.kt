@@ -1,5 +1,6 @@
 package ted.gun0912.clustering.naver
 
+import android.content.Context
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
@@ -11,7 +12,7 @@ import ted.gun0912.clustering.geometry.TedCameraPosition
 import ted.gun0912.clustering.geometry.TedLatLng
 import ted.gun0912.clustering.geometry.TedLatLngBounds
 
-class TedNaverMap(private val naverMap: NaverMap) : TedMap<Marker, TedNaverMarker, OverlayImage> {
+class TedNaverMap(private val naverMap: NaverMap,val context: Context) : TedMap<Marker, TedNaverMarker, OverlayImage> {
 
     override fun getCameraPosition(): TedCameraPosition {
         val cameraPosition = naverMap.cameraPosition
@@ -69,9 +70,6 @@ class TedNaverMap(private val naverMap: NaverMap) : TedMap<Marker, TedNaverMarke
         return getMarker(Marker())
     }
 
-    override fun getMarker(marker: Marker): TedNaverMarker {
-        return TedNaverMarker(marker)
-    }
 
     override fun addMarkerClickListener(
         tedNaverMarker: TedNaverMarker,
@@ -81,5 +79,9 @@ class TedNaverMap(private val naverMap: NaverMap) : TedMap<Marker, TedNaverMarke
             action.invoke(tedNaverMarker)
             true
         }
+    }
+
+    override fun getMarker(marker: Marker): TedNaverMarker {
+        return TedNaverMarker(marker,context)
     }
 }

@@ -23,7 +23,7 @@ class TedNaverClustering<C : TedClusterItem>(clusterManager: ClusterManager<TedN
     class Builder<C : TedClusterItem>(context: Context, map: NaverMap) :
         BaseBuilder<TedNaverClustering<C>, C, Marker, TedNaverMarker, NaverMap, OverlayImage>(
             context,
-            TedNaverMap(map)
+            TedNaverMap(map,context)
         ) {
         override fun make(): TedNaverClustering<C> {
             return TedNaverClustering(ClusterManager(this))

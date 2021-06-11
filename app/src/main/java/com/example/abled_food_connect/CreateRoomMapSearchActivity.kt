@@ -1,6 +1,7 @@
 package com.example.abled_food_connect
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -41,10 +42,14 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var cluster: TedNaverClustering<ClusterDataClass>
     lateinit var CLlist: ArrayList<ClusterDataClass>
     lateinit var infoWindow: InfoWindow
+    companion object{
+        lateinit var context:Context
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
+        context = this
         markerList = ArrayList()
         infoWindow = InfoWindow()
         CLlist = ArrayList()
@@ -227,7 +232,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                 this.icon = MarkerIcons.GREEN
 
                             }
-                        }.markerClickListener {
+                        }.markerClickListener{
 
                             if (infoWindow.isAdded) {
                                 infoWindow.close()
