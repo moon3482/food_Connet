@@ -11,7 +11,7 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
     internal var markerClickListener: ((C) -> Unit)? = null,
     internal var clusterClickListener: ((Cluster<C>) -> Unit)? = null,
     internal var clickToCenter: Boolean = true,
-    internal var clusterBuckets: IntArray = intArrayOf(10, 20, 50, 100, 200, 500, 1000),
+    internal var clusterBuckets: IntArray = intArrayOf(5,10,20, 50, 100, 200, 500, 1000),
     internal var minClusterSize: Int = 3,
     internal var clusterAnimation: Boolean = true,
     internal var clusterBackground: ((Int) -> Int)? = null,
@@ -28,7 +28,7 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
         apply { this.clusterMaker = clusterMaker }
 
     fun customMarker(markerMaker: ((clusterItem: C) -> RealMarker)? = null) =
-        apply { this.markerMaker = markerMaker }
+        apply{ this.markerMaker = markerMaker }
 
     fun item(item: C) =
         apply { this.item = item }
@@ -42,6 +42,7 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
         } ?: map.getMarker())
             .also {
                 it.position = clusterItem.getTedLatLng()
+
 
             }
     }

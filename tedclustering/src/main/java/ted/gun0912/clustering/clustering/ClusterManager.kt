@@ -42,7 +42,7 @@ class ClusterManager<Clustering, C : TedClusterItem, RealMarker, Marker : TedMar
 
     init {
         map.addOnCameraIdleListener(::onCameraIdle)
-        mRenderer = ClusterRenderer(builder, this)
+        mRenderer = ClusterRenderer(builder,this)
         builder.item?.let { addItem(it) }
         builder.items?.let { addItems(it) }
 

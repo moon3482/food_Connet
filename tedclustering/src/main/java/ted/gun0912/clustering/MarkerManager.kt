@@ -1,5 +1,6 @@
 package ted.gun0912.clustering
 
+import com.naver.maps.map.util.MarkerIcons
 import java.util.*
 
 /**
@@ -10,8 +11,8 @@ import java.util.*
  * All marker operations (adds and removes) should occur via its collection class. That is, don't
  * add a marker via a collection, then remove it via TedMarker.remove()
  */
-class MarkerManager<RealMarker,Marker : TedMarker<ImageDescriptor>, ImageDescriptor>(
-    private val tedMap: TedMap<RealMarker,Marker, ImageDescriptor>
+class MarkerManager<RealMarker, Marker : TedMarker<ImageDescriptor>, ImageDescriptor>(
+    private val tedMap: TedMap<RealMarker, Marker, ImageDescriptor>
 ) {
     private val allMarkerMap = HashMap<Marker, MarkerCollection>()
 
@@ -34,6 +35,7 @@ class MarkerManager<RealMarker,Marker : TedMarker<ImageDescriptor>, ImageDescrip
             tedMap.addMarker(marker)
             mMarkers.add(marker)
             allMarkerMap[marker] = this@MarkerCollection
+
             return marker
         }
 
@@ -60,6 +62,8 @@ class MarkerManager<RealMarker,Marker : TedMarker<ImageDescriptor>, ImageDescrip
                 marker.setVisible(false)
             }
         }
+
+
 
         fun remove(tedMarker: Marker): Boolean {
             if (mMarkers.remove(tedMarker)) {

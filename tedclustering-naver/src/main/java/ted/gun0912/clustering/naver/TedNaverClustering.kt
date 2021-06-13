@@ -9,6 +9,7 @@ import ted.gun0912.clustering.TedClustering
 import ted.gun0912.clustering.clustering.ClusterManager
 import ted.gun0912.clustering.clustering.TedClusterItem
 
+
 class TedNaverClustering<C : TedClusterItem>(clusterManager: ClusterManager<TedNaverClustering<C>, C, Marker, TedNaverMarker, NaverMap, OverlayImage>) :
     TedClustering<TedNaverClustering<C>, C, Marker, TedNaverMarker, NaverMap, OverlayImage>(
         clusterManager
@@ -28,6 +29,7 @@ class TedNaverClustering<C : TedClusterItem>(clusterManager: ClusterManager<TedN
         override fun make(): TedNaverClustering<C> {
             return TedNaverClustering(ClusterManager(this))
         }
+        
     }
 
 }

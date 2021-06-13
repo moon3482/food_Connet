@@ -17,6 +17,8 @@ import android.util.SparseArray
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorInt
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.util.MarkerIcons
 import ted.gun0912.clustering.*
 import ted.gun0912.clustering.clustering.Cluster
 import ted.gun0912.clustering.clustering.TedClusterItem
@@ -38,14 +40,13 @@ internal class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marke
     private val builder: BaseBuilder<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>,
     private val mClusterManager: ClusterManager<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>
 ) {
-
     private val context: Context = builder.context
     private val tedMap: TedMap<RealMarker, Marker, ImageDescriptor> = builder.map
-
     private val mIconGenerator: IconGenerator
     private val mDensity: Float
     private var clusterAnimation: Boolean = builder.clusterAnimation
     private var mColoredCircleBackground: ShapeDrawable? = null
+
 
     /**
      * Markers that are currently on the tedMap.
@@ -92,8 +93,11 @@ internal class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marke
 
         mClusterManager.markerMarkerCollection
             .setOnMarkerClickListener { marker ->
+
                 if (builder.clickToCenter) {
+
                     tedMap.moveToCenter(marker.position)
+
                 }
                 builder.markerClickListener?.invoke(mMarkerCache[marker])
             }
@@ -717,6 +721,7 @@ internal class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marke
                             mClusterManager.onMarkerClick(marker)
                         })
                         marker = mClusterManager.markerMarkerCollection.addMarker(markerOptions)
+
                         markerWithPosition = MarkerWithPosition(marker)
                         mMarkerCache.put(item, marker)
                         if (animateFrom != null) {

@@ -9,4 +9,6 @@ interface Cluster<T : TedClusterItem> {
     val items: Collection<T>
 
     val size: Int
+
+
 }
