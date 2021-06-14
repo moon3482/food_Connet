@@ -211,13 +211,15 @@
 
             </LinearLayout>
 
-            <fragment
+            <ImageView
                 android:id="@+id/CreateRoomActivityMapView"
                 android:name="com.naver.maps.map.MapFragment"
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="400dp"
                 android:layout_marginTop="15dp" />
+
+
 
             <LinearLayout
                 style="@style/create_room_margin"

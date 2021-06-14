@@ -7,12 +7,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.abled_food_connect.data.ClusterDataClass
+import com.example.abled_food_connect.data.Cluster.ClusterDataClass
 import com.example.abled_food_connect.data.kakaoDataClass.Document
 import com.example.abled_food_connect.data.kakaoDataClass.KakaoLocalSearch
-import com.example.abled_food_connect.data.marker
+import com.example.abled_food_connect.data.Cluster.ClusterMarkerData
 import com.example.abled_food_connect.data.naverDataClass.NaverSearchLocal
 import com.example.abled_food_connect.databinding.ActivityCreateRoomMapSearchBinding
 import com.example.abled_food_connect.retrofit.MapSearch
@@ -21,10 +20,8 @@ import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.MarkerIcons
 import okhttp3.OkHttpClient
-import okhttp3.internal.wait
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
@@ -48,7 +45,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var CLlist: ArrayList<ClusterDataClass>
     lateinit var infoWindow: InfoWindow
     lateinit var pickMarker: ClusterDataClass
-    lateinit var array: ArrayList<marker>
+    lateinit var array: ArrayList<ClusterMarkerData>
 
 
     companion object {
@@ -267,11 +264,11 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                 intentShopName = clusterItem.document.placeName
                                 intentRoadAddress = clusterItem.document.roadAddressName
                                 intentAddress = clusterItem.document.addressName
-                                array.add(marker(clusterItem, tedNaverMarker))
+                                array.add(ClusterMarkerData(clusterItem, tedNaverMarker))
                                 naverMap.moveCamera(CameraUpdate.scrollTo(clusterItem.position).animate(CameraAnimation.Easing))
                                 true
                             }
-                        }.items(getItems(naverMap, CLlist)).minClusterSize(4).clusterBuckets(
+                        }.items(getItems(naverMap, CLlist)).minClusterSize(5).clusterBuckets(
                             intArrayOf(5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)).make()
 
                         val buildMap: LatLngBounds = builder.build()

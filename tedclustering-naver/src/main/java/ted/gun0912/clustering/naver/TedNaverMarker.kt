@@ -13,7 +13,7 @@ import ted.gun0912.clustering.geometry.TedLatLng
 
 
 class TedNaverMarker(override var marker: Marker, val context: Context) : TedMarker<OverlayImage> {
-var cmarker = marker
+
     override fun setVisible(visible: Boolean) {
         marker.isVisible = visible
 

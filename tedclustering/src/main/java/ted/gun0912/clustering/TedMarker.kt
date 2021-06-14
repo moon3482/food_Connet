@@ -15,8 +15,6 @@ interface TedMarker<ImageDescriptor> {
 
     var marker: Marker
 
-
-
     fun setImageDescriptor(imageDescriptor: ImageDescriptor)
 
     fun fromBitmap(bitmap: Bitmap): ImageDescriptor

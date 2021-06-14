@@ -1,4 +1,4 @@
-package com.example.abled_food_connect.data
+package com.example.abled_food_connect.data.Cluster
 
 import com.example.abled_food_connect.data.kakaoDataClass.Document
 import com.naver.maps.geometry.LatLng
