@@ -143,7 +143,7 @@ class DirectMessageActivity : AppCompatActivity() {
 
         //DB 방정보에 유저가 등록되어있는지 확인.
         //미 등록시 방에 유저를 등록시킨다.
-        DM_Room_Join_Checking(roomName,MyUserTableId)
+        DM_Room_Join_Checking(roomName,MyUserTableId, clicked_user_tb_id)
 
 
         //채팅내역을 가져온다.
@@ -465,7 +465,7 @@ class DirectMessageActivity : AppCompatActivity() {
     }
 
 
-    fun DM_Room_Join_Checking(dm_room_name:String, room_join_user_tb_id:Int){
+    fun DM_Room_Join_Checking(dm_room_name:String, my_user_tb_id:Int , your_user_tb_id:Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -473,7 +473,7 @@ class DirectMessageActivity : AppCompatActivity() {
         val api = retrofit.create(API.dmRoomJoinCheck_Interface::class.java)
 
         //db에 방이 있는지 확인한다.
-        val dm_room_join_check_get = api.dm_room_join_check(dm_room_name,room_join_user_tb_id)
+        val dm_room_join_check_get = api.dm_room_join_check(dm_room_name,my_user_tb_id,your_user_tb_id)
 
 
         dm_room_join_check_get.enqueue(object : Callback<String> {

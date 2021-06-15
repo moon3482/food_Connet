@@ -200,8 +200,17 @@ class API {
         @POST("chat/dm_room_join_check.php")
         fun dm_room_join_check(
             @Part("dm_room_name") dm_room_name: String,
-            @Part("room_join_user_tb_id") room_join_user_tb_id: Int
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("your_user_tb_id") your_user_tb_id: Int
         ): Call<String>
+    }
+
+    interface DMChattingListGet_Interface{
+        @Multipart
+        @POST("chat/dm_chatting_list_get.php")
+        fun dm_room_join_check(
+            @Part("my_user_tb_id") my_user_tb_id: Int
+        ): Call<ChattingFragmentDmRvData>
     }
 
 
