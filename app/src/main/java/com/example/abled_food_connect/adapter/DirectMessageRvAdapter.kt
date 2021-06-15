@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.data.DirectMessageData
+import com.example.abled_food_connect.data.DirectMessageRvData
 
-class DirectMessageRvAdapter (private val mydatas: MutableList<DirectMessageData>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvData>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var datas = mydatas
+    var datas = mydata
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : RecyclerView.ViewHolder {
         val view : View?
@@ -110,13 +111,13 @@ class DirectMessageRvAdapter (private val mydatas: MutableList<DirectMessageData
     inner class MyMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val MyMessage: TextView = view.findViewById(R.id.chatMyMessageText)
-//        private val txtAge: TextView = view.findViewById(R.id.tv_rv_age)
-//        private val imgProfile: ImageView = view.findViewById(R.id.img_rv_photo)
+        private val chatMyTimeStamp: TextView = view.findViewById(R.id.chatMyTimeStamp)
+        private val messageCheckTv:TextView = view.findViewById(R.id.messageCheckTv)
 
-        fun bind(item: DirectMessageData) {
+        fun bind(item: DirectMessageRvData) {
             MyMessage.text = item.message
-            //txtAge.text = item.age.toString()
-            //Glide.with(itemView).load(item.image).into(imgProfile)
+            chatMyTimeStamp.text = item.sendTime.toString()
+            messageCheckTv.text = item.message_check
 
         }
     }
@@ -128,26 +129,33 @@ class DirectMessageRvAdapter (private val mydatas: MutableList<DirectMessageData
         private val YourImgProfile: ImageView = view.findViewById(R.id.chatOthersImage)
         private val YourNicName: TextView = view.findViewById(R.id.chatOthersNickName)
         private val YourMessage: TextView = view.findViewById(R.id.chatOthersMessageText)
+        private val chatOthersTimeStamp: TextView = view.findViewById(R.id.chatOthersTimeStamp)
 
 
-        fun bind(item: DirectMessageData) {
+
+        fun bind(item: DirectMessageRvData) {
 
             Glide.with(YourImgProfile.context).load(item.userProfileImage).into(YourImgProfile)
             YourNicName.text = item.userNicName
             YourMessage.text = item.message
+            chatOthersTimeStamp.text = item.sendTime
+
+
 
 
         }
     }
     inner class MyImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private val MyImage: TextView = view.findViewById(R.id.chatMyMessageText)
+        private val chatMyIv: ImageView = view.findViewById(R.id.chatMyIv)
+        private val chatMyTimeStamp: TextView = view.findViewById(R.id.chatMyTimeStamp)
+        private val messageCheckTv:TextView = view.findViewById(R.id.messageCheckTv)
 
+        fun bind(item: DirectMessageRvData) {
 
-        fun bind(item: DirectMessageData) {
-            MyImage.text = item.message
-            //Glide.with(itemView).load(item.image).into(imgProfile)
-
+            Glide.with(chatMyIv.context).load(chatMyIv.context.getString(R.string.http_request_base_url)+item.message).into(chatMyIv)
+            chatMyTimeStamp.text = item.sendTime
+            messageCheckTv.text = item.message_check
         }
     }
 
@@ -155,12 +163,17 @@ class DirectMessageRvAdapter (private val mydatas: MutableList<DirectMessageData
 
         private val YourImgProfile: ImageView = view.findViewById(R.id.chatOthersImage)
         private val YourNicName: TextView = view.findViewById(R.id.chatOthersNickName)
-        private val YourMessage: TextView = view.findViewById(R.id.chatOthersMessageText)
+        private val chatOthersIv: ImageView = view.findViewById(R.id.chatOthersIv)
+        private val chatOthersTimeStamp: TextView = view.findViewById(R.id.chatOthersTimeStamp)
 
-        fun bind(item: DirectMessageData) {
+
+
+        fun bind(item: DirectMessageRvData) {
             Glide.with(YourImgProfile.context).load(item.userProfileImage).into(YourImgProfile)
             YourNicName.text = item.userNicName
-            YourMessage.text = item.message
+            Glide.with(chatOthersIv.context).load(chatOthersIv.context.getString(R.string.http_request_base_url)+item.message).into(chatOthersIv)
+            chatOthersTimeStamp.text = item.sendTime
+
 
         }
     }

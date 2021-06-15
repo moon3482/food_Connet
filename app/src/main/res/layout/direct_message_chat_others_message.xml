@@ -42,7 +42,7 @@
                 android:padding="10dp"
                 android:textColor="@color/black"
                 android:outlineProvider="none"
-                tools:text="" />
+                tools:text="dddd" />
 
             <TextView
                 android:id="@+id/chatOthersTimeStamp"

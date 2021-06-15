@@ -170,6 +170,42 @@ class API {
         ): Call<ReviewChildPageCommentGetData>
     }
 
+
+
+    interface chatImageSend_interface {
+        // 프로필 이미지 보내기
+        @Multipart
+        @POST("chat/DirectMessageImageSending.php")
+        fun chat_image_send_interface_Request(
+            @Part imageFile : MultipartBody.Part
+        ): Call<ChatImageSendingData>
+
+    }
+
+
+    interface getChattingList_Interface{
+        // UserProfileActivity에서 유저정보 가져오기
+        @Multipart
+        @POST("chat/direct_message_list_get.php")
+        fun direct_message_list_get(
+            @Part("roomName") roomName: String
+        ): Call<DirectMessageNodeServerSendData>
+    }
+
+
+
+    interface dmRoomJoinCheck_Interface{
+        // UserProfileActivity에서 유저정보 가져오기
+        @Multipart
+        @POST("chat/dm_room_join_check.php")
+        fun dm_room_join_check(
+            @Part("dm_room_name") dm_room_name: String,
+            @Part("room_join_user_tb_id") room_join_user_tb_id: Int
+        ): Call<String>
+    }
+
+
+
     interface UserProfileDataInterface{
         // UserProfileActivity에서 유저정보 가져오기
         @Multipart

@@ -386,7 +386,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="7"
                 android:backgroundTint="@color/app_theme_color"
-                app:srcCompat="@drawable/ic_baseline_send_24" />
+                app:srcCompat="@drawable/ic_baseline_present_to_all_24" />
 
         </LinearLayout>
 

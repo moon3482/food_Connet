@@ -39,7 +39,6 @@ import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -77,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         var user_table_id : Int = 0
         var loginUserId: String = ""
         var loginUserNickname : String = ""
+        var userThumbnailImage : String = ""
     }
 
     /*
@@ -588,7 +588,7 @@ class MainActivity : AppCompatActivity() {
         //creating retrofit object
         var retrofit =
             Retrofit.Builder()
-                .baseUrl(getString(R.string.http_request_base_url))
+                .baseUrl("http://52.78.107.230/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(createOkHttpClient())
                 .build()
@@ -620,6 +620,7 @@ class MainActivity : AppCompatActivity() {
                         val get_user_table_id = userlogin.id
                         val loginId = userlogin.userId
                         val loginNickname = userlogin.userNickname
+                        val loginThumbnailImage = userlogin.userThumbnailImage
                         Toast.makeText(applicationContext, "로그인 되었습니다.", Toast.LENGTH_LONG)
                             .show();
                         Log.d("성공", "" + "유저가있습니다.")
@@ -628,6 +629,7 @@ class MainActivity : AppCompatActivity() {
                         user_table_id = get_user_table_id
                         loginUserId = loginId
                         loginUserNickname = loginNickname
+                        userThumbnailImage =loginThumbnailImage
                         startActivity(mainFragmentJoin)
                         finish()
                     } else {

@@ -29,6 +29,7 @@ class UserProfileActivity : AppCompatActivity() {
 
     private var clicked_user_tb_id : Int = 0
     private lateinit var clicked_user_NicName : String
+    private lateinit var clicked_user_ProfileImage : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,7 @@ class UserProfileActivity : AppCompatActivity() {
             var toDirectMessageActivity : Intent = Intent(applicationContext, DirectMessageActivity::class.java)
             toDirectMessageActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
             toDirectMessageActivity.putExtra("clicked_user_NicName", clicked_user_NicName)
+            toDirectMessageActivity.putExtra("clicked_user_ProfileImage", clicked_user_ProfileImage)
             ContextCompat.startActivity(applicationContext, toDirectMessageActivity, null)
         })
 
@@ -106,8 +108,11 @@ class UserProfileActivity : AppCompatActivity() {
                     .circleCrop()
                     .into(binding.userProfileIv)
 
+                clicked_user_ProfileImage = items!!.profile_image
+
                 binding.userProfileNicNameTv.text = items!!.nick_name
                 clicked_user_NicName = items!!.nick_name
+
 
                 if(items!!.introduction == null) {
                     binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
