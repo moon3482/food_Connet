@@ -217,7 +217,8 @@
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                android:layout_marginTop="15dp" />
+                android:layout_marginTop="15dp"
+                tools:srcCompat="@tools:sample/avatars" />
 
 
 
@@ -310,9 +311,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/create_room_activity_minimum_age"
+                            android:textSize="12sp"
                             android:inputType="none" />
 
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        style="@style/create_room_activity_text_view_style"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.6"
+                        android:text="~" />
 
                     <com.google.android.material.textfield.TextInputLayout
 
@@ -327,6 +337,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/create_room_activity_maximum_age"
+                            android:textSize="12sp"
                             android:inputType="none" />
 
                     </com.google.android.material.textfield.TextInputLayout>

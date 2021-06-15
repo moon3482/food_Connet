@@ -58,7 +58,8 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(view)
         array = ArrayList()
         context = this
-        pickMarker = ClusterDataClass(0.0, 0.0, Document("","","","","","","","","","","",""))
+        pickMarker =
+            ClusterDataClass(0.0, 0.0, Document("", "", "", "", "", "", "", "", "", "", "", ""))
         markerList = ArrayList()
         infoWindow = InfoWindow()
         CLlist = ArrayList()
@@ -176,19 +177,25 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                         var x: Double = 0.0
                         var y: Double = 0.0
+                        if (list?.documents?.size != 0) {
+                            for (index in list?.documents!!.indices) {
 
-                        for (index in list?.documents!!.indices) {
 
-
-                            x += documents!![index].x.toDouble()
-                            y += documents[index].y.toDouble()
+                                x += documents!![index].x.toDouble()
+                                y += documents[index].y.toDouble()
 //                            val marker = Marker()
-                            val position = LatLng(
-                                documents!![index].y.toDouble(),
-                                documents!![index].x.toDouble()
-                            )
-                            builder.include(position)
-                            CLlist.add(ClusterDataClass(position, documents[index].placeName,documents[index]))
+                                val position = LatLng(
+                                    documents!![index].y.toDouble(),
+                                    documents!![index].x.toDouble()
+                                )
+                                builder.include(position)
+                                CLlist.add(
+                                    ClusterDataClass(
+                                        position,
+                                        documents[index].placeName,
+                                        documents[index]
+                                    )
+                                )
 //                            marker.position = position
 //                            marker.map = it
 //                            val infoWindow = InfoWindow()
@@ -227,60 +234,91 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 //                            markerList.add(marker)
 //                            Log.e("어레이 사이즈", markerList.size.toString())
 
-                        }
-
-                        cluster = TedNaverClustering.with<ClusterDataClass>(
-                            this@CreateRoomMapSearchActivity,
-                            naverMap
-                        ).markerAddedListener { clusterItem, tedNaverMarker ->
-                            if (clusterItem.status == 1) {
-                                array[0].marker = tedNaverMarker
-                                array[0].clustetdata = clusterItem
-                                tedNaverMarker.marker.icon = MarkerIcons.RED
                             }
-                            val info = InfoWindow()
-                            info.adapter = object :
-                                InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
-                                override fun getText(p0: InfoWindow): CharSequence {
-                                    return clusterItem.name
+
+                            cluster = TedNaverClustering.with<ClusterDataClass>(
+                                this@CreateRoomMapSearchActivity,
+                                naverMap
+                            ).markerAddedListener { clusterItem, tedNaverMarker ->
+                                if (clusterItem.status == 1) {
+                                    array[0].marker = tedNaverMarker
+                                    array[0].clustetdata = clusterItem
+                                    tedNaverMarker.marker.icon = MarkerIcons.RED
                                 }
-                            }
-                            info.open(tedNaverMarker.marker)
-
-
-                            tedNaverMarker.marker.setOnClickListener {
-                                if (array.size > 0) {
-                                    for (index in array.indices) {
-                                        array[index].clustetdata.status = 0
-                                        array[index].marker.marker.icon = MarkerIcons.GREEN
-                                        array.removeAt(index)
+                                val info = InfoWindow()
+                                info.adapter = object :
+                                    InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                    override fun getText(p0: InfoWindow): CharSequence {
+                                        return clusterItem.name
                                     }
                                 }
+                                info.open(tedNaverMarker.marker)
 
-                                clusterItem.status = 1
-                                tedNaverMarker.marker.icon = MarkerIcons.RED
-                                intentX = clusterItem.position.longitude
-                                intentY = clusterItem.position.latitude
-                                intentShopName = clusterItem.document.placeName
-                                intentRoadAddress = clusterItem.document.roadAddressName
-                                intentAddress = clusterItem.document.addressName
-                                array.add(ClusterMarkerData(clusterItem, tedNaverMarker))
-                                naverMap.moveCamera(CameraUpdate.scrollTo(clusterItem.position).animate(CameraAnimation.Easing))
-                                true
+
+                                tedNaverMarker.marker.setOnClickListener {
+                                    if (array.size > 0) {
+                                        for (index in array.indices) {
+                                            array[index].clustetdata.status = 0
+                                            array[index].marker.marker.icon = MarkerIcons.GREEN
+                                            array.removeAt(index)
+                                        }
+                                    }
+
+                                    clusterItem.status = 1
+                                    tedNaverMarker.marker.icon = MarkerIcons.RED
+                                    intentX = clusterItem.position.longitude
+                                    intentY = clusterItem.position.latitude
+                                    intentShopName = clusterItem.document.placeName
+                                    intentRoadAddress = clusterItem.document.roadAddressName
+                                    intentAddress = clusterItem.document.addressName
+                                    array.add(ClusterMarkerData(clusterItem, tedNaverMarker))
+                                    naverMap.moveCamera(
+                                        CameraUpdate.scrollTo(clusterItem.position)
+                                            .animate(CameraAnimation.Easing)
+                                    )
+                                    true
+                                }
+                            }.items(getItems(naverMap, CLlist)).minClusterSize(3).clusterBuckets(
+                                intArrayOf(
+                                    5,
+                                    10,
+                                    15,
+                                    20,
+                                    25,
+                                    30,
+                                    35,
+                                    40,
+                                    45,
+                                    50,
+                                    55,
+                                    60,
+                                    65,
+                                    70,
+                                    75,
+                                    80,
+                                    85,
+                                    90,
+                                    95,
+                                    100
+                                )
+                            ).make()
+
+                            val buildMap: LatLngBounds = builder.build()
+                            if (documents != null) {
+                                Log.e(
+                                    "마커 로그 평균",
+                                    "x : " + x / documents.size + "y : " + y / documents.size
+                                )
+                                naverMap.moveCamera(
+                                    CameraUpdate.fitBounds(buildMap, 300)
+                                        .animate(CameraAnimation.Easing)
+                                )
                             }
-                        }.items(getItems(naverMap, CLlist)).minClusterSize(5).clusterBuckets(
-                            intArrayOf(5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)).make()
-
-                        val buildMap: LatLngBounds = builder.build()
-                        if (documents != null) {
-                            Log.e(
-                                "마커 로그 평균",
-                                "x : " + x / documents.size + "y : " + y / documents.size
-                            )
-                            naverMap.moveCamera(
-                                CameraUpdate.fitBounds(buildMap, 300)
-                                    .animate(CameraAnimation.Easing)
-                            )
+                        }else{
+                            val dialog = AlertDialog.Builder(this@CreateRoomMapSearchActivity)
+                            dialog.setTitle("검색된 결과가 없습니다.")
+                            dialog.setPositiveButton("확인", null)
+                            dialog.show()
                         }
                     }
 
