@@ -131,7 +131,7 @@ class ChatDMFragment : Fragment() {
 
 
 
-        DM_Message_List_get()
+        //DM_Message_List_get()
 
 
 

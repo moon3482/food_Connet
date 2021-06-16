@@ -15,6 +15,7 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
+import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -104,6 +105,9 @@ class DirectMessageActivity : AppCompatActivity() {
         // 이제부터 binding 바인딩 변수를 활용하여 마음 껏 xml 파일 내의 뷰 id 접근이 가능해집니다.
         // 뷰 id도 파스칼케이스 + 카멜케이스의 네이밍규칙 적용으로 인해서 tv_message -> tvMessage 로 자동 변환 되었습니다.
 
+        //키보드가 화면 안가리게함
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
 
         // 권한체크 시작(카메라, 저장소접근)
         settingPermission()
@@ -184,16 +188,24 @@ class DirectMessageActivity : AppCompatActivity() {
 
         binding.messageSendBtn.setOnClickListener {
 
+            if(binding.editText.text.toString().length>0) {
+                //내가 보내는 것이다.
+                //dm_log_tb_id,sendtime,message_check는 서버에서 처리할 것이다.
+                var g1 = DirectMessageNodeServerSendDataItem(
+                    0,
+                    roomName,
+                    MyUserTableId,
+                    clicked_user_tb_id,
+                    binding.editText.text.toString(),
+                    "Text",
+                    "",
+                    ""
+                )
+                var msg_json = gson.toJson(g1)
 
-            //내가 보내는 것이다.
-            //dm_log_tb_id,sendtime,message_check는 서버에서 처리할 것이다.
-            var g1 = DirectMessageNodeServerSendDataItem(0,roomName,MyUserTableId,clicked_user_tb_id,binding.editText.text.toString(),"Text","","")
-            var msg_json = gson.toJson(g1)
 
-
-            mySocket.emit("message_from_client", msg_json)
-            binding.editText.setText("")
-
+                mySocket.emit("message_from_client", msg_json)
+                binding.editText.setText("")
 
 
 //            Log.d("어레이뭐있냐", direct_message_data_Arraylist.toString())
@@ -203,6 +215,8 @@ class DirectMessageActivity : AppCompatActivity() {
 //                binding.directMessageChatListRv.adapter = directMessageRvAdapter
 //                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size-1);
 //            });
+
+            }
         }
 
         binding.imageSendBtn.setOnClickListener {
@@ -227,13 +241,10 @@ class DirectMessageActivity : AppCompatActivity() {
         //서버에서 도착한 메시지 받기.
         Log.d("유저가 접속했습니다.",  it[0].toString())
 
-        if(clicked_user_tb_id == it[0].toString().toInt()) {
+
+        NewUserchattingListLoading(roomName)
 
 
-            Thread.sleep(2000);
-            NewUserchattingListLoading(roomName)
-
-        }
     }
 
     val fromServerMessage_Get: Emitter.Listener = Emitter.Listener {
@@ -612,8 +623,9 @@ class DirectMessageActivity : AppCompatActivity() {
 
 
                 runOnUiThread({
-                    directMessageRvAdapter = DirectMessageRvAdapter(direct_message_data_Arraylist)
-                    directMessageRvAdapter.notifyDataSetChanged()
+
+                    binding.directMessageChatListRv.adapter?.notifyDataSetChanged()
+
                 })
 
 
