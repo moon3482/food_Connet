@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +29,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URISyntaxException
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class ChatDMFragment : Fragment() {
 
@@ -74,6 +79,7 @@ class ChatDMFragment : Fragment() {
 
     }
 
+
     override fun onPause() {
         super.onPause()
         mySocket.disconnect()
@@ -98,18 +104,19 @@ class ChatDMFragment : Fragment() {
             e.printStackTrace()
         }
 
-        //소켓통신을 시작한다.
-
-        mySocket.connect() // 소켓연결
-        //on은 서버로부터 받는 동작 수행.
-        //emit은 보내는 동작수행
-        mySocket.on(Socket.EVENT_CONNECT, DMFragmentOnConnect)
-        // 첫 연결이 되면 onConnect 메서드가 실행된다
-        // onConnect는 나의 user_tb_id와 방 모든 목록이
-        //서버로부터 메시지를 받는다. "message_from_server"을 키값으로 사용한다.
-        mySocket.on("dm_fragment_refresh", fromServerMessage_Get)
-
-
+//        //소켓통신을 시작한다.
+//
+//        mySocket.connect() // 소켓연결
+//        //on은 서버로부터 받는 동작 수행.
+//        //emit은 보내는 동작수행
+//        mySocket.on(Socket.EVENT_CONNECT, DMFragmentOnConnect)
+//        // 첫 연결이 되면 onConnect 메서드가 실행된다
+//        // onConnect는 나의 user_tb_id와 방 모든 목록이
+//        //서버로부터 메시지를 받는다. "message_from_server"을 키값으로 사용한다.
+//        mySocket.on("dm_fragment_refresh", fromServerMessage_Get)
+//
+//
+//        mySocket.on("some_one_login_broadcast",some_one_login_broadcast_refresh)
 
 
 
@@ -143,6 +150,14 @@ class ChatDMFragment : Fragment() {
     }
 
 
+    val some_one_login_broadcast_refresh  : Emitter.Listener = Emitter.Listener {
+        //서버에서 도착한 메시지 받기.
+        Log.d("어떤 유저가 채팅방에 들어갔습니다.",  it[0].toString())
+
+
+    }
+
+
     fun DM_Message_List_get(){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
@@ -172,6 +187,18 @@ class ChatDMFragment : Fragment() {
                     DM_List_arrayList.clear()
                 }
                 DM_List_arrayList = items!!.chattingList as ArrayList<ChattingFragmentDmRvDataItem>
+
+
+                DM_List_arrayList.sortWith(object: Comparator<ChattingFragmentDmRvDataItem>{
+                    override fun compare(p1: ChattingFragmentDmRvDataItem, p2: ChattingFragmentDmRvDataItem): Int = when {
+                        p1.send_time > p2.send_time -> -1
+                        p1.send_time == p2.send_time -> 0
+                        else -> 1
+                    }
+                })
+
+
+
                 DM_List_rv_Adapter =  ChattingFragmentDmRvAdapter(DM_List_arrayList)
                 DM_List_rv_Adapter.notifyDataSetChanged()
                 DM_List_rv.adapter = DM_List_rv_Adapter
@@ -191,6 +218,9 @@ class ChatDMFragment : Fragment() {
                 // onConnect는 나의 user_tb_id와 방 모든 목록이
                 //서버로부터 메시지를 받는다. "message_from_server"을 키값으로 사용한다.
                 mySocket.on("dm_fragment_refresh", fromServerMessage_Get)
+
+
+                mySocket.on("some_one_login_broadcast",some_one_login_broadcast_refresh)
 
 
                 //목록을 다 받고 소켓서버로 유저 아이디와 방목록을 보내준다
@@ -256,13 +286,24 @@ class ChatDMFragment : Fragment() {
                 }
                 DM_List_arrayList = items!!.chattingList as ArrayList<ChattingFragmentDmRvDataItem>
 
+                DM_List_arrayList.sortWith(object: Comparator<ChattingFragmentDmRvDataItem>{
+                    override fun compare(p1: ChattingFragmentDmRvDataItem, p2: ChattingFragmentDmRvDataItem): Int = when {
+                        p1.send_time > p2.send_time -> -1
+                        p1.send_time == p2.send_time -> 0
+                        else -> 1
+                    }
+                })
+
                 Log.d("목록나와라", DM_List_arrayList.toString())
 
 
 
 
+
                 DM_List_rv_Adapter = ChattingFragmentDmRvAdapter(DM_List_arrayList)
+
                 DM_List_rv_Adapter.notifyDataSetChanged()
+
                 DM_List_rv.adapter = DM_List_rv_Adapter
 
 

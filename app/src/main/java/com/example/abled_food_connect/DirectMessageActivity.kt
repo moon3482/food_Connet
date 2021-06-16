@@ -232,7 +232,7 @@ class DirectMessageActivity : AppCompatActivity() {
         //서버 측에서는 이 username을 whoIsON Array 에 추가를 할 것입니다.
 
 
-        mySocket.emit("login", roomName+","+MyUserTableId.toString())
+        mySocket.emit("login", roomName+","+MyUserTableId.toString()+","+clicked_user_tb_id.toString())
         //mySocket.emit("user_room_name", roomName)
         Log.d("Tag", "Socket is connected with ${MyUserTableId.toString()+roomName}")
     }
@@ -246,6 +246,10 @@ class DirectMessageActivity : AppCompatActivity() {
 
 
     }
+
+
+
+
 
     val fromServerMessage_Get: Emitter.Listener = Emitter.Listener {
         //서버에서 도착한 메시지 받기.

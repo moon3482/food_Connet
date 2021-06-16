@@ -1,6 +1,7 @@
 package com.example.abled_food_connect.adapter
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,8 @@ import com.bumptech.glide.Glide
 import com.example.abled_food_connect.DirectMessageActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.ChattingFragmentDmRvDataItem
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDmRvDataItem>) : RecyclerView.Adapter<ChattingFragmentDmRvAdapter.CustromViewHolder>(){
 
@@ -37,7 +40,15 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
 
 
         holder.dmListUserNicNameTv.text = DMArrayList.get(position).your_nick_name
-        holder.dmListSendTimeTv.text = DMArrayList.get(position).send_time
+
+
+
+
+        holder.dmListSendTimeTv.text = formatTimeAgo(DMArrayList.get(position).send_time,DMArrayList.get(position).now_server_time)
+
+
+
+
         if(DMArrayList.get(position).text_or_image == "Image"){
             holder.dmListMessageTv.text = "사진을 보냈습니다."
         }else{
@@ -90,5 +101,59 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
 
 
     }
+
+
+    fun formatTimeAgo(sendTime: String, ServerTime:String): String {  // Note : date1 must be in   "yyyy-MM-dd hh:mm:ss"   format
+        var conversionTime =""
+
+        val sendTime_str = sendTime
+        val format = SimpleDateFormat("yyyy-MM-dd")
+        val date: Date = format.parse(sendTime_str)
+        val sendDate = format.format(date)
+
+        var sendTimeToken = sendTime.split(' ')
+        var hourAndMinute = sendTimeToken[1].split(":")
+
+
+        val time_sendDate = hourAndMinute[0]+":"+hourAndMinute[1]
+
+        try{
+            val format = "yyyy-MM-dd hh:mm:ss"
+
+            val sdf = SimpleDateFormat(format)
+
+           //val datetime= Calendar.getInstance()
+            //var date2= sdf.format(datetime.time).toString()
+
+            val dateObj1 = sdf.parse(sendTime)
+            val dateObj2 = sdf.parse(ServerTime)
+            val diff = dateObj2.time - dateObj1.time
+
+            val diffDays = diff / (24 * 60 * 60 * 1000)
+            val diffhours = diff / (60 * 60 * 1000)
+            val diffmin = diff / (60 * 1000)
+            val diffsec = diff  / 1000
+            if(diffDays>1){
+                conversionTime+=sendDate
+            }else if(diffhours>1){
+                conversionTime+=time_sendDate
+            }else if(diffmin>1){
+                conversionTime+=time_sendDate
+            }else if(diffsec>1){
+                conversionTime+=time_sendDate
+            }else{
+                conversionTime+=time_sendDate
+            }
+        }catch (ex:java.lang.Exception){
+            Log.e("formatTimeAgo",ex.toString())
+        }
+        if(conversionTime!=""){
+
+        }
+        return conversionTime
+    }
+
+
+
 
 }
