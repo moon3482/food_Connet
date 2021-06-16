@@ -31,6 +31,10 @@ class ChatAdapter(context: Context, arrayList: ArrayList<ChatItem>) :
                 view = inflater.inflate(R.layout.chat_others_message, parent, false)
                 LeftMessage(view)
             }
+            ItemType.CENTER_MESSAGE -> {
+                view = inflater.inflate(R.layout.chat_server_item, parent, false)
+                ServerMessage(view)
+            }
             else -> {
                 view = inflater.inflate(R.layout.chat_my_message, parent, false)
                 RightMessage(view)
@@ -47,29 +51,37 @@ class ChatAdapter(context: Context, arrayList: ArrayList<ChatItem>) :
             leftHolder.message.text = chatItem.content
             leftHolder.nickname.text = chatItem.name
             leftHolder.time.text = chatItem.sendTime
-            leftHolder.profileImage.load(context.getString(R.string.http_request_base_url)+chatItem.ThumbnailImage)
-            leftHolder.message.setOnLongClickListener(object : View.OnLongClickListener{
+            leftHolder.profileImage.load(context.getString(R.string.http_request_base_url) + chatItem.ThumbnailImage)
+            leftHolder.message.setOnLongClickListener(object : View.OnLongClickListener {
                 override fun onLongClick(v: View?): Boolean {
-                    val clipboardManager:ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clipData:ClipData = ClipData.newPlainText("",leftHolder.message.text.toString())
+                    val clipboardManager: ClipboardManager =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData: ClipData =
+                        ClipData.newPlainText("", leftHolder.message.text.toString())
                     clipboardManager.setPrimaryClip(clipData)
-                    Toast.makeText(context,"클립보드에 복사되었습니다.",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
                     return true
                 }
             })
 
+        } else if (holder is ServerMessage) {
+            var chatItem: ChatItem = arrayList[position]
+            var centerHolder = (holder as ServerMessage)
+            centerHolder.message.text = chatItem.content
         } else {
 
             var chatItem: ChatItem = arrayList[position]
             var rightHolder = (holder as RightMessage)
             rightHolder.message.text = chatItem.content
             rightHolder.time.text = chatItem.sendTime
-            rightHolder.message.setOnLongClickListener(object : View.OnLongClickListener{
+            rightHolder.message.setOnLongClickListener(object : View.OnLongClickListener {
                 override fun onLongClick(v: View?): Boolean {
-                    val clipboardManager:ClipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clipData:ClipData = ClipData.newPlainText("",rightHolder.message.text.toString())
+                    val clipboardManager: ClipboardManager =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData: ClipData =
+                        ClipData.newPlainText("", rightHolder.message.text.toString())
                     clipboardManager.setPrimaryClip(clipData)
-                    Toast.makeText(context,"클립보드에 복사되었습니다.",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
                     return true
                 }
             })
@@ -95,5 +107,10 @@ class ChatAdapter(context: Context, arrayList: ArrayList<ChatItem>) :
     class RightMessage(view: View) : RecyclerView.ViewHolder(view) {
         var message = view.findViewById<TextView>(R.id.chatMyMessageText)
         var time = view.findViewById<TextView>(R.id.chatMyTimeStamp)
+    }
+
+    class ServerMessage(view: View) : RecyclerView.ViewHolder(view) {
+        var message = view.findViewById<TextView>(R.id.content_text)
+
     }
 }

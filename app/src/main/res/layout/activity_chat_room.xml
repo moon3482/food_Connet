@@ -27,13 +27,18 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/groupChatRecyclerView"
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/ChatRoomCoordinator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
 
-            </androidx.recyclerview.widget.RecyclerView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/groupChatRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
             <LinearLayout
                 android:id="@+id/groupChatInputMessageLinear"

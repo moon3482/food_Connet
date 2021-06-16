@@ -1,9 +1,7 @@
 package com.example.abled_food_connect.retrofit
 
 
-import com.example.abled_food_connect.data.JoinRoomCheck
-import com.example.abled_food_connect.data.LoadingRoom
-import com.example.abled_food_connect.data.Message
+import com.example.abled_food_connect.data.*
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -18,7 +16,7 @@ interface RoomAPI {
         @Field("time") time: String,
         @Field("address") address: String,
         @Field("roadAddress") roadAddress: String,
-        @Field("placeName") placeName:String,
+        @Field("placeName") placeName: String,
         @Field("shopName") shopName: String,
         @Field("keyWords") keyWords: String,
         @Field("gender") gender: String,
@@ -55,6 +53,28 @@ interface RoomAPI {
 
 
     @retrofit2.http.Multipart
-    @POST("/upload")  open
+    @POST("/upload")
+    open
     fun uploadImage(@Part image: Part?): Call<Message?>?
+
+    @FormUrlEncoded
+    @POST("/groupChat/datelineCheck.php")
+    fun timelineCheck(
+        @Field("datetime") datetime: String?
+    ): Call<String>
+
+    @FormUrlEncoded
+    @POST("/groupChat/datelineCheck.php")
+    fun getPageMaxNum(
+        @Field("roomId") roomId: String?
+    ): Call<Int>
+
+    @GET("/groupChat/chatPagenation.php")
+    fun pagination(
+        @Query("roomId") roomId: String,
+        @Query("page") page: Int
+    ): Call<paginationData>
+
+
 }
+

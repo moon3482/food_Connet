@@ -1,5 +1,14 @@
 package com.example.abled_food_connect.data
 
-class MessageData(val type:String,val from:String,val to:String,val content:String,val thumbnailImage:String,val sendTime:Long) {
+import com.google.gson.annotations.SerializedName
+
+class MessageData(
+    @SerializedName("type") val type: String,
+    @SerializedName("from") val from: String,
+    @SerializedName("to") val to: String,
+    @SerializedName("content") val content: String,
+    @SerializedName("thumbnailImage") val thumbnailImage: String,
+    @SerializedName("sendTime") val sendTime: String? = null
+) {
 
 }
