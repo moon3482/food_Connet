@@ -7,14 +7,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.adapter.ChattingFragmentDmRvAdapter
+import com.example.abled_food_connect.data.ChattingFragmentDmRvData
+import com.example.abled_food_connect.data.ChattingFragmentDmRvDataItem
+import com.example.abled_food_connect.retrofit.API
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.net.URISyntaxException
 
 class ChatDMFragment : Fragment() {
 
