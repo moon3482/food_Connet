@@ -37,9 +37,9 @@ data class MainFragmentItemData(
     var hostName: String,
     @SerializedName("roomStatus")
     var roomStatus: Double,
-    @SerializedName("mapX")
+    @SerializedName("map_x")
     var mapX:Double,
-    @SerializedName("mapY")
+    @SerializedName("map_y")
     var mapY:Double
 
 ) {

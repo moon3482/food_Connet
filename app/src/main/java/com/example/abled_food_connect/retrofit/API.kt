@@ -6,6 +6,7 @@ import android.content.Intent
 import android.widget.Toast
 import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -118,7 +119,7 @@ class API {
     data class createRoomHost(
         @SerializedName("success")
         val success :Boolean,
-        @SerializedName("roomId")
-        val roomId:String
+        @SerializedName("room")
+        val roomId:MainFragmentItemData
     )
 }

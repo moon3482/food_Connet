@@ -61,6 +61,8 @@ class CreateRoomActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+    private var x:Double? = null
+    private var y:Double? = null
     /*태그 리스트*/val PERMISSIONS_REQUEST_CODE = 100
     var tagArray: ArrayList<String> = ArrayList()
     lateinit var marker: Marker
@@ -404,6 +406,8 @@ class CreateRoomActivity : AppCompatActivity() {
         val shopName = placeName
         val keyWord = tagArray.toString()
         var gender: String = ""
+        var mapx = x?.toDouble()
+        var mapy = y?.toDouble()
 
         if (genderMaleSelected) {
             gender = "male"
@@ -444,7 +448,9 @@ class CreateRoomActivity : AppCompatActivity() {
             gender,
             minAge,
             maxAge,
-            hostName
+            hostName,
+            mapx.toString(),
+            mapy.toString()
         )
             .enqueue(object : Callback<API.createRoomHost> {
                 override fun onResponse(
@@ -456,13 +462,24 @@ class CreateRoomActivity : AppCompatActivity() {
 
                     if (room!!.success) {
                         Toast.makeText(this@CreateRoomActivity, "방 생성", Toast.LENGTH_SHORT).show()
-                        startActivity(
-                            Intent(
-                                this@CreateRoomActivity,
-                                ChatRoomActivity::class.java
-                            ).putExtra("roomId", room.roomId)
 
-                        )
+                        val intent = Intent(this@CreateRoomActivity, RoomInformationActivity::class.java)
+                        intent.putExtra("roomId",room.roomId.roomId)
+                        intent.putExtra("title",room.roomId.title)
+                        intent.putExtra("info",room.roomId.info)
+                        intent.putExtra("hostName",room.roomId.hostName)
+                        intent.putExtra("address",room.roomId.address)
+                        intent.putExtra("date",room.roomId.date)
+                        intent.putExtra("shopName",room.roomId.shopName)
+                        intent.putExtra("roomStatus",room.roomId.roomStatus)
+                        intent.putExtra("numOfPeople",room.roomId.numOfPeople.toString())
+                        intent.putExtra("keyWords",room.roomId.keyWords)
+                        intent.putExtra("mapX",room.roomId.mapX)
+                        intent.putExtra("mapY",room.roomId.mapY)
+                        intent.putExtra("nowNumOfPeople",room.roomId.nowNumOfPeople.toString())
+                        intent.putExtra("imageUrl",MainActivity.userThumbnailImage)
+                        intent.putExtra("join","1")
+                        startActivity(intent)
                         finish()
                     }
                 }
@@ -717,8 +734,8 @@ class CreateRoomActivity : AppCompatActivity() {
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 SEARCHMAPRESULTCODE -> {
-                    val x = data?.getDoubleExtra("x", 0.0)
-                    val y = data?.getDoubleExtra("y", 0.0)
+                    x = data?.getDoubleExtra("x", 0.0)
+                    y = data?.getDoubleExtra("y", 0.0)
                     placeName = data?.getStringExtra("shopName").toString()
                     address = data?.getStringExtra("address").toString()
                     roadAddress = data?.getStringExtra("roadAddress").toString()

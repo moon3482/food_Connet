@@ -166,7 +166,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 var last = layoutManager.findLastCompletelyVisibleItemPosition()
                 var lc = layoutManager.itemCount - 1
                 pagenum = layoutManager.itemCount - 1
-                if (first == count) {
+                if (first == count&&requestPage) {
 
                     messageLoad(pagenum)
 
@@ -186,6 +186,7 @@ class ChatRoomActivity : AppCompatActivity() {
         socket.on(
             Socket.EVENT_CONNECT,
             Emitter.Listener { socket.emit("enter", gson.toJson(RoomData(userName, roomId))) })
+
 
         socket.on(
             "update",
@@ -401,6 +402,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         }
                     } else {
                         requestPage = false
+                        Log.e("로드 메세지끝", requestPage.toString() )
                     }
                 }
 
