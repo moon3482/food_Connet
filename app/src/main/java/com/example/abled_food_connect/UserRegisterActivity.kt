@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -22,6 +24,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -35,6 +38,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -43,6 +48,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -64,6 +70,13 @@ class UserRegisterActivity : AppCompatActivity() {
     lateinit var currentPhotoPath : String
 
 
+
+    //이미지 Uri
+    lateinit var userProfileImageUri : Uri
+    lateinit var thumbnail_userProfileImageUri : Uri
+
+
+
     //닉네임 중복 체크했는지 확인하는 변수
     var nicName_dup_check_str = "NO"
 
@@ -72,7 +85,7 @@ class UserRegisterActivity : AppCompatActivity() {
     lateinit var user_id : String
     lateinit var social_login_type  : String
     lateinit var nick_name  : String
-    var profile_image_path  : String ="NOIMAGE"
+    var profile_get_check  : String ="NOIMAGE"
     lateinit var birth_year  : String
     lateinit var user_gender  : String
     lateinit var phone_number  : String
@@ -129,41 +142,16 @@ class UserRegisterActivity : AppCompatActivity() {
         imageView = binding.userProfileIv
 
 
-
-
-
-        //title = "KotlinApp"
-
         // 카메라 및 이미지 권한체크
         settingPermission()
 
         //이미지뷰를 누르면 사진을 변경할 수 있다.
         binding.userProfileIv.setOnClickListener {
-            var builder = AlertDialog.Builder(this)
-            builder.setTitle("사진 업로드")
-            builder.setIcon(R.drawable.ic_baseline_camera_alt_24)
 
-            // 버튼 클릭시에 무슨 작업을 할 것인가!
-            var listener = object : DialogInterface.OnClickListener {
-                override fun onClick(p0: DialogInterface?, p1: Int) {
+            CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this);
 
-                    val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-
-                    when (p1) {
-                        DialogInterface.BUTTON_POSITIVE ->
-                            startCapture()
-
-                        DialogInterface.BUTTON_NEGATIVE ->
-                            startActivityForResult(gallery, pickImage)
-                    }
-                }
-            }
-
-            builder.setPositiveButton("카메라", listener)
-            builder.setNegativeButton("갤러리", listener)
-
-
-            builder.show()
         }
 
 
@@ -334,7 +322,7 @@ class UserRegisterActivity : AppCompatActivity() {
         binding.userRegisterBtn.setOnClickListener {
 
 
-            if(profile_image_path == "NOIMAGE"){
+            if(profile_get_check == "NOIMAGE"){
                 Toast.makeText(this,"프로필 사진을 등록해주세요.",Toast.LENGTH_SHORT).show()
             }
             else if(nicName_dup_check_str=="NO"){
@@ -353,7 +341,7 @@ class UserRegisterActivity : AppCompatActivity() {
 
             else {
 
-               RegistUserInfo(profile_image_path)
+               RegistUserInfo(userProfileImageUri,thumbnail_userProfileImageUri)
             }
 
 
@@ -377,46 +365,73 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK){
+            when(requestCode) {
 
-        //사진첩에서 사진을 가져올 때.
-        if (resultCode == RESULT_OK && requestCode == pickImage) {
-            imageUri = data?.data
-            imageView.setImageURI(imageUri)
+                CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
 
-            val uriPathHelper = URIPathHelper()
-            var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
-            if (filePath != null) {
-                profile_image_path = filePath
+                    //profile_get_check에 글을 넣어준다
+                    profile_get_check = "OK"
+
+                    //이미지를 가져와서 이미지 뷰에 보여준다.
+                    val result = CropImage.getActivityResult(data)
+                    val resultUri: Uri = result.uri
+                    binding.userProfileIv.setImageURI(Uri.parse(resultUri.toString()))
+
+
+                    //이미지 uri를 비트맵으로 변환한다.
+                    val bitmap =
+                        MediaStore.Images.Media.getBitmap(applicationContext.getContentResolver(), resultUri)
+
+                    //썸네일 크기 줄이기 비트맵 크기를 1/2로 줄인다.
+
+                    var width : Int =bitmap.width
+                    var height : Int = bitmap.height
+
+                    var resize_bitmap : Bitmap
+                    if(width>100||height>100){
+                        resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, 300, 300*height/width, true)
+
+                    }else{
+                        resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, width/2, height/2, true)
+                    }
+
+                    //썸네일 용량 줄이기 비트맵 화질을 낮춘다.
+                    resize_bitmap = compressBitmap(resize_bitmap)!!
+
+
+
+
+
+                    Log.d("uri", resultUri.toString())
+                    Log.d("uri", getImageUri(applicationContext,bitmap).toString())
+                    Log.d("uri", getImageUri(applicationContext,resize_bitmap).toString())
+
+
+                    userProfileImageUri = resultUri
+                    thumbnail_userProfileImageUri = getImageUri(applicationContext,resize_bitmap)!!
+                }
             }
-
         }
+    }
 
-        //카메라로 촬영했을 때.
-        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
-            val file = File(currentPhotoPath)
+    //비트맵 이미지를 압축시칸다.
+    private fun compressBitmap(bitmap: Bitmap): Bitmap? {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream)
+        val byteArray = stream.toByteArray()
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
 
-            profile_image_path = currentPhotoPath
+    //비트맵 이미지 uri를 가져온다.
+    fun getImageUri(inContext: Context?, inImage: Bitmap?): Uri? {
 
-            if (Build.VERSION.SDK_INT < 28) {
-                val bitmap = MediaStore.Images.Media
-                    .getBitmap(contentResolver, Uri.fromFile(file))
-                imageView.setImageBitmap(bitmap)
+        val path = MediaStore.Images.Media.insertImage(inContext?.getContentResolver(), inImage, "Title"+ Calendar.getInstance().getTime(), null)
 
-
-
-            }
-            else{
-                val decode = ImageDecoder.createSource(this.contentResolver,
-                    Uri.fromFile(file))
-                val bitmap = ImageDecoder.decodeBitmap(decode)
-                imageView.setImageBitmap(bitmap)
-
-
-            }
-        }
+        Log.d("uri 나와라", path)
+        return Uri.parse(path)
     }
 
 
@@ -425,16 +440,40 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
 
-    fun RegistUserInfo(path:String){
+    fun RegistUserInfo(imageUri:Uri,thumbnail_ImageUri:Uri){
+
+        //원본이미지
+        val uriPathHelper = UserProfileModifyActivity.URIPathHelper()
+        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
 
         //creating a file
-        val file = File(path)
-        var fileName = user_id.replace("@","").replace(".","")
-        fileName = fileName+".png"
+        val file = File(filePath)
+
+        //이미지의 확장자를 구한다.
+        val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri.toString())
 
 
+        var fileName = MainActivity.loginUserId+"."+extension
         var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),file)
         var body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file",fileName,requestBody)
+
+
+        //썸네일이미지
+        val thumbnail_uriPathHelper = UserProfileModifyActivity.URIPathHelper()
+        var thumbnail_filePath = thumbnail_ImageUri?.let { thumbnail_uriPathHelper.getPath(this, it) }
+
+        //creating a file
+        val thumbnail_file = File(thumbnail_filePath)
+
+        //이미지의 확장자를 구한다.
+        val thumbnail_extension = MimeTypeMap.getFileExtensionFromUrl(thumbnail_ImageUri.toString())
+
+
+        //var thumbnail_fileName = MainActivity.user_table_id.toString()+"."+thumbnail_extension
+        var thumbnail_fileName = MainActivity.loginUserId+".jpeg"
+        var thumbnail_requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),thumbnail_file)
+        var thumbnail_body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file1",thumbnail_fileName,thumbnail_requestBody)
+
 
         //The gson builder
         var gson : Gson =  GsonBuilder()
@@ -460,7 +499,7 @@ class UserRegisterActivity : AppCompatActivity() {
         //user_gender = binding.userGenderEt.text.toString()
         phone_number = binding.phoneNumberInputEt.text.toString()
 
-        server.post_Porfile_Request(user_id,social_login_type, nick_name,birth_year,user_gender,phone_number, body).enqueue(object: Callback<String> {
+        server.post_Porfile_Request(user_id,social_login_type, nick_name,birth_year,user_gender,phone_number, body,thumbnail_body).enqueue(object: Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
             }

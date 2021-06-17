@@ -27,7 +27,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".DirectMessageActivity"></activity>
+        <activity android:name=".UserProfileModifyActivity"></activity>
+        <activity android:name=".DirectMessageActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".UserProfileClickedReviewVerticalListActivity" />
         <activity android:name=".UserProfileClickedReviewGridListActivity" />
