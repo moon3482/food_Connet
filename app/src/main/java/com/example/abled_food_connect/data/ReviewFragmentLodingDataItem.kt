@@ -7,6 +7,8 @@ data class ReviewFragmentLodingDataItem(
     val review_id : Int,
     @SerializedName("room_tb_id")
     val room_tb_id : Int,
+    @SerializedName("writer_user_tb_id")
+    val writer_user_tb_id : Int,
     @SerializedName("writer_uid")
     val writer_uid : String,
     @SerializedName("writer_nicname")

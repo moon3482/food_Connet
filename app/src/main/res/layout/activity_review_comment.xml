@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".ReviewCommentActivity"
     android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp">
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+
+    <androidx.core.widget.NestedScrollView
+
+        android:id="@+id/nestedScroll"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+
 
     <LinearLayout
         android:gravity="center_vertical"
@@ -16,10 +37,9 @@
         android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
-
         <ImageView
             android:layout_marginRight="10dp"
-            android:id="@+id/profileDetailIv"
+            android:id="@+id/contentProfileDetailIv"
             android:layout_width="50dp"
             android:layout_height="50dp"/>
 
@@ -33,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
-                    android:id="@+id/nicNameDetailTv"
+                    android:id="@+id/contentNicNameDetailTv"
                     android:text="닉네임"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
@@ -46,7 +66,7 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/writingDateDetailTv"
+                    android:id="@+id/contentWritingDateDetailTv"
                     android:text="21.07.21 금요일"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -57,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
-                    android:id="@+id/restaurantAddressDetailTv"
+                    android:id="@+id/contentRestaurantAddressDetailTv"
                     android:text="서울시>영등포구"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -67,7 +87,7 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/restaurantNameDetailTv"
+                    android:id="@+id/contentRestaurantNameDetailTv"
                     android:text="가게이름"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -89,17 +109,17 @@
         android:layout_marginBottom="10dp">
 
         <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/view_pager2"
+            android:id="@+id/contentViewPager2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:layout_above="@+id/indicator"/>
+            android:layout_above="@+id/contentIndicator"/>
 
         <me.relex.circleindicator.CircleIndicator3
+            android:id="@+id/contentIndicator"
             android:layout_marginBottom="10dp"
             android:visibility="gone"
             app:ci_drawable="@drawable/black_radius"
-            android:id="@+id/indicator"
             android:layout_width="match_parent"
             android:layout_height="18dp"
             android:layout_alignParentBottom="true"
@@ -109,8 +129,9 @@
 
     </RelativeLayout>
 
-<!--별점 삭제 -->
+<!--별점삭제-->
 <!--    <LinearLayout-->
+<!--        android:id="@+id/RatingStarLinearLayout"-->
 <!--        android:layout_marginLeft="20dp"-->
 <!--        android:layout_marginRight="10dp"-->
 <!--        android:layout_width="match_parent"-->
@@ -129,7 +150,7 @@
 <!--            android:layout_height="wrap_content"/>-->
 
 <!--        <TextView-->
-<!--            android:id="@+id/ratingStarTasteDetailTv"-->
+<!--            android:id="@+id/contentRatingStarTasteDetailTv"-->
 <!--            android:text="5"-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"/>-->
@@ -152,7 +173,7 @@
 <!--            android:layout_height="wrap_content"/>-->
 
 <!--        <TextView-->
-<!--            android:id="@+id/ratingStarServiceDetailTv"-->
+<!--            android:id="@+id/contentRatingStarServiceDetailTv"-->
 <!--            android:text="5"-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"/>-->
@@ -178,7 +199,7 @@
 
 
 <!--        <TextView-->
-<!--            android:id="@+id/ratingStarCleanDetailTv"-->
+<!--            android:id="@+id/contentRatingStarCleanDetailTv"-->
 <!--            android:text="5"-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"/>-->
@@ -202,7 +223,7 @@
 <!--            android:layout_height="wrap_content"/>-->
 
 <!--        <TextView-->
-<!--            android:id="@+id/ratingStarInteriorDetailTv"-->
+<!--            android:id="@+id/contentRatingStarInteriorDetailTv"-->
 <!--            android:text="5"-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"/>-->
@@ -211,7 +232,7 @@
 <!--    </LinearLayout>-->
 
     <TextView
-        android:id="@+id/reviewDescriptionTv"
+        android:id="@+id/contentReviewDescriptionTv"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
@@ -232,16 +253,16 @@
 
 
         <LinearLayout
-            android:id="@+id/likeBtn"
+            android:id="@+id/contentLikeBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp">
 
             <ImageView
-                android:id="@+id/heartIv"
+                android:id="@+id/contentHeartIv"
+                android:src="@drawable/ic_baseline_favorite_24"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_baseline_favorite_24" />
+                android:layout_height="wrap_content"/>
 
 
 
@@ -251,7 +272,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
-                android:id="@+id/likeCountTv"
+                android:id="@+id/contentLikeCountTv"
                 android:text="5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -267,7 +288,7 @@
 
 
         <LinearLayout
-            android:id="@+id/commentBtn"
+            android:id="@+id/contentCommentBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -282,7 +303,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
-                android:id="@+id/commentCountTv"
+                android:id="@+id/contentCommentCountTv"
                 android:text="5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -297,6 +318,84 @@
 
 
     </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:id="@+id/noCommentTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:gravity="center"
+                android:text="아직 댓글이 없습니다"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:gravity="center"
+                android:text="가장 먼저 댓글을 남겨보세요!"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+
+        </LinearLayout>
+
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:id="@+id/reviewCommentRv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            android:nestedScrollingEnabled="false"/>
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+
+        <LinearLayout
+            android:layout_gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/writingCommentEt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:inputType="textPersonName" />
+
+            <ImageButton
+                android:id="@+id/sendCommentBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:backgroundTint="@color/app_theme_color"
+                app:srcCompat="@drawable/ic_baseline_present_to_all_24" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+
 
 
 </LinearLayout>

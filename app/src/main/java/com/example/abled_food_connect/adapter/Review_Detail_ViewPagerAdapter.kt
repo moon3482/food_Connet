@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +40,7 @@ class Review_Detail_ViewPagerAdapter(private var images : List<String>) : Recycl
     override fun onBindViewHolder(holder: Review_Detail_ViewPagerAdapter.Pager2ViewHolder, position: Int){
 
         Glide.with(holder.itemImage.context)
-            .load("http://52.78.107.230/"+images[position])
+            .load(holder.itemImage.context.getString(R.string.http_request_base_url)+images[position])
             .optionalFitCenter()
             //.apply(RequestOptions().cen())
             .into(holder.itemImage)

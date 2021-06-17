@@ -445,7 +445,7 @@ class UserRegisterActivity : AppCompatActivity() {
         //creating retrofit object
         var retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl(getString(R.string.http_request_base_url))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
 
@@ -710,7 +710,7 @@ class UserRegisterActivity : AppCompatActivity() {
         //creating retrofit object
         var retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl(getString(R.string.http_request_base_url))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
 

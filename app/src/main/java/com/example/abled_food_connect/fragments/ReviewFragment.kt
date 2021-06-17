@@ -10,12 +10,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.R
-import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
-import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.data.ReviewFragmentLoadingData
 import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
+import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
 import com.example.abled_food_connect.interfaces.ReviewFragRvUsingInterface
+import com.example.abled_food_connect.R
+import com.example.abled_food_connect.data.MainFragmentItemData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -64,7 +64,7 @@ class ReviewFragment:Fragment() {
 
 
 
-//        reviewDbLoading()
+        reviewDbLoading()
 
 
 
@@ -90,15 +90,10 @@ class ReviewFragment:Fragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        reviewDbLoading()
-    }
-
 
     fun reviewDbLoading(){
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://52.78.107.230/")
+            .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(ReviewFragRvUsingInterface::class.java)
@@ -121,11 +116,7 @@ class ReviewFragment:Fragment() {
 
                 gridView_arrayList = items!!.roomList as ArrayList<ReviewFragmentLodingDataItem>
 
-                for(i in gridView_arrayList.indices){
-                    println(gridView_arrayList.get(i).review_picture_0);
 
-
-                }
 
                 mAdapter =  ReviewFragmentGridViewAdapter(gridView_arrayList)
                 rv.adapter = mAdapter
