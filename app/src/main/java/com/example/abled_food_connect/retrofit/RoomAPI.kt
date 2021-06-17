@@ -62,7 +62,8 @@ interface RoomAPI {
     @FormUrlEncoded
     @POST("/groupChat/datelineCheck.php")
     fun timelineCheck(
-        @Field("datetime") datetime: String?
+        @Field("datetime") datetime: String?,
+        @Field("roomId") roomId: String
     ): Call<String>
 
     @FormUrlEncoded

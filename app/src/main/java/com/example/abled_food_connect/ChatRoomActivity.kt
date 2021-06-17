@@ -166,7 +166,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 var last = layoutManager.findLastCompletelyVisibleItemPosition()
                 var lc = layoutManager.itemCount - 1
                 pagenum = layoutManager.itemCount - 1
-                if (first == count&&requestPage) {
+                if (first == count&&requestPage&&layoutManager.itemCount>31) {
 
                     messageLoad(pagenum)
 
@@ -334,7 +334,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         val server = retrofit.create(RoomAPI::class.java)
 
-        server.timelineCheck("datetime").enqueue(object : Callback<String> {
+        server.timelineCheck("datetime",roomId).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.body() == "true") {
                     timeLineadd()
