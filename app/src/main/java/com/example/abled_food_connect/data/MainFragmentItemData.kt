@@ -40,7 +40,9 @@ data class MainFragmentItemData(
     @SerializedName("map_x")
     var mapX:Double,
     @SerializedName("map_y")
-    var mapY:Double
+    var mapY:Double,
+    @SerializedName("joinMember")
+    var joinMember:ArrayList<String>
 
 ) {
     private fun CreateRoom() {

@@ -39,6 +39,7 @@ class MainFragment : Fragment() {
     lateinit var checkImage: ImageView
     private var check: Boolean = false
     lateinit var swipeRefresh: SwipeRefreshLayout
+    lateinit var refreshTextView:SwipeRefreshLayout
 
     companion object {
         const val TAG: String = "홈 프래그먼트 로그"
@@ -71,6 +72,7 @@ class MainFragment : Fragment() {
         hideRoom = view.findViewById(R.id.hideJoinRoom)
         checkImage = view.findViewById(R.id.hideRoomCheck)
         swipeRefresh = view.findViewById(R.id.mainFragmentSwipeRefresh)
+        refreshTextView = view.findViewById(R.id.mainFragmentSwipeRefreshTextView)
         recyclerView = view.findViewById(R.id.mainRcv) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.addItemDecoration(
@@ -86,7 +88,7 @@ class MainFragment : Fragment() {
         hideRoom.setOnClickListener {
             check = when (check) {
                 false -> {
-                    recyclerViewAdapter.filter.filter(MainActivity.loginUserNickname)
+                    recyclerViewAdapter.filter.filter(MainActivity.user_table_id.toString())
                     checkImage.setImageResource(R.drawable.ic_baseline_check_circle_24)
                     true
                 }
@@ -181,11 +183,11 @@ class MainFragment : Fragment() {
                     val array: ArrayList<MainFragmentItemData> = list.roomList
                     mainFragmentListArray = list.roomList as ArrayList<MainFragmentItemData>
                     recyclerViewAdapter =
-                        MainFragmentAdapter(requireContext(), mainFragmentListArray)
+                        MainFragmentAdapter(requireContext(),this@MainFragment, mainFragmentListArray)
                     recyclerView.adapter = recyclerViewAdapter
                     swipeRefresh.isRefreshing = false
                     if(check){
-                        recyclerViewAdapter.filter.filter(MainActivity.loginUserNickname)
+                        recyclerViewAdapter.filter.filter(MainActivity.user_table_id.toString())
                     }else{
                         recyclerViewAdapter.filter.filter(null)
                     }

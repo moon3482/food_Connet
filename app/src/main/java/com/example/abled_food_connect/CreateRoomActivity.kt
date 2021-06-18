@@ -61,8 +61,8 @@ class CreateRoomActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
-    private var x:Double? = null
-    private var y:Double? = null
+    private var x: Double? = null
+    private var y: Double? = null
     /*태그 리스트*/val PERMISSIONS_REQUEST_CODE = 100
     var tagArray: ArrayList<String> = ArrayList()
     lateinit var marker: Marker
@@ -435,6 +435,7 @@ class CreateRoomActivity : AppCompatActivity() {
         val server = retrofit.create(RoomAPI::class.java)
 
         server.createRoom(
+            MainActivity.user_table_id.toString(),
             tile,
             info,
             numOfPeople,
@@ -463,22 +464,23 @@ class CreateRoomActivity : AppCompatActivity() {
                     if (room!!.success) {
                         Toast.makeText(this@CreateRoomActivity, "방 생성", Toast.LENGTH_SHORT).show()
 
-                        val intent = Intent(this@CreateRoomActivity, RoomInformationActivity::class.java)
-                        intent.putExtra("roomId",room.roomId.roomId)
-                        intent.putExtra("title",room.roomId.title)
-                        intent.putExtra("info",room.roomId.info)
-                        intent.putExtra("hostName",room.roomId.hostName)
-                        intent.putExtra("address",room.roomId.address)
-                        intent.putExtra("date",room.roomId.date)
-                        intent.putExtra("shopName",room.roomId.shopName)
-                        intent.putExtra("roomStatus",room.roomId.roomStatus)
-                        intent.putExtra("numOfPeople",room.roomId.numOfPeople.toString())
-                        intent.putExtra("keyWords",room.roomId.keyWords)
-                        intent.putExtra("mapX",room.roomId.mapX)
-                        intent.putExtra("mapY",room.roomId.mapY)
-                        intent.putExtra("nowNumOfPeople",room.roomId.nowNumOfPeople.toString())
-                        intent.putExtra("imageUrl",MainActivity.userThumbnailImage)
-                        intent.putExtra("join","1")
+                        val intent =
+                            Intent(this@CreateRoomActivity, RoomInformationActivity::class.java)
+                        intent.putExtra("roomId", room.roomId.roomId)
+                        intent.putExtra("title", room.roomId.title)
+                        intent.putExtra("info", room.roomId.info)
+                        intent.putExtra("hostName", room.roomId.hostName)
+                        intent.putExtra("address", room.roomId.address)
+                        intent.putExtra("date", room.roomId.date)
+                        intent.putExtra("shopName", room.roomId.shopName)
+                        intent.putExtra("roomStatus", room.roomId.roomStatus)
+                        intent.putExtra("numOfPeople", room.roomId.numOfPeople.toString())
+                        intent.putExtra("keyWords", room.roomId.keyWords)
+                        intent.putExtra("mapX", room.roomId.mapX)
+                        intent.putExtra("mapY", room.roomId.mapY)
+                        intent.putExtra("nowNumOfPeople", room.roomId.nowNumOfPeople.toString())
+                        intent.putExtra("imageUrl", MainActivity.userThumbnailImage)
+                        intent.putExtra("join", "1")
                         startActivity(intent)
                         finish()
                     }
@@ -739,9 +741,9 @@ class CreateRoomActivity : AppCompatActivity() {
                     placeName = data?.getStringExtra("shopName").toString()
                     address = data?.getStringExtra("address").toString()
                     roadAddress = data?.getStringExtra("roadAddress").toString()
-                    Log.e("가게이름",placeName)
+                    Log.e("가게이름", placeName)
                     getMapImage(x, y, placeName)
-                    binding.CreateRoomActivityMapView.setOnClickListener{
+                    binding.CreateRoomActivityMapView.setOnClickListener {
                         val i = Intent(Intent.ACTION_VIEW)
                         i.data = Uri.parse("http://map.naver.com/?query=$address")
                         startActivity(i)
@@ -765,9 +767,8 @@ class CreateRoomActivity : AppCompatActivity() {
             center = "$x $y"
             place = "|label:$placeName"
             marker =
-               "type:t${place}|size:mid|pos:$x $y|viewSizeRatio:2.0"
+                "type:t${place}|size:mid|pos:$x $y|viewSizeRatio:2.0"
         }
-
 
 
         val retrofit = Retrofit.Builder()

@@ -1,19 +1,21 @@
 package com.example.abled_food_connect
 
 
+import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AbsListView
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
 import com.example.abled_food_connect.databinding.ActivityRoomInformationBinding
-import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.MapSearch
+import com.example.abled_food_connect.retrofit.RoomAPI
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -23,6 +25,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.InputStream
+
 
 class RoomInformationActivity : AppCompatActivity() {
     val binding by lazy { ActivityRoomInformationBinding.inflate(layoutInflater) }
@@ -55,6 +58,14 @@ class RoomInformationActivity : AppCompatActivity() {
             binding.RoomInfoJoinRoomBtn.visibility = View.VISIBLE
         }
 
+        binding.RoomInfoSubscriptionRoomBtn.setOnClickListener {
+
+            if (roomId != null) {
+                joinSubscription(roomId,MainActivity.user_table_id.toString())
+            }
+
+        }
+
         if (roomStatus > 5) {
             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
             binding.RoomInformationStatus.text = "모집중"
@@ -84,6 +95,7 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RoomInfoShopName.text = shopName
 
 
+
         binding.RankingCircleView.borderWidth = 20
 //        binding.RankingGold.visibility = View.VISIBLE
         binding.RankingCircleView.borderColor = getColor(R.color.app_theme_color)
@@ -95,6 +107,7 @@ class RoomInformationActivity : AppCompatActivity() {
             mapClick = false
             val intent = Intent(this, ChatRoomActivity::class.java)
             intent.putExtra("roomId", roomId)
+            intent.putExtra("hostName",hostName)
             startActivity(intent)
 
 
@@ -150,9 +163,27 @@ class RoomInformationActivity : AppCompatActivity() {
                 binding.RoomInfoMapImageView.setImageBitmap(bitmap)
                 binding.RoomInfoMapImageView.setOnClickListener {
                     mapClick = true
-                    val i = Intent(Intent.ACTION_VIEW)
-                    i.data = Uri.parse("http://map.naver.com/?query=$address")
-                    startActivity(i)
+
+                    val url = "nmap://place?lat=${y}&lng=${x}&name=${placeName}\n\n${address}&appname=${packageName}"
+//                    val url = "nmap://search?query=${placeName}&appname=${packageName}"
+
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    intent.addCategory(Intent.CATEGORY_BROWSABLE)
+
+                    val list = packageManager.queryIntentActivities(
+                        intent,
+                        PackageManager.MATCH_DEFAULT_ONLY
+                    )
+                    if (list == null || list.isEmpty()) {
+                        startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("http://map.naver.com/?query=$address")
+                            )
+                        )
+                    } else {
+                        startActivity(intent)
+                    }
                 }
             }
 
@@ -171,5 +202,41 @@ class RoomInformationActivity : AppCompatActivity() {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         builder.addInterceptor(interceptor)
         return builder.build()
+    }
+
+    fun joinSubscription(room:String,userIndex:String){
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java).joinSubscription(room,userIndex).enqueue(object :Callback<String>{
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if(response.body() == "true"){
+                    val dialog = AlertDialog.Builder(this@RoomInformationActivity)
+                    dialog.setTitle("참여 신청을 보냈습니다.")
+                    dialog.setPositiveButton("확인", null)
+                    dialog.show()
+                }else if(response.body() == null){
+                    val dialog = AlertDialog.Builder(this@RoomInformationActivity)
+                    dialog.setTitle("참여 신청에 실패 하였습니다.")
+                    dialog.setPositiveButton("확인", null)
+                    dialog.show()
+                }
+                else{
+                    val dialog = AlertDialog.Builder(this@RoomInformationActivity)
+                    dialog.setTitle("이미 보낸 신청이 있습니다.")
+                    dialog.setPositiveButton("확인", null)
+                    dialog.show()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+
+            }
+
+        })
     }
 }
