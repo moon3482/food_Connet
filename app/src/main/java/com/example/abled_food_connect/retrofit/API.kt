@@ -44,13 +44,28 @@ class API {
 
 
     //프로필 수정 - 원본이미지와 압축된 이미지를 보낸다.
+    interface UserProfileModifyStringChange_interface {
+        @Multipart
+        @POST("user_info/user_profile_just_String_modify.php")
+        fun user_profile_just_String_modify_Request(
+            @Part("user_tb_id") user_tb_id: Int,
+            @Part("nic_name") nic_name: String,
+            @Part("introduction") introduction: String
+        ): Call<String>
+
+    }
+
+
+    //프로필 수정 - 원본이미지와 압축된 이미지, 아이디, 자기소개를 보낸다.
     interface UserProfileModifyImageChange_interface {
-        // 프로필 이미지 보내기
         @Multipart
         @POST("user_info/user_profile_modify.php")
         fun user_profile_modify_Request(
             @Part imageFile : MultipartBody.Part,
-            @Part thumbnail_imageFile : MultipartBody.Part
+            @Part thumbnail_imageFile : MultipartBody.Part,
+            @Part("user_tb_id") user_tb_id: Int,
+            @Part("nic_name") nic_name: String,
+            @Part("introduction") introduction: String
         ): Call<String>
 
     }

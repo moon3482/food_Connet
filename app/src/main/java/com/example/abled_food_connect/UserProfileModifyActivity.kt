@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentUris
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -35,6 +36,7 @@ import com.example.abled_food_connect.data.ChatImageSendingData
 import com.example.abled_food_connect.data.DirectMessageNodeServerSendDataItem
 import com.example.abled_food_connect.data.UserProfileData
 import com.example.abled_food_connect.databinding.ActivityUserProfileModifyBinding
+import com.example.abled_food_connect.fragments.MyPageFragment
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
 import com.google.gson.Gson
@@ -199,10 +201,13 @@ class UserProfileModifyActivity : AppCompatActivity() {
         binding.profileModifyOkBtn.setOnClickListener(View.OnClickListener {
 
             if(imageChangeCheck==false){
-                Toast.makeText(this, "닉네임 변경을 취소하셨습니다.", Toast.LENGTH_SHORT).show()
-            }else {
-                ImageUpload(resultUri!!, getImageUri(applicationContext, resize_bitmap)!!)
+                justStringUpload()
             }
+            else{
+                ImageUpload(resultUri!!,getImageUri(applicationContext,resize_bitmap)!!)
+            }
+
+
         })
 
 
@@ -286,11 +291,71 @@ class UserProfileModifyActivity : AppCompatActivity() {
 
 
 
-    //서버로 이미지 업로드
+    //이미지 전송 없이, 닉네임 또는 자기소개만 변경하는 경우
+    fun justStringUpload(){
 
+        //The gson builder
+        var gson : Gson =  GsonBuilder()
+            .setLenient()
+            .create()
+
+
+        //creating retrofit object
+        var retrofit =
+            Retrofit.Builder()
+                .baseUrl(getString(R.string.http_request_base_url))
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+
+        //creating our api
+
+        var server = retrofit.create(API.UserProfileModifyStringChange_interface::class.java)
+
+        var userModifyNicName = binding.userProfileNicNameTv.text.toString()
+        var userModifyIntroduction = binding.CreateRoomActivityRoomInformationInput.text.toString()
+
+        server.user_profile_just_String_modify_Request(MainActivity.user_table_id,userModifyNicName,userModifyIntroduction).enqueue(object:
+            Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                t.message?.let { Log.d("레트로핏 결과1", it) }
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response?.isSuccessful) {
+                    Log.d("이미지를 업로드했습니다",""+response?.body().toString())
+
+                    var items : String? =  response.body()
+
+
+                    //companion object의 닉네임 변수 변경한다.
+                    MainActivity.loginUserNickname = userModifyNicName
+
+                    //쉐어드 닉네임 변경한다.
+                    val pref = getSharedPreferences("pref_user_data",0)
+                    val edit = pref.edit()
+                    if (edit != null) {
+                        edit.putString("loginUserNickname", userModifyNicName)
+                        edit.apply()//저장완료
+                    }
+
+                    //이전화면으로 돌아간다.
+                    finish()
+
+
+
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
+                    Log.d("이미지업로드실패",""+response?.body().toString())
+                }
+            }
+        })
+    }
+
+
+
+    //서버로 이미지와 함께 정보를 변경할때
     fun ImageUpload(imageUri:Uri,thumbnail_ImageUri:Uri){
-
-
 
         //원본이미지
         val uriPathHelper = URIPathHelper()
@@ -326,7 +391,6 @@ class UserProfileModifyActivity : AppCompatActivity() {
         //The gson builder
         var gson : Gson =  GsonBuilder()
             .setLenient()
-            .serializeNulls()
             .create()
 
 
@@ -341,8 +405,10 @@ class UserProfileModifyActivity : AppCompatActivity() {
 
         var server = retrofit.create(API.UserProfileModifyImageChange_interface::class.java)
 
+        var userModifyNicName = binding.userProfileNicNameTv.text.toString()
+        var userModifyIntroduction = binding.CreateRoomActivityRoomInformationInput.text.toString()
 
-        server.user_profile_modify_Request(body,thumbnail_body).enqueue(object:
+        server.user_profile_modify_Request(body,thumbnail_body,MainActivity.user_table_id,userModifyNicName,userModifyIntroduction).enqueue(object:
             Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
@@ -355,6 +421,22 @@ class UserProfileModifyActivity : AppCompatActivity() {
                     var items : String? =  response.body()
 
 
+                    //companion object의 닉네임 변수 변경한다.
+                    MainActivity.loginUserNickname = userModifyNicName
+
+                    //쉐어드 닉네임 변경한다.
+                    val pref = getSharedPreferences("pref_user_data",0)
+                    val edit = pref.edit()
+                    if (edit != null) {
+                        edit.putString("loginUserNickname", userModifyNicName)
+                        edit.apply()//저장완료
+                    }
+
+                    //이전화면으로 돌아간다.
+                    finish()
+
+
+
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
@@ -363,6 +445,8 @@ class UserProfileModifyActivity : AppCompatActivity() {
             }
         })
     }
+
+
 
     class URIPathHelper {
 
@@ -577,14 +661,87 @@ class UserProfileModifyActivity : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+
+
+
+        var builder = AlertDialog.Builder(this)
+        builder.setTitle("프로필을 변경하시겠습니까?")
+        builder.setMessage("확인버튼을 누르시면 프로필 정보가 변경됩니다.")
+
+        // 버튼 클릭시에 무슨 작업을 할 것인가!
+        var listener = object : DialogInterface.OnClickListener {
+            override fun onClick(p0: DialogInterface?, p1: Int) {
+                when (p1) {
+                    DialogInterface.BUTTON_POSITIVE ->
+
+
+                        if(imageChangeCheck==false){
+                            justStringUpload()
+                        }
+                        else{
+                            ImageUpload(resultUri!!,getImageUri(applicationContext,resize_bitmap)!!)
+                        }
+
+
+
+                    DialogInterface.BUTTON_NEGATIVE ->
+                    {
+                        finish()
+                    }
+                }
+            }
+        }
+
+        builder.setPositiveButton("확인", listener)
+        builder.setNegativeButton("취소", listener)
+
+
+        builder.show()
+
+    }
+
 
     //상단바 백버튼을 클릭한 경우
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         when (id) {
             android.R.id.home -> {
-                finish()
-                return true
+
+
+                var builder = AlertDialog.Builder(this)
+                builder.setTitle("프로필을 변경하시겠습니까?")
+                builder.setMessage("확인버튼을 누르시면 프로필 정보가 변경됩니다.")
+
+                // 버튼 클릭시에 무슨 작업을 할 것인가!
+                var listener = object : DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        when (p1) {
+                            DialogInterface.BUTTON_POSITIVE ->
+
+
+                                if(imageChangeCheck==false){
+                                    justStringUpload()
+                                }
+                                else{
+                                    ImageUpload(resultUri!!,getImageUri(applicationContext,resize_bitmap)!!)
+                                }
+
+
+
+                            DialogInterface.BUTTON_NEGATIVE ->
+                                finish()
+                        }
+                    }
+                }
+
+                builder.setPositiveButton("확인", listener)
+                builder.setNegativeButton("취소", listener)
+
+
+                builder.show()
+
+
             }
         }
         return super.onOptionsItemSelected(item)

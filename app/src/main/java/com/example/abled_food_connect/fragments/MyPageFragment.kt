@@ -10,19 +10,53 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.UserProfileModifyActivity
+import com.example.abled_food_connect.data.UserProfileData
+import com.example.abled_food_connect.retrofit.API
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MyPageFragment:Fragment() {
+
+
+    lateinit var userProfileIv : ImageView
+    lateinit var userProfileNicNameTv : TextView
+    lateinit var userProfileIntroductionTv : TextView
+
+
+
     companion object{
         const val TAG : String = "마이페이지 프래그먼트 로그"
         fun newInstance(): MyPageFragment{
             return MyPageFragment()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        //작성자 프로필
+        Glide.with(userProfileIv.context)
+            .load(getString(R.string.http_request_base_url)+MainActivity.userThumbnailImage)
+            .circleCrop()
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(userProfileIv)
+
+        userProfileNicNameTv.text = MainActivity.loginUserNickname
+        //유저 정보를 DB에서 가져온다.
+        userProfileLoading(MainActivity.user_table_id)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +77,9 @@ class MyPageFragment:Fragment() {
         val view = inflater.inflate(R.layout.mypage_fragments, container, false)
 
 
+        userProfileIv = view.findViewById<ImageView>(R.id.userProfileIv)
+        userProfileNicNameTv = view.findViewById<TextView>(R.id.userProfileNicNameTv)
+        userProfileIntroductionTv = view.findViewById<TextView>(R.id.userProfileIntroductionTv)
 
 
 
@@ -60,7 +97,7 @@ class MyPageFragment:Fragment() {
             var builder = AlertDialog.Builder(logoutBtn.context)
             builder.setTitle("로그아웃")
             builder.setMessage("로그아웃 하시겠습니까?")
-            builder.setIcon(R.mipmap.ic_launcher)
+
 
             // 버튼 클릭시에 무슨 작업을 할 것인가!
             var listener = object : DialogInterface.OnClickListener {
@@ -78,6 +115,8 @@ class MyPageFragment:Fragment() {
                                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
                                 } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+
+                                activity!!.finish()
 
 
                             }
@@ -112,6 +151,53 @@ class MyPageFragment:Fragment() {
         }
 
 
+    }
+
+
+
+    fun userProfileLoading(user_tb_id:Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.UserProfileDataInterface::class.java)
+
+        //어떤 리뷰를 선택했는지 확인하는 변수 + 좋아요 클릭여부를 확인하기 위하여 사용자 id보냄
+        val user_profile_data_get = api.user_profile_data_get(user_tb_id)
+
+
+        user_profile_data_get.enqueue(object : Callback<UserProfileData> {
+            override fun onResponse(
+                call: Call<UserProfileData>,
+                response: Response<UserProfileData>
+            ) {
+                Log.d(ReviewFragment.TAG, "프로필 정보 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "프로필 정보 : ${response.body().toString()}")
+
+                var items : UserProfileData? =  response.body()
+
+
+
+
+
+
+
+                if(items!!.introduction == null||items!!.introduction.length<1){
+                    userProfileIntroductionTv.text = "자기소개가 없습니다."
+                }else{
+                    userProfileIntroductionTv.text = items!!.introduction
+                }
+
+
+
+
+
+            }
+
+            override fun onFailure(call: Call<UserProfileData>, t: Throwable) {
+                Log.d("유저정보가져오기실패?", "실패 : $t")
+            }
+        })
     }
 
 

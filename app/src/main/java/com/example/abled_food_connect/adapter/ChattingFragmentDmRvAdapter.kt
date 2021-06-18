@@ -136,7 +136,7 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
             if(diffDays>1){
                 conversionTime+=sendDate
             }else if(diffhours>1){
-                conversionTime+=time_sendDate
+                conversionTime+=sendDate
             }else if(diffmin>1){
                 conversionTime+=time_sendDate
             }else if(diffsec>1){

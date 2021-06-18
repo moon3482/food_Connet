@@ -15,13 +15,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="30dp"
         android:layout_marginBottom="20dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
         <ImageView
-            android:src="@mipmap/ic_launcher"
+            android:id="@+id/userProfileIv"
             android:layout_width="70dp"
             android:layout_height="70dp"/>
 
@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
+                android:id="@+id/userProfileNicNameTv"
                 android:textStyle="bold"
                 android:text="닉네임"
                 android:textSize="20dp"
@@ -48,6 +49,41 @@
 
         </LinearLayout>
 
+
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:background="#AA000000"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:textStyle="bold"
+            android:layout_marginLeft="22dp"
+            android:layout_marginBottom="5dp"
+            android:text="자기소개"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:text="ddd"
+            android:padding="20dp"
+            android:id="@+id/userProfileIntroductionTv"
+            android:background="@drawable/chat_others_message_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
 
 
