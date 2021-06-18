@@ -17,7 +17,9 @@ interface retrofit_interface {
         @Part("birth_year") birth_year: String,
         @Part("user_gender") user_gender: String,
         @Part("phone_number") phone_number: String,
-        @Part imageFile : MultipartBody.Part): Call<String>
+        @Part imageFile : MultipartBody.Part,
+        @Part thumbnail_imageFile : MultipartBody.Part
+    ): Call<String>
 
 //    //string값 보내는 예제입니다.
 //    // 프로필 닉 상태메세지 보내기

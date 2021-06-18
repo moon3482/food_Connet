@@ -79,6 +79,10 @@ class MainActivity : AppCompatActivity() {
         var userThumbnailImage : String = ""
     }
 
+
+
+    var sharedLoginCheckBoolean: Boolean = false
+
     /*
     구글 로그인
     최초 작성 21.05.10
@@ -102,6 +106,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val btnFacebookLogin: LinearLayout = findViewById(R.id.btnFacebookLogin)
         val btnKakaoLogin: LinearLayout = findViewById(R.id.btnKakaoLogin)
+
+
+        //유저정보 쉐어드프리퍼런스 로드
+        sharedLoadData()
+
 
 
         nextIntent = Intent(this, UserRegisterActivity::class.java)
@@ -630,6 +639,12 @@ class MainActivity : AppCompatActivity() {
                         loginUserId = loginId
                         loginUserNickname = loginNickname
                         userThumbnailImage =loginThumbnailImage
+
+
+                        //쉐어드프리퍼런스에 값을 저장한다.
+                        sharedSaveData()
+
+
                         startActivity(mainFragmentJoin)
                         finish()
                     } else {
@@ -666,6 +681,40 @@ class MainActivity : AppCompatActivity() {
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         builder.addInterceptor(interceptor)
         return builder.build()
+    }
+
+
+
+
+    private fun sharedSaveData(){
+        val pref = getSharedPreferences("pref_user_data",0)
+        val edit = pref.edit()
+
+        edit.putInt("user_table_id",user_table_id)
+        edit.putString("loginUserId",loginUserId)
+        edit.putString("loginUserNickname",loginUserNickname)
+        edit.putString("userThumbnailImage",userThumbnailImage)
+        edit.putBoolean("login_check",true)
+        edit.apply()//저장완료
+
+
+    }
+
+    private fun sharedLoadData(){
+        val pref =getSharedPreferences("pref_user_data",0)
+        user_table_id = pref.getInt("user_table_id",0)
+        loginUserId = pref.getString("loginUserId","")!!
+        loginUserNickname = pref.getString("loginUserNickname","")!!
+        userThumbnailImage = pref.getString("userThumbnailImage","")!!
+        sharedLoginCheckBoolean = pref.getBoolean("login_check",false)!!
+
+        //자동로그인 확인
+        if(sharedLoginCheckBoolean == true) {
+            val mainFragmentJoin = Intent(this@MainActivity, MainFragmentActivity::class.java)
+            startActivity(mainFragmentJoin)
+            finish()
+        }
+
     }
 
 }
