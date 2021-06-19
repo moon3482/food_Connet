@@ -28,7 +28,7 @@ class ClusterManager<Clustering, C : TedClusterItem, RealMarker, Marker : TedMar
         PreCachingAlgorithmDecorator(NonHierarchicalDistanceBasedAlgorithm())
     )
     private val mAlgorithmLock = ReentrantReadWriteLock()
-    private var mRenderer: ClusterRenderer<Clustering, C, RealMarker, Marker, Map, ImageDescriptor>
+    var mRenderer: ClusterRenderer<Clustering, C, RealMarker, Marker, Map, ImageDescriptor>
     private var previousCameraPosition: TedCameraPosition? = null
     private var mClusterTask: ClusterTask = ClusterTask()
 

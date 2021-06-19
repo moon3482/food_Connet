@@ -36,9 +36,9 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
-internal class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMarker<ImageDescriptor>, Map, ImageDescriptor>(
+class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMarker<ImageDescriptor>, Map, ImageDescriptor>(
     private val builder: BaseBuilder<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>,
-    private val mClusterManager: ClusterManager<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>
+     var mClusterManager: ClusterManager<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>
 ) {
     private val context: Context = builder.context
     private val tedMap: TedMap<RealMarker, Marker, ImageDescriptor> = builder.map
@@ -46,6 +46,7 @@ internal class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marke
     private val mDensity: Float
     private var clusterAnimation: Boolean = builder.clusterAnimation
     private var mColoredCircleBackground: ShapeDrawable? = null
+
 
 
     /**
@@ -75,7 +76,7 @@ internal class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marke
      * Lookup between markers and the associated cluster.
      */
     private val mMarkerToCluster = HashMap<Marker, Cluster<T>>()
-    private val mClusterToMarker = HashMap<Cluster<T>, Marker>()
+    val mClusterToMarker = HashMap<Cluster<T>, Marker>()
 
     /**
      * The target zoom level for the current set of clusters.
@@ -734,7 +735,7 @@ internal class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marke
                     } else {
                         markerWithPosition = MarkerWithPosition(marker)
                     }
-                    builder.markerAddedListener?.invoke(item, marker)
+                    builder.markerAddedListener?.invoke(item, marker,this@ClusterRenderer)
                     newMarkers.add(markerWithPosition)
                 }
                 return

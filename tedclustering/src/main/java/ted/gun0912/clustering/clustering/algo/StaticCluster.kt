@@ -42,4 +42,5 @@ class StaticCluster<T : TedClusterItem>(override val position: TedLatLng) : Clus
         } else other.position == position && other.mItems == mItems
 
     }
+
 }

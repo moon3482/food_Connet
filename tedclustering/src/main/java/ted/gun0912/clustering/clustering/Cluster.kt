@@ -11,4 +11,14 @@ interface Cluster<T : TedClusterItem> {
     val size: Int
 
 
+    fun clusterData(): Boolean {
+        var check = false
+        for (index in items) {
+            if(index.check){
+            check = true}
+        }
+        return check
+    }
+
+
 }

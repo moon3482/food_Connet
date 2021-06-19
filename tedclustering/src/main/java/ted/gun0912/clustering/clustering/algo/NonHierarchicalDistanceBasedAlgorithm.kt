@@ -174,6 +174,8 @@ open class NonHierarchicalDistanceBasedAlgorithm<T : TedClusterItem> : Algorithm
             return (other as? QuadItem<*>)?.mClusterItem?.equals(mClusterItem) ?: false
 
         }
+
+
     }
 
     companion object {

@@ -3,7 +3,9 @@ package ted.gun0912.clustering
 import android.content.Context
 import android.view.View
 import ted.gun0912.clustering.clustering.Cluster
+import ted.gun0912.clustering.clustering.ClusterManager
 import ted.gun0912.clustering.clustering.TedClusterItem
+import ted.gun0912.clustering.clustering.view.ClusterRenderer
 
 abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedMarker<ImageDescriptor>, Map, ImageDescriptor>(
     internal val context: Context,
@@ -15,9 +17,10 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
     internal var minClusterSize: Int = 3,
     internal var clusterAnimation: Boolean = true,
     internal var clusterBackground: ((Int) -> Int)? = null,
+    internal var setClusterBackground: ((Int) -> Int)? = null,
     internal var clusterText: ((Int) -> String)? = null,
     internal var clusterAddedListener: ((cluster: Cluster<C>, TM) -> Unit)? = null,
-    internal var markerAddedListener: ((clusterItem: C, TM) -> Unit)? = null,
+    internal var markerAddedListener: ((clusterItem: C, TM,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>) -> Unit)? = null,
     internal var items: Collection<C>? = null,
     internal var item: C? = null,
     private var markerMaker: ((clusterItem: C) -> RealMarker)? = null,
@@ -47,7 +50,7 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
             }
     }
 
-    fun markerAddedListener(listener: ((clusterItem: C, TM) -> Unit)) =
+    fun markerAddedListener(listener: ((clusterItem: C, TM,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>) -> Unit)) =
         apply { this.markerAddedListener = listener }
 
     fun clusterAddedListener(listener: ((cluster: Cluster<C>, TM) -> Unit)) =
@@ -58,6 +61,9 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
 
     fun clusterBackground(action: ((Int) -> Int)) =
         apply { this.clusterBackground = action }
+
+    fun setClusterBackground(action: ((Int) -> Int)) =
+        apply { this.setClusterBackground = action }
 
     fun clusterAnimation(animate: Boolean) =
         apply { this.clusterAnimation = animate }

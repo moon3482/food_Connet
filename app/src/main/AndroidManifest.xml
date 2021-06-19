@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".JoinRoomSubscriptionActivity"></activity>
+        <activity android:name=".JoinRoomSubscriptionActivity"/>
         <activity android:name=".DirectMessageActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".UserProfileClickedReviewVerticalListActivity" />
@@ -40,6 +40,7 @@
         <activity
             android:name=".CreateRoomActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".UserProfileModifyActivity"/>
         <activity android:name=".RoomInformationActivity" />
         <activity android:name=".ChatRoomActivity" />
         <activity android:name=".CreateRoomMapSearchActivity">
