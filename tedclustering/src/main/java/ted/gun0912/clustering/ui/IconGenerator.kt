@@ -39,7 +39,7 @@ import ted.gun0912.clustering.R
  *
  * This class is not thread safe.
  */
-internal class IconGenerator(private val mContext: Context) {
+class IconGenerator(private val mContext: Context) {
 
     private val mContainer: ViewGroup =
         LayoutInflater.from(mContext).inflate(R.layout.amu_text_bubble, null) as ViewGroup

@@ -10,16 +10,22 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.MarkerIcons
 import ted.gun0912.clustering.TedMarker
 import ted.gun0912.clustering.geometry.TedLatLng
+import kotlin.properties.Delegates
 
 
-class TedNaverMarker(override var marker: Marker, val context: Context) : TedMarker<OverlayImage> {
+class TedNaverMarker(override var marker: Marker, val context: Context, override var check: Boolean =false) : TedMarker<OverlayImage> {
 
     override fun setVisible(visible: Boolean) {
         marker.isVisible = visible
 
 
-
     }
+
+    var markerCheck: Boolean by Delegates.observable(false) { props, old, new ->
+
+            new
+    }
+    var markerche = check
 
     override var position: TedLatLng
         get() = TedLatLng(marker.position.latitude, marker.position.longitude)

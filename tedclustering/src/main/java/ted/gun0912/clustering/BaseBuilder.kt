@@ -9,7 +9,7 @@ import ted.gun0912.clustering.clustering.view.ClusterRenderer
 
 abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedMarker<ImageDescriptor>, Map, ImageDescriptor>(
     internal val context: Context,
-    internal val map: TedMap<RealMarker, TM, ImageDescriptor>,
+    val map: TedMap<RealMarker, TM, ImageDescriptor>,
     internal var markerClickListener: ((C) -> Unit)? = null,
     internal var clusterClickListener: ((Cluster<C>) -> Unit)? = null,
     internal var clickToCenter: Boolean = true,
@@ -17,10 +17,10 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
     internal var minClusterSize: Int = 3,
     internal var clusterAnimation: Boolean = true,
     internal var clusterBackground: ((Int) -> Int)? = null,
-    internal var setClusterBackground: ((Int) -> Int)? = null,
+    internal var setClusterBackground: ((Int,cluster:Cluster<C>) -> Int)? = null,
     internal var clusterText: ((Int) -> String)? = null,
-    internal var clusterAddedListener: ((cluster: Cluster<C>, TM) -> Unit)? = null,
-    internal var markerAddedListener: ((clusterItem: C, TM,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>) -> Unit)? = null,
+    internal var clusterAddedListener: ((cluster: Cluster<C>, TM,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>) -> Unit)? = null,
+    internal var markerAddedListener: ((clusterItem: C, TM,cluster:Cluster<C>,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>,BB:BaseBuilder<Clustering, C, RealMarker, TM , Map, ImageDescriptor>)-> Unit)? = null,
     internal var items: Collection<C>? = null,
     internal var item: C? = null,
     private var markerMaker: ((clusterItem: C) -> RealMarker)? = null,
@@ -50,10 +50,10 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
             }
     }
 
-    fun markerAddedListener(listener: ((clusterItem: C, TM,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>) -> Unit)) =
+    fun markerAddedListener(listener: ((clusterItem: C, TM,cluster:Cluster<C>,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>,BB:BaseBuilder<Clustering, C, RealMarker, TM , Map, ImageDescriptor>) -> Unit)) =
         apply { this.markerAddedListener = listener }
 
-    fun clusterAddedListener(listener: ((cluster: Cluster<C>, TM) -> Unit)) =
+    fun clusterAddedListener(listener: ((cluster: Cluster<C>, TM,AA:ClusterRenderer<Clustering,C,RealMarker,TM,Map,ImageDescriptor>) -> Unit)) =
         apply { this.clusterAddedListener = listener }
 
     fun clusterText(action: ((Int) -> String)) =
@@ -62,7 +62,7 @@ abstract class BaseBuilder<Clustering, C : TedClusterItem, RealMarker, TM : TedM
     fun clusterBackground(action: ((Int) -> Int)) =
         apply { this.clusterBackground = action }
 
-    fun setClusterBackground(action: ((Int) -> Int)) =
+    fun setClusterBackground(action: ((Int,cluster:Cluster<C>) -> Int)) =
         apply { this.setClusterBackground = action }
 
     fun clusterAnimation(animate: Boolean) =

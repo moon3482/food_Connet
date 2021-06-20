@@ -13,6 +13,7 @@ import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.os.*
+import android.util.Log
 import android.util.SparseArray
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
@@ -41,8 +42,8 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
      var mClusterManager: ClusterManager<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>
 ) {
     private val context: Context = builder.context
-    private val tedMap: TedMap<RealMarker, Marker, ImageDescriptor> = builder.map
-    private val mIconGenerator: IconGenerator
+    val tedMap: TedMap<RealMarker, Marker, ImageDescriptor> = builder.map
+    var mIconGenerator: IconGenerator
     private val mDensity: Float
     private var clusterAnimation: Boolean = builder.clusterAnimation
     private var mColoredCircleBackground: ShapeDrawable? = null
@@ -75,8 +76,8 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
     /**
      * Lookup between markers and the associated cluster.
      */
-    private val mMarkerToCluster = HashMap<Marker, Cluster<T>>()
-    val mClusterToMarker = HashMap<Cluster<T>, Marker>()
+    var mMarkerToCluster = HashMap<Marker, Cluster<T>>()
+    var mClusterToMarker = HashMap<Cluster<T>, Marker>()
 
     /**
      * The target zoom level for the current set of clusters.
@@ -145,7 +146,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
         return Color.HSVToColor(floatArrayOf(hue, 1f, .6f))
     }
 
-    private fun getDefaultClusterText(bucket: Int): String {
+     fun getDefaultClusterText(bucket: Int): String {
         return if (bucket < builder.clusterBuckets[0]) {
             bucket.toString()
         } else "$bucket+"
@@ -155,7 +156,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
      * Gets the "bucket" for a particular cluster. By default, uses the number of points within the
      * cluster, bucketed to some set points.
      */
-    private fun getBucket(cluster: Cluster<T>): Int {
+    fun getBucket(cluster: Cluster<T>): Int {
         val buckets = builder.clusterBuckets
         val size = cluster.size
         if (size <= buckets[0]) {
@@ -381,7 +382,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
         }
     }
 
-    internal fun onClustersChanged(clusters: Set<Cluster<T>>) {
+     fun onClustersChanged(clusters: Set<Cluster<T>>) {
         mViewModifier.queue(clusters)
     }
 
@@ -407,7 +408,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
      * UI.
      */
     @SuppressLint("HandlerLeak")
-    private inner class MarkerModifier : Handler(Looper.getMainLooper()),
+     inner class MarkerModifier : Handler(Looper.getMainLooper()),
         MessageQueue.IdleHandler {
 
         private val lock = ReentrantLock()
@@ -547,7 +548,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
          * Perform the next task. Prioritise any on-screen work.
          */
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        private fun performNextTask() {
+        fun performNextTask() {
             if (!mOnScreenRemoveMarkerTasks.isEmpty()) {
                 removeMarker(mOnScreenRemoveMarkerTasks.poll())
             } else if (!mAnimationTasks.isEmpty()) {
@@ -632,7 +633,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
      * Called before the tedMarker for a Cluster is added to the tedMap.
      * The default implementation draws a circle with a rough count of the number of items.
      */
-    private fun onBeforeClusterRendered(
+    fun onBeforeClusterRendered(
         cluster: Cluster<T>,
         tedMarker: TedMarker<ImageDescriptor>
     ) {
@@ -650,7 +651,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
         tedMarker.setImageDescriptor(imageDescriptor!!)
     }
 
-    private fun getDefaultCluster(bucket: Int): Bitmap {
+   fun getDefaultCluster(bucket: Int): Bitmap {
         mColoredCircleBackground!!.paint.color =
             builder.clusterBackground?.invoke(bucket) ?: getDefaultClusterBackground(bucket)
         val clusterText = builder.clusterText?.invoke(bucket) ?: getDefaultClusterText(bucket)
@@ -696,7 +697,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
     /**
      * Creates markerWithPosition(s) for a particular cluster, animating it if necessary.
      */
-    private inner class CreateMarkerTask
+     inner class CreateMarkerTask
     /**
      * @param cluster      the cluster to render.
      * @param markersAdded a collection of markers to append any created markers.
@@ -704,9 +705,9 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
      * animation is required.
      */
         (
-        private val cluster: Cluster<T>,
-        private val newMarkers: MutableSet<MarkerWithPosition<Marker, ImageDescriptor>>,
-        private val animateFrom: TedLatLng?
+         val cluster: Cluster<T>,
+        val newMarkers: MutableSet<MarkerWithPosition<Marker, ImageDescriptor>>,
+         val animateFrom: TedLatLng?
     ) {
 
         fun perform(markerModifier: MarkerModifier) {
@@ -735,7 +736,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
                     } else {
                         markerWithPosition = MarkerWithPosition(marker)
                     }
-                    builder.markerAddedListener?.invoke(item, marker,this@ClusterRenderer)
+                    builder.markerAddedListener?.invoke(item, marker,cluster,this@ClusterRenderer,builder)
                     newMarkers.add(markerWithPosition)
                 }
                 return
@@ -754,10 +755,13 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
                 if (animateFrom != null) {
                     markerModifier.animate(markerWithPosition, animateFrom, cluster.position)
                 }
+                Log.e("클러스터", "클러스터")
             } else {
+                Log.e("클러스터2", "클러스터2")
                 markerWithPosition = MarkerWithPosition(marker)
             }
-            builder.clusterAddedListener?.invoke(cluster, marker)
+            builder.clusterAddedListener?.invoke(cluster, marker,this@ClusterRenderer)
+
             newMarkers.add(markerWithPosition)
             tedMap.addMarkerClickListener(marker, { marker ->
                 mClusterManager.onMarkerClick(marker)
@@ -770,7 +774,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
      * A TedMarker and its position. TedMarker.getTedLatLng() must be called from the UI thread, so this
      * object allows lookup from other threads.
      */
-    private class MarkerWithPosition<Marker : TedMarker<ImageDescriptor>, ImageDescriptor>(val tedMarker: Marker) {
+   class MarkerWithPosition<Marker : TedMarker<ImageDescriptor>, ImageDescriptor>(val tedMarker: Marker) {
         var position: TedLatLng = tedMarker.position
 
         override fun equals(other: Any?): Boolean {

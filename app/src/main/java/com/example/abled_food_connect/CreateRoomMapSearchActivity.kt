@@ -26,6 +26,8 @@ import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.MarkerIcons
 import okhttp3.OkHttpClient
 import okhttp3.internal.notifyAll
@@ -35,7 +37,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ted.gun0912.clustering.TedMap
+import ted.gun0912.clustering.TedMarker
+import ted.gun0912.clustering.clustering.Cluster
+import ted.gun0912.clustering.clustering.view.ClusterRenderer
 import ted.gun0912.clustering.naver.TedNaverClustering
+import ted.gun0912.clustering.naver.TedNaverMarker
 
 
 class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -52,6 +59,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var infoWindow: InfoWindow
     lateinit var pickMarker: ClusterDataClass
     lateinit var array: ArrayList<ClusterMarkerData>
+    lateinit var gg: ArrayList<Cluster<ClusterDataClass>>
 
 
     companion object {
@@ -62,6 +70,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
+        gg = ArrayList()
         array = ArrayList()
         context = this
         pickMarker =
@@ -246,140 +255,168 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                             cluster = TedNaverClustering.with<ClusterDataClass>(
                                 this@CreateRoomMapSearchActivity,
                                 naverMap
-                            ).markerAddedListener { clusterItem, tedNaverMarker, cluster ->
-                                if (clusterItem.status == 1) {
-                                    array[0].marker = tedNaverMarker
-                                    array[0].clustetdata = clusterItem
-                                    tedNaverMarker.marker.icon = MarkerIcons.RED
-                                    array[0].clustetdata.check = true
-                                    var info = array[0].marker.marker.infoWindow
-                                    info?.adapter = object :
-                                        InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
-                                        override fun getText(p0: InfoWindow): CharSequence {
-                                            val spannableString =
-                                                SpannableString("[선택] " + clusterItem.name)
-                                            spannableString.setSpan(
-                                                ForegroundColorSpan(Color.parseColor("#ff0000")),
-                                                0,
-                                                4,
-                                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                                            )
-                                            spannableString.setSpan(
-                                                StyleSpan(Typeface.BOLD),
-                                                0,
-                                                4,
-                                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                                            )
-                                            return spannableString
-                                        }
-
-                                    }
-                                    info?.let { it.open(array[0].marker.marker) }
-                                } else {
-                                    val info = InfoWindow()
-                                    info.adapter = object :
-                                        InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
-                                        override fun getText(p0: InfoWindow): CharSequence {
-                                            return clusterItem.placeName
-                                        }
-                                    }
-                                    info.open(tedNaverMarker.marker)
-                                }
-
-
-                                tedNaverMarker.marker.setOnClickListener {
-                                    if (array.size > 0) {
-                                        for (index in array.indices) {
-                                            array[index].clustetdata.status = 0
-                                            array[index].marker.marker.icon = MarkerIcons.GREEN
-                                            array[index].clustetdata.check = false
-                                            array[index].marker.marker.infoWindow?.let {
-
+                            )
+                                .markerAddedListener { clusterItem, tedNaverMarker, cluster, render, builder ->
+                                    if (clusterItem.status == 1) {
+                                        array[0].marker = tedNaverMarker
+                                        array[0].clustetdata = clusterItem
+                                        tedNaverMarker.marker.icon = MarkerIcons.RED
+                                        array[0].clustetdata.check = true
+                                        tedNaverMarker.markerCheck = true
+                                        val info = InfoWindow()
+                                        info.adapter = object :
+                                            InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                            override fun getText(p0: InfoWindow): CharSequence {
+                                                val spannableString =
+                                                    SpannableString("[선택] " + clusterItem.name)
+                                                spannableString.setSpan(
+                                                    ForegroundColorSpan(Color.parseColor("#ff0000")),
+                                                    0,
+                                                    4,
+                                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                                )
+                                                spannableString.setSpan(
+                                                    StyleSpan(Typeface.BOLD),
+                                                    0,
+                                                    4,
+                                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                                )
+                                                return spannableString
                                             }
-                                            var info = array[index].marker.marker.infoWindow
-                                            info?.let {
-                                                it.adapter = object :
-                                                    InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
-                                                    override fun getText(p0: InfoWindow): CharSequence {
-                                                        return clusterItem.placeName
+
+                                        }
+                                        info.open(array[0].marker.marker)
+
+                                    } else {
+                                        val info = InfoWindow()
+                                        info.adapter = object :
+                                            InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                            override fun getText(p0: InfoWindow): CharSequence {
+                                                return clusterItem.placeName
+                                            }
+                                        }
+                                        info.open(tedNaverMarker.marker)
+                                    }
+
+
+                                    tedNaverMarker.marker.setOnClickListener {
+                                        if (array.size > 0) {
+
+                                            for (index in array.indices) {
+                                                array[index].clustetdata.status = 0
+                                                array[index].marker.marker.icon = MarkerIcons.GREEN
+                                                array[index].clustetdata.check = false
+                                                array[index].marker.check = false
+                                                array[index].marker.marker.infoWindow?.let {
+
+                                                    it.adapter = object :
+                                                        InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                                        override fun getText(p0: InfoWindow): CharSequence {
+                                                            return clusterItem.placeName
+                                                        }
                                                     }
+                                                    it.open(array[index].marker.marker)
+
+
                                                 }
-                                                info.open(array[index].marker.marker)
+
+                                                array.removeAt(index)
                                             }
-                                            array.removeAt(index)
+
                                         }
+                                        for ((Marker, item) in render.mClusterManager.markerManager.allMarkerMap) {
+                                            Marker.markerCheck = false
+                                        }
+                                        clusterItem.status = 1
+                                        tedNaverMarker.marker.icon = MarkerIcons.RED
+                                        tedNaverMarker.markerCheck = true
+                                        clusterItem.check = true
+                                        intentX = clusterItem.position.longitude
+                                        intentY = clusterItem.position.latitude
+                                        intentShopName = clusterItem.document.placeName
+                                        intentRoadAddress = clusterItem.document.roadAddressName
+                                        intentAddress = clusterItem.document.addressName
+                                        array.add(ClusterMarkerData(clusterItem, tedNaverMarker))
+                                        var info = array[0].marker.marker.infoWindow
+                                        info?.adapter = object :
+                                            InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                            override fun getText(p0: InfoWindow): CharSequence {
+                                                val spannableString =
+                                                    SpannableString("[선택] " + clusterItem.name)
+                                                spannableString.setSpan(
+                                                    ForegroundColorSpan(Color.parseColor("#ff0000")),
+                                                    0,
+                                                    4,
+                                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                                )
+                                                spannableString.setSpan(
+                                                    StyleSpan(Typeface.BOLD),
+                                                    0,
+                                                    4,
+                                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                                )
+                                                return spannableString
+                                            }
+
+                                        }
+                                        info?.let { it.open(array[0].marker.marker) }
+                                        naverMap.moveCamera(
+                                            CameraUpdate.scrollTo(clusterItem.position)
+                                                .animate(CameraAnimation.Easing)
+                                        )
+
+                                        for ((Marker, item) in render.mMarkerToCluster) {
+                                            if (!Marker.markerCheck) {
+                                                Marker.marker.infoWindow?.let {
+                                                    it.close()
+                                                }
+                                                render.onBeforeClusterRendered(item, Marker)
+
+                                            }
+                                        }
+
+                                        true
                                     }
 
-                                    clusterItem.status = 1
-                                    tedNaverMarker.marker.icon = MarkerIcons.RED
-                                    clusterItem.check = true
-                                    intentX = clusterItem.position.longitude
-                                    intentY = clusterItem.position.latitude
-                                    intentShopName = clusterItem.document.placeName
-                                    intentRoadAddress = clusterItem.document.roadAddressName
-                                    intentAddress = clusterItem.document.addressName
-                                    array.add(ClusterMarkerData(clusterItem, tedNaverMarker))
-                                    var info = array[0].marker.marker.infoWindow
-                                    info?.adapter = object :
-                                        InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
-                                        override fun getText(p0: InfoWindow): CharSequence {
-                                            val spannableString =
-                                                SpannableString("[선택] " + clusterItem.name)
-                                            spannableString.setSpan(
-                                                ForegroundColorSpan(Color.parseColor("#ff0000")),
-                                                0,
-                                                4,
-                                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                                            )
-                                            spannableString.setSpan(
-                                                StyleSpan(Typeface.BOLD),
-                                                0,
-                                                4,
-                                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                                            )
-                                            return spannableString
+
+                                }.clusterAddedListener { cluster, tedNaverMarker, render ->
+
+                                    if (cluster.clusterData()) {
+
+                                        tedNaverMarker.marker.icon = MarkerIcons.RED
+                                        tedNaverMarker.markerCheck = true
+                                        var info = InfoWindow()
+
+                                        info.adapter = object :
+                                            InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
+                                            override fun getText(p0: InfoWindow): CharSequence {
+                                                val spannableString =
+                                                    SpannableString("[선택] " + array[0].clustetdata.placeName)
+                                                spannableString.setSpan(
+                                                    ForegroundColorSpan(Color.parseColor("#ff0000")),
+                                                    0,
+                                                    4,
+                                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                                )
+                                                spannableString.setSpan(
+                                                    StyleSpan(Typeface.BOLD),
+                                                    0,
+                                                    4,
+                                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                                )
+                                                return spannableString
+                                            }
                                         }
+                                        info.open(tedNaverMarker.marker)
 
+
+                                    } else {
+                                        tedNaverMarker.markerCheck = false
                                     }
-                                    info?.let { it.open(array[0].marker.marker) }
-                                    naverMap.moveCamera(
-                                        CameraUpdate.scrollTo(clusterItem.position)
-                                            .animate(CameraAnimation.Easing)
-                                    )
+                                    gg.add(cluster)
+                                    Log.e("클러스터 사이즈", gg.size.toString())
 
-                                    true
                                 }
-
-                            }.clusterAddedListener { cluster, tedNaverMarker ->
-                                if (cluster.clusterData()) {
-                                    tedNaverMarker.marker.icon = MarkerIcons.RED
-                                    var info = InfoWindow()
-
-                                    info.adapter = object :
-                                        InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
-                                        override fun getText(p0: InfoWindow): CharSequence {
-                                            val spannableString =
-                                                SpannableString("[선택] " + array[0].clustetdata.placeName)
-                                            spannableString.setSpan(
-                                                ForegroundColorSpan(Color.parseColor("#ff0000")),
-                                                0,
-                                                4,
-                                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                                            )
-                                            spannableString.setSpan(
-                                                StyleSpan(Typeface.BOLD),
-                                                0,
-                                                4,
-                                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                                            )
-                                            return spannableString
-                                        }
-                                    }
-                                    info.open(tedNaverMarker.marker)
-
-
-                                }
-                            }
                                 .items(getItems(naverMap, CLlist)).minClusterSize(3).clusterBuckets(
                                     intArrayOf(
                                         5,

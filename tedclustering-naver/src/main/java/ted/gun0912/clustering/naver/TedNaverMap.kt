@@ -82,6 +82,6 @@ class TedNaverMap(private val naverMap: NaverMap,val context: Context) : TedMap<
     }
 
     override fun getMarker(marker: Marker): TedNaverMarker {
-        return TedNaverMarker(marker,context)
+        return TedNaverMarker(marker,context, check = false)
     }
 }

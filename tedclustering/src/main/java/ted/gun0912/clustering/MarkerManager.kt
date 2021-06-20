@@ -14,7 +14,7 @@ import java.util.*
 class MarkerManager<RealMarker, Marker : TedMarker<ImageDescriptor>, ImageDescriptor>(
     private val tedMap: TedMap<RealMarker, Marker, ImageDescriptor>
 ) {
-    private val allMarkerMap = HashMap<Marker, MarkerCollection>()
+     val allMarkerMap = HashMap<Marker, MarkerCollection>()
 
     fun newCollection(): MarkerCollection = MarkerCollection()
 
@@ -38,6 +38,8 @@ class MarkerManager<RealMarker, Marker : TedMarker<ImageDescriptor>, ImageDescri
 
             return marker
         }
+
+        
 
         fun addAll(collection: Collection<Marker>) {
             for (marker in collection) {
