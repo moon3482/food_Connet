@@ -21,11 +21,8 @@ class TedNaverMarker(override var marker: Marker, val context: Context, override
 
     }
 
-    var markerCheck: Boolean by Delegates.observable(false) { props, old, new ->
 
-            new
-    }
-    var markerche = check
+
 
     override var position: TedLatLng
         get() = TedLatLng(marker.position.latitude, marker.position.longitude)

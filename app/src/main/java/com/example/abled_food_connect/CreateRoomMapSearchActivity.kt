@@ -262,7 +262,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                         array[0].clustetdata = clusterItem
                                         tedNaverMarker.marker.icon = MarkerIcons.RED
                                         array[0].clustetdata.check = true
-                                        tedNaverMarker.markerCheck = true
+                                        tedNaverMarker.check = true
                                         val info = InfoWindow()
                                         info.adapter = object :
                                             InfoWindow.DefaultTextAdapter(this@CreateRoomMapSearchActivity) {
@@ -325,11 +325,11 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
                                         }
                                         for ((Marker, item) in render.mClusterManager.markerManager.allMarkerMap) {
-                                            Marker.markerCheck = false
+                                            Marker.check = false
                                         }
                                         clusterItem.status = 1
                                         tedNaverMarker.marker.icon = MarkerIcons.RED
-                                        tedNaverMarker.markerCheck = true
+                                        tedNaverMarker.check = true
                                         clusterItem.check = true
                                         intentX = clusterItem.position.longitude
                                         intentY = clusterItem.position.latitude
@@ -366,7 +366,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                         )
 
                                         for ((Marker, item) in render.mMarkerToCluster) {
-                                            if (!Marker.markerCheck) {
+                                            if (!Marker.check) {
                                                 Marker.marker.infoWindow?.let {
                                                     it.close()
                                                 }
@@ -375,6 +375,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                             }
                                         }
 
+
                                         true
                                     }
 
@@ -382,9 +383,14 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                 }.clusterAddedListener { cluster, tedNaverMarker, render ->
 
                                     if (cluster.clusterData()) {
+                                        tedNaverMarker.check = true
+                                        tedNaverMarker.setImageDescriptor(
+                                            tedNaverMarker.fromBitmap(
+                                                render.getDefaultCluster(cluster.size, cluster)
+                                            )
+                                        )
 
-                                        tedNaverMarker.marker.icon = MarkerIcons.RED
-                                        tedNaverMarker.markerCheck = true
+
                                         var info = InfoWindow()
 
                                         info.adapter = object :
@@ -410,11 +416,8 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                         info.open(tedNaverMarker.marker)
 
 
-                                    } else {
-                                        tedNaverMarker.markerCheck = false
                                     }
-                                    gg.add(cluster)
-                                    Log.e("클러스터 사이즈", gg.size.toString())
+
 
                                 }
                                 .items(getItems(naverMap, CLlist)).minClusterSize(3).clusterBuckets(

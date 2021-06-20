@@ -8,7 +8,9 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Color.*
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -18,6 +20,7 @@ import android.util.SparseArray
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.util.MarkerIcons
 import ted.gun0912.clustering.*
@@ -37,7 +40,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
-class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMarker<ImageDescriptor>, Map, ImageDescriptor>(
+class ClusterRenderer<Clustering,T : TedClusterItem, RealMarker, Marker : TedMarker<ImageDescriptor>, Map, ImageDescriptor>(
     private val builder: BaseBuilder<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>,
      var mClusterManager: ClusterManager<Clustering, T, RealMarker, Marker, Map, ImageDescriptor>
 ) {
@@ -47,6 +50,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
     private val mDensity: Float
     private var clusterAnimation: Boolean = builder.clusterAnimation
     private var mColoredCircleBackground: ShapeDrawable? = null
+
 
 
 
@@ -93,6 +97,8 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
         mIconGenerator.setTextAppearance(R.style.amu_ClusterIcon_TextAppearance)
         mIconGenerator.setBackground(makeClusterBackground())
 
+
+
         mClusterManager.markerMarkerCollection
             .setOnMarkerClickListener { marker ->
 
@@ -114,7 +120,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
     }
 
 
-    private fun makeClusterBackground(): LayerDrawable {
+    fun makeClusterBackground(): LayerDrawable {
         mColoredCircleBackground = ShapeDrawable(OvalShape())
         val outline = ShapeDrawable(OvalShape())
         outline.paint.color = -0x7f000001 // Transparent white.
@@ -143,7 +149,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
         val sizeRange = 300f
         val size = Math.min(clusterSize.toFloat(), sizeRange)
         val hue = (sizeRange - size) * (sizeRange - size) / (sizeRange * sizeRange) * hueRange
-        return Color.HSVToColor(floatArrayOf(hue, 1f, .6f))
+        return HSVToColor(floatArrayOf(hue, 1f, .6f))
     }
 
      fun getDefaultClusterText(bucket: Int): String {
@@ -643,7 +649,7 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
             val clusterBitmap = builder.clusterMaker?.let {
                 val view = it.invoke(cluster)
                 IconGenerator.makeIcon(view)
-            } ?: getDefaultCluster(bucket)
+            } ?: getDefaultCluster(bucket,cluster)
             imageDescriptor = tedMarker.fromBitmap(clusterBitmap)
             mIcons.put(bucket, imageDescriptor)
         }
@@ -651,9 +657,13 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
         tedMarker.setImageDescriptor(imageDescriptor!!)
     }
 
-   fun getDefaultCluster(bucket: Int): Bitmap {
-        mColoredCircleBackground!!.paint.color =
-            builder.clusterBackground?.invoke(bucket) ?: getDefaultClusterBackground(bucket)
+   fun getDefaultCluster(bucket: Int,cluster: Cluster<T>): Bitmap {
+      if(cluster.clusterData()){
+          mColoredCircleBackground!!.paint.color = Color.parseColor("#ff0000")
+      }else{
+          mColoredCircleBackground!!.paint.color =
+              builder.clusterBackground?.invoke(bucket) ?: getDefaultClusterBackground(bucket)
+      }
         val clusterText = builder.clusterText?.invoke(bucket) ?: getDefaultClusterText(bucket)
         return mIconGenerator.makeIcon(clusterText)
     }
@@ -755,9 +765,9 @@ class ClusterRenderer<Clustering, T : TedClusterItem, RealMarker, Marker : TedMa
                 if (animateFrom != null) {
                     markerModifier.animate(markerWithPosition, animateFrom, cluster.position)
                 }
-                Log.e("클러스터", "클러스터")
+
             } else {
-                Log.e("클러스터2", "클러스터2")
+
                 markerWithPosition = MarkerWithPosition(marker)
             }
             builder.clusterAddedListener?.invoke(cluster, marker,this@ClusterRenderer)
