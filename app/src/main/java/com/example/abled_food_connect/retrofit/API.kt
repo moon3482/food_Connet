@@ -186,6 +186,8 @@ class API {
     }
 
 
+
+
     interface reviewPageCommentWriting{
         // 리뷰보다가 댓글(코멘트)작성
         @Multipart
@@ -200,6 +202,21 @@ class API {
             @Part("groupNum") groupNum: Int
         ): Call<ReviewChildPageCommentGetData>
     }
+
+
+    interface ReviewSearchRvInterface {
+
+        @Multipart
+        @POST("review/review_search_rv_list_get.php")
+        fun review_search_rv_using_get(
+            @Part("option_number") option_number: Int,
+            @Part("search_keyword") search_keyword: String,
+            @Part("userId") userId: Int
+        ): Call<ReviewDetailViewRvData>
+
+    }
+
+
 
 
 
