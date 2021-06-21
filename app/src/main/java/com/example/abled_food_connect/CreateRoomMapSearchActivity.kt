@@ -261,6 +261,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                         array[0].marker = tedNaverMarker
                                         array[0].clustetdata = clusterItem
                                         tedNaverMarker.marker.icon = MarkerIcons.RED
+                                        tedNaverMarker.marker.zIndex = 200
                                         array[0].clustetdata.check = true
                                         tedNaverMarker.check = true
                                         val info = InfoWindow()
@@ -285,6 +286,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                             }
 
                                         }
+                                        info.zIndex = 200
                                         info.open(array[0].marker.marker)
 
                                     } else {
@@ -307,6 +309,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                                 array[index].marker.marker.icon = MarkerIcons.GREEN
                                                 array[index].clustetdata.check = false
                                                 array[index].marker.check = false
+                                                array[index].marker.marker.zIndex = 0
                                                 array[index].marker.marker.infoWindow?.let {
 
                                                     it.adapter = object :
@@ -315,6 +318,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                                             return clusterItem.placeName
                                                         }
                                                     }
+                                                    it.zIndex = 0
                                                     it.open(array[index].marker.marker)
 
 
@@ -329,6 +333,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                         }
                                         clusterItem.status = 1
                                         tedNaverMarker.marker.icon = MarkerIcons.RED
+                                        tedNaverMarker.marker.zIndex = 200
                                         tedNaverMarker.check = true
                                         clusterItem.check = true
                                         intentX = clusterItem.position.longitude
@@ -359,7 +364,10 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                             }
 
                                         }
-                                        info?.let { it.open(array[0].marker.marker) }
+
+                                        info?.let {
+                                            it.zIndex = 200
+                                            it.open(array[0].marker.marker) }
                                         naverMap.moveCamera(
                                             CameraUpdate.scrollTo(clusterItem.position)
                                                 .animate(CameraAnimation.Easing)
@@ -384,6 +392,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
                                     if (cluster.clusterData()) {
                                         tedNaverMarker.check = true
+                                        tedNaverMarker.marker.zIndex = 200
                                         tedNaverMarker.setImageDescriptor(
                                             tedNaverMarker.fromBitmap(
                                                 render.getDefaultCluster(cluster.size, cluster)

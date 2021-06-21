@@ -204,9 +204,10 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
 
+
                     Handler().postDelayed(Runnable {
                         //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
-                        binding.nestedScroll.scrollTo(0,binding.contentReviewDescriptionTv.top)
+                        binding.nestedScroll.smoothScrollBy(0,binding.contentViewPager2.top)
                     }, 500)
 
 

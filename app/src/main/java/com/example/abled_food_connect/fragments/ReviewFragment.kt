@@ -1,12 +1,12 @@
 package com.example.abled_food_connect.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +15,7 @@ import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
 import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
 import com.example.abled_food_connect.interfaces.ReviewFragRvUsingInterface
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.ReviewSearchActivity
 import com.example.abled_food_connect.data.MainFragmentItemData
 import retrofit2.Call
 import retrofit2.Callback
@@ -85,6 +86,8 @@ class ReviewFragment:Fragment() {
 
 
 
+        //메뉴바 나오게한다.
+        setHasOptionsMenu(true)
 
 
         return view
@@ -149,6 +152,27 @@ class ReviewFragment:Fragment() {
             outRect.top = divHeight
             outRect.bottom = divHeight
         }
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.review_fragment_top_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.search_btn) {
+
+
+            activity?.let{
+                val intent = Intent(context, ReviewSearchActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent)
+
+            }
+
+            Toast.makeText(context, "버튼킬륵", Toast.LENGTH_SHORT).show()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

@@ -11,11 +11,9 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.adapter.UserProfileClickedReviewVerticalListAdapter
 import com.example.abled_food_connect.data.ReviewDetailViewLikeAndCommentCountCheckData
-import com.example.abled_food_connect.data.ReviewDetailViewRvData
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
 import com.example.abled_food_connect.databinding.ActivityUserProfileClickedReviewVerticalListBinding
 import com.example.abled_food_connect.fragments.ReviewFragment
-import com.example.abled_food_connect.interfaces.ReviewDetailRvInterface
 import com.example.abled_food_connect.retrofit.API
 import retrofit2.Call
 import retrofit2.Callback
@@ -100,26 +98,9 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
 
 
-
-        //그리드 뷰에서 몇번째 포지션 아이템을 선택했는가. 버티컬뷰로 이동했을때 해당 포지션의 스크롤로 이동한다.
-        val smoothScroller = object : LinearSmoothScroller(this) {
-            override fun getVerticalSnapPreference(): Int {
-                return LinearSmoothScroller.SNAP_TO_START
-            }
-        }
-
-        smoothScroller.targetPosition = whatClickPositionInGridView
-        (detail_rv.layoutManager as LinearLayoutManager).startSmoothScroll(smoothScroller)
+        detail_rv.scrollToPosition(whatClickPositionInGridView)
 
 
-        //클릭리스너 등록
-        mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
-            override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
-                whatClickPostion = position
-                this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
-
-            }
-        })
 
     }
 

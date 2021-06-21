@@ -28,15 +28,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import coil.load
-import coil.request.CachePolicy
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.abled_food_connect.data.ChatImageSendingData
-import com.example.abled_food_connect.data.DirectMessageNodeServerSendDataItem
 import com.example.abled_food_connect.data.UserProfileData
 import com.example.abled_food_connect.databinding.ActivityUserProfileModifyBinding
-import com.example.abled_food_connect.fragments.MyPageFragment
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
 import com.google.gson.Gson
@@ -48,7 +43,6 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
