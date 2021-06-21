@@ -5,9 +5,13 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.util.SparseArray
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,8 +19,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import co.lujun.androidtagview.TagView
 import com.example.abled_food_connect.array.age
+import com.example.abled_food_connect.array.maximumAge
+import com.example.abled_food_connect.array.minimumAge
 import com.example.abled_food_connect.array.numOfPeople
 import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBinding
+import com.example.abled_food_connect.retrofit.API
+import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -26,18 +34,23 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import net.daum.android.map.*
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.BufferedInputStream
+import java.io.InputStream
+import java.net.URLDecoder
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
+class CreateRoomActivity : AppCompatActivity() {
     lateinit var mapFragment: MapFragment
     val binding by lazy { ActivityCreateRoomActivityBinding.inflate(layoutInflater) }
     private var genderMaleSelected: Boolean = false
@@ -48,6 +61,8 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+    private var x: Double? = null
+    private var y: Double? = null
     /*태그 리스트*/val PERMISSIONS_REQUEST_CODE = 100
     var tagArray: ArrayList<String> = ArrayList()
     lateinit var marker: Marker
@@ -77,10 +92,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         onClickListenerGroup()
         checkPermissions()
 
-        val fm = supportFragmentManager
-        mapFragment = fm.findFragmentById(R.id.CreateRoomActivityMapView) as MapFragment?
-            ?: MapFragment.newInstance()
-                .also { fm.beginTransaction().add(R.id.CreateRoomActivityMapView, it).commit() }
+        getMapImage(null, null, null)
 
     }
 
@@ -200,6 +212,20 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
+    private fun setAdapter(age: minimumAge, num: Int): ArrayAdapter<Int> {
+
+
+        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
+
+    }
+
+    private fun setAdapter(age: maximumAge, num: Int): ArrayAdapter<Int> {
+
+
+        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
+
+    }
+
     /**
      * 모집인원 어댑터
      * */
@@ -209,7 +235,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         return ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item,
-            numOfPeople.numArray()
+            numOfPeople.numArray(3)
         )
 
     }
@@ -221,13 +247,8 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (binding.CreateRoomActivityRoomTitleInput.length() == 0) {
             Toast.makeText(this, "방 제목을 입력해주세요", Toast.LENGTH_LONG).show()
-            binding.Scroll.scrollTo(0, binding.CreateRoomShopNameInputLayout.bottom)
-            binding.CreateRoomTitleInputLayout.requestFocus()
-            return false
-        } else if (binding.CreateRoomActivityRoomShopNameInput.length() == 0) {
-            Toast.makeText(this, "매장 이름을 입력해주세요", Toast.LENGTH_LONG).show()
             binding.Scroll.scrollTo(0, 0)
-            binding.CreateRoomShopNameInputLayout.requestFocus()
+            binding.CreateRoomTitleInputLayout.requestFocus()
             return false
         } else if (binding.CreateRoomActivityRoomInformationInput.length() == 0) {
             Toast.makeText(this, "방 소개를 입력해주세요", Toast.LENGTH_LONG).show()
@@ -382,9 +403,11 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         val address = address
         val roadAddress = roadAddress
         val placeName = placeName
-        val shopName = binding.CreateRoomActivityRoomShopNameInput.text.toString()
+        val shopName = placeName
         val keyWord = tagArray.toString()
         var gender: String = ""
+        var mapx = x?.toDouble()
+        var mapy = y?.toDouble()
 
         if (genderMaleSelected) {
             gender = "male"
@@ -412,6 +435,7 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         val server = retrofit.create(RoomAPI::class.java)
 
         server.createRoom(
+            MainActivity.user_table_id.toString(),
             tile,
             info,
             numOfPeople,
@@ -425,26 +449,44 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
             gender,
             minAge,
             maxAge,
-            hostName
+            hostName,
+            mapx.toString(),
+            mapy.toString()
         )
-            .enqueue(object : Callback<String> {
+            .enqueue(object : Callback<API.createRoomHost> {
                 override fun onResponse(
-                    call: Call<String>,
-                    response: Response<String>
+                    call: Call<API.createRoomHost>,
+                    response: Response<API.createRoomHost>
                 ) {
-                    if (response?.body().toString() == "true") {
+
+                    val room: API.createRoomHost? = response.body()
+
+                    if (room!!.success) {
                         Toast.makeText(this@CreateRoomActivity, "방 생성", Toast.LENGTH_SHORT).show()
-                        startActivity(
-                            Intent(
-                                this@CreateRoomActivity,
-                                MainFragmentActivity::class.java
-                            ).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                        )
+
+                        val intent =
+                            Intent(this@CreateRoomActivity, RoomInformationActivity::class.java)
+                        intent.putExtra("roomId", room.roomId.roomId)
+                        intent.putExtra("title", room.roomId.title)
+                        intent.putExtra("info", room.roomId.info)
+                        intent.putExtra("hostName", room.roomId.hostName)
+                        intent.putExtra("address", room.roomId.address)
+                        intent.putExtra("date", room.roomId.date)
+                        intent.putExtra("shopName", room.roomId.shopName)
+                        intent.putExtra("roomStatus", room.roomId.roomStatus)
+                        intent.putExtra("numOfPeople", room.roomId.numOfPeople.toString())
+                        intent.putExtra("keyWords", room.roomId.keyWords)
+                        intent.putExtra("mapX", room.roomId.mapX)
+                        intent.putExtra("mapY", room.roomId.mapY)
+                        intent.putExtra("nowNumOfPeople", room.roomId.nowNumOfPeople.toString())
+                        intent.putExtra("imageUrl", MainActivity.userThumbnailImage)
+                        intent.putExtra("join", "1")
+                        startActivity(intent)
                         finish()
                     }
                 }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
+                override fun onFailure(call: Call<API.createRoomHost>, t: Throwable) {
 
                 }
 
@@ -670,6 +712,23 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivityForResult(intent, SEARCHMAPRESULTCODE)
 
         }
+
+        binding.minimumAgeTextView.setOnItemClickListener(object : AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val num = binding.minimumAgeTextView.text.toString().toInt()
+                binding.maximumAgeTextView.setAdapter(setAdapter(maximumAge(), num))
+            }
+        })
+
+        binding.maximumAgeTextView.setOnItemClickListener { parent, view, position, id ->
+            val num = binding.maximumAgeTextView.text.toString().toInt()
+            binding.minimumAgeTextView.setAdapter(setAdapter(minimumAge(), num))
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -677,28 +736,17 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         if (resultCode == RESULT_OK) {
             when (requestCode) {
                 SEARCHMAPRESULTCODE -> {
-                    val x = data?.getDoubleExtra("x", 0.0)
-                    val y = data?.getDoubleExtra("y", 0.0)
+                    x = data?.getDoubleExtra("x", 0.0)
+                    y = data?.getDoubleExtra("y", 0.0)
                     placeName = data?.getStringExtra("shopName").toString()
                     address = data?.getStringExtra("address").toString()
                     roadAddress = data?.getStringExtra("roadAddress").toString()
-                    mapFragment.getMapAsync {
-                        marker.position = LatLng(y!!, x!!)
-
-
-                        val infoWindow = InfoWindow()
-                        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(this) {
-                            override fun getText(p0: InfoWindow): CharSequence {
-                                return placeName
-                            }
-                        }
-                        marker.map = it
-                        infoWindow.open(marker)
-
-                        it.moveCamera(
-                            CameraUpdate.scrollTo(LatLng(y, x)).animate(CameraAnimation.Easing)
-                        )
-
+                    Log.e("가게이름", placeName)
+                    getMapImage(x, y, placeName)
+                    binding.CreateRoomActivityMapView.setOnClickListener {
+                        val i = Intent(Intent.ACTION_VIEW)
+                        i.data = Uri.parse("http://map.naver.com/?query=$address")
+                        startActivity(i)
                     }
 
                 }
@@ -708,8 +756,52 @@ class CreateRoomActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    override fun onMapReady(p0: NaverMap) {
-        TODO("Not yet implemented")
+
+    fun getMapImage(x: Double?, y: Double?, placeName: String?) {
+        var w = 400
+        var h = 400
+        var center = "126.978082,37.565577"
+        var place: String? = null
+        var marker: String? = null
+        if (x != null && y != null) {
+            center = "$x $y"
+            place = "|label:$placeName"
+            marker =
+                "type:t${place}|size:mid|pos:$x $y|viewSizeRatio:2.0"
+        }
+
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://naveropenapi.apigw.ntruss.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(MapSearch::class.java).getStaticMap(
+            "kqfai8b97u",
+            "NyaUzYcb3IWf1GKPNFDTYJTHIg9SUNtciSstiv5m",
+            w,
+            h,
+            14,
+            "basic",
+            marker,
+            center,
+            2
+        ).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+
+                val input: InputStream = response.body()!!.byteStream()
+//                val bufferedInputStream = BufferedInputStream(input)
+                val bitmap: Bitmap = BitmapFactory.decodeStream(input)
+                binding.CreateRoomActivityMapView.setImageBitmap(bitmap)
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("StaticMap", "실패")
+            }
+        })
+
+
     }
 
     /* 나이제한 배열 생성 2021-05-19 기능을 인터페이스로 전환하여 사용 불필요

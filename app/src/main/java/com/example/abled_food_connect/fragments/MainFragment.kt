@@ -6,11 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.adapter.MainFragmentAdapter
@@ -31,6 +34,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainFragment : Fragment() {
     private var mainFragmentListArray: ArrayList<MainFragmentItemData> = ArrayList()
     lateinit var recyclerView: RecyclerView
+    lateinit var recyclerViewAdapter: MainFragmentAdapter
+    lateinit var hideRoom: LinearLayout
+    lateinit var checkImage: ImageView
+    private var check: Boolean = false
+    lateinit var swipeRefresh: SwipeRefreshLayout
+    lateinit var refreshTextView:SwipeRefreshLayout
 
     companion object {
         const val TAG: String = "홈 프래그먼트 로그"
@@ -42,6 +51,7 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "메인프래그먼트 onCreate()")
+
 
     }
 
@@ -57,27 +67,42 @@ class MainFragment : Fragment() {
     ): View? {
         Log.d(TAG, "메인프래그먼트 onCreateView()")
         val view = inflater.inflate(R.layout.main_fragment, container, false)
-//        mainFragmentListArray.add(MainFragmentItemData("제목","정보",0, "","","","","","male",0,20,"나야",0))
-//        mainFragmentListArray.add(MainFragmentItemData("제목1","정보1",0, "","","","","","female",0,20,"나야",1))
-//        mainFragmentListArray.add(MainFragmentItemData("제목2","정보2",0, "","","","","","any",0,20,"나야",2))
-//        mainFragmentListArray.add(MainFragmentItemData("제목3","정보3",0, "","","","","","male",0,20,"나야",3))
-//        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
-//        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
-//        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
-//        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
-//        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
-//        mainFragmentListArray.add(MainFragmentItemData("제목4","정보4",0, "","","","","","male",0,20,"나야",6))
 
 
+        hideRoom = view.findViewById(R.id.hideJoinRoom)
+        checkImage = view.findViewById(R.id.hideRoomCheck)
+        swipeRefresh = view.findViewById(R.id.mainFragmentSwipeRefresh)
+        refreshTextView = view.findViewById(R.id.mainFragmentSwipeRefreshTextView)
         recyclerView = view.findViewById(R.id.mainRcv) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = MainFragmentAdapter(requireContext(), mainFragmentListArray)
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
                 LinearLayoutManager(this.context).orientation
             )
         )
+        swipeRefresh.setOnRefreshListener {
+            load()
+
+        }
+        hideRoom.setOnClickListener {
+            check = when (check) {
+                false -> {
+                    recyclerViewAdapter.filter.filter(MainActivity.user_table_id.toString())
+                    checkImage.setImageResource(R.drawable.ic_baseline_check_circle_24)
+                    true
+                }
+                else -> {
+                    recyclerViewAdapter.filter.filter(null)
+                    checkImage.setImageResource(R.drawable.ic_baseline_noncheck_circle_24)
+                    false
+                }
+
+
+            }
+
+
+        }
         load()
 
         return view
@@ -103,7 +128,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "메인프래그먼트 onResume()")
-        load()
+
 
     }
 
@@ -156,13 +181,16 @@ class MainFragment : Fragment() {
 
                     val list: LoadingRoom = response.body()!!
                     val array: ArrayList<MainFragmentItemData> = list.roomList
-                    for (i in 0 until array.size) {
-                        mainFragmentListArray.add(array[i])
-                        recyclerView.adapter!!.notifyDataSetChanged()
-
+                    mainFragmentListArray = list.roomList as ArrayList<MainFragmentItemData>
+                    recyclerViewAdapter =
+                        MainFragmentAdapter(requireContext(),this@MainFragment, mainFragmentListArray)
+                    recyclerView.adapter = recyclerViewAdapter
+                    swipeRefresh.isRefreshing = false
+                    if(check){
+                        recyclerViewAdapter.filter.filter(MainActivity.user_table_id.toString())
+                    }else{
+                        recyclerViewAdapter.filter.filter(null)
                     }
-
-
                 }
 
                 override fun onFailure(call: Call<LoadingRoom>, t: Throwable) {

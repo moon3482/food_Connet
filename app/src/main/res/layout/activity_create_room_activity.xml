@@ -30,29 +30,6 @@
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/CreateRoomShopNameInputLayout"
-                style="@style/LoginTextInputLayoutStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:counterEnabled="true"
-                app:counterMaxLength="15"
-                app:errorEnabled="true"
-                app:hintAnimationEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/CreateRoomActivityRoomShopNameInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/create_room_activity_room_shop_name_hint"
-                    android:textCursorDrawable="@drawable/edit_text_cursor_color"
-
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/CreateRoomTitleInputLayout"
                 style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
@@ -61,6 +38,7 @@
                 android:layout_marginEnd="20dp"
                 app:counterEnabled="true"
                 app:counterMaxLength="30"
+                android:layout_marginTop="20dp"
                 app:errorEnabled="true"
                 app:hintAnimationEnabled="true">
 
@@ -233,13 +211,16 @@
 
             </LinearLayout>
 
-            <fragment
+            <ImageView
                 android:id="@+id/CreateRoomActivityMapView"
                 android:name="com.naver.maps.map.MapFragment"
                 style="@style/create_room_margin"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginTop="15dp" />
+                android:layout_height="400dp"
+                android:layout_marginTop="15dp"
+                tools:srcCompat="@tools:sample/avatars" />
+
+
 
             <LinearLayout
                 style="@style/create_room_margin"
@@ -330,9 +311,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/create_room_activity_minimum_age"
+                            android:textSize="12sp"
                             android:inputType="none" />
 
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        style="@style/create_room_activity_text_view_style"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.6"
+                        android:text="~" />
 
                     <com.google.android.material.textfield.TextInputLayout
 
@@ -347,6 +337,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/create_room_activity_maximum_age"
+                            android:textSize="12sp"
                             android:inputType="none" />
 
                     </com.google.android.material.textfield.TextInputLayout>

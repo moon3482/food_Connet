@@ -1,11 +1,12 @@
 package com.example.abled_food_connect.retrofit
 
+import android.graphics.Bitmap
 import com.example.abled_food_connect.data.kakaoDataClass.KakaoLocalSearch
 import com.example.abled_food_connect.data.naverDataClass.NaverSearchLocal
+import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Query
+import retrofit2.http.*
+import java.io.InputStream
 
 interface MapSearch {
 
@@ -23,4 +24,17 @@ interface MapSearch {
         @Header("Authorization") header :String,
         @Query("query")query:String
     ) : Call<KakaoLocalSearch>
+
+    @GET("map-static/v2/raster")
+    @Streaming
+    fun getStaticMap( @Header("X-NCP-APIGW-API-KEY-ID") clientId: String,
+                      @Header("X-NCP-APIGW-API-KEY") clientSecret: String,
+                      @Query("w") w: Int,
+                      @Query("h") h: Int,
+                      @Query("level") level: Int? = null,
+                      @Query("maptype") maptype: String? = null,
+                      @Query("markers",encoded = true) markers: String? = null,
+                      @Query("center") center: String? = null,
+                      @Query("scale") scale: Int? = null
+    ):Call<ResponseBody>
 }

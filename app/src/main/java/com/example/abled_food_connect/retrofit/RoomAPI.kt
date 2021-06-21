@@ -1,32 +1,32 @@
 package com.example.abled_food_connect.retrofit
 
 
-import com.example.abled_food_connect.data.JoinRoomCheck
-import com.example.abled_food_connect.data.LoadingRoom
+import com.example.abled_food_connect.data.*
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface RoomAPI {
     @FormUrlEncoded
     @POST("createRoom.php")
     fun createRoom(
+        @Field("userIndexId") userIndexId: String,
         @Field("title") title: String,
         @Field("info") info: String,
         @Field("numOfPeople") numOfPeople: String,
         @Field("date") date: String,
         @Field("time") time: String,
         @Field("address") address: String,
-        @Field("roadAddress") roadaddress: String,
-        @Field("placeName") placeName:String,
+        @Field("roadAddress") roadAddress: String,
+        @Field("placeName") placeName: String,
         @Field("shopName") shopName: String,
         @Field("keyWords") keyWords: String,
         @Field("gender") gender: String,
         @Field("minimumAge") minimumAge: String,
         @Field("maximumAge") maximumAge: String,
-        @Field("hostName") hostName: String
-    ): Call<String>
+        @Field("hostName") hostName: String,
+        @Field("map_x") map_x: String,
+        @Field("map_y") map_y: String
+    ): Call<API.createRoomHost>
 
 
     @FormUrlEncoded
@@ -41,7 +41,7 @@ interface RoomAPI {
     @POST("RoomJoinCheck.php")
     fun joinRoomCheck(
         @Field("roomId") roomId: String,
-        @Field("userId") userId: String,
+        @Field("nickName") nickName: String,
         @Field("hostName") hostName: String
 
     ): Call<JoinRoomCheck>
@@ -50,7 +50,57 @@ interface RoomAPI {
     @POST("RoomJoin.php")
     fun joinRoom(
         @Field("roomId") roomId: String,
-        @Field("userId") userId: String
+        @Field("nickName") nickName: String,
+        @Field("userIndexId")userIndexId:String
 
     ): Call<API.joinRoomClass>
+
+
+    @retrofit2.http.Multipart
+    @POST("/upload")
+    open
+    fun uploadImage(@Part image: Part?): Call<Message?>?
+
+    @FormUrlEncoded
+    @POST("/groupChat/datelineCheck.php")
+    fun timelineCheck(
+        @Field("datetime") datetime: String?,
+        @Field("roomId") roomId: String
+    ): Call<String>
+
+    @FormUrlEncoded
+    @POST("/groupChat/datelineCheck.php")
+    fun getPageMaxNum(
+        @Field("roomId") roomId: String?
+    ): Call<Int>
+
+    @GET("/groupChat/chatPagenation.php")
+    fun pagination(
+        @Query("roomId") roomId: String,
+        @Query("page") page: Int
+    ): Call<paginationData>
+
+    @FormUrlEncoded
+    @POST("/groupChat/joinSubscription.php")
+    fun joinSubscription(
+        @Field("roomId") roomId: String?,
+        @Field("userIndexId") userIndexId: String?
+    ): Call<String>
+
+    @FormUrlEncoded
+    @POST("/groupChat/subscriptionCheck.php")
+    fun hostSubscriptionCheck(
+        @Field("roomId") roomId: String?,
+
+    ): Call<ChatRoomSubscriptionResult>
+
+    @FormUrlEncoded
+    @POST("/groupChat/subscriptionUpdate.php")
+    fun hostSubscriptionStatusUpdate(
+        @Field("subNumber") subNumber: String?,
+        @Field("status") status: String?
+
+        ): Call<String>
+
 }
+

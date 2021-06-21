@@ -9,12 +9,14 @@ data class MainFragmentItemData(
     var title: String,
     @SerializedName("info")
     var info: String,
+    @SerializedName("nowNumOfPeople")
+    var nowNumOfPeople: Int,
     @SerializedName("numOfPeople")
     var numOfPeople: Int,
     @SerializedName("date")
-    var date : String,
+    var date: String,
     @SerializedName("time")
-    var time : String,
+    var time: String,
     @SerializedName("address")
     var address: String,
     @SerializedName("roadAddress")
@@ -22,7 +24,7 @@ data class MainFragmentItemData(
     @SerializedName("shopName")
     var shopName: String,
     @SerializedName("placeName")
-    var placeName:String,
+    var placeName: String,
     @SerializedName("keyWords")
     var keyWords: String,
     @SerializedName("gender")
@@ -32,12 +34,18 @@ data class MainFragmentItemData(
     @SerializedName("maximumAge")
     var maximumAge: Int,
     @SerializedName("hostName")
-    var hostName:String,
+    var hostName: String,
     @SerializedName("roomStatus")
-    var roomStatus:Double
+    var roomStatus: Double,
+    @SerializedName("map_x")
+    var mapX:Double,
+    @SerializedName("map_y")
+    var mapY:Double,
+    @SerializedName("joinMember")
+    var joinMember:ArrayList<String>
 
-){
-private fun CreateRoom(){
+) {
+    private fun CreateRoom() {
 
-}
+    }
 }

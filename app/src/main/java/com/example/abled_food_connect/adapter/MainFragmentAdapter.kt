@@ -2,9 +2,12 @@ package com.example.abled_food_connect.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +17,7 @@ import com.example.abled_food_connect.R
 import com.example.abled_food_connect.RoomInformationActivity
 import com.example.abled_food_connect.data.JoinRoomCheck
 import com.example.abled_food_connect.data.MainFragmentItemData
+import com.example.abled_food_connect.fragments.MainFragment
 import com.example.abled_food_connect.retrofit.RoomAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,9 +28,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
+class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, private val list: ArrayList<MainFragmentItemData>) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
+    var unList = list
+    var filList = ArrayList<MainFragmentItemData>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -37,7 +42,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        val maindata: MainFragmentItemData = list[position]
+        val maindata: MainFragmentItemData = filList[position]
         val testholder: CustomHolder = holder as CustomHolder
         testholder.roomStatus.text = maindata.title
         testholder.shopName.text = maindata.info
@@ -52,7 +57,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                 String.format(text, Math.round(maindata.roomStatus).toInt())
 
         } else if (maindata.roomStatus < 0.9 && maindata.roomStatus > 0.0) {
-            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
             testholder.roomStatus.text = "임박"
 
         } else if (maindata.roomStatus < 0) {
@@ -73,36 +78,38 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             val text: String = context.getString(R.string.limit_age_badge)
             testholder.roomAge.text = String.format(text, maindata.minimumAge, maindata.maximumAge)
         }
-        testholder.shopName.text = maindata.shopName
+        if(maindata.joinMember.contains(MainActivity.user_table_id.toString())){
+            testholder.joinCheckImageView.visibility = View.VISIBLE
+        }else{
+            testholder.joinCheckImageView.visibility = View.INVISIBLE
+        }
+        testholder.shopName.text = maindata.placeName
         testholder.roomTitle.text = maindata.title
-        testholder.roomNumberOfPeople.text = "1/${(maindata.numOfPeople + 1).toString()}명"
+        testholder.roomNumberOfPeople.text =
+            "${maindata.nowNumOfPeople.toString()}/${(maindata.numOfPeople).toString()}명"
         testholder.roomDateTime.text = maindata.date
         val splitAddress = maindata.address.toString().split("구")
         val splitAddress2 = splitAddress[0].split(" ")
-        var location:String = ""
-        for (index in splitAddress2.indices){
-            location += splitAddress2[index]+">"
+        var location: String = ""
+        for (index in splitAddress2.indices) {
+            location += splitAddress2[index] + ">"
         }
-        location = location.substring(0,location.length-1)+"구"
+        location = location.substring(0, location.length - 1) + "구"
         testholder.roomLocation.text = location
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                if(maindata.hostName == MainActivity.loginUserNickname){
 
-                    context.startActivity(Intent(context,ChatRoomActivity::class.java))
-                }else{
-
-                    joinRoomCheckMethod(maindata,location)
-                }
+                joinRoomCheckMethod(maindata, maindata.address)
 
             }
         })
+
 
     }
 
     override fun getItemCount(): Int {
 
-        return list.size
+        return filList.size
     }
 
 
@@ -115,10 +122,12 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         var roomLocation: TextView = view.findViewById(R.id.tvRoomLocation)
         var roomNumberOfPeople: TextView = view.findViewById(R.id.tvRoomNumberOfPeople)
         var roomAge: TextView = view.findViewById(R.id.tvAge)
+        var joinCheckImageView:ImageView = view.findViewById(R.id.joinCheckImageView)
 
 
     }
-    fun joinRoomCheckMethod(mainData:MainFragmentItemData,addressParse:String){
+
+    fun joinRoomCheckMethod(mainData: MainFragmentItemData, addressParse: String) {
 
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
@@ -127,39 +136,61 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.joinRoomCheck(mainData.roomId,MainActivity.loginUserId,mainData.hostName).enqueue(object : Callback<JoinRoomCheck>{
-            override fun onResponse(call: Call<JoinRoomCheck>, response: Response<JoinRoomCheck>) {
+        server.joinRoomCheck(mainData.roomId, MainActivity.loginUserNickname, mainData.hostName)
+            .enqueue(object : Callback<JoinRoomCheck> {
+                override fun onResponse(
+                    call: Call<JoinRoomCheck>,
+                    response: Response<JoinRoomCheck>
+                ) {
                     val joinRoomCheck = response.body()
-                if(joinRoomCheck!!.success){
-                    val intent = Intent(context, RoomInformationActivity::class.java)
-                    intent.putExtra("roomId",mainData.roomId)
-                    intent.putExtra("title",mainData.title)
-                    intent.putExtra("info",mainData.info)
-                    intent.putExtra("hostName",mainData.hostName)
-                    intent.putExtra("address",addressParse)
-                    intent.putExtra("date",mainData.date)
-                    intent.putExtra("shopName",mainData.shopName)
-                    intent.putExtra("roomStatus",mainData.roomStatus)
-                    intent.putExtra("numOfPeople",mainData.numOfPeople.toString())
-                    intent.putExtra("keyWords",mainData.keyWords)
-                    intent.putExtra("imageUrl",joinRoomCheck.imageUrl)
-                    context.startActivity(intent)
-                }else{
-                    val intent = Intent(context, ChatRoomActivity::class.java)
-                    intent.putExtra("roomId",mainData.roomId)
-                    context.startActivity(intent)
+                    if (joinRoomCheck!!.success) {
+                        val intent = Intent(context, RoomInformationActivity::class.java)
+                        intent.putExtra("roomId", mainData.roomId)
+                        intent.putExtra("title", mainData.title)
+                        intent.putExtra("info", mainData.info)
+                        intent.putExtra("hostName", mainData.hostName)
+                        intent.putExtra("address", addressParse)
+                        intent.putExtra("date", mainData.date)
+                        intent.putExtra("shopName", mainData.shopName)
+                        intent.putExtra("roomStatus", mainData.roomStatus)
+                        intent.putExtra("numOfPeople", mainData.numOfPeople.toString())
+                        intent.putExtra("keyWords", mainData.keyWords)
+                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople.toString())
+                        intent.putExtra("mapX", mainData.mapX)
+                        intent.putExtra("mapY", mainData.mapY)
+                        intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
+                        intent.putExtra("join", "0")
+                        context.startActivity(intent)
+                    } else {
+                        val intent = Intent(context, RoomInformationActivity::class.java)
+                        intent.putExtra("roomId", mainData.roomId)
+                        intent.putExtra("title", mainData.title)
+                        intent.putExtra("info", mainData.info)
+                        intent.putExtra("hostName", mainData.hostName)
+                        intent.putExtra("address", addressParse)
+                        intent.putExtra("date", mainData.date)
+                        intent.putExtra("shopName", mainData.shopName)
+                        intent.putExtra("roomStatus", mainData.roomStatus)
+                        intent.putExtra("numOfPeople", mainData.numOfPeople.toString())
+                        intent.putExtra("keyWords", mainData.keyWords)
+                        intent.putExtra("mapX", mainData.mapX)
+                        intent.putExtra("mapY", mainData.mapY)
+                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople.toString())
+                        intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
+                        intent.putExtra("join", "1")
+                        context.startActivity(intent)
+
+                    }
+                }
+
+                override fun onFailure(call: Call<JoinRoomCheck>, t: Throwable) {
 
                 }
-            }
-
-            override fun onFailure(call: Call<JoinRoomCheck>, t: Throwable) {
-
-            }
-        })
-
+            })
 
 
     }
+
     private fun createOkHttpClient(): OkHttpClient {
         //Log.d ("TAG","OkhttpClient");
         val builder = OkHttpClient.Builder()
@@ -167,6 +198,44 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         builder.addInterceptor(interceptor)
         return builder.build()
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filterCheck = constraint.toString()
+                if (filterCheck.isEmpty()) {
+                    filList = unList
+                    Log.e("필터 동작","없을때")
+                } else {
+                    filList = ArrayList<MainFragmentItemData>()
+                    for (index in unList) {
+
+                        if (!index.joinMember.contains(filterCheck)) {
+                            filList.add(index)
+                        }
+
+                    }
+                    Log.e("필터 동작","있을때")
+                    filList
+                }
+                val filterResult = FilterResults()
+                filterResult.values = filList
+                return filterResult
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filList = results?.values as ArrayList<MainFragmentItemData>
+                notifyDataSetChanged()
+                if(filList.size==0){
+                    mainFragment.swipeRefresh.visibility = View.GONE
+                    mainFragment.refreshTextView.visibility = View.VISIBLE
+                }else{
+                    mainFragment.swipeRefresh.visibility = View.VISIBLE
+                    mainFragment.refreshTextView.visibility = View.GONE
+                }
+            }
+        }
     }
 
 }

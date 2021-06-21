@@ -68,8 +68,10 @@ dependencies {
     // TedImagePicker 라이브러리 사용(리뷰 사진 업로드) - 다중 사진 선택 가능하게 해줌.
     implementation 'gun0912.ted:tedimagepicker:1.0.8'
 
-    implementation 'com.github.bumptech.glide:glide:4.5.0'
-    kapt 'com.github.bumptech.glide:compiler:4.5.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
+    implementation project(path: ':tedclustering-naver')
+    kapt 'com.github.bumptech.glide:compiler:4.12.0'
 
     implementation 'gun0912.ted:tedpermission:2.2.3'
     implementation 'gun0912.ted:tedonactivityresult-rx2:1.0.6'
@@ -130,8 +132,8 @@ dependencies {
     // 네이버 지도 SDK
     implementation 'com.naver.maps:map-sdk:3.11.0'
 
-    implementation("io.coil-kt:coil:1.2.2")
-    implementation 'gun0912.ted:tedclustering-naver:1.0.2'
+    implementation 'io.coil-kt:coil:1.2.2'
+//    implementation 'gun0912.ted:tedclustering-naver:1.0.2'
 
 
 

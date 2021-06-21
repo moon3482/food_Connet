@@ -87,7 +87,7 @@ class MyPageFragment:Fragment() {
         val toUserProfileModifyActivityBtn = view.findViewById<TextView>(R.id.toUserProfileModifyActivityBtn)
 
         toUserProfileModifyActivityBtn.setOnClickListener{
-            val intent = Intent(context, UserProfileModifyActivity::class.java)
+            val intent = Intent(requireContext(), UserProfileModifyActivity::class.java)
             startActivity(intent)
         }
 

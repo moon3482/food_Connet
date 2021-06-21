@@ -191,6 +191,29 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
+                    android:id="@+id/RoomInfoNumOfPeopleTextView"
+                    style="@style/room_information_category_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="참여인원" />
+
+                <LinearLayout
+                    style="@style/Divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="vertical"></LinearLayout>
+
+                <TextView
+                    android:id="@+id/RoomInformationCategoryNumOfPeopleTextview"
+                    style="@style/room_information_textview_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+                <TextView
                     android:id="@+id/RoomInfoAddressTextView"
                     style="@style/room_information_category_style"
                     android:layout_width="match_parent"
@@ -212,30 +235,15 @@
                     style="@style/room_information_textview_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/RoomInfoNumOfPeopleTextView"
-                    style="@style/room_information_category_style"
+                <ImageView
+                    android:id="@+id/RoomInfoMapImageView"
+                    android:name="com.naver.maps.map.MapFragment"
+                    style="@style/create_room_margin"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="인원"
-                     />
+                    android:layout_height="400dp"
 
-                <LinearLayout
-                    style="@style/Divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="20dp"
-                    android:orientation="vertical"></LinearLayout>
+                    tools:srcCompat="@tools:sample/avatars" />
 
-                <TextView
-                    android:id="@+id/RoomInformationCategoryNumOfPeopleTextview"
-                    style="@style/room_information_textview_style"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -246,4 +254,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="입장" />
+
+    <Button
+        android:id="@+id/RoomInfoSubscriptionRoomBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="참여 신청"
+        android:visibility="gone" />
 </LinearLayout>

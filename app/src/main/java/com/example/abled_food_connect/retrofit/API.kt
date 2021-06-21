@@ -4,7 +4,7 @@ package com.example.abled_food_connect.retrofit
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import com.example.abled_food_connect.ChatActivity
+import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.*
 import com.google.gson.annotations.SerializedName
@@ -286,7 +286,7 @@ class API {
 
 
 
-    fun joinRoom(context:Context,roomId:String,userId:String){
+    fun joinRoom(context:Context,roomId:String,nickName:String,userIndexId:String){
 
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
@@ -295,20 +295,18 @@ class API {
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.joinRoom(roomId,userId).enqueue(object: Callback<joinRoomClass>{
+        server.joinRoom(roomId,nickName,userIndexId).enqueue(object: Callback<joinRoomClass>{
             override fun onResponse(call: Call<joinRoomClass>, response: Response<joinRoomClass>) {
                 val success : joinRoomClass = response.body()!!
                 if (success.success){
-                    val intent = Intent(context,ChatActivity::class.java)
-                    context.startActivity(intent)
 
                 }else{
-                    Toast.makeText(context,"입장 실패",Toast.LENGTH_SHORT).show()
+
                 }
             }
 
             override fun onFailure(call: Call<joinRoomClass>, t: Throwable) {
-                TODO("Not yet implemented")
+
             }
         })
 
@@ -326,5 +324,11 @@ class API {
     data class joinRoomClass(
         @SerializedName("success")
         val success: Boolean
+    )
+    data class createRoomHost(
+        @SerializedName("success")
+        val success :Boolean,
+        @SerializedName("room")
+        val roomId:MainFragmentItemData
     )
 }

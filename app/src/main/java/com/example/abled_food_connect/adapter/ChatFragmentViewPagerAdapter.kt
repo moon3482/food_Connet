@@ -1,13 +1,14 @@
 package com.example.abled_food_connect.adapter
 
-
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.abled_food_connect.fragments.ChatDMFragment
 import com.example.abled_food_connect.fragments.ChatGroupFragment
-
+import com.example.abled_food_connect.fragments.ChatingFragment
+import com.example.abled_food_connect.fragments.MyPageFragment
 
 
 class ChatFragmentViewPagerAdapter(fragment: FragmentActivity) :
