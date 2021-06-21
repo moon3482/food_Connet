@@ -82,7 +82,7 @@ class ReviewCommentActivity : AppCompatActivity() {
         //setContentView(R.layout.activity_review_comment)
 
         //키보드가 화면 안가리게함
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
         // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
@@ -387,8 +387,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                 binding.contentProfileDetailIv.setOnClickListener(View.OnClickListener {
                     var toMoveUserProfileActivity : Intent = Intent(applicationContext, UserProfileActivity::class.java)
                     toMoveUserProfileActivity.putExtra("writer_user_tb_id", WriterUserTbId)
-                    ContextCompat.startActivity(
-                        applicationContext,
+                    startActivity(
                         toMoveUserProfileActivity,
                         null
                     )
@@ -404,8 +403,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                 binding.contentNicNameDetailTv.setOnClickListener(View.OnClickListener {
                     var toMoveUserProfileActivity : Intent = Intent(applicationContext, UserProfileActivity::class.java)
                     toMoveUserProfileActivity.putExtra("writer_user_tb_id", WriterUserTbId)
-                    ContextCompat.startActivity(
-                        applicationContext,
+                    startActivity(
                         toMoveUserProfileActivity,
                         null
                     )

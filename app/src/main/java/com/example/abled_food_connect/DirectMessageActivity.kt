@@ -106,7 +106,7 @@ class DirectMessageActivity : AppCompatActivity() {
         // 뷰 id도 파스칼케이스 + 카멜케이스의 네이밍규칙 적용으로 인해서 tv_message -> tvMessage 로 자동 변환 되었습니다.
 
         //키보드가 화면 안가리게함
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
         // 권한체크 시작(카메라, 저장소접근)

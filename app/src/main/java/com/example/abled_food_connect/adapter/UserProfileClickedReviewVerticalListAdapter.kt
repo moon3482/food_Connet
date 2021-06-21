@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -76,7 +76,7 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
 
             var toMoveUserProfileActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileActivity::class.java)
             toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            ContextCompat.startActivity(
+            startActivity(
                 holder.profileDetailIv.context as Activity,
                 toMoveUserProfileActivity,
                 null
@@ -96,7 +96,7 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
 
             var toMoveUserProfileActivity : Intent = Intent(holder.profileDetailIv.context, UserProfileActivity::class.java)
             toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            ContextCompat.startActivity(
+            startActivity(
                 holder.profileDetailIv.context as Activity,
                 toMoveUserProfileActivity,
                 null
@@ -191,7 +191,7 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
 
             var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
             toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
-            ContextCompat.startActivity(
+            startActivity(
                 holder.commentBtn.context as Activity,
                 toMoveCommentActivity,
                 null

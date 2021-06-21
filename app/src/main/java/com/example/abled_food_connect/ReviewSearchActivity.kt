@@ -141,10 +141,6 @@ class ReviewSearchActivity : AppCompatActivity() {
             }
         })
 
-
-
-
-
     }
 
     // 1. 리스너로 처리
@@ -168,11 +164,6 @@ class ReviewSearchActivity : AppCompatActivity() {
         }
 
     }
-
-
-
-    
-
 
 
 

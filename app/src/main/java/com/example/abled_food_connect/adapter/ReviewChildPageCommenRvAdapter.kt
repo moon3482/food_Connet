@@ -14,8 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.R
@@ -120,7 +119,7 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
             commentProfileIv.setOnClickListener(View.OnClickListener {
                 var toMoveUserProfileActivity : Intent = Intent(commentProfileIv.context, UserProfileActivity::class.java)
                 toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
-                ContextCompat.startActivity(
+                startActivity(
                     commentProfileIv.context,
                     toMoveUserProfileActivity,
                     null
@@ -134,7 +133,7 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
             commentNicnameTv.setOnClickListener(View.OnClickListener {
                 var toMoveUserProfileActivity : Intent = Intent(commentNicnameTv.context, UserProfileActivity::class.java)
                 toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
-                ContextCompat.startActivity(
+                startActivity(
                     commentNicnameTv.context,
                     toMoveUserProfileActivity,
                     null
@@ -176,7 +175,7 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
             commentProfileIv.setOnClickListener(View.OnClickListener {
                 var toMoveUserProfileActivity : Intent = Intent(commentProfileIv.context, UserProfileActivity::class.java)
                 toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
-                ContextCompat.startActivity(
+                startActivity(
                     commentProfileIv.context,
                     toMoveUserProfileActivity,
                     null
@@ -190,7 +189,7 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
             commentNicnameTv.setOnClickListener(View.OnClickListener {
                 var toMoveUserProfileActivity : Intent = Intent(commentNicnameTv.context, UserProfileActivity::class.java)
                 toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.writing_user_id)
-                ContextCompat.startActivity(
+                startActivity(
                     commentNicnameTv.context,
                     toMoveUserProfileActivity,
                     null
@@ -221,7 +220,7 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
                 override fun onClick(widget: View) {
                     var toMoveUserProfileActivity : Intent = Intent(commentWritingTimeTv.context, UserProfileActivity::class.java)
                     toMoveUserProfileActivity.putExtra("writer_user_tb_id", itemChildPage.sendTargetUserTable_id)
-                    ContextCompat.startActivity(
+                    startActivity(
                         commentWritingTimeTv.context,
                         toMoveUserProfileActivity,
                         null
