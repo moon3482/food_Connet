@@ -1,14 +1,17 @@
 package com.example.abled_food_connect.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.ChatRoomUserData
 import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.RoomAPI
@@ -48,6 +51,11 @@ class ChatRoomJoinSubscriptionRCVAdapter(val context: Context, val arrayList: Ar
             arrayList.removeAt(position)
             notifyDataSetChanged()
         }
+        holder.InformationButton.setOnClickListener {
+            val intent = Intent(context,UserProfileActivity::class.java)
+            intent.putExtra("writer_user_tb_id",chatRoomUserData.userIndexId.toInt())
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -59,6 +67,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(val context: Context, val arrayList: Ar
         var userId = itemView.findViewById<TextView>(R.id.chatRoomSubscriptionUserListId)
         var OkButton = itemView.findViewById<Button>(R.id.SubscriptionOK)
         var CancleButton = itemView.findViewById<Button>(R.id.SubscriptionCancel)
+        var InformationButton = itemView.findViewById<ImageButton>(R.id.userInfomation)
 
     }
     private fun updateSubscriptionStatus(subNumber:String,status:String?="1"){

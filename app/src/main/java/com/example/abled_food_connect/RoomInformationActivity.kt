@@ -107,7 +107,19 @@ class RoomInformationActivity : AppCompatActivity() {
             mapClick = false
             val intent = Intent(this, ChatRoomActivity::class.java)
             intent.putExtra("roomId", roomId)
-            intent.putExtra("hostName",hostName)
+            intent.putExtra("title", title)
+            intent.putExtra("info", info)
+            intent.putExtra("hostName", hostName)
+            intent.putExtra("address", address)
+            intent.putExtra("date", date)
+            intent.putExtra("shopName", shopName)
+            intent.putExtra("roomStatus", roomStatus)
+            intent.putExtra("numOfPeople", numOfPeople.toString())
+            intent.putExtra("keyWords", keyWords)
+            intent.putExtra("nowNumOfPeople", nowNumOfPeople.toString())
+            intent.putExtra("mapX", mapX)
+            intent.putExtra("mapY", mapY)
+            intent.putExtra("imageUrl", imageUrl)
             startActivity(intent)
 
 

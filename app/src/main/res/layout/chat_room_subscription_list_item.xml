@@ -38,20 +38,30 @@
         <Button
             android:id="@+id/SubscriptionCancel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:backgroundTint="#C8C8C8"
-            android:text="거절"
-            android:textSize="10sp" />
+            android:text="X" />
 
         <Button
             android:id="@+id/SubscriptionOK"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/app_theme_color"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:text="수락" />
+            android:text="O" />
+
+        <ImageButton
+            android:id="@+id/userInfomation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/com_facebook_blue"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_baseline_assignment_ind_24" />
+
     </LinearLayout>
 
 </LinearLayout>
