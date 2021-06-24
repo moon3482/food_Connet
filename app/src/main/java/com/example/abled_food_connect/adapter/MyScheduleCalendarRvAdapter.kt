@@ -95,6 +95,8 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
 
 
             if (calDateList.get(position).rvDay != 0) {
+
+                //모임이 진행중 - 초록색원
                 if (calDateList.get(position).meeting_result == 0) {
 
                     holder.rvDay.text = calDateList.get(position).rvDay.toString()
@@ -103,8 +105,8 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
 
 
 
-
-                } else if (calDateList.get(position).meeting_result == 1) {
+                //모임이 취소또는 종료 - 주황색원
+               } else if (calDateList.get(position).meeting_result == 1) {
 
                     holder.rvDay.text = calDateList.get(position).rvDay.toString()
                     var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_orange_edge)

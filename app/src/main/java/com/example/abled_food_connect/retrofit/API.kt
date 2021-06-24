@@ -289,6 +289,19 @@ class API {
         @Multipart
         @POST("schedule/my_page_user_schedule_get.php")
         fun my_page_user_schedule_rv_get(
+            @Part("user_tb_nicname") user_tb_nicname: String,
+            @Part("date_reverse") date_reverse: Int //데이트 리버스는 일정리스트에서 예정된 일정의 날짜는 미래의 날짜를 asc, 완료된 일정은 과거읜 날을 desc
+        ): Call<MyPageUserScheduleData>
+
+    }
+
+
+
+    interface UnWrittenReviewListRvInterface {
+
+        @Multipart
+        @POST("schedule/un_written_review_list_get.php")
+        fun un_written_review_list_get(
             @Part("user_tb_nicname") user_tb_nicname: String
         ): Call<MyPageUserScheduleData>
 

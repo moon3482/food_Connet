@@ -16,10 +16,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.abled_food_connect.MainActivity
-import com.example.abled_food_connect.MyPageUserScheduleActivity
-import com.example.abled_food_connect.R
-import com.example.abled_food_connect.UserProfileModifyActivity
+import com.example.abled_food_connect.*
 import com.example.abled_food_connect.data.UserProfileData
 import com.example.abled_food_connect.retrofit.API
 import retrofit2.Call
@@ -88,10 +85,26 @@ class MyPageFragment:Fragment() {
 
         val toUserProfileModifyActivityBtn = view.findViewById<TextView>(R.id.toUserProfileModifyActivityBtn)
 
+
         toUserProfileModifyActivityBtn.setOnClickListener{
             val intent = Intent(requireContext(), UserProfileModifyActivity::class.java)
             startActivity(intent)
         }
+
+
+        val toMoveWrittenReviewListActivityBtn = view.findViewById<LinearLayout>(R.id.toMoveWrittenReviewListActivityBtn)
+        toMoveWrittenReviewListActivityBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileClickedReviewGridListActivity : Intent = Intent(context, UserProfileClickedReviewGridListActivity::class.java)
+            toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", MainActivity.user_table_id)
+            startActivity(toUserProfileClickedReviewGridListActivity, null)
+        })
+
+
+        val toMoveReviewWritingActivityBtn = view.findViewById<LinearLayout>(R.id.toMoveReviewWritingActivityBtn)
+        toMoveReviewWritingActivityBtn.setOnClickListener(View.OnClickListener {
+            var toUnwrittenReviewListActivity : Intent = Intent(context, UnwrittenReviewListActivity::class.java)
+            startActivity(toUnwrittenReviewListActivity, null)
+        })
 
 
         val toMyPageUserScheduleActivityBtn = view.findViewById<LinearLayout>(R.id.toMyPageUserScheduleActivityBtn)

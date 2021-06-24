@@ -1,8 +1,10 @@
 package com.example.abled_food_connect
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
@@ -99,6 +101,10 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
+
+
+
+
         calendarRv = binding.calendarRv
 
         todayScheduleListRv =  binding.todayScheduleListRv
@@ -152,7 +158,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 
 
                 var checkNum = 0
-                var meeting_result = 0
+                var meeting_result = 1
 
 
                 Log.d("TAG", dateStr)
@@ -162,8 +168,8 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                         Log.d("TAG", "같다")
                         Log.d("TAG", "dateStr")
                         Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
-                        if(scheduleArrayList.get(k).meeting_result == 1){
-                            meeting_result =1
+                        if(scheduleArrayList.get(k).meeting_result == 0){
+                            meeting_result =0
                         }
                         checkNum = 1
                         break
@@ -224,6 +230,12 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 //                                val dividerItemDecoration =
 //                                    DividerItemDecoration(todayScheduleListRv.context, LinearLayoutManager(applicationContext).orientation)
 //                                todayScheduleListRv.addItemDecoration(dividerItemDecoration)
+
+                        if(todayClickScheduleArrayList.size>0){
+                            binding.noScheduleTv.visibility = View.GONE
+                        }else{
+                            binding.noScheduleTv.visibility = View.VISIBLE
+                        }
 
                     }
 
@@ -296,7 +308,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 
 
                 var checkNum = 0
-                var meeting_result = 0
+                var meeting_result = 1
 
 
                 Log.d("TAG", dateStr)
@@ -306,8 +318,8 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                         Log.d("TAG", "같다")
                         Log.d("TAG", "dateStr")
                         Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
-                        if(scheduleArrayList.get(k).meeting_result == 1){
-                            meeting_result =1
+                        if(scheduleArrayList.get(k).meeting_result == 0){
+                            meeting_result =0
                         }
                         checkNum = 1
                         break
@@ -370,9 +382,19 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 //                                    DividerItemDecoration(todayScheduleListRv.context, LinearLayoutManager(applicationContext).orientation)
 //                                todayScheduleListRv.addItemDecoration(dividerItemDecoration)
 
+                        if(todayClickScheduleArrayList.size>0){
+                            binding.noScheduleTv.visibility = View.GONE
+                        }else{
+                            binding.noScheduleTv.visibility = View.VISIBLE
+                        }
+
                     }
 
+
+
                 }
+
+
             })
             calendarRv.adapter = mAdapter
 
@@ -417,7 +439,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
         val api = retrofit.create(API.MyPageUserScheduleRvInterface::class.java)
 
         //db에 방이 있는지 확인한다.
-        val user_schedule_get = api.my_page_user_schedule_rv_get(MainActivity.loginUserNickname)
+        val user_schedule_get = api.my_page_user_schedule_rv_get(MainActivity.loginUserNickname,0)
 
 
         user_schedule_get.enqueue(object : Callback<MyPageUserScheduleData> {
@@ -464,7 +486,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 
 
                         var checkNum = 0
-                        var meeting_result = 0
+                        var meeting_result = 1
 
 
                         Log.d("TAG", dateStr)
@@ -474,8 +496,8 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                                 Log.d("TAG", "같다")
                                 Log.d("TAG", "dateStr")
                                 Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
-                                if(scheduleArrayList.get(k).meeting_result == 1){
-                                    meeting_result =1
+                                if(scheduleArrayList.get(k).meeting_result == 0){
+                                    meeting_result =0
                                 }
                                 checkNum = 1
                                 break
@@ -596,16 +618,35 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
         })
     }
 
+    //액션버튼 메뉴 액션바에 집어 넣기
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.my_page_user_schedule_top_menu, menu)
+        return true
+    }
+
+
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         when (id) {
+            R.id.toMoveMyPageUserScheduleListActivity -> {
+                //공유 버튼 눌렀을 때
+
+                var toMoveMyPageUserScheduleListActivityintent : Intent = Intent(applicationContext, MyPageUserScheduleListActivity::class.java)
+                startActivity(toMoveMyPageUserScheduleListActivityintent, null)
+                return true
+            }
+
+
             android.R.id.home -> {
                 finish()
                 return true
             }
+
         }
         return super.onOptionsItemSelected(item)
     }
+
 }

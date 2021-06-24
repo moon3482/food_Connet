@@ -89,20 +89,16 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
         holder.meetingDateTv.text = daySplit[1]+"월 "+daySplit[2]+"일 "+dayOfWeekStr+" "+amOrPmStr+" "+scheduleHour.toString()+" : "+scheduleMinute.toString()
         holder.meetingTitleTv.text = ScheduleDataList.get(position).room_title
 
-        if(ScheduleDataList.get(position).meeting_result !=0){
 
-            holder.meetingDateTv.setBackgroundColor(Color.parseColor("#fcba03"))
-        }
 
 
         var addressSplit = ScheduleDataList.get(position).restaurant_address.split(" ")
         var addressStr = addressSplit[0]+">"+addressSplit[1]
         holder.restaurantAddressTv.text = addressStr+">"+ScheduleDataList.get(position).restaurant_name
 
-        //holder.restaurantNameTv.text = ""
-        //holder.reviewWritingBtn
-        //holder.userEvaluationBtn
 
+
+        //모임이 진행중인경우
         if(ScheduleDataList.get(position).meeting_result == 0) {
             holder.reviewWritingBtn.setBackgroundColor(Color.GRAY)
             holder.reviewWritingBtn.setOnClickListener({
@@ -113,9 +109,9 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
                 Toast.makeText(holder.reviewWritingBtn.context, "모임완료 후 클릭해주세요.", Toast.LENGTH_SHORT).show()
             })
         }
-
-        if(ScheduleDataList.get(position).meeting_result == 1) {
-
+        //방장이 모임이 잘 끝났다고 표시함
+        else if(ScheduleDataList.get(position).meeting_result == 1) {
+            holder.meetingDateTv.setBackgroundColor(Color.parseColor("#fcba03"))
 
             //리뷰버튼
             if(ScheduleDataList.get(position).review_result == 0) {
@@ -125,7 +121,10 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
                         Toast.makeText(holder.reviewWritingBtn.context, "리뷰작성페이지로 이동", Toast.LENGTH_SHORT).show()
                     })
                 })
-            }else if (ScheduleDataList.get(position).review_result == 1) {
+            }
+
+            //모임이 완료 되었을 때
+            else if (ScheduleDataList.get(position).review_result == 1) {
 
                 //리뷰가 작성이 된 상태이다.
 
@@ -159,6 +158,24 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
                     })
                 })
             }
+
+
+
+        }
+        //모임이 취소된 경우
+        else if(ScheduleDataList.get(position).meeting_result == 2) {
+            holder.meetingDateTv.setBackgroundColor(Color.parseColor("#eb344c"))
+
+
+            holder.reviewWritingBtn.setBackgroundColor(Color.GRAY)
+            holder.reviewWritingBtn.setOnClickListener({
+                Toast.makeText(holder.reviewWritingBtn.context, "취소된 모임입니다.", Toast.LENGTH_SHORT).show()
+            })
+            
+            holder.userEvaluationBtn.setBackgroundColor(Color.GRAY)
+            holder.userEvaluationBtn.setOnClickListener({
+                Toast.makeText(holder.reviewWritingBtn.context, "취소된 모임입니다.", Toast.LENGTH_SHORT).show()
+            })
 
 
         }
