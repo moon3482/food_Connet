@@ -88,13 +88,13 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
         testholder.roomNumberOfPeople.text =
             "${maindata.nowNumOfPeople.toString()}/${(maindata.numOfPeople).toString()}명"
         testholder.roomDateTime.text = maindata.date
-        val splitAddress = maindata.address.toString().split("구")
+        val splitAddress = maindata.address.toString().split(" ")
         val splitAddress2 = splitAddress[0].split(" ")
         var location: String = ""
-        for (index in splitAddress2.indices) {
-            location += splitAddress2[index] + ">"
+        for (index in 0..2) {
+            location += splitAddress[index] + ">"
         }
-        location = location.substring(0, location.length - 1) + "구"
+        location = location.substring(0, location.length - 1)
         testholder.roomLocation.text = location
         testholder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {

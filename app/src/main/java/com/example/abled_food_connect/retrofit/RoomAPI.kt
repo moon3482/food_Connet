@@ -102,5 +102,19 @@ interface RoomAPI {
 
         ): Call<String>
 
+    @FormUrlEncoded
+    @POST("/groupChat/joinRoomMember.php")
+    fun joinRoomMember(
+        @Field("roomId")roomId:String
+    ):Call<ArrayList<LoadRoomUsers>>
+
+    @FormUrlEncoded
+    @POST("/groupChat/exitRoom.php")
+    fun exitRoom(
+        @Field("roomId")roomId:String,
+        @Field("userIndexId")userIndexId:String,
+        @Field("userNickName")userNickName:String
+    ):Call<String>
+
 }
 

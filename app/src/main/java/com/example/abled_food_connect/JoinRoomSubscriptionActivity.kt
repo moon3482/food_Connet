@@ -6,8 +6,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.abled_food_connect.adapter.ChatRoomJoinSubscriptionRCVAdapter
 import com.example.abled_food_connect.data.ChatRoomSubscriptionResult
 import com.example.abled_food_connect.data.ChatRoomUserData
+import com.example.abled_food_connect.data.MessageData
+import com.example.abled_food_connect.data.RoomData
 import com.example.abled_food_connect.databinding.ActivityJoinRoomSubscriptionBinding
 import com.example.abled_food_connect.retrofit.RoomAPI
+import com.google.gson.Gson
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -19,12 +25,28 @@ import retrofit2.converter.gson.GsonConverterFactory
 class JoinRoomSubscriptionActivity : AppCompatActivity() {
     val binding by lazy { ActivityJoinRoomSubscriptionBinding.inflate(layoutInflater) }
     lateinit var roomId: String
+    lateinit var socket: Socket
+    lateinit var gson:Gson
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
         roomId = intent.getStringExtra("roomId").toString()
-        hostSubscriptionCheck(roomId)
+        gson = Gson()
+
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        init()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        socket.emit("left", gson.toJson(RoomData(MainActivity.loginUserNickname, roomId)))
+        socket.disconnect()
     }
 
     private fun hostSubscriptionCheck(roomId: String) {
@@ -54,7 +76,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
                         binding.joinRoomSubscriptionRCV.adapter =
                             ChatRoomJoinSubscriptionRCVAdapter(
                                 this@JoinRoomSubscriptionActivity,
-                                userList
+                                userList,socket,roomId
                             )
                     }
                 }
@@ -63,6 +85,21 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
 
                 }
             })
+    }
+
+    fun init() {
+        socket = IO.socket(getString(R.string.chat_socket_url))
+        socket.connect()
+        socket.on(
+            Socket.EVENT_CONNECT,
+            Emitter.Listener {
+                socket.emit(
+                    "enter",
+                    gson.toJson(RoomData(MainActivity.loginUserNickname, roomId))
+                )
+            })
+
+        hostSubscriptionCheck(roomId)
     }
 
     private fun createOkHttpClient(): OkHttpClient {

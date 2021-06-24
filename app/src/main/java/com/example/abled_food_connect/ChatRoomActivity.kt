@@ -1,12 +1,15 @@
 package com.example.abled_food_connect
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
@@ -50,19 +53,22 @@ class ChatRoomActivity : AppCompatActivity() {
     val binding by lazy { ActivityChatRoomBinding.inflate(layoutInflater) }
     val TAG = "그룹채팅 액티비티"
     val PERMISSIONS_REQUEST_CODE = 100
-    private lateinit var socket: Socket
+
     private lateinit var chatClient: ChatClient
     private lateinit var userName: String
     private lateinit var chatroomRoomId: String
     private lateinit var chatroomHostName: String
     private lateinit var thumbnailImage: String
     private lateinit var chatAdapter: ChatAdapter
+    private lateinit var userList: ChatRoomUserListRCVAdapter
     private lateinit var gson: Gson
     private lateinit var chatList: ArrayList<ChatItem>
     private var pagenum: Int = 0
     private lateinit var snackbar: Snackbar
     private lateinit var snackbarTextView: TextView
     private lateinit var snackbarView: View
+    private lateinit var hostName: String
+    private lateinit var roomId: String
     private var requestPage: Boolean = true
     private var firstLoading: Boolean = true
     private val REQUIRED_PERMISSIONS = arrayOf(
@@ -70,6 +76,10 @@ class ChatRoomActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
+
+    companion object {
+        lateinit var socket: Socket
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,12 +94,12 @@ class ChatRoomActivity : AppCompatActivity() {
         userName = MainActivity.loginUserNickname.toString()
         thumbnailImage = MainActivity.userThumbnailImage.toString()
         Log.e("유져 정보", chatroomRoomId.toString() + userName)
-        chatList = ArrayList()
+
         gson = Gson()
-        init()
+
         snackbar = Snackbar.make(binding.ChatRoomCoordinator, "", Snackbar.LENGTH_INDEFINITE)
         snackbarView = snackbar.view
-        messageLoad(pagenum)
+
         if (chatroomHostName == MainActivity.loginUserNickname) {
             binding.chatRoomSubscription.visibility = View.VISIBLE
         }
@@ -100,6 +110,9 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart 호출")
+        chatList = ArrayList()
+        init()
+
     }
 
     override fun onRestart() {
@@ -110,7 +123,10 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume 호출")
+        pagenum = 0
+        messageLoad(pagenum)
         hostSubscriptionCheck()
+        joinMember()
     }
 
     override fun onPause() {
@@ -121,13 +137,14 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop 호출")
+        socket.emit("left", gson.toJson(RoomData(userName, chatroomRoomId)))
+        socket.disconnect()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy 호출")
-        socket.emit("left", gson.toJson(RoomData(userName, chatroomRoomId)))
-        socket.disconnect()
+
     }
 
 
@@ -173,6 +190,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
         chatClient = ChatClient.getInstance()
         chatAdapter = ChatAdapter(this, chatList)
+
+        binding.userListRCV.layoutManager = LinearLayoutManager(this)
         binding.groupChatRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.groupChatRecyclerView.adapter = chatAdapter
         binding.groupChatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -232,6 +251,17 @@ class ChatRoomActivity : AppCompatActivity() {
                 timelimeCheck()
             }
         }
+
+        binding.groupChatExitRoomButton.setOnClickListener {
+            var builder = AlertDialog.Builder(this)
+            builder.setMessage("정말로 방을 나가시겠습니까?")
+            builder.setPositiveButton("나가기"
+            ) { dialog, which -> exitRoom() }
+            builder.setNegativeButton("취소",null)
+            builder.show()
+
+        }
+
         socket.connect()
         socket.on(
             Socket.EVENT_CONNECT,
@@ -264,6 +294,55 @@ class ChatRoomActivity : AppCompatActivity() {
                     }
 
                 }
+
+            })
+
+        socket.on(
+            "outRoom",
+            Emitter.Listener {
+                val data: MessageData = gson.fromJson(it[0].toString(), MessageData::class.java)
+
+                val layoutManager =
+                    LinearLayoutManager::class.java.cast(binding.groupChatRecyclerView.layoutManager)
+                var last = layoutManager.findLastCompletelyVisibleItemPosition()
+                var lc = layoutManager.itemCount - 1
+                if (last < lc) {
+                    addChat(data)
+                    onSnackbar(data)
+
+                } else {
+                    addChat(data)
+                    runOnUiThread {
+
+                        binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+                    }
+
+                }
+                joinMember()
+
+            })
+        socket.on(
+            "joinRoom",
+            Emitter.Listener {
+                val data: MessageData = gson.fromJson(it[0].toString(), MessageData::class.java)
+
+                val layoutManager =
+                    LinearLayoutManager::class.java.cast(binding.groupChatRecyclerView.layoutManager)
+                var last = layoutManager.findLastCompletelyVisibleItemPosition()
+                var lc = layoutManager.itemCount - 1
+                if (last < lc) {
+                    addChat(data)
+                    onSnackbar(data)
+
+                } else {
+                    addChat(data)
+                    runOnUiThread {
+
+                        binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+                    }
+
+                }
+                joinMember()
 
             })
 
@@ -309,7 +388,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
             } else if (messageData.type == "IMAGE") {
 
-            } else if (messageData.type == "TIMELINE") {
+            } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 chatList.add(
                     ChatItem(
                         messageData.from, messageData.thumbnailImage, messageData.content,
@@ -354,12 +433,13 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private fun loadChat(messageData: MessageData) {
+
         runOnUiThread(Runnable {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
 
             } else if (messageData.type == "IMAGE") {
 
-            } else if (messageData.type == "TIMELINE") {
+            } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 chatList.add(
                     0,
                     ChatItem(
@@ -533,6 +613,35 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
+    private fun joinMember() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java).joinRoomMember(chatroomRoomId)
+            .enqueue(object : Callback<ArrayList<LoadRoomUsers>> {
+                override fun onResponse(
+                    call: Call<ArrayList<LoadRoomUsers>>,
+                    response: Response<ArrayList<LoadRoomUsers>>
+                ) {
+
+                    val users: ArrayList<LoadRoomUsers>? = response.body()
+                    if (users != null) {
+                        userList =
+                            ChatRoomUserListRCVAdapter(this@ChatRoomActivity, users, hostName)
+                        binding.userListRCV.adapter = userList
+                        userList.notifyDataSetChanged()
+                    }
+                }
+
+                override fun onFailure(call: Call<ArrayList<LoadRoomUsers>>, t: Throwable) {
+
+                }
+            })
+    }
+
     private fun hostSubscriptionCheck() {
         val retrofit =
             Retrofit.Builder()
@@ -639,10 +748,10 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     fun roomInfoLoad() {
-        val roomId = intent.getStringExtra("roomId")
+        roomId = intent.getStringExtra("roomId")!!
         val title = intent.getStringExtra("title")
         val info = intent.getStringExtra("info")
-        val hostName = intent.getStringExtra("hostName")
+        hostName = intent.getStringExtra("hostName")!!
         val address = intent.getStringExtra("address")!!
         val date = intent.getStringExtra("date")
         val shopName = intent.getStringExtra("shopName")
@@ -682,6 +791,7 @@ class ChatRoomActivity : AppCompatActivity() {
         binding.RoomInformationCategoryAddressTextview.text = address
 
         getMapImage(mapX, mapY, shopName, address)
+        joinMember()
     }
 
 
@@ -708,9 +818,10 @@ class ChatRoomActivity : AppCompatActivity() {
                     || ActivityCompat.shouldShowRequestPermissionRationale(
                         this,
                         REQUIRED_PERMISSIONS[1]
-                    )||ActivityCompat.shouldShowRequestPermissionRationale(
+                    ) || ActivityCompat.shouldShowRequestPermissionRationale(
                         this,
-                        REQUIRED_PERMISSIONS[2])
+                        REQUIRED_PERMISSIONS[2]
+                    )
                 ) {
                     Toast.makeText(
                         this,
@@ -725,6 +836,7 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun checkPermissions() {
         //거절되었거나 아직 수락하지 않은 권한(퍼미션)을 저장할 문자열 배열 리스트
         var rejectedPermissionList = ArrayList<String>()
@@ -750,5 +862,40 @@ class ChatRoomActivity : AppCompatActivity() {
                 PERMISSIONS_REQUEST_CODE
             )
         }
+    }
+
+    private fun exitRoom() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java)
+            .exitRoom(chatroomRoomId, MainActivity.user_table_id.toString(), MainActivity.loginUserNickname)
+            .enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.body() == "true") {
+                        socket.emit(
+                            "outRoom", gson.toJson(
+                                MessageData(
+                                    "EXITROOM",
+                                    "EXITROOM",
+                                    chatroomRoomId,
+                                    MainActivity.loginUserNickname, "SERVER",
+                                    "SERVER"
+                                )
+                            )
+                        )
+
+                        onBackPressed()
+                        Handler().postDelayed(Runnable { onBackPressed() },500)
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+
+                }
+            })
     }
 }

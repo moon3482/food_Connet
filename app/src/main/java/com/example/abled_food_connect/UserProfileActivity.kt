@@ -69,14 +69,14 @@ class UserProfileActivity : AppCompatActivity() {
             toDirectMessageActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
             toDirectMessageActivity.putExtra("clicked_user_NicName", clicked_user_NicName)
             toDirectMessageActivity.putExtra("clicked_user_ProfileImage", clicked_user_ProfileImage)
-            ContextCompat.startActivity(applicationContext, toDirectMessageActivity, null)
+            startActivity(toDirectMessageActivity)
         })
 
 
         binding.toMoveWrittenReviewListActivityBtn.setOnClickListener(View.OnClickListener {
             var toUserProfileClickedReviewGridListActivity : Intent = Intent(applicationContext, UserProfileClickedReviewGridListActivity::class.java)
             toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
-            ContextCompat.startActivity(applicationContext, toUserProfileClickedReviewGridListActivity, null)
+            startActivity(toUserProfileClickedReviewGridListActivity)
         })
 
     }
