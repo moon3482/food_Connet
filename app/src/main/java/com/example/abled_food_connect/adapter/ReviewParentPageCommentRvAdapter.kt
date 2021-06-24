@@ -129,5 +129,3 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
     }
 
 }
-
-

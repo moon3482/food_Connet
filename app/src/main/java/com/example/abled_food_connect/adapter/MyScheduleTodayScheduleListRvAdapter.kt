@@ -1,13 +1,18 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.DirectMessageActivity
 import com.example.abled_food_connect.MainActivity
+import com.example.abled_food_connect.MeetingUserEvaluationActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.MyPageUserScheduleDataItem
 import java.util.*
@@ -117,9 +122,9 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
             if(ScheduleDataList.get(position).review_result == 0) {
                 holder.reviewWritingBtn.setOnClickListener({
                     //리뷰작성페이지로 이동
-                    holder.reviewWritingBtn.setOnClickListener({
+
                         Toast.makeText(holder.reviewWritingBtn.context, "리뷰작성페이지로 이동", Toast.LENGTH_SHORT).show()
-                    })
+
                 })
             }
 
@@ -131,9 +136,9 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
                 holder.reviewWritingBtn.setBackgroundColor(Color.BLACK)
                 holder.reviewWritingBtn.text = "작성완료"
                 holder.reviewWritingBtn.setOnClickListener({
-                    holder.reviewWritingBtn.setOnClickListener({
-                        Toast.makeText(holder.reviewWritingBtn.context, "리뷰를 작성하셨습니다.", Toast.LENGTH_SHORT).show()
-                    })
+
+                    Toast.makeText(holder.reviewWritingBtn.context, "리뷰를 작성하셨습니다.", Toast.LENGTH_SHORT).show()
+
                 })
             }
 
@@ -141,10 +146,16 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
 
             if(ScheduleDataList.get(position).user_evaluation == 0) {
                 holder.userEvaluationBtn.setOnClickListener({
-                    //리뷰작성페이지로 이동
-                    holder.userEvaluationBtn.setOnClickListener({
-                        Toast.makeText(holder.reviewWritingBtn.context, "유저평가로 이동", Toast.LENGTH_SHORT).show()
-                    })
+                    //유저평가페이지로 이동
+                    var toMeetingUserEvaluationActivityIntent : Intent = Intent(holder.userEvaluationBtn.context, MeetingUserEvaluationActivity::class.java)
+                    toMeetingUserEvaluationActivityIntent.putExtra("room_id", ScheduleDataList.get(position).room_id)
+
+                    startActivity(
+                        holder.userEvaluationBtn.context,
+                        toMeetingUserEvaluationActivityIntent,
+                        null
+                    )
+
                 })
             }
 
@@ -153,9 +164,9 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
                 holder.userEvaluationBtn.setBackgroundColor(Color.BLACK)
                 holder.userEvaluationBtn.text = "평가완료"
                 holder.userEvaluationBtn.setOnClickListener({
-                    holder.userEvaluationBtn.setOnClickListener({
+
                         Toast.makeText(holder.reviewWritingBtn.context, "유저평가를 완료 하셨습니다.", Toast.LENGTH_SHORT).show()
-                    })
+
                 })
             }
 

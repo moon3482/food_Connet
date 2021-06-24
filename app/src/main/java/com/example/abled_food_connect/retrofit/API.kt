@@ -308,6 +308,17 @@ class API {
     }
 
 
+    interface MeetingEvaluationUserListRvInterface {
+
+        @Multipart
+        @POST("schedule/meeting_evaluation_user_list.php")
+        fun meeting_evaluation_user_list_get(
+            @Part("room_id") room_id: Int
+        ): Call<MeetingEvaluationUserListRvData>
+
+    }
+
+
 
     fun joinRoom(context:Context,roomId:String,nickName:String,userIndexId:String){
 
