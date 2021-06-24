@@ -1,7 +1,13 @@
 package com.example.abled_food_connect
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
@@ -10,6 +16,8 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -18,6 +26,7 @@ import com.example.abled_food_connect.adapter.ChatRoomUserListRCVAdapter
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.databinding.ActivityChatRoomBinding
 import com.example.abled_food_connect.retrofit.ChatClient
+import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -25,12 +34,14 @@ import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -38,6 +49,7 @@ import kotlin.collections.ArrayList
 class ChatRoomActivity : AppCompatActivity() {
     val binding by lazy { ActivityChatRoomBinding.inflate(layoutInflater) }
     val TAG = "그룹채팅 액티비티"
+    val PERMISSIONS_REQUEST_CODE = 100
     private lateinit var socket: Socket
     private lateinit var chatClient: ChatClient
     private lateinit var userName: String
@@ -53,6 +65,12 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var snackbarView: View
     private var requestPage: Boolean = true
     private var firstLoading: Boolean = true
+    private val REQUIRED_PERMISSIONS = arrayOf(
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
@@ -137,15 +155,19 @@ class ChatRoomActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
 
-        if (binding.chatDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
-            binding.chatDrawerLayout.closeDrawer(Gravity.RIGHT)
+        if (binding.chatDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+            binding.chatDrawerLayout.closeDrawer(Gravity.LEFT)
         } else {
-            super.onBackPressed()
+            if (binding.chatDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+                binding.chatDrawerLayout.closeDrawer(Gravity.RIGHT)
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
     fun init() {
-
+        roomInfoLoad()
         socket = IO.socket(getString(R.string.chat_socket_url))
         Log.d("SOCKET", "Connection success : " + socket.id())
 
@@ -185,6 +207,19 @@ class ChatRoomActivity : AppCompatActivity() {
                 }
             }
         })
+
+        binding.imageButton3.setOnClickListener {
+            binding.chatDrawerLayout.openDrawer(Gravity.LEFT)
+        }
+        binding.groupChatMembersLocationButton.setOnClickListener {
+
+            checkPermissions()
+//            val i = Intent()
+//            i.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//            val uri = Uri.fromParts("package", packageName, null)
+//            i.data = uri
+//            startActivity(i)
+        }
         binding.chatRoomSubscription.setOnClickListener {
             val intent = Intent(this, JoinRoomSubscriptionActivity::class.java)
             intent.putExtra("roomId", chatroomRoomId)
@@ -529,5 +564,191 @@ class ChatRoomActivity : AppCompatActivity() {
 
                 }
             })
+    }
+
+    fun getMapImage(x: Double?, y: Double?, placeName: String?, address: String) {
+        var w = 400
+        var h = 400
+        var center = "126.978082,37.565577"
+        var place: String? = null
+        var marker: String? = null
+        if (x != null && y != null) {
+            center = "$x $y"
+            place = "|label:$placeName"
+            marker =
+                "type:t${place}|size:mid|pos:$x $y|viewSizeRatio:2.0"
+        }
+
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://naveropenapi.apigw.ntruss.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(MapSearch::class.java).getStaticMap(
+            "kqfai8b97u",
+            "NyaUzYcb3IWf1GKPNFDTYJTHIg9SUNtciSstiv5m",
+            w,
+            h,
+            14,
+            "basic",
+            marker,
+            center,
+            2
+        ).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+
+                val input: InputStream = response.body()!!.byteStream()
+//                val bufferedInputStream = BufferedInputStream(input)
+                val bitmap: Bitmap = BitmapFactory.decodeStream(input)
+                binding.RoomInfoMapImageView.setImageBitmap(bitmap)
+                binding.RoomInfoMapImageView.setOnClickListener {
+
+
+                    val url =
+                        "nmap://place?lat=${y}&lng=${x}&name=${placeName}\n\n${address}&appname=${packageName}"
+//                    val url = "nmap://search?query=${placeName}&appname=${packageName}"
+
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    intent.addCategory(Intent.CATEGORY_BROWSABLE)
+
+                    val list = packageManager.queryIntentActivities(
+                        intent,
+                        PackageManager.MATCH_DEFAULT_ONLY
+                    )
+                    if (list == null || list.isEmpty()) {
+                        startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("http://map.naver.com/?query=$address")
+                            )
+                        )
+                    } else {
+                        startActivity(intent)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("StaticMap", "실패")
+            }
+        })
+
+
+    }
+
+    fun roomInfoLoad() {
+        val roomId = intent.getStringExtra("roomId")
+        val title = intent.getStringExtra("title")
+        val info = intent.getStringExtra("info")
+        val hostName = intent.getStringExtra("hostName")
+        val address = intent.getStringExtra("address")!!
+        val date = intent.getStringExtra("date")
+        val shopName = intent.getStringExtra("shopName")
+        val roomStatus = intent.getDoubleExtra("roomStatus", 0.0);
+        val nowNumOfPeople = intent.getStringExtra("nowNumOfPeople")
+        val numOfPeople = intent.getStringExtra("numOfPeople")
+        val keyWords = intent.getStringExtra("keyWords")
+        val imageUrl = intent.getStringExtra("imageUrl")
+        val join = intent.getStringExtra("join")
+        val mapX = intent.getDoubleExtra("mapX", 0.0)
+        val mapY = intent.getDoubleExtra("mapY", 0.0)
+
+        if (roomStatus > 5) {
+            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
+            binding.RoomInformationStatus.text = "모집중"
+        } else if (roomStatus > 0.9) {
+            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+            val text: String = getString(R.string.room_status_imminent_time)
+            binding.RoomInformationStatus.text =
+                String.format(text, Math.round(roomStatus).toInt())
+
+        } else if (roomStatus < 0.9 && roomStatus > 0.0) {
+            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
+            binding.RoomInformationStatus.text = "임박"
+
+        } else if (roomStatus < 0) {
+            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
+            binding.RoomInformationStatus.text = "마감"
+        }
+
+        binding.RoomInfomationDate.text = date
+        binding.RoomInfoShopName.text = shopName
+        binding.RoomInformationCategoryTitleTextview.text = title
+        binding.RoomInformationCategoryIntroduceTextview.text = info
+        binding.RoomInformationCategoryNumOfPeopleTextview.text =
+            "${nowNumOfPeople}/${numOfPeople}명"
+        binding.RoomInformationCategoryAddressTextview.text = address
+
+        getMapImage(mapX, mapY, shopName, address)
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSIONS_REQUEST_CODE && grantResults.size == REQUIRED_PERMISSIONS.size) {
+            var check_result = true
+            for (result in grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    check_result = false;
+                    break;
+                }
+            }
+            if (check_result) {
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        REQUIRED_PERMISSIONS[0]
+                    )
+                    || ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        REQUIRED_PERMISSIONS[1]
+                    )||ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        REQUIRED_PERMISSIONS[2])
+                ) {
+                    Toast.makeText(
+                        this,
+                        "권한 설정이 거부되었습니다.\n앱을 사용하시려면 다시 실행해주세요.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                } else {
+                    Toast.makeText(this, "권한 설정이 거부되었습니다.\n설정에서 권한을 허용해야 합니다..", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+    private fun checkPermissions() {
+        //거절되었거나 아직 수락하지 않은 권한(퍼미션)을 저장할 문자열 배열 리스트
+        var rejectedPermissionList = ArrayList<String>()
+
+        //필요한 퍼미션들을 하나씩 끄집어내서 현재 권한을 받았는지 체크
+        for (permission in REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                //만약 권한이 없다면 rejectedPermissionList에 추가
+                rejectedPermissionList.add(permission)
+            }
+        }
+        //거절된 퍼미션이 있다면...
+        if (rejectedPermissionList.isNotEmpty()) {
+            //권한 요청!
+            val array = arrayOfNulls<String>(rejectedPermissionList.size)
+            ActivityCompat.requestPermissions(
+                this,
+                rejectedPermissionList.toArray(array),
+                PERMISSIONS_REQUEST_CODE
+            )
+        }
     }
 }
