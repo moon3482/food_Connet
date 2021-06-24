@@ -284,6 +284,16 @@ class API {
 
     }
 
+    interface MyPageUserScheduleRvInterface {
+
+        @Multipart
+        @POST("schedule/my_page_user_schedule_get.php")
+        fun my_page_user_schedule_rv_get(
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<MyPageUserScheduleData>
+
+    }
+
 
 
     fun joinRoom(context:Context,roomId:String,nickName:String,userIndexId:String){

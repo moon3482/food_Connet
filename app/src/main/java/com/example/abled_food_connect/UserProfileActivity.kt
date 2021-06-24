@@ -64,6 +64,9 @@ class UserProfileActivity : AppCompatActivity() {
         if(clicked_user_tb_id == MainActivity.user_table_id){
             binding.toMoveDirectMessageActivityBtn.visibility = View.GONE
         }
+
+
+
         binding.toMoveDirectMessageActivityBtn.setOnClickListener(View.OnClickListener {
             var toDirectMessageActivity : Intent = Intent(applicationContext, DirectMessageActivity::class.java)
             toDirectMessageActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)

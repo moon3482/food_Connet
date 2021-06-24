@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.abled_food_connect.MainActivity
+import com.example.abled_food_connect.MyPageUserScheduleActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.UserProfileModifyActivity
 import com.example.abled_food_connect.data.UserProfileData
@@ -84,10 +85,19 @@ class MyPageFragment:Fragment() {
 
 
 
+
         val toUserProfileModifyActivityBtn = view.findViewById<TextView>(R.id.toUserProfileModifyActivityBtn)
 
         toUserProfileModifyActivityBtn.setOnClickListener{
             val intent = Intent(requireContext(), UserProfileModifyActivity::class.java)
+            startActivity(intent)
+        }
+
+
+        val toMyPageUserScheduleActivityBtn = view.findViewById<LinearLayout>(R.id.toMyPageUserScheduleActivityBtn)
+
+        toMyPageUserScheduleActivityBtn.setOnClickListener{
+            val intent = Intent(requireContext(), MyPageUserScheduleActivity::class.java)
             startActivity(intent)
         }
 
