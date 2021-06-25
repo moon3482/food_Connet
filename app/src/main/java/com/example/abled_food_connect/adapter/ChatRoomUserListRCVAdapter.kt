@@ -53,6 +53,11 @@ class ChatRoomUserListRCVAdapter(
         } else {
             holder.hostUserCrown.visibility = View.INVISIBLE
         }
+        if (chatRoomUserData.userNickname == MainActivity.loginUserNickname){
+            holder.meIcon.visibility = View.VISIBLE
+        }else{
+            holder.meIcon.visibility = View.INVISIBLE
+        }
     }
 
     override fun getItemCount(): Int {
@@ -64,6 +69,7 @@ class ChatRoomUserListRCVAdapter(
         var userId = itemView.findViewById<TextView>(R.id.chatUserListId)
         var userKickButton = itemView.findViewById<ImageButton>(R.id.userKickButton)
         var hostUserCrown = itemView.findViewById<ImageView>(R.id.hostUserCrown)
+        var meIcon = itemView.findViewById<ImageView>(R.id.meIcon)
 
     }
 }

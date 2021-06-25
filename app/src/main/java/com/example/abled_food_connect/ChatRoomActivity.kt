@@ -255,9 +255,10 @@ class ChatRoomActivity : AppCompatActivity() {
         binding.groupChatExitRoomButton.setOnClickListener {
             var builder = AlertDialog.Builder(this)
             builder.setMessage("정말로 방을 나가시겠습니까?")
-            builder.setPositiveButton("나가기"
+            builder.setPositiveButton(
+                "나가기"
             ) { dialog, which -> exitRoom() }
-            builder.setNegativeButton("취소",null)
+            builder.setNegativeButton("취소", null)
             builder.show()
 
         }
@@ -872,7 +873,11 @@ class ChatRoomActivity : AppCompatActivity() {
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-            .exitRoom(chatroomRoomId, MainActivity.user_table_id.toString(), MainActivity.loginUserNickname)
+            .exitRoom(
+                chatroomRoomId,
+                MainActivity.user_table_id.toString(),
+                MainActivity.loginUserNickname
+            )
             .enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.body() == "true") {
@@ -889,7 +894,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         )
 
                         onBackPressed()
-                        Handler().postDelayed(Runnable { onBackPressed() },500)
+                        Handler().postDelayed(Runnable { onBackPressed() }, 500)
                     }
                 }
 

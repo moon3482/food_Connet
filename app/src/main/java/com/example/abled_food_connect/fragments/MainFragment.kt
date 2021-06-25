@@ -181,7 +181,7 @@ class MainFragment : Fragment() {
 
                     val list: LoadingRoom = response.body()!!
                     val array: ArrayList<MainFragmentItemData> = list.roomList
-                    mainFragmentListArray = list.roomList as ArrayList<MainFragmentItemData>
+                    mainFragmentListArray = list.roomList
                     recyclerViewAdapter =
                         MainFragmentAdapter(requireContext(),this@MainFragment, mainFragmentListArray)
                     recyclerView.adapter = recyclerViewAdapter

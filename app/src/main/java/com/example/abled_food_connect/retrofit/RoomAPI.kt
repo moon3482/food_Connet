@@ -51,7 +51,7 @@ interface RoomAPI {
     fun joinRoom(
         @Field("roomId") roomId: String,
         @Field("nickName") nickName: String,
-        @Field("userIndexId")userIndexId:String
+        @Field("userIndexId") userIndexId: String
 
     ): Call<API.joinRoomClass>
 
@@ -92,7 +92,7 @@ interface RoomAPI {
     fun hostSubscriptionCheck(
         @Field("roomId") roomId: String?,
 
-    ): Call<ChatRoomSubscriptionResult>
+        ): Call<ChatRoomSubscriptionResult>
 
     @FormUrlEncoded
     @POST("/groupChat/subscriptionUpdate.php")
@@ -100,21 +100,30 @@ interface RoomAPI {
         @Field("subNumber") subNumber: String?,
         @Field("status") status: String?
 
-        ): Call<String>
+    ): Call<String>
 
     @FormUrlEncoded
     @POST("/groupChat/joinRoomMember.php")
     fun joinRoomMember(
-        @Field("roomId")roomId:String
-    ):Call<ArrayList<LoadRoomUsers>>
+        @Field("roomId") roomId: String
+    ): Call<ArrayList<LoadRoomUsers>>
 
     @FormUrlEncoded
     @POST("/groupChat/exitRoom.php")
     fun exitRoom(
-        @Field("roomId")roomId:String,
-        @Field("userIndexId")userIndexId:String,
-        @Field("userNickName")userNickName:String
-    ):Call<String>
+        @Field("roomId") roomId: String,
+        @Field("userIndexId") userIndexId: String,
+        @Field("userNickName") userNickName: String
+    ): Call<String>
+
+    @FormUrlEncoded
+    @POST("groupChat/LoadGroupChatList.php")
+    fun loadGroupChatList(
+        @Field("userIndexId") userIndexId: String,
+        @Field("userNickName") userNickName: String
+
+
+    ): Call<LoadingRoom>
 
 }
 
