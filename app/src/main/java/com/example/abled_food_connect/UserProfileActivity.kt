@@ -122,6 +122,8 @@ class UserProfileActivity : AppCompatActivity() {
 
                 if(items!!.introduction == null) {
                     binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
+                }else{
+                    binding.userProfileIntroductionTv.text = items.introduction
                 }
 
                 binding.reviewTitleAndReviewCountTv.text= "작성한 리뷰 ${items.review_count}개"
