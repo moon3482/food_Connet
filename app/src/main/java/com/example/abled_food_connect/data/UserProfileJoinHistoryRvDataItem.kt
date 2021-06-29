@@ -2,7 +2,7 @@ package com.example.abled_food_connect.data
 
 import com.google.gson.annotations.SerializedName
 
-data class MyPageUserScheduleDataItem(
+data class UserProfileJoinHistoryRvDataItem(
     @SerializedName("room_id")
     val room_id : Int,
     @SerializedName("meeting_result")

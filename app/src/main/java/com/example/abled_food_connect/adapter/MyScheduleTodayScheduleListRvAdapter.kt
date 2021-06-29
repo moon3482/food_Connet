@@ -10,10 +10,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.DirectMessageActivity
-import com.example.abled_food_connect.MainActivity
-import com.example.abled_food_connect.MeetingUserEvaluationActivity
-import com.example.abled_food_connect.R
+import com.example.abled_food_connect.*
 import com.example.abled_food_connect.data.MyPageUserScheduleDataItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -122,8 +119,17 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
             if(ScheduleDataList.get(position).review_result == 0) {
                 holder.reviewWritingBtn.setOnClickListener({
                     //리뷰작성페이지로 이동
+                    //Toast.makeText(holder.reviewWritingBtn.context, "리뷰작성페이지로 이동", Toast.LENGTH_SHORT).show()
 
-                        Toast.makeText(holder.reviewWritingBtn.context, "리뷰작성페이지로 이동", Toast.LENGTH_SHORT).show()
+                    var toReviewWritingIntent : Intent = Intent(holder.reviewWritingBtn.context, ReviewWriting::class.java)
+                    toReviewWritingIntent.putExtra("room_id", ScheduleDataList.get(position).room_id)
+
+                    startActivity(
+                        holder.reviewWritingBtn.context,
+                        toReviewWritingIntent,
+                        null
+                    )
+
 
                 })
             }
@@ -175,7 +181,7 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
         }
         //모임이 취소된 경우
         else if(ScheduleDataList.get(position).meeting_result == 2) {
-            holder.meetingDateTv.setBackgroundColor(Color.parseColor("#eb344c"))
+            holder.meetingDateTv.setBackgroundColor(Color.parseColor("#595959"))
 
 
             holder.reviewWritingBtn.setBackgroundColor(Color.GRAY)

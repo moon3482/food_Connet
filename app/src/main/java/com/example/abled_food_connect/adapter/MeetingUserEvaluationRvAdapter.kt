@@ -10,7 +10,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.MeetingEvaluationUserListRvDataItem
 
@@ -52,24 +51,48 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
             popupMenu.menuInflater.inflate(R.menu.meeting_user_evaluation_pop_up_menu,popupMenu.menu)
             popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
                 when(item.itemId) {
-                    R.id.Item1 ->
+                    R.id.Item1 ->{
                         holder.userEvaluationTv.text = "유쾌함"
-                    R.id.Item2 ->
+                        itemClickListener.onClick(it, position,"유쾌함")
+                    }
+
+                    R.id.Item2 -> {
                         holder.userEvaluationTv.text = "고독한미식가"
-                    R.id.Item3 ->
+                        itemClickListener.onClick(it, position,"고독한미식가")
+                    }
+                    R.id.Item3 ->{
                         holder.userEvaluationTv.text = "재미있음"
-                    R.id.Item4 ->
+                        itemClickListener.onClick(it, position,"재미있음")
+                    }
+                    R.id.Item4 ->{
                         holder.userEvaluationTv.text = "시끄러움"
-                    R.id.Item5 ->
+                        itemClickListener.onClick(it, position,"시끄러움")
+                    }
+                    R.id.Item5 -> {
                         holder.userEvaluationTv.text = "무뚝뚝"
-                    R.id.Item6 ->
+                        itemClickListener.onClick(it, position, "무뚝뚝")
+                    }
+                    R.id.Item6 ->{
                         holder.userEvaluationTv.text = "맛잘알"
-                    R.id.Item7 ->
+                        itemClickListener.onClick(it, position,"맛잘알")
+                    }
+                    R.id.Item7 ->{
                         holder.userEvaluationTv.text = "친화력갑"
-                    R.id.Item8 ->
+                        itemClickListener.onClick(it, position,"친화력갑")
+                    }
+                    R.id.Item8 ->{
                         holder.userEvaluationTv.text = "미소지기"
-                    R.id.Item9 ->
+                        itemClickListener.onClick(it, position,"미소지기")
+                    }
+                    R.id.Item9 ->{
                         holder.userEvaluationTv.text = "부담스러움"
+                        itemClickListener.onClick(it, position,"부담스러움")
+                    }
+
+                    R.id.Item10 ->{
+                        holder.userEvaluationTv.text = "선택안함"
+                        itemClickListener.onClick(it, position,"선택안함")
+                    }
 
                 }
                 true
@@ -102,5 +125,17 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
 
 
     }
+
+
+    // (2) 리스너 인터페이스
+    interface OnItemClickListener {
+        fun onClick(v: View, position: Int, clickedText: String)
+    }
+    // (3) 외부에서 클릭 시 이벤트 설정
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+    // (4) setItemClickListener로 설정한 함수 실행
+    private lateinit var itemClickListener : OnItemClickListener
 
 }

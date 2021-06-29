@@ -11,11 +11,21 @@ import androidx.core.content.ContextCompat.getDrawable
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.MyScheduleCalendarData
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendarData>) : RecyclerView.Adapter<MyScheduleCalendarRvAdapter.CustromViewHolder>(){
 
     //이전에 선택된 값은 다시 채워지지 않은 원으로 바꿔준다.
     var ClickNumber : Int = -1
+
+    //오늘 날짜
+
+    //시간에 사용하는 변수
+    val todaycal = Calendar.getInstance()
+    var year = todaycal.get(Calendar.YEAR)
+    var month = (todaycal.get(Calendar.MONTH))
+    var day = todaycal.get(Calendar.DATE)
 
 
     // (2) 리스너 인터페이스
@@ -56,7 +66,25 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
 
         if(ClickNumber == position){
 
-            if(calDateList.get(position).meeting_result == 0){
+            //오늘인 경우
+            if(calDateList.get(position).rvYear ==  year && calDateList.get(position).rvMonth == month && calDateList.get(position).rvDay ==day){
+
+                var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_red_full)
+                holder.rvDay.background =  drawable
+                holder.rvDay.setTextColor(Color.WHITE)
+
+                holder.rvDay.text = calDateList.get(position).rvDay.toString()
+
+                //배경 테두리
+                var backGroundDrawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.rv_day_tv_rectangle_background)
+                holder.rvDayTvBackgroundLinearLayout.background = backGroundDrawable
+
+
+
+
+            }
+
+            else if(calDateList.get(position).meeting_result == 0){
 
                 var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_green_full)
                 holder.rvDay.background =  drawable
@@ -96,8 +124,20 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
 
             if (calDateList.get(position).rvDay != 0) {
 
+                //오늘인 경우
+                if(calDateList.get(position).rvYear ==  year && calDateList.get(position).rvMonth == month && calDateList.get(position).rvDay ==day){
+
+                    holder.rvDay.text = calDateList.get(position).rvDay.toString()
+                    var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_red_edge)
+                    holder.rvDay.background = drawable
+
+
+
+
+                }
+
                 //모임이 진행중 - 초록색원
-                if (calDateList.get(position).meeting_result == 0) {
+                else if (calDateList.get(position).meeting_result == 0) {
 
                     holder.rvDay.text = calDateList.get(position).rvDay.toString()
                     var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_green_edge)

@@ -31,6 +31,11 @@ class MyPageUserScheduleListSecondFragment : Fragment() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        MyPageUserScheduleRvGet()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,7 +56,7 @@ class MyPageUserScheduleListSecondFragment : Fragment() {
 
 
 
-        MyPageUserScheduleRvGet()
+        //MyPageUserScheduleRvGet()
         return view
     }
 

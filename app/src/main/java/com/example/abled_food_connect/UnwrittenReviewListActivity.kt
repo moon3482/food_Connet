@@ -30,6 +30,11 @@ class UnwrittenReviewListActivity : AppCompatActivity() {
     var ScheduleArrayList = ArrayList<MyPageUserScheduleDataItem>()
     lateinit var unwrittenReviewListRv : RecyclerView
 
+    override fun onStart() {
+        super.onStart()
+        UnWrittenReviewListRvGet()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_unwritten_review_list)
@@ -60,7 +65,7 @@ class UnwrittenReviewListActivity : AppCompatActivity() {
 
 
 
-        UnWrittenReviewListRvGet()
+
     }
 
 

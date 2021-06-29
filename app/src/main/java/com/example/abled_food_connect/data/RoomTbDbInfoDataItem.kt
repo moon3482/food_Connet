@@ -2,15 +2,9 @@ package com.example.abled_food_connect.data
 
 import com.google.gson.annotations.SerializedName
 
-data class MyPageUserScheduleDataItem(
-    @SerializedName("room_id")
+data class RoomTbDbInfoDataItem(
+    @SerializedName("id")
     val room_id : Int,
-    @SerializedName("meeting_result")
-    val meeting_result : Int,
-    @SerializedName("review_result")
-    val review_result : Int,
-    @SerializedName("user_evaluation")
-    val user_evaluation : Int,
     @SerializedName("room_title")
     val room_title : String,
     @SerializedName("room_introduce")

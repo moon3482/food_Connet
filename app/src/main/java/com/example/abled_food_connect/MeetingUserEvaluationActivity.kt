@@ -1,9 +1,12 @@
 package com.example.abled_food_connect
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,6 +19,10 @@ import com.example.abled_food_connect.data.UserProfileData
 import com.example.abled_food_connect.databinding.ActivityMeetingUserEvaluationBinding
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import org.json.JSONException
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +42,9 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
     var userList =  ArrayList<MeetingEvaluationUserListRvDataItem>()
 
+    //버튼을 여러번 누르면, 누른만큼 전송이 된다. 따라서 연속클릭을 방지하기위한 변수를 만들었다.
+    var clickedBtnCount = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meeting_user_evaluation)
@@ -52,7 +62,7 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.Toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
-        binding.Toolbar.title = "모임평가"
+        binding.Toolbar.title = "모임원평가"
         //툴바에 백버튼 만들기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -68,6 +78,47 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
         Log.d("room_id", room_id.toString())
 
         MeetingEnduserLoading(room_id)
+
+        binding.sendReviewBtn.setOnClickListener(View.OnClickListener {
+
+            var isNull = false
+            for(i in 0..userList.size-1){
+                if(userList.get(i).user_evaluation_what_did_you_say == null){
+                    isNull = true
+                }
+            }
+
+            if (isNull ==true){
+                Toast.makeText(applicationContext, "평가가 완료되지 않은 모임원이 있습니다.", Toast.LENGTH_SHORT).show()
+            }
+
+            if(isNull == false){
+
+
+                //clickedBtnCount은 여러번 클릭하는 것을 방지하기 위함이다.
+                if(clickedBtnCount == 0){
+
+                    clickedBtnCount = clickedBtnCount+1
+
+                    var makeGson = GsonBuilder().create()
+
+                    try {
+                        // 제이슨으로 변환
+
+                        val userListJson = Gson().toJsonTree(userList, object : TypeToken<ArrayList<MeetingEvaluationUserListRvDataItem>>(){}.type)
+
+                        Log.d("json", userListJson.toString())
+                        MeetingUserEvaluationWriting(userListJson.toString())
+
+                    }catch (e : JSONException){
+                    }
+                }
+
+
+            }
+
+
+        })
 
     }
 
@@ -117,6 +168,21 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
 
                var mAdapter =  MeetingUserEvaluationRvAdapter(userList)
+
+                mAdapter.setItemClickListener(object: MeetingUserEvaluationRvAdapter.OnItemClickListener{
+                    override fun onClick(v: View, position: Int, clickedText: String) {
+                        // 클릭 시 이벤트 작성
+//                        Toast.makeText(applicationContext,
+//                            "${userList[position].user_nickname}\n${clickedText}",
+//                            Toast.LENGTH_SHORT).show()
+
+                        userList[position].user_evaluation_what_did_you_say = clickedText
+
+                        Log.d("TAG", userList.toString())
+
+                    }
+                })
+
                 mAdapter.notifyDataSetChanged()
                 meetingEndUserListRv.adapter = mAdapter
 
@@ -126,6 +192,50 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<MeetingEvaluationUserListRvData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+
+
+    fun MeetingUserEvaluationWriting(meeting_user_evaluation_Json:String){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.MeetingUserEvaluationWritingInterface::class.java)
+
+        //어떤 리뷰를 선택했는지 확인하는 변수 + 좋아요 클릭여부를 확인하기 위하여 사용자 id보냄
+        val meeting_user_evaluation_send = api.meeting_user_evaluation_writing(meeting_user_evaluation_Json,MainActivity.user_table_id,MainActivity.loginUserNickname)
+
+
+        meeting_user_evaluation_send.enqueue(object : Callback<String> {
+
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "가져온값 : ${response.body().toString()}")
+
+
+                Toast.makeText(applicationContext,
+                    "모임원 평가를 완료하였습니다.",
+                    Toast.LENGTH_SHORT).show()
+
+                onBackPressed()
+                finish()
+                //var items : MeetingEvaluationUserListRvData? =  response.body()
+
+
+
+
+
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+
             }
         })
     }

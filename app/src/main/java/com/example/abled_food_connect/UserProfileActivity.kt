@@ -82,6 +82,13 @@ class UserProfileActivity : AppCompatActivity() {
             startActivity(toUserProfileClickedReviewGridListActivity, null)
         })
 
+
+        binding.userHistoryBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileJoinHistoryActivityIntent : Intent = Intent(applicationContext, UserProfileJoinHistoryActivity::class.java)
+            toUserProfileJoinHistoryActivityIntent.putExtra("UserNicName", clicked_user_NicName)
+            startActivity(toUserProfileJoinHistoryActivityIntent, null)
+        })
+
     }
 
 

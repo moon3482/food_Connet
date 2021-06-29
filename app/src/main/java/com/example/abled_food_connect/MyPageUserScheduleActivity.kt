@@ -8,10 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
-import android.widget.Button
 import android.widget.TextView
-import androidx.recyclerview.widget.DividerItemDecoration
-
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -76,7 +73,8 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 
 
 
-
+    var isFisrtOpen = 0
+    var selectPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +90,9 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // 이제부터 binding 바인딩 변수를 활용하여 마음 껏 xml 파일 내의 뷰 id 접근이 가능해집니다.
+
+
+
 
 
         setSupportActionBar(binding.userScheduleToolbar) //커스텀한 toolbar를 액션바로 사용
@@ -204,6 +205,10 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
             var mAdapter =  MyScheduleCalendarRvAdapter(caldateList)
             mAdapter.setItemClickListener(object: MyScheduleCalendarRvAdapter.OnItemClickListener{
                 override fun onClick(v: View, position: Int) {
+
+
+                    selectPosition = position
+
                     // 클릭 시 이벤트 작성
                     if(caldateList.get(position).rvDay != 0){
 
@@ -285,7 +290,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
             binding.calendarYearAndMonthTv.setText("${year}년 ${month+1}월")
 
 
-            cal.set(year,(month),1);
+            cal.set(year,(month),1)
 
             var maxday = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
             Log.d("마지막날", "$maxday")
@@ -355,6 +360,11 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
             mAdapter.notifyDataSetChanged()
             mAdapter.setItemClickListener(object: MyScheduleCalendarRvAdapter.OnItemClickListener{
                 override fun onClick(v: View, position: Int) {
+
+
+                    selectPosition = position
+
+
                     // 클릭 시 이벤트 작성
                     if(caldateList.get(position).rvDay != 0){
 
@@ -427,7 +437,18 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 
 
 
+
+    }
+
+    override fun onStart() {
+        super.onStart()
         MyPageUserScheduleRvGet()
+
+
+
+
+
+
     }
 
 
@@ -453,7 +474,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                 var items : MyPageUserScheduleData? =  response.body()
 
 
-                if (items != null) {
+                if (items != null && isFisrtOpen ==0) {
                     scheduleArrayList = items.scheduleList as ArrayList<MyPageUserScheduleDataItem>
 
 
@@ -536,6 +557,9 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 
                     mAdapter.setItemClickListener(object: MyScheduleCalendarRvAdapter.OnItemClickListener{
                         override fun onClick(v: View, position: Int) {
+
+                            selectPosition = position
+
                             // 클릭 시 이벤트 작성
                             if(caldateList.get(position).rvDay != 0){
 
@@ -607,6 +631,151 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
 
 
                 }
+
+
+
+
+                if(items!=null && isFisrtOpen==1){
+
+                    scheduleArrayList = items.scheduleList as ArrayList<MyPageUserScheduleDataItem>
+
+                    binding.calendarYearAndMonthTv.setText("${year}년 ${month+1}월")
+
+
+                    cal.set(year,(month),1)
+
+                    var maxday = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+                    Log.d("마지막날", "$maxday")
+
+                    var dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+                    Log.d("요일", "$dayOfWeek")
+
+
+                    caldateList.clear()
+                    for(i in 1..dayOfWeek-1){
+
+                        caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                    }
+
+                    for(i in 1..maxday){
+
+
+                        var dateStr = "${year}-${String.format("%02d", month+1)}-${String.format("%02d", i)}"
+
+
+
+                        var checkNum = 0
+                        var meeting_result = 1
+
+
+                        Log.d("TAG", dateStr)
+                        //Log.d("TAG", scheduleArrayList.get(k).appointment_day)
+                        for(k in 0..scheduleArrayList.size-1){
+                            if(dateStr ==  scheduleArrayList.get(k).appointment_day){
+                                Log.d("TAG", "같다")
+                                Log.d("TAG", "dateStr")
+                                Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
+                                if(scheduleArrayList.get(k).meeting_result == 0){
+                                    meeting_result =0
+                                }
+                                checkNum = 1
+                                break
+                            }
+
+                        }
+
+                        if(checkNum == 1){
+                            if(meeting_result == 0){
+                                caldateList.add(MyScheduleCalendarData(year,month,i,0))
+                            }else if(meeting_result == 1){
+                                caldateList.add(MyScheduleCalendarData(year,month,i,1))
+                            }
+                        }
+
+                        if(checkNum ==0){
+                            caldateList.add(MyScheduleCalendarData(year,month,i,-1))
+                        }
+
+                        if(checkNum ==1){
+                            checkNum = 0
+                        }
+
+                    }
+
+                    for(i in caldateList.size-1 .. 40){
+                        caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                    }
+
+
+
+                    var mAdapter =  MyScheduleCalendarRvAdapter(caldateList)
+                    mAdapter.notifyDataSetChanged()
+                    mAdapter.setItemClickListener(object: MyScheduleCalendarRvAdapter.OnItemClickListener{
+                        override fun onClick(v: View, position: Int) {
+
+                            selectPosition = position
+                            // 클릭 시 이벤트 작성
+                            if(caldateList.get(position).rvDay != 0){
+
+
+
+                                var dateStr = "${year}-${String.format("%02d", caldateList.get(position).rvMonth+1)}-${String.format("%02d", caldateList.get(position).rvDay)}"
+
+                                todayClickScheduleArrayList.clear()
+                                for(k in 0..scheduleArrayList.size-1){
+                                    if(scheduleArrayList.get(k).appointment_day == dateStr){
+
+                                        todayClickScheduleArrayList.add(scheduleArrayList.get(k))
+
+                                    }
+                                }
+
+                                var TodayScheduleListAdapter =  MyScheduleTodayScheduleListRvAdapter(todayClickScheduleArrayList)
+                                TodayScheduleListAdapter.notifyDataSetChanged()
+                                todayScheduleListRv.adapter = TodayScheduleListAdapter
+
+                                Log.d("TAG", "오늘"+todayClickScheduleArrayList.toString())
+
+//                                //리사이클러뷰 구분선
+//                                val dividerItemDecoration =
+//                                    DividerItemDecoration(todayScheduleListRv.context, LinearLayoutManager(applicationContext).orientation)
+//                                todayScheduleListRv.addItemDecoration(dividerItemDecoration)
+
+                                if(todayClickScheduleArrayList.size>0){
+                                    binding.noScheduleTv.visibility = View.GONE
+                                }else{
+                                    binding.noScheduleTv.visibility = View.VISIBLE
+                                }
+
+                            }
+
+
+
+                        }
+
+
+                    })
+                    calendarRv.adapter = mAdapter
+
+
+                    //오늘날짜 클릭(리사이클러뷰 뷰가 그려지고 나서 수행해야함, 그려지기 전에 클릭이벤트를 실행하면 null값이 나옴)
+
+
+
+                    calendarRv.viewTreeObserver.addOnGlobalLayoutListener(
+                        object: ViewTreeObserver.OnGlobalLayoutListener {
+                            override fun onGlobalLayout() {
+                                Log.d("누름", "onGlobalLayout: ")
+                                val view = calendarRv.findViewHolderForAdapterPosition(selectPosition)!!.itemView?.findViewById<TextView>(R.id.rvDayTv)
+                                view!!.performClick()
+                                calendarRv.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                            }
+                        }
+                    )
+
+                }
+
+                isFisrtOpen = 1
 
 
 

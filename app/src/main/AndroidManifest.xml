@@ -27,7 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MeetingUserEvaluationActivity"></activity>
+        <activity android:name=".UserProfileEvaluationListActivity"></activity>
+        <activity android:name=".UserProfileJoinHistoryActivity" />
+        <activity android:name=".MeetingUserEvaluationActivity" />
         <activity android:name=".UnwrittenReviewListActivity" />
         <activity android:name=".MyPageUserScheduleListActivity" />
         <activity android:name=".MyPageUserScheduleActivity" />

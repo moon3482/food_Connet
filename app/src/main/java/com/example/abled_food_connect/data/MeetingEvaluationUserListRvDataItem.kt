@@ -22,5 +22,5 @@ data class MeetingEvaluationUserListRvDataItem(
     @SerializedName("ishost")
     val is_host : Boolean,
     @SerializedName("user_evaluation_what_did_you_say")
-    val user_evaluation_what_did_you_say : String
+    var user_evaluation_what_did_you_say : String
 )

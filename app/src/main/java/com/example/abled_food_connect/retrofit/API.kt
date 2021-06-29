@@ -71,6 +71,18 @@ class API {
     }
 
 
+    interface roomTbDbInfoGetInterface {
+
+
+        @Multipart
+        @POST("review/room_tb_db_info_get.php")
+        fun room_tb_db_info_get(
+            @Part("room_id") room_id: Int
+        ): Call<RoomTbDbInfoData>
+
+    }
+
+
 
     interface reviewWriting{
         // 리뷰작성하기 보내기
@@ -273,6 +285,18 @@ class API {
     }
 
 
+    interface UserProfileJoinHistoryRvInterface {
+
+        @Multipart
+        @POST("schedule/user_profile_join_history_rv_list_get.php")
+        fun user_profile_join_history_rv_list_get(
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<UserProfileJoinHistoryRvData>
+
+    }
+
+
+
     interface UserProfileClickedReviewGridListRvInterface {
 
         @Multipart
@@ -308,6 +332,10 @@ class API {
     }
 
 
+
+
+
+
     interface MeetingEvaluationUserListRvInterface {
 
         @Multipart
@@ -315,6 +343,18 @@ class API {
         fun meeting_evaluation_user_list_get(
             @Part("room_id") room_id: Int
         ): Call<MeetingEvaluationUserListRvData>
+
+    }
+
+    interface MeetingUserEvaluationWritingInterface {
+
+        @Multipart
+        @POST("schedule/meeting_user_evaluation_writing.php")
+        fun meeting_user_evaluation_writing(
+            @Part("meeting_user_evaluation_Json") meeting_user_evaluation_Json: String,
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("my_user_nicname") my_user_nicname: String
+        ): Call<String>
 
     }
 

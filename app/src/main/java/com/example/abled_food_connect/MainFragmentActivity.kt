@@ -80,7 +80,7 @@ class MainFragmentActivity : AppCompatActivity() {
             View.OnClickListener
             {
                 //바텀네비게이션 프래그먼트 셀렉트 리스너
-                val nextIntent = Intent(this, ReviewWriting::class.java)
+                val nextIntent = Intent(this, UnwrittenReviewListActivity::class.java)
                 startActivity(nextIntent)
 
             })
