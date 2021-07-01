@@ -107,6 +107,24 @@ class MyPageFragment:Fragment() {
         })
 
 
+        val toMoveUserProfileBadgeListActivityBtn = view.findViewById<LinearLayout>(R.id.toMoveUserProfileBadgeListActivityBtn)
+        toMoveUserProfileBadgeListActivityBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileBadgeListActivity : Intent = Intent(context, UserProfileBadgeListActivity::class.java)
+            toUserProfileBadgeListActivity.putExtra("user_tb_id",MainActivity.user_table_id)
+            toUserProfileBadgeListActivity.putExtra("user_nicname",MainActivity.loginUserNickname)
+            startActivity(toUserProfileBadgeListActivity, null)
+        })
+
+
+        val toMoveUserProfileEvaluationListActivity = view.findViewById<LinearLayout>(R.id.toMoveUserProfileEvaluationListActivity)
+        toMoveUserProfileEvaluationListActivity.setOnClickListener(View.OnClickListener {
+            var toUserProfileEvaluationListActivity : Intent = Intent(context, UserProfileEvaluationListActivity::class.java)
+            toUserProfileEvaluationListActivity.putExtra("user_tb_id",MainActivity.user_table_id)
+            toUserProfileEvaluationListActivity.putExtra("user_nicname",MainActivity.loginUserNickname)
+            startActivity(toUserProfileEvaluationListActivity, null)
+        })
+
+
         val toMyPageUserScheduleActivityBtn = view.findViewById<LinearLayout>(R.id.toMyPageUserScheduleActivityBtn)
 
         toMyPageUserScheduleActivityBtn.setOnClickListener{

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.abled_food_connect">
+    package="com.example.abled_food_connect" >
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -26,8 +26,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".UserProfileEvaluationListActivity"></activity>
+        android:usesCleartextTraffic="true" >
+        <activity android:name=".UserProfileBadgeListActivity" >
+        </activity>
+        <activity android:name=".UserProfileEvaluationListActivity" />
         <activity android:name=".UserProfileJoinHistoryActivity" />
         <activity android:name=".MeetingUserEvaluationActivity" />
         <activity android:name=".UnwrittenReviewListActivity" />
@@ -50,7 +52,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".RoomInformationActivity" />
         <activity android:name=".ChatRoomActivity" />
-        <activity android:name=".CreateRoomMapSearchActivity">
+        <activity android:name=".CreateRoomMapSearchActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -76,14 +78,14 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
         <activity android:name=".ChatActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
+        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

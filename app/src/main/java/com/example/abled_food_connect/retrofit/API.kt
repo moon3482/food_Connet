@@ -57,6 +57,17 @@ class API {
 
 
     //프로필 수정 - 원본이미지와 압축된 이미지, 아이디, 자기소개를 보낸다.
+    interface UserProfileEvaluationListInterface {
+        @Multipart
+        @POST("review/user_profile_evaluation_list.php")
+        fun user_profile_evaluation_list_Request(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<UserProfileEvaluationListData>
+
+    }
+
+
+    //프로필 수정 - 원본이미지와 압축된 이미지, 아이디, 자기소개를 보낸다.
     interface UserProfileModifyImageChange_interface {
         @Multipart
         @POST("user_info/user_profile_modify.php")
@@ -121,6 +132,7 @@ class API {
         ): Call<ReviewDetailViewRvData>
 
     }
+
 
     interface reviewLikeBtnClick{
         // 좋아요 버튼 클릭
@@ -329,6 +341,15 @@ class API {
             @Part("user_tb_nicname") user_tb_nicname: String
         ): Call<MyPageUserScheduleData>
 
+    }
+
+    interface UserProfileBadgeListDataGetInterface {
+        @Multipart
+        @POST("user_info/user_profile_badge_list_data_get.php")
+        fun user_profile_badge_list_data_get(
+            @Part("user_tb_id") user_tb_id: Int,
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<UserProfileBadgeListData>
     }
 
 

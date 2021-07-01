@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.data.UserProfileData
@@ -76,6 +77,15 @@ class UserProfileActivity : AppCompatActivity() {
         })
 
 
+
+        binding.toMoveUserProfileBadgeListActivityBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileBadgeListActivity : Intent = Intent(applicationContext, UserProfileBadgeListActivity::class.java)
+            toUserProfileBadgeListActivity.putExtra("user_tb_id",clicked_user_tb_id)
+            toUserProfileBadgeListActivity.putExtra("user_nicname",clicked_user_NicName)
+            startActivity(toUserProfileBadgeListActivity, null)
+        })
+
+
         binding.toMoveWrittenReviewListActivityBtn.setOnClickListener(View.OnClickListener {
             var toUserProfileClickedReviewGridListActivity : Intent = Intent(applicationContext, UserProfileClickedReviewGridListActivity::class.java)
             toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
@@ -87,6 +97,16 @@ class UserProfileActivity : AppCompatActivity() {
             var toUserProfileJoinHistoryActivityIntent : Intent = Intent(applicationContext, UserProfileJoinHistoryActivity::class.java)
             toUserProfileJoinHistoryActivityIntent.putExtra("UserNicName", clicked_user_NicName)
             startActivity(toUserProfileJoinHistoryActivityIntent, null)
+        })
+
+
+
+
+        binding.toMoveUserProfileEvaluationListActivityBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileEvaluationListActivity : Intent = Intent(applicationContext, UserProfileEvaluationListActivity::class.java)
+            toUserProfileEvaluationListActivity.putExtra("user_tb_id",clicked_user_tb_id)
+            toUserProfileEvaluationListActivity.putExtra("user_nicname",clicked_user_NicName)
+            startActivity(toUserProfileEvaluationListActivity, null)
         })
 
     }

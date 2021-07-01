@@ -101,6 +101,7 @@
                 android:background="#AA000000"/>
 
             <LinearLayout
+                android:id="@+id/toMoveUserProfileBadgeListActivityBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -133,7 +134,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#AA000000"/>]
+                android:background="#AA000000"/>
 
             <LinearLayout
                 android:id="@+id/userHistoryBtn"
@@ -207,12 +208,12 @@
 
 
             <LinearLayout
+                android:id="@+id/toMoveUserProfileEvaluationListActivityBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/toMoveReputationListActivityBtn"
                 android:text="받은 평가"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
