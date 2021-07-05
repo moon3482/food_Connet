@@ -13,8 +13,8 @@ data class DirectMessageNodeServerSendDataItem(
     val to_user_tb_id: Int,
     @SerializedName("content")
     val content: String,
-    @SerializedName("text_or_image")
-    val text_or_image: String,
+    @SerializedName("text_or_image_or_dateline")
+    val text_or_image_or_dateline: String,
     @SerializedName("send_time")
     val send_time: String,
     @SerializedName("message_check")

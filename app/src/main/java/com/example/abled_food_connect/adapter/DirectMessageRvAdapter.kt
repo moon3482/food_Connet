@@ -55,6 +55,16 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
                 YourImageViewHolder(view)
             }
 
+
+            4 -> {
+                view = LayoutInflater.from(parent.context).inflate(
+                    R.layout.direct_message_chat_date_line,
+                    parent,
+                    false
+                )
+                DateLineHolder(view)
+            }
+
             else -> {
                 view = LayoutInflater.from(parent.context).inflate(
                     R.layout.direct_message_chat_my_message,
@@ -70,14 +80,16 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
     override fun getItemViewType(position: Int): Int {
         var type : Int = 0
 
-        if(datas[position].TextOrImage =="Text" && datas[position].user_tb_id == MainActivity.user_table_id){
+        if(datas[position].TextOrImageOrDateLine =="Text" && datas[position].user_tb_id == MainActivity.user_table_id){
             type = 0
-        } else if(datas[position].TextOrImage =="Text" && datas[position].user_tb_id != MainActivity.user_table_id){
+        } else if(datas[position].TextOrImageOrDateLine =="Text" && datas[position].user_tb_id != MainActivity.user_table_id){
             type = 1
-        } else if(datas[position].TextOrImage =="Image" && datas[position].user_tb_id == MainActivity.user_table_id){
+        } else if(datas[position].TextOrImageOrDateLine =="Image" && datas[position].user_tb_id == MainActivity.user_table_id){
             type = 2
-        } else if(datas[position].TextOrImage =="Image" && datas[position].user_tb_id != MainActivity.user_table_id){
+        } else if(datas[position].TextOrImageOrDateLine =="Image" && datas[position].user_tb_id != MainActivity.user_table_id){
             type = 3
+        } else if(datas[position].TextOrImageOrDateLine =="DateLine"){
+            type = 4
         }
         return type
     }
@@ -101,6 +113,11 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
             }
             3 -> {
                 (holder as YourImageViewHolder).bind(datas[position])
+
+            }
+
+            4 -> {
+                (holder as DateLineHolder).bind(datas[position])
 
             }
 
@@ -188,6 +205,26 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
             YourNicName.text = item.userNicName
             Glide.with(chatOthersIv.context).load(chatOthersIv.context.getString(R.string.http_request_base_url)+item.message).into(chatOthersIv)
             chatOthersTimeStamp.text = item.toShowTimeStr
+
+
+        }
+    }
+
+
+
+
+    inner class DateLineHolder(view: View) : RecyclerView.ViewHolder(view) {
+
+
+        private val dateLineTv: TextView = view.findViewById(R.id.dateLineTv)
+
+
+
+        fun bind(item: DirectMessageRvData) {
+
+
+            dateLineTv.text = item.message
+
 
 
         }

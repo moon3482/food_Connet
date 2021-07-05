@@ -13,8 +13,8 @@ data class DirectMessageRvData(
     val userProfileImage: String,
     @SerializedName("message")
     val message: String,
-    @SerializedName("TextOrImage")
-    val TextOrImage: String,
+    @SerializedName("TextOrImageOrDateLine")
+    val TextOrImageOrDateLine: String,
     @SerializedName("sendTime")
     val sendTime: String,
     @SerializedName("toShowTimeStr")

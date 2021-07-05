@@ -49,7 +49,7 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
 
 
 
-        if(DMArrayList.get(position).text_or_image == "Image"){
+        if(DMArrayList.get(position).text_or_image_or_dateline == "Image"){
             holder.dmListMessageTv.text = "사진을 보냈습니다."
         }else{
             holder.dmListMessageTv.text = DMArrayList.get(position).content

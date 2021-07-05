@@ -263,7 +263,7 @@ class DirectMessageActivity : AppCompatActivity() {
         var from_user_tb_id = data.getInt("from_user_tb_id")
         var to_user_tb_id = data.getInt("to_user_tb_id")
         var content = data.getString("content")
-        var text_or_image = data.getString("text_or_image")
+        var text_or_image_or_dateline = data.getString("text_or_image_or_dateline")
         var send_time = data.getString("send_time")
         var message_check = data.getString("message_check")
 
@@ -275,11 +275,11 @@ class DirectMessageActivity : AppCompatActivity() {
         if(from_user_tb_id == MyUserTableId){
 
 
-            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
+            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
 
 
         }else{
-            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
+            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
         }
 
 
@@ -549,7 +549,7 @@ class DirectMessageActivity : AppCompatActivity() {
                     var from_user_tb_id = directMessageNodeServerSendDataItem.get(i).from_user_tb_id
                     var to_user_tb_id = directMessageNodeServerSendDataItem.get(i).to_user_tb_id
                     var content = directMessageNodeServerSendDataItem.get(i).content
-                    var text_or_image = directMessageNodeServerSendDataItem.get(i).text_or_image
+                    var text_or_image_or_dateline = directMessageNodeServerSendDataItem.get(i).text_or_image_or_dateline
                     var send_time = directMessageNodeServerSendDataItem.get(i).send_time
                     var message_check = directMessageNodeServerSendDataItem.get(i).message_check
 
@@ -559,9 +559,9 @@ class DirectMessageActivity : AppCompatActivity() {
                     var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 
                     if(from_user_tb_id == MyUserTableId){
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                     }else{
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                     }
                 }
 
@@ -621,7 +621,7 @@ class DirectMessageActivity : AppCompatActivity() {
                     var from_user_tb_id = directMessageNodeServerSendDataItem.get(i).from_user_tb_id
                     var to_user_tb_id = directMessageNodeServerSendDataItem.get(i).to_user_tb_id
                     var content = directMessageNodeServerSendDataItem.get(i).content
-                    var text_or_image = directMessageNodeServerSendDataItem.get(i).text_or_image
+                    var text_or_image_or_dateline = directMessageNodeServerSendDataItem.get(i).text_or_image_or_dateline
                     var send_time = directMessageNodeServerSendDataItem.get(i).send_time
                     var message_check = directMessageNodeServerSendDataItem.get(i).message_check
 
@@ -631,9 +631,9 @@ class DirectMessageActivity : AppCompatActivity() {
                     var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 
                     if(from_user_tb_id == MyUserTableId){
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                     }else{
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                     }
                 }
 
