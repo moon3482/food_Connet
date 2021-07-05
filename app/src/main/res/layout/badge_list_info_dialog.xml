@@ -38,6 +38,8 @@
         android:id="@+id/howToAchieveInfoTv"
         android:layout_gravity="center"
         android:textSize="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:text="모임원 평가에서 유쾌함 10회 이상 받으세요."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

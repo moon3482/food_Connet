@@ -17,6 +17,8 @@ data class DirectMessageRvData(
     val TextOrImage: String,
     @SerializedName("sendTime")
     val sendTime: String,
+    @SerializedName("toShowTimeStr")
+    val toShowTimeStr: String,
     @SerializedName("message_check")
     val message_check: String
 

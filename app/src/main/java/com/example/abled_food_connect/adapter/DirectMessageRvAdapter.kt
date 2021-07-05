@@ -118,7 +118,7 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
 
         fun bind(item: DirectMessageRvData) {
             MyMessage.text = item.message
-            chatMyTimeStamp.text = item.sendTime.toString()
+            chatMyTimeStamp.text = item.toShowTimeStr
             messageCheckTv.text = item.message_check
 
         }
@@ -146,7 +146,7 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
 
             YourNicName.text = item.userNicName
             YourMessage.text = item.message
-            chatOthersTimeStamp.text = item.sendTime
+            chatOthersTimeStamp.text = item.toShowTimeStr
 
 
 
@@ -162,7 +162,7 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
         fun bind(item: DirectMessageRvData) {
 
             Glide.with(chatMyIv.context).load(chatMyIv.context.getString(R.string.http_request_base_url)+item.message).into(chatMyIv)
-            chatMyTimeStamp.text = item.sendTime
+            chatMyTimeStamp.text = item.toShowTimeStr
             messageCheckTv.text = item.message_check
         }
     }
@@ -187,7 +187,7 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
 
             YourNicName.text = item.userNicName
             Glide.with(chatOthersIv.context).load(chatOthersIv.context.getString(R.string.http_request_base_url)+item.message).into(chatOthersIv)
-            chatOthersTimeStamp.text = item.sendTime
+            chatOthersTimeStamp.text = item.toShowTimeStr
 
 
         }

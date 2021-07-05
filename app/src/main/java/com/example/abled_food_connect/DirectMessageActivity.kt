@@ -267,14 +267,19 @@ class DirectMessageActivity : AppCompatActivity() {
         var send_time = data.getString("send_time")
         var message_check = data.getString("message_check")
 
+        val send_time_split = send_time.split(" ")
+        val show_time_split = send_time_split[1].split(":")
+
+        var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
+
         if(from_user_tb_id == MyUserTableId){
 
 
-            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,message_check))
+            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
 
 
         }else{
-            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,message_check))
+            direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
         }
 
 
@@ -548,10 +553,15 @@ class DirectMessageActivity : AppCompatActivity() {
                     var send_time = directMessageNodeServerSendDataItem.get(i).send_time
                     var message_check = directMessageNodeServerSendDataItem.get(i).message_check
 
+                    val send_time_split = send_time.split(" ")
+                    val show_time_split = send_time_split[1].split(":")
+
+                    var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
+
                     if(from_user_tb_id == MyUserTableId){
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
                     }else{
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
                     }
                 }
 
@@ -615,10 +625,15 @@ class DirectMessageActivity : AppCompatActivity() {
                     var send_time = directMessageNodeServerSendDataItem.get(i).send_time
                     var message_check = directMessageNodeServerSendDataItem.get(i).message_check
 
+                    val send_time_split = send_time.split(" ")
+                    val show_time_split = send_time_split[1].split(":")
+
+                    var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
+
                     if(from_user_tb_id == MyUserTableId){
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
                     }else{
-                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image,send_time,toShowTimeStr,message_check))
                     }
                 }
 
