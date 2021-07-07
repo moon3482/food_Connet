@@ -260,7 +260,8 @@ class API {
         @Multipart
         @POST("chat/direct_message_list_get.php")
         fun direct_message_list_get(
-            @Part("roomName") roomName: String
+            @Part("roomName") roomName: String,
+            @Part("dm_log_tb_id") dm_log_tb_id: Int
         ): Call<DirectMessageNodeServerSendData>
     }
 

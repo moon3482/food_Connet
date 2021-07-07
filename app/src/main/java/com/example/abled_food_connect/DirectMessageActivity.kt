@@ -361,6 +361,8 @@ class DirectMessageActivity : AppCompatActivity() {
 
         runOnUiThread( {
 
+            directMessageRvAdapter.notifyDataSetChanged()
+
             if(from_user_tb_id != MyUserTableId){
                 //스낵바에 메시지 출력하기
 
@@ -384,10 +386,19 @@ class DirectMessageActivity : AppCompatActivity() {
             }
 
             if(isRvScrollBottom == true){
-                directMessageRvAdapter.notifyDataSetChanged()
+
                 //리사이클러뷰 최하단에 있으면 새로운 메시지가 왔을 때, 자동으로 다음 메시지 보이게한다.
                 binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size-1)
             }
+
+            //만약 내가 보낸 내용이면 최하단으로 이동한다.
+            if(from_user_tb_id == MyUserTableId){
+
+                //리사이클러뷰 최하단에 있으면 새로운 메시지가 왔을 때, 자동으로 다음 메시지 보이게한다.
+                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size-1)
+            }
+
+
 
 
         });
