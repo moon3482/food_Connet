@@ -381,6 +381,18 @@ class API {
     }
 
 
+    interface rankingFragmentRvTotalPointListGetInterface {
+
+        @Multipart
+        @POST("ranking/total_point_list_get.php")
+        fun total_point_list_get(
+            @Part("my_user_tb_id") my_user_tb_id: Int
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
 
     fun joinRoom(context:Context,roomId:String,nickName:String,userIndexId:String){
 
