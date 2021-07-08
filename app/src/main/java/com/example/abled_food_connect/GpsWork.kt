@@ -30,7 +30,7 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
     override fun doWork(): Result {
         while (true) {
             gps()
-            Thread.sleep(6000000)
+            Thread.sleep(6000)
         }
 
         return Result.success()
@@ -38,7 +38,7 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
 
     private fun gps() {
         locatioNManager = (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?)!!
-        var userLocation: Location = getLatLng()
+        var userLocation: Location? = getLatLng()
         if (userLocation != null) {
             currentLatitude = userLocation.latitude
             currentLongitude = userLocation.longitude
@@ -51,7 +51,11 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
         }
     }
 
-    private fun getLatLng(): Location {
+    private fun getLatLng(): Location? {
+        val isGPSEnabled = locatioNManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        val isNetworkEnabled = locatioNManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+
         var currentLatLng: Location? = null
         var hasFineLocationPermission = ContextCompat.checkSelfPermission(
             context,
@@ -65,13 +69,25 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
         if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
             hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED
         ) {
-            val locatioNProvider = LocationManager.GPS_PROVIDER
-            currentLatLng = locatioNManager?.getLastKnownLocation(locatioNProvider)
+
+            if (isNetworkEnabled && !isGPSEnabled) {
+
+                val locatioNProvider = LocationManager.NETWORK_PROVIDER
+                currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
+            }else {
+                val locatioNProvider = LocationManager.GPS_PROVIDER
+                currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
+            }
+            if(currentLatLng == null){
+                val locatioNProvider = LocationManager.NETWORK_PROVIDER
+                currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
+            }
+
         } else {
 
             currentLatLng = getLatLng()
         }
-        return currentLatLng!!
+        return currentLatLng
     }
 
     private fun serverGps(userIndex: Int, x: String, y: String) {

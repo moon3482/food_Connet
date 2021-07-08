@@ -1,9 +1,6 @@
 package com.example.abled_food_connect
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,7 +15,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.abled_food_connect.data.LoginDataClass
-import com.example.abled_food_connect.data.LoginDataStore
 import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
 import com.facebook.*
 import com.facebook.login.LoginManager
@@ -41,9 +37,6 @@ import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
@@ -120,11 +113,7 @@ class MainActivity : AppCompatActivity() {
 
         nextIntent = Intent(this, UserRegisterActivity::class.java)
 
-GlobalScope.launch {
-    LoginDataStore(this@MainActivity).exampleCounterFlow.collect {
-        value -> Log.e("밸류",value.toString())
-    }
-}
+
         val keyHash = Utility.getKeyHash(this)
         Log.e("해시", keyHash)
 

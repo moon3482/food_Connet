@@ -14,7 +14,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
 
     <application
         android:name=".GlobalApplication"
@@ -28,8 +29,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-<!--        <service android:foregroundServiceType="location|camera|microphone"/>-->
-        <activity android:name=".JoinRoomSubscriptionActivity"/>
+        <activity android:name=".GroupChatLocationMapActivity"></activity>
+        <!-- <service android:foregroundServiceType="location|camera|microphone"/> -->
+        <activity android:name=".JoinRoomSubscriptionActivity" />
         <activity android:name=".DirectMessageActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".UserProfileClickedReviewVerticalListActivity" />
@@ -42,7 +44,7 @@
         <activity
             android:name=".CreateRoomActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".UserProfileModifyActivity"/>
+        <activity android:name=".UserProfileModifyActivity" />
         <activity android:name=".RoomInformationActivity" />
         <activity android:name=".ChatRoomActivity" />
         <activity android:name=".CreateRoomMapSearchActivity">

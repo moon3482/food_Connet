@@ -69,9 +69,9 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var snackbarView: View
     private lateinit var hostName: String
     private lateinit var roomId: String
-    private lateinit var vi:View
+    private lateinit var vi: View
 
-    private lateinit var notiIcon:ImageView
+    private lateinit var notiIcon: ImageView
     private var requestPage: Boolean = true
     private var firstLoading: Boolean = true
     private val REQUIRED_PERMISSIONS = arrayOf(
@@ -155,9 +155,10 @@ class ChatRoomActivity : AppCompatActivity() {
 
         menuInflater.inflate(R.menu.group_chat_room_menu, menu)
 
-       val notiIconView: MenuItem? = menu?.findItem(R.id.groupChatMenu)
-        notiIconView?.actionView?.findViewById<ImageView>(R.id.chatNotifyDot)?.visibility = View.VISIBLE
-        Log.e("노티버튼",notiIconView.toString())
+        val notiIconView: MenuItem? = menu?.findItem(R.id.groupChatMenu)
+        notiIconView?.actionView?.findViewById<ImageView>(R.id.chatNotifyDot)?.visibility =
+            View.VISIBLE
+        Log.e("노티버튼", notiIconView.toString())
 
 
 
@@ -244,7 +245,7 @@ class ChatRoomActivity : AppCompatActivity() {
             binding.chatDrawerLayout.openDrawer(Gravity.LEFT)
         }
         binding.groupChatMembersLocationButton.setOnClickListener {
-
+            roomStateCheck()
 //            checkPermissions()
 //            val i = Intent()
 //            i.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
@@ -917,5 +918,46 @@ class ChatRoomActivity : AppCompatActivity() {
 
                 }
             })
+    }
+
+    private fun roomStateCheck() {
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java).roomStatusTime(roomId)
+            .enqueue(object : Callback<Double> {
+                override fun onResponse(call: Call<Double>, response: Response<Double>) {
+                    if (response.body()!! < 1.0 && response.body()!! > 0.0) {
+                        val intent =
+                            Intent(this@ChatRoomActivity, GroupChatLocationMapActivity::class.java)
+                        intent.putExtra("roomId", roomId)
+                        startActivity(intent)
+                    } else if (response.body()!! < 0.0) {
+                        var builder = AlertDialog.Builder(this@ChatRoomActivity)
+                        builder.setMessage("마감시간 이후에 위치를 조회 할 수 없습니다.")
+                        builder.setPositiveButton(
+                            "확인", null
+                        )
+                        builder.show()
+                    } else {
+                        var builder = AlertDialog.Builder(this@ChatRoomActivity)
+                        builder.setMessage("약속시간 1시간 전부터 위치를 멤버의 위치를 조회 할 수 있습니다.")
+                        builder.setPositiveButton(
+                            "확인", null
+                        )
+                        builder.show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Double>, t: Throwable) {
+
+                }
+
+            })
+
     }
 }

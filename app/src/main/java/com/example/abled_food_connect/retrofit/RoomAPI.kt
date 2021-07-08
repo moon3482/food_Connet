@@ -125,5 +125,17 @@ interface RoomAPI {
 
     ): Call<LoadingRoom>
 
+
+    @FormUrlEncoded
+    @POST("groupChat/mapActivityTimeCheck.php")
+    fun roomStatusTime(
+        @Field("roomId")roomId: String
+    ):Call<Double>
+
+    @FormUrlEncoded
+    @POST("groupChat/mapActivityMember.php")
+    fun memberLocation(
+        @Field("roomId")roomId: Int
+    ):Call<GroupChatLocationData>
 }
 

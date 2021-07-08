@@ -1,8 +1,11 @@
 package com.example.abled_food_connect
 
 import android.Manifest
+import android.annotation.TargetApi
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -60,6 +63,9 @@ class CreateRoomActivity : AppCompatActivity() {
     private val REQUIRED_PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
+
+
+
     )
     private var x: Double? = null
     private var y: Double? = null
@@ -90,6 +96,7 @@ class CreateRoomActivity : AppCompatActivity() {
         numOfPeople.setAdapter(setAdapter(numOfPeople()))
 
         onClickListenerGroup()
+        checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
         checkPermissions()
 
         getMapImage(null, null, null)
@@ -103,6 +110,7 @@ class CreateRoomActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
     }
 
     override fun onPause() {
@@ -156,6 +164,9 @@ class CreateRoomActivity : AppCompatActivity() {
                     || ActivityCompat.shouldShowRequestPermissionRationale(
                         this,
                         REQUIRED_PERMISSIONS[1]
+                    ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        REQUIRED_PERMISSIONS[2]
                     )
                 ) {
                     Toast.makeText(
@@ -201,6 +212,7 @@ class CreateRoomActivity : AppCompatActivity() {
             )
         }
     }
+
 
     /**
      * 나이 어댑터
@@ -826,6 +838,39 @@ class CreateRoomActivity : AppCompatActivity() {
     return list
     }
      */
+    @TargetApi(30)
+    private fun Context.checkBackgroundLocationPermissionAPI30(backgroundLocationRequestCode: Int) {
+        if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            return
+        } else {
+            AlertDialog.Builder(this)
+                .setTitle("위치 사용권한")
+                .setMessage("위치사용권한을 항상사용을로 변경해주세요.")
+                .setPositiveButton("설정") { _, _ ->
+                    // this request will take user to Application's Setting page
+                    requestPermissions(
+                        arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                        backgroundLocationRequestCode
+                    )
+                }
+                .setNegativeButton("취소") { dialog, _ ->
+                    dialog.dismiss()
+                    onBackPressed()
+                }
+                .create()
+                .show()
+        }
+
+
+    }
+
+    private fun Context.checkSinglePermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
 
 }
 
