@@ -2,7 +2,6 @@ package com.example.abled_food_connect
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,20 +9,21 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuCompat
+import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.abled_food_connect.adapter.ChatAdapter
 import com.example.abled_food_connect.adapter.ChatRoomUserListRCVAdapter
 import com.example.abled_food_connect.data.*
@@ -69,6 +69,9 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var snackbarView: View
     private lateinit var hostName: String
     private lateinit var roomId: String
+    private lateinit var vi:View
+
+    private lateinit var notiIcon:ImageView
     private var requestPage: Boolean = true
     private var firstLoading: Boolean = true
     private val REQUIRED_PERMISSIONS = arrayOf(
@@ -149,8 +152,18 @@ class ChatRoomActivity : AppCompatActivity() {
 
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
         menuInflater.inflate(R.menu.group_chat_room_menu, menu)
-        return true
+
+       val notiIconView: MenuItem? = menu?.findItem(R.id.groupChatMenu)
+        notiIconView?.actionView?.findViewById<ImageView>(R.id.chatNotifyDot)?.visibility = View.VISIBLE
+        Log.e("노티버튼",notiIconView.toString())
+
+
+
+
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -232,7 +245,7 @@ class ChatRoomActivity : AppCompatActivity() {
         }
         binding.groupChatMembersLocationButton.setOnClickListener {
 
-            checkPermissions()
+//            checkPermissions()
 //            val i = Intent()
 //            i.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 //            val uri = Uri.fromParts("package", packageName, null)
@@ -662,8 +675,10 @@ class ChatRoomActivity : AppCompatActivity() {
                         for (item in list.userList) {
                             if (item.status == 0) {
                                 binding.chatRoomNewSubscriptionCircle.visibility = View.VISIBLE
+                                notiIcon.visibility = View.VISIBLE
                             } else {
                                 binding.chatRoomNewSubscriptionCircle.visibility = View.INVISIBLE
+                                notiIcon.visibility = View.GONE
                             }
                         }
 

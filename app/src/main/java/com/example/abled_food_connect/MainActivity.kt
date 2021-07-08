@@ -1,6 +1,9 @@
 package com.example.abled_food_connect
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,6 +18,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.abled_food_connect.data.LoginDataClass
+import com.example.abled_food_connect.data.LoginDataStore
 import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
 import com.facebook.*
 import com.facebook.login.LoginManager
@@ -37,6 +41,9 @@ import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
@@ -73,12 +80,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var mContext: Context
 
     companion object {
-        var user_table_id : Int = 0
+        var user_table_id: Int = 0
         var loginUserId: String = ""
-        var loginUserNickname : String = ""
-        var userThumbnailImage : String = ""
+        var loginUserNickname: String = ""
+        var userThumbnailImage: String = ""
     }
-
 
 
     var sharedLoginCheckBoolean: Boolean = false
@@ -95,7 +101,6 @@ class MainActivity : AppCompatActivity() {
     // 구글 로그인 연동에 필요한 변수
     var googleSignInClient: GoogleSignInClient? = null
     var GOOGLE_LOGIN_CODE = 9001
-
 
     lateinit var nextIntent: Intent
 
@@ -115,6 +120,11 @@ class MainActivity : AppCompatActivity() {
 
         nextIntent = Intent(this, UserRegisterActivity::class.java)
 
+GlobalScope.launch {
+    LoginDataStore(this@MainActivity).exampleCounterFlow.collect {
+        value -> Log.e("밸류",value.toString())
+    }
+}
         val keyHash = Utility.getKeyHash(this)
         Log.e("해시", keyHash)
 
@@ -262,7 +272,6 @@ class MainActivity : AppCompatActivity() {
             //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
             buttonOAuthLoginImg.performClick()
         }
-
 
 
         /*
@@ -638,7 +647,7 @@ class MainActivity : AppCompatActivity() {
                         user_table_id = get_user_table_id
                         loginUserId = loginId
                         loginUserNickname = loginNickname
-                        userThumbnailImage =loginThumbnailImage
+                        userThumbnailImage = loginThumbnailImage
 
 
                         //쉐어드프리퍼런스에 값을 저장한다.
@@ -684,37 +693,36 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
-    private fun sharedSaveData(){
-        val pref = getSharedPreferences("pref_user_data",0)
+    private fun sharedSaveData() {
+        val pref = getSharedPreferences("pref_user_data", 0)
         val edit = pref.edit()
 
-        edit.putInt("user_table_id",user_table_id)
-        edit.putString("loginUserId",loginUserId)
-        edit.putString("loginUserNickname",loginUserNickname)
-        edit.putString("userThumbnailImage",userThumbnailImage)
-        edit.putBoolean("login_check",true)
+        edit.putInt("user_table_id", user_table_id)
+        edit.putString("loginUserId", loginUserId)
+        edit.putString("loginUserNickname", loginUserNickname)
+        edit.putString("userThumbnailImage", userThumbnailImage)
+        edit.putBoolean("login_check", true)
         edit.apply()//저장완료
 
 
     }
 
-    private fun sharedLoadData(){
-        val pref =getSharedPreferences("pref_user_data",0)
-        user_table_id = pref.getInt("user_table_id",0)
-        loginUserId = pref.getString("loginUserId","")!!
-        loginUserNickname = pref.getString("loginUserNickname","")!!
-        userThumbnailImage = pref.getString("userThumbnailImage","")!!
-        sharedLoginCheckBoolean = pref.getBoolean("login_check",false)!!
+    private fun sharedLoadData() {
+        val pref = getSharedPreferences("pref_user_data", 0)
+        user_table_id = pref.getInt("user_table_id", 0)
+        loginUserId = pref.getString("loginUserId", "")!!
+        loginUserNickname = pref.getString("loginUserNickname", "")!!
+        userThumbnailImage = pref.getString("userThumbnailImage", "")!!
+        sharedLoginCheckBoolean = pref.getBoolean("login_check", false)!!
 
         //자동로그인 확인
-        if(sharedLoginCheckBoolean == true) {
+        if (sharedLoginCheckBoolean == true) {
             val mainFragmentJoin = Intent(this@MainActivity, MainFragmentActivity::class.java)
             startActivity(mainFragmentJoin)
             finish()
         }
 
     }
+
 
 }

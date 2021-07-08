@@ -1,24 +1,35 @@
 package com.example.abled_food_connect
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.impl.model.Preference
+import com.example.abled_food_connect.data.LoginDataStore
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 class MainFragmentActivity : AppCompatActivity() {
@@ -29,6 +40,7 @@ class MainFragmentActivity : AppCompatActivity() {
     private lateinit var chatingFragment: ChatingFragment
     private lateinit var myPageFragment: MyPageFragment
     private var BackPressTime: Long = 0
+    private var context: Context = this
 
     //태그 생성
     companion object obuserid {
@@ -36,7 +48,6 @@ class MainFragmentActivity : AppCompatActivity() {
 
 
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,12 +95,14 @@ class MainFragmentActivity : AppCompatActivity() {
                 startActivity(nextIntent)
 
             })
+
+
     }
 
 
     override fun onStart() {
         super.onStart()
-
+        doWorkWithPeriodic(this)
     }
 
     override fun onStop() {
@@ -305,12 +318,22 @@ class MainFragmentActivity : AppCompatActivity() {
             BackPressTime = System.currentTimeMillis()
             Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show()
             return
-        }else{
+        } else {
             super.onBackPressed()
         }
 
     }
 
+    private fun doWorkWithPeriodic(context: Context) {
+        Log.d("CheckGpsWorker", "worker 시작함수 진입")
+        val workRequest = PeriodicWorkRequestBuilder<GpsWork>(15, TimeUnit.MINUTES).build()
+        /*
+            ExistingPeriodicWorkPolicy.KEEP     :  워크매니저가 실행중이 아니면 새로 실행하고, 실행중이면 아무작업도 하지 않는다.
+            ExistingPeriodicWorkPolicy.REPLACE  :  워크매니저를 무조건 다시 실행한다.
+         */
+        WorkManager.getInstance(context)
+            .enqueueUniquePeriodicWork("GpsWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)
+    }
 
 }
 
