@@ -97,7 +97,7 @@ class ChatRoomActivity : AppCompatActivity() {
         userName = MainActivity.loginUserNickname.toString()
         thumbnailImage = MainActivity.userThumbnailImage.toString()
         Log.e("유져 정보", chatroomRoomId.toString() + userName)
-
+        notiIcon = binding.chatRoomNewSubscriptionCircle
         gson = Gson()
 
         snackbar = Snackbar.make(binding.ChatRoomCoordinator, "", Snackbar.LENGTH_INDEFINITE)

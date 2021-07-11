@@ -7,9 +7,11 @@ import android.location.Location
 import android.location.LocationManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.work.CoroutineWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.abled_food_connect.retrofit.MapSearch
+import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -19,7 +21,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class GpsWork(val context: Context, workerParameters: WorkerParameters) :
-    Worker(context, workerParameters) {
+    CoroutineWorker(context, workerParameters) {
     lateinit var locatioNManager: LocationManager
     var currentLatitude: Double = 0.0
     var currentLongitude: Double = 0.0
@@ -27,11 +29,15 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
     val userIndex = perf.getInt("user_table_id", 0)
 
 
-    override fun doWork(): Result {
-        while (true) {
-            gps()
-            Thread.sleep(6000)
+    override suspend fun doWork(): Result {
+        return withTimeout(10 * 60 * 1000) {
+            while (true) {
+                gps()
+                Thread.sleep(10 * 60 * 1000)
+            }
+            return@withTimeout Result.success()
         }
+
 
         return Result.success()
     }
