@@ -15,8 +15,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.abled_food_connect.data.LoginDataClass
+import com.example.abled_food_connect.fragments.MyPageFragment
 import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
 import com.facebook.*
+import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
@@ -32,6 +34,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
@@ -156,11 +159,59 @@ class MainActivity : AppCompatActivity() {
 
 
         btnKakaoLogin.setOnClickListener {
-            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
-            } else {
-                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+
+
+            UserApiClient.instance.loginWithKakaoAccount(applicationContext, prompts = listOf(Prompt.LOGIN)) { token, error ->
+                if (error != null) {
+                    Log.e(MyPageFragment.TAG, "로그인 실패", error)
+                }
+                else if (token != null) {
+                    Log.i(MyPageFragment.TAG, "로그인 성공 ${token.accessToken}")
+
+
+
+                    UserApiClient.instance.me { user, error ->
+                        if (error != null) {
+                            Log.e(MyPageFragment.TAG, "사용자 정보 요청 실패", error)
+                        } else if (user != null) {
+                            Log.i(
+                                MyPageFragment.TAG, "사용자 정보 요청 성공" +
+                                        "\n회원번호: ${user.id}" +
+                                        "\n이메일: ${user.kakaoAccount?.email}" +
+                                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                                        "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}" +
+                                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+                            )
+
+                            RegistUserInfo(user.id.toString(), "KAKAO")
+
+
+
+                        }
+                    }
+
+
+
+
+
+                }
             }
+
+//            UserApiClient.instance.logout { error ->
+//                if (error != null) {
+//                    Log.e(MyPageFragment.TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
+//                }
+//                else {
+//                    Log.i(MyPageFragment.TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
+//                }
+//            }
+//
+//
+//            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+//                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
+//            } else {
+//                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+//            }
         }
         callbackManager = CallbackManager.Factory.create()
 
@@ -208,6 +259,10 @@ class MainActivity : AppCompatActivity() {
 
         // Callback registration
         LoginManager.getInstance()
+            //로그아웃시 웹뷰설정을 하지 않으면, 크롬과 같은 인터넷 브라우져로 로그인을하게 된다.
+            //브라우져 로그인을 하게되면, 로그인 정보를 브라우져 캐시에 저장하고 있어 브라우져캐시를 지우지 않는한 페이스북 계정 입력창이 나오지 않는다.
+            //만약 다른 페이스북 계정으로 로그인 하고 싶은 유저를 위하여 웹뷰온리 옵션을 추가해주었다.
+            .setLoginBehavior(LoginBehavior.WEB_VIEW_ONLY)
             .registerCallback(callbackManager, object : FacebookCallback<LoginResult?> {
                 override fun onSuccess(loginResult: LoginResult?) {
                     Log.d("TAG", "Success Login")
@@ -244,6 +299,18 @@ class MainActivity : AppCompatActivity() {
         //네이버 아이디로 로그인 인스턴스를 얻습니다.
         mOAuthLoginInstance = OAuthLogin.getInstance()
 
+        //네이버 웹뷰로 로그인 옵션을 추가가
+       mOAuthLoginInstance.enableWebViewLoginOnly()
+
+        //만약 네이버 앱이 설치되어있는 경우, 앱으로 로그인 가능하게 설정한다.
+//        try {
+//            if (packageManager.getApplicationInfo("com.nhn.android.search", 0).enabled) {
+//                mOAuthLoginInstance?.enableNaverAppLoginOnly()
+//            }
+//        }
+//        catch (e: Exception) {
+//        }
+
         //네이버 아이디로 로그인 인스턴스에 클라이언트 정보를 설정합니다.
         mOAuthLoginInstance.init(mContext, naver_client_id, naver_client_secret, naver_client_name)
 
@@ -260,6 +327,8 @@ class MainActivity : AppCompatActivity() {
 
         btnNaverLogin.setOnClickListener {
             //로그인 버튼을 눌렀을때 mOAuthLoginHandler 실행
+
+
             buttonOAuthLoginImg.performClick()
         }
 
@@ -282,6 +351,7 @@ class MainActivity : AppCompatActivity() {
 
         btnGoogleLogin.setOnClickListener {
             //로그인 버튼을 눌렀을때 구글로그인 실행
+            googleSignInClient!!.signOut()
             googleLogin()
         }
 
@@ -469,6 +539,7 @@ class MainActivity : AppCompatActivity() {
     //로그인 버튼 클릭 시, 결과 처리 로그인핸들러
     val mOAuthLoginHandler: OAuthLoginHandler = object : OAuthLoginHandler() {
         override fun run(success: Boolean) {
+
 
             // 로그인에 성공했을 때 실행.
             if (success) {
