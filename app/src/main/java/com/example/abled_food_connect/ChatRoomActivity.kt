@@ -138,7 +138,7 @@ class ChatRoomActivity : AppCompatActivity() {
 //
 //
 //}
-
+        init()
         snackbar = Snackbar.make(binding.groupChatRecyclerView, "", Snackbar.LENGTH_INDEFINITE)
         snackbarView = snackbar.view
 
@@ -153,7 +153,7 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onStart()
         Log.d(TAG, "onStart 호출")
 
-        init()
+
 
     }
 
@@ -166,6 +166,7 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume 호출")
+        socket.connect()
         readMessage()
         hostSubscriptionCheck()
         joinMember()
@@ -248,6 +249,8 @@ class ChatRoomActivity : AppCompatActivity() {
     fun init() {
         roomInfoLoad()
         socket = IO.socket(getString(R.string.chat_socket_url))
+
+
         Log.d("SOCKET", "Connection success : " + socket.id())
 
         chatClient = ChatClient.getInstance()

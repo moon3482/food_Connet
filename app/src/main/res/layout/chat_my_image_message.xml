@@ -10,16 +10,15 @@
  >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="end"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:gravity="bottom">
 
             <TextView
@@ -43,10 +42,10 @@
             <ImageView
                 android:id="@+id/ImageChatMyImage"
                 android:layout_width="wrap_content"
-                android:maxWidth="150dp"
-                android:layout_height="wrap_content"
-                android:maxHeight="200dp"
+                android:layout_height="150dp"
                 android:layout_weight="1"
+                android:maxWidth="150dp"
+                android:maxHeight="150dp"
                 tools:srcCompat="@tools:sample/avatars" />
 
 
