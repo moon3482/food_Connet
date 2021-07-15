@@ -1,15 +1,11 @@
 package com.example.abled_food_connect
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.data.UserProfileData
 import com.example.abled_food_connect.databinding.ActivityUserProfileBinding
@@ -147,13 +143,29 @@ class UserProfileActivity : AppCompatActivity() {
                 clicked_user_NicName = items!!.nick_name
 
 
-                if(items!!.introduction == null) {
+                if(items!!.introduction == null || items!!.introduction.length == 0) {
                     binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
                 }else{
                     binding.userProfileIntroductionTv.text = items.introduction
                 }
 
                 binding.reviewTitleAndReviewCountTv.text= "작성한 리뷰 ${items.review_count}개"
+
+                //랭킹관련
+
+                binding.rankTv.text = "(${items.rank}위)"
+
+
+                binding.tierTv.text = "${items.tier}"
+                binding.rankingPointTv.text = "${items.rank_point}PT"
+
+
+                Glide.with(applicationContext)
+                    .load(getString(R.string.http_request_base_url)+items!!.tier_image)
+                    .into(binding.tierBadgeImageIv)
+
+
+
 
             }
 
