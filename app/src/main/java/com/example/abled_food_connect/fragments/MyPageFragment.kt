@@ -64,6 +64,15 @@ class MyPageFragment:Fragment() {
 
 
 
+
+    lateinit var tierBadgeImageIv : ImageView
+    lateinit var tierTv : TextView
+    lateinit var rankingPointTv : TextView
+
+    lateinit var rankTv : TextView
+
+
+
     // Firebase Authentication 관리 클래스
     // firebase 인증을 위한 변수
     var auth: FirebaseAuth? = null
@@ -122,6 +131,12 @@ class MyPageFragment:Fragment() {
 
 
 
+
+        tierBadgeImageIv = view.findViewById<ImageView>(R.id.tierBadgeImageIv)
+        tierTv = view.findViewById<TextView>(R.id.tierTv)
+        rankingPointTv = view.findViewById<TextView>(R.id.rankingPointTv)
+
+        rankTv = view.findViewById<TextView>(R.id.rankTv)
 
 
         val toUserProfileModifyActivityBtn = view.findViewById<TextView>(R.id.toUserProfileModifyActivityBtn)
@@ -819,6 +834,18 @@ class MyPageFragment:Fragment() {
                 }
 
 
+
+                //랭킹관련
+
+                tierTv.text = "${items.tier}"
+                rankingPointTv.text = "${items.rank_point}PT"
+
+
+                Glide.with(requireContext())
+                    .load(getString(R.string.http_request_base_url)+items!!.tier_image)
+                    .into(tierBadgeImageIv)
+
+                rankTv.text = "(${items.rank}위)"
 
 
 
