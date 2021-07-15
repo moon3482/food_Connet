@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.RankingFragmentRvDataItem
@@ -56,9 +57,10 @@ class RankingFragmentRvAdapter(val rankingList: ArrayList<RankingFragmentRvDataI
         }else{
 
 
-            Glide.with(holder.profileImageIv.context)
-                .load(holder.profileImageIv.context.getString(R.string.http_request_base_url)+rankingList.get(position).profile_image)
-                .into(holder.profileImageIv)
+            holder.profileImageIv.load(holder.profileImageIv.context.getString(R.string.http_request_base_url)+rankingList.get(position).profile_image)
+//            Glide.with(holder.profileImageIv.context)
+//                .load(holder.profileImageIv.context.getString(R.string.http_request_base_url)+rankingList.get(position).profile_image)
+//                .into(holder.profileImageIv)
         }
 
         holder.nicnameTv.text = rankingList.get(position).user_tb_nicname
@@ -71,6 +73,12 @@ class RankingFragmentRvAdapter(val rankingList: ArrayList<RankingFragmentRvDataI
 //                view-> removeItem(position)
 //        }
     }
+
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
 
     fun addItem(prof:RankingFragmentRvDataItem){
 

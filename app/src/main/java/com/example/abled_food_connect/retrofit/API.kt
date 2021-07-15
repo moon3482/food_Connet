@@ -381,12 +381,48 @@ class API {
     }
 
 
-    interface rankingFragmentRvTotalPointListGetInterface {
+    interface rankingFragmentRvSeasonPointListGetInterface {
 
         @Multipart
-        @POST("ranking/total_point_list_get.php")
-        fun total_point_list_get(
-            @Part("my_user_tb_id") my_user_tb_id: Int
+        @POST("ranking/season_point_list_get.php")
+        fun season_point_list_get(
+            @Part("my_nicname") my_nicname: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
+    interface rankingFragmentRvSeasonTierListGetInterface {
+
+        @Multipart
+        @POST("ranking/season_tier_list_get.php")
+        fun season_tier_list_get(
+            @Part("what_tier") what_tier: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
+    interface rankingRvPagingToDownInterface {
+
+        @Multipart
+        @POST("ranking/ranking_paging_to_down.php")
+        fun paging_to_down_get(
+            @Part("lastArrayNumber") lastArrayNumber: Int,
+            @Part("what_tier") what_tier: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+    interface rankingNicNameSearchInterface {
+
+        @Multipart
+        @POST("ranking/ranking_nicname_search.php")
+        fun anking_nicname_search_get(
+            @Part("searchNicName") searchNicName: String
 
         ): Call<RankingFragmentRvData>
 

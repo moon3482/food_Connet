@@ -17,6 +17,8 @@ data class RankingFragmentRvDataItem(
     val rank_point : String,
     @SerializedName("rank")
     val rank : String,
+    @SerializedName("number")
+    val number : Int,
     @SerializedName("tier")
     val tier : String,
     @SerializedName("tier_image")

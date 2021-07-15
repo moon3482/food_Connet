@@ -170,7 +170,7 @@ class ReviewFragment:Fragment() {
 
             }
 
-            Toast.makeText(context, "버튼킬륵", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "버튼클릭", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
     }
