@@ -15,6 +15,8 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
+import android.webkit.MimeTypeMap
+import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -25,22 +27,30 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.request.ImageRequest
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageView
+import com.canhub.cropper.options
 import com.example.abled_food_connect.adapter.ChatAdapter
 import com.example.abled_food_connect.adapter.ChatRoomUserListRCVAdapter
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.databinding.ActivityChatRoomBinding
+import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.ChatClient
 import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -48,6 +58,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -91,6 +102,22 @@ class ChatRoomActivity : AppCompatActivity() {
         lateinit var socket: Socket
     }
 
+    val cropImage = registerForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            // use the returned uri
+            val uriContent = result.originalUri
+            val uriFilePath = result.getUriFilePath(this) // optional usage
+            socket.connect()
+
+            timelimeCheck(uriFilePath)
+
+
+        } else {
+            // an error occurred
+            val exception = result.error
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
@@ -132,6 +159,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
+
         Log.d(TAG, "onStart 호출")
     }
 
@@ -300,8 +328,15 @@ class ChatRoomActivity : AppCompatActivity() {
             builder.show()
 
         }
+        binding.groupChatAddImageButton.setOnClickListener {
+            cropImage.launch(
+                options {
+                    setGuidelines(CropImageView.Guidelines.ON)
+                }
+            )
+        }
 
-        socket.connect()
+
         socket.on(
             Socket.EVENT_CONNECT,
             Emitter.Listener {
@@ -317,7 +352,7 @@ class ChatRoomActivity : AppCompatActivity() {
             "update",
             Emitter.Listener {
                 val data: MessageData = gson.fromJson(it[0].toString(), MessageData::class.java)
-
+                Log.e("메세지 업데이트", "메시지 업데이트")
                 val layoutManager =
                     LinearLayoutManager::class.java.cast(binding.groupChatRecyclerView.layoutManager)
                 var last = layoutManager.findLastCompletelyVisibleItemPosition()
@@ -437,13 +472,49 @@ class ChatRoomActivity : AppCompatActivity() {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
 
             } else if (messageData.type == "IMAGE") {
+                if (messageData.from == userName) {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
 
+
+
+                    chatAdapter.arrayList.add(
+
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.RIGHT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                } else {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+
+
+                    chatAdapter.arrayList.add(
+
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.LEFT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                }
             } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
                 val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
-                val time = simdate.parse(chatAdapter.arrayList[chatAdapter.arrayList.size-1].sendTime)
-                val time2 = simdate.parse(messageData.sendTime)
+
 //                when(true){
 //                    chatAdapter.arrayList[chatAdapter.arrayList.size-1].name == messageData.from&& time.compareTo(
 //                            time2
@@ -454,11 +525,12 @@ class ChatRoomActivity : AppCompatActivity() {
 //                    chatAdapter.arrayList[chatAdapter.arrayList.size-1].name ==
 //                }
                 chatAdapter.arrayList.add(
-                            ChatItem(
-                                messageData.from, messageData.thumbnailImage, messageData.content,
-                                date, ItemType.CENTER_MESSAGE,
-                                messageData.members,0
-                            ))
+                    ChatItem(
+                        messageData.from, messageData.thumbnailImage, messageData.content,
+                        date, ItemType.CENTER_MESSAGE,
+                        messageData.members, 0
+                    )
+                )
 
             } else if (messageData.from == userName) {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
@@ -506,7 +578,44 @@ class ChatRoomActivity : AppCompatActivity() {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
 
             } else if (messageData.type == "IMAGE") {
+                if (messageData.from == userName) {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
 
+
+
+                    chatAdapter.arrayList.add(
+                        0,
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.RIGHT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                } else {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+
+
+                    chatAdapter.arrayList.add(
+                        0,
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.LEFT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                }
             } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
@@ -571,7 +680,43 @@ class ChatRoomActivity : AppCompatActivity() {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
 
             } else if (messageData.type == "IMAGE") {
+                if (messageData.from == userName) {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
 
+
+                    chatAdapter.arrayList.add(
+                        0,
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.RIGHT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                } else {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+
+
+                    chatAdapter.arrayList.add(
+                        0,
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.LEFT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                }
             } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
@@ -630,7 +775,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     }
 
-    fun timelimeCheck() {
+    fun timelimeCheck(type: String? = null) {
 
 
         val retrofit =
@@ -649,12 +794,20 @@ class ChatRoomActivity : AppCompatActivity() {
 
                     members = response.body()!!.members
                     timeLineadd()
-                    sendMessage()
+                    if (type == null) {
+                        sendMessage()
+                    } else {
+                        ImageUpload(type)
+                    }
                 } else {
 
                     members = response.body()!!.members
 
-                    sendMessage()
+                    if (type == null) {
+                        sendMessage()
+                    } else {
+                        ImageUpload(type)
+                    }
                 }
             }
 
@@ -698,35 +851,36 @@ class ChatRoomActivity : AppCompatActivity() {
                 .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.pagination(chatroomRoomId, pagenum,MainActivity.user_table_id).enqueue(object : Callback<paginationData> {
-            override fun onResponse(
-                call: Call<paginationData>,
-                response: Response<paginationData>
-            ) {
-                if (response.body() != null) {
-                    Log.e("로드 실행","로드")
-                    val list: paginationData? = response.body()
-                    if (list!!.success) {
-                        for (index in list.ChatLogList.indices) {
-                            loadChat(list.ChatLogList[index])
+        server.pagination(chatroomRoomId, pagenum, MainActivity.user_table_id)
+            .enqueue(object : Callback<paginationData> {
+                override fun onResponse(
+                    call: Call<paginationData>,
+                    response: Response<paginationData>
+                ) {
+                    if (response.body() != null) {
+                        Log.e("로드 실행", "로드")
+                        val list: paginationData? = response.body()
+                        if (list!!.success) {
+                            for (index in list.ChatLogList.indices) {
+                                loadChat(list.ChatLogList[index])
 
+                            }
+                            if (firstLoading) {
+                                binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+                                firstLoading = false
+                            }
+                        } else {
+                            requestPage = false
+                            Log.e("로드 메세지끝", requestPage.toString())
                         }
-                        if (firstLoading) {
-                            binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
-                            firstLoading = false
-                        }
-                    } else {
-                        requestPage = false
-                        Log.e("로드 메세지끝", requestPage.toString())
                     }
+
                 }
 
-            }
-
-            override fun onFailure(call: Call<paginationData>, t: Throwable) {
-                TODO("Not yet implemented")
-            }
-        })
+                override fun onFailure(call: Call<paginationData>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
     }
 
     private fun messageRead(pagenum: Int) {
@@ -738,40 +892,41 @@ class ChatRoomActivity : AppCompatActivity() {
                 .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.paginationRead(chatroomRoomId, pagenum,MainActivity.user_table_id).enqueue(object : Callback<paginationData> {
-            override fun onResponse(
-                call: Call<paginationData>,
-                response: Response<paginationData>
-            ) {
+        server.paginationRead(chatroomRoomId, pagenum, MainActivity.user_table_id)
+            .enqueue(object : Callback<paginationData> {
+                override fun onResponse(
+                    call: Call<paginationData>,
+                    response: Response<paginationData>
+                ) {
 
-                chatAdapter.arrayList.clear()
+                    chatAdapter.arrayList.clear()
 
-                if (response.body() != null) {
-                    val list: paginationData? = response.body()
-                    if (list!!.success) {
-                        Log.e("로드메시지서버", "로드메시지서버")
-                        for (index in list.ChatLogList.indices) {
-                            ReadChat(list.ChatLogList[index])
+                    if (response.body() != null) {
+                        val list: paginationData? = response.body()
+                        if (list!!.success) {
+                            Log.e("로드메시지서버", "로드메시지서버")
+                            for (index in list.ChatLogList.indices) {
+                                ReadChat(list.ChatLogList[index])
 
 
+                            }
+                            chatAdapter.notifyDataSetChanged()
+                            if (firstLoading) {
+                                binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+                                firstLoading = false
+                            }
+                        } else {
+                            requestPage = false
+                            Log.e("로드 메세지끝", requestPage.toString())
                         }
-                        chatAdapter.notifyDataSetChanged()
-                        if (firstLoading) {
-                            binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
-                            firstLoading = false
-                        }
-                    } else {
-                        requestPage = false
-                        Log.e("로드 메세지끝", requestPage.toString())
                     }
+
                 }
 
-            }
-
-            override fun onFailure(call: Call<paginationData>, t: Throwable) {
-                TODO("Not yet implemented")
-            }
-        })
+                override fun onFailure(call: Call<paginationData>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
     }
 
     fun onSnackbar(messageData: MessageData) {
@@ -1188,6 +1343,103 @@ class ChatRoomActivity : AppCompatActivity() {
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
 
+                }
+            })
+    }
+
+    fun ImageUpload(imageUri: String?) {
+
+//        val uriPathHelper = UserRegisterActivity.URIPathHelper()
+//        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
+
+        //creating a file
+        val file = File(imageUri)
+
+        //이미지의 확장자를 구한다.
+        val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri.toString())
+
+
+        var fileName = MainActivity.user_table_id.toString() + "." + extension
+        var requestBody: RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+        var body: MultipartBody.Part =
+            MultipartBody.Part.createFormData("uploaded_file", fileName, requestBody)
+
+
+        //creating retrofit object
+        var retrofit =
+            Retrofit.Builder()
+                .baseUrl(getString(R.string.http_request_base_url))
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(createOkHttpClient())
+                .build()
+
+        //creating our api
+
+        var server = retrofit.create(RoomAPI::class.java)
+
+
+        server.groupChatImageSend(body, roomId, MainActivity.user_table_id, userName)
+            .enqueue(object : Callback<ChatImageSendingData> {
+                override fun onFailure(call: Call<ChatImageSendingData>, t: Throwable) {
+                    t.message?.let { Log.d("레트로핏 결과1", it) }
+                }
+
+                override fun onResponse(
+                    call: Call<ChatImageSendingData>,
+                    response: Response<ChatImageSendingData>
+                ) {
+                    if (response?.isSuccessful) {
+                        Log.d("이미지를 업로드했습니다", "" + response?.body().toString())
+
+                        var items: ChatImageSendingData = response.body()!!
+                        if (items != null) {
+                            if (items.success) {
+                                if (!socket.connected()) {
+                                    socket.connect()
+                                    socket.emit(
+                                        "newMessage", gson.toJson(
+                                            MessageData(
+                                                "IMAGE",
+                                                userName,
+                                                chatroomRoomId,
+                                                items.ImageName,
+                                                thumbnailImage,
+                                                null,
+                                                members
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    socket.emit(
+                                        "newMessage", gson.toJson(
+                                            MessageData(
+                                                "IMAGE",
+                                                userName,
+                                                chatroomRoomId,
+                                                items.ImageName,
+                                                thumbnailImage,
+                                                null,
+                                                members
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+
+                        //내가 보내는 것이다.
+                        //dm_log_tb_id,sendtime,message_check는 서버에서 처리할 것이다.
+
+
+                    } else {
+                        Toast.makeText(
+                            getApplicationContext(),
+                            "Some error occurred...",
+                            Toast.LENGTH_LONG
+                        ).show();
+                        Log.d("이미지업로드실패", "" + response?.body().toString())
+                    }
                 }
             })
     }

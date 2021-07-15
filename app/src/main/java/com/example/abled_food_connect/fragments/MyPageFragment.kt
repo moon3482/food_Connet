@@ -421,7 +421,7 @@ class MyPageFragment:Fragment() {
                 if (task.isSuccessful) {
 
                     val user = Firebase.auth.currentUser
-                    val uid = user.uid
+                    val uid = user!!.uid
                     Log.d("사용자 식별자 id", uid)
 
                     if(table_user_id == uid){
@@ -429,7 +429,7 @@ class MyPageFragment:Fragment() {
 
 
                         //구글 계정연동 해제
-                        auth!!.getCurrentUser().delete()
+                        auth!!.getCurrentUser()!!.delete()
 
                         //구글 로그아웃
                         FirebaseAuth.getInstance().signOut()

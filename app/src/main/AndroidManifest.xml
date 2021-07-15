@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.abled_food_connect" >
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -9,7 +10,7 @@
         android:name="android.hardware.camera"
         android:required="true" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -28,7 +29,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
+
         <activity android:name=".GroupChatLocationMapActivity"></activity>
         <!-- <service android:foregroundServiceType="location|camera|microphone"/> -->
         <activity android:name=".JoinRoomSubscriptionActivity" />
@@ -104,9 +107,9 @@
                     android:scheme="kakao79386308695f07328a0a5316dcb46a0a" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
+        <activity android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
+
     </application>
 
 </manifest>

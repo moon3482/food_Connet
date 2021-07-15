@@ -49,6 +49,15 @@
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
+                    <ImageButton
+                        android:id="@+id/groupChatAddImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#00FFFFFF"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+
                     <EditText
                         android:id="@+id/groupChatInputMessageEditText"
                         android:layout_width="match_parent"
@@ -59,9 +68,8 @@
 
                     <ImageButton
                         android:id="@+id/groupChatSendMessageButton"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_weight="6"
                         android:backgroundTint="@color/app_theme_color"
                         app:srcCompat="@drawable/ic_baseline_send_24" />
 

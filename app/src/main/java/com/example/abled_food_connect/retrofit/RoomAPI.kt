@@ -2,6 +2,7 @@ package com.example.abled_food_connect.retrofit
 
 
 import com.example.abled_food_connect.data.*
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -151,5 +152,15 @@ interface RoomAPI {
     fun memberLocation(
         @Field("roomId")roomId: Int
     ):Call<GroupChatLocationData>
+
+
+    @Multipart
+    @POST("groupChat/groupChatImageSend.php")
+    fun groupChatImageSend(
+        @Part imageFile : MultipartBody.Part,
+        @Part("roomId") roomId: String,
+        @Part("userIndex") userIndex:Int,
+        @Part("userNickname")userNickname:String
+    ): Call<ChatImageSendingData>
 }
 

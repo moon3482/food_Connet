@@ -627,14 +627,14 @@ class MainActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // 로그인 성공 시
                     val user = Firebase.auth.currentUser
-                    val name = user.displayName
-                    val email = user.email
-                    val photoUrl = user.photoUrl
+                    val name = user!!.displayName
+                    val email = user!!.email
+                    val photoUrl = user!!.photoUrl
                     val uid = user.uid
 
                     Log.d("나와라", "구글 로그인하였습니다.")
-                    Log.d("이름", name)
-                    Log.d("이메일", email)
+                    Log.d("이름", name.toString())
+                    Log.d("이메일", email.toString())
                     Log.d("프로필사진", photoUrl.toString())
                     Log.d("사용자 식별자 id", uid)
 

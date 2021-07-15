@@ -130,7 +130,7 @@
             android:layout_height="18dp"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/view_pager2"
-            app:ci_drawable="@drawable/black_radius" />
+            />
 
     </RelativeLayout>
 
