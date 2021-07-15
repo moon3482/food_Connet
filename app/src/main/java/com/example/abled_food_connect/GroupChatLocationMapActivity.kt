@@ -3,6 +3,7 @@ package com.example.abled_food_connect
 import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.AlertDialog
 import android.content.Context
@@ -23,13 +24,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil.load
 import com.example.abled_food_connect.data.GroupChatLocationData
+import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.databinding.ActivityGroupChatLocationMapBinding
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.MarkerIcons
 import de.hdodenhof.circleimageview.CircleImageView
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -40,6 +44,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
+@SuppressLint("ResourceType")
 class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
     val binding by lazy { ActivityGroupChatLocationMapBinding.inflate(layoutInflater) }
     val rotate: Animation by lazy { AnimationUtils.loadAnimation(this, R.animator.rotate) }
@@ -66,7 +71,7 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 .also { fm.beginTransaction().add(R.id.GroupLocationMapView, it).commit() }
 
         mapFragment.getMapAsync(this)
-        loadMemberLocation()
+
         binding.GroupLocationRefresh.setOnClickListener {
             binding.GroupLocationRefresh.startAnimation(
                 rotate
@@ -89,6 +94,7 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onResume() {
 
         super.onResume()
+        loadMemberLocation()
 
     }
     override fun onRequestPermissionsResult(
@@ -151,7 +157,20 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                             val bitmap =
                                 Marker.DEFAULT_ICON.getBitmap(this@GroupChatLocationMapActivity)
                             val inflater = LayoutInflater.from(this@GroupChatLocationMapActivity)
+                            val roomInfo:MainFragmentItemData = response.body()!!.roomInfo
 
+                            var roomMarker = Marker()
+                            roomMarker.position = LatLng(roomInfo.mapY,roomInfo.mapX)
+                            roomMarker.icon = MarkerIcons.RED
+                            roomMarker.map = it
+                            var roomInfoWindow = InfoWindow()
+                            roomInfoWindow.adapter = object : InfoWindow.DefaultTextAdapter(this@GroupChatLocationMapActivity){
+                                override fun getText(p0: InfoWindow): CharSequence {
+                                    return roomInfo.placeName
+                                }
+                            }
+                            roomInfoWindow.open(roomMarker)
+                            markerList.add(roomMarker)
 
                             for (item in response.body()!!.members) {
                                 builder.include(LatLng(item.x,item.y))

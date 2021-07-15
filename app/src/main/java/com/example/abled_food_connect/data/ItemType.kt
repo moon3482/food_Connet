@@ -5,5 +5,6 @@ class ItemType {
         const val LEFT_MESSAGE = 0
         const val RIGHT_MESSAGE = 1
         const val CENTER_MESSAGE = 2
+        const val STARTANDEND = 3
     }
 }

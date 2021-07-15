@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chatRoomLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -15,8 +16,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <androidx.appcompat.widget.Toolbar
@@ -27,42 +27,47 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme" />
 
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/ChatRoomCoordinator"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/groupChatRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-
-            <LinearLayout
-                android:id="@+id/groupChatInputMessageLinear"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/groupChatInputMessageEditText"
-                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_above="@+id/groupChatInputMessageLinear">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <LinearLayout
+                    android:id="@+id/groupChatInputMessageLinear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+
                     android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="textPersonName" />
+                    android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/groupChatSendMessageButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="6"
-                    android:backgroundTint="@color/app_theme_color"
-                    app:srcCompat="@drawable/ic_baseline_send_24" />
+                    <EditText
+                        android:id="@+id/groupChatInputMessageEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="textPersonName" />
 
-            </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/groupChatSendMessageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="6"
+                        android:backgroundTint="@color/app_theme_color"
+                        app:srcCompat="@drawable/ic_baseline_send_24" />
+
+                </LinearLayout>
+            </RelativeLayout>
+
 
         </LinearLayout>
 

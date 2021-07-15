@@ -45,7 +45,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        socket.emit("left", gson.toJson(RoomData(MainActivity.loginUserNickname, roomId)))
+        socket.emit("left", gson.toJson(RoomData(MainActivity.loginUserNickname, roomId,MainActivity.user_table_id)))
         socket.disconnect()
     }
 
@@ -95,7 +95,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
             Emitter.Listener {
                 socket.emit(
                     "enter",
-                    gson.toJson(RoomData(MainActivity.loginUserNickname, roomId))
+                    gson.toJson(RoomData(MainActivity.loginUserNickname, roomId,MainActivity.user_table_id))
                 )
             })
 

@@ -66,7 +66,7 @@ interface RoomAPI {
     fun timelineCheck(
         @Field("datetime") datetime: String?,
         @Field("roomId") roomId: String
-    ): Call<String>
+    ): Call<member>
 
     @FormUrlEncoded
     @POST("/groupChat/datelineCheck.php")
@@ -77,8 +77,22 @@ interface RoomAPI {
     @GET("/groupChat/chatPagenation.php")
     fun pagination(
         @Query("roomId") roomId: String,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("userIndex") userIndex: Int
     ): Call<paginationData>
+
+    @GET("/groupChat/chatPagenation.php")
+    fun paginationRead(
+        @Query("roomId") roomId: String,
+        @Query("pageEnd") pageEnd: Int,
+        @Query("userIndex") userIndex: Int
+    ): Call<paginationData>
+    @FormUrlEncoded
+    @POST("/groupChat/readMessage.php")
+    fun readMessage(
+        @Field("roomId") roomId: String,
+        @Field("userIndex") userIndex: Int
+    ): Call<String>
 
     @FormUrlEncoded
     @POST("/groupChat/joinSubscription.php")

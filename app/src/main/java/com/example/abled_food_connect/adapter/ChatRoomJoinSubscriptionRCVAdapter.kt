@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.UserProfileActivity
+import com.example.abled_food_connect.array.array
 import com.example.abled_food_connect.data.ChatRoomUserData
 import com.example.abled_food_connect.data.MessageData
+import com.example.abled_food_connect.data.member
 import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
@@ -35,6 +37,7 @@ var gson:Gson = Gson()
             LayoutInflater.from(context).inflate(R.layout.chat_room_subscription_list_item, parent, false)
         )
     }
+    lateinit var members:String
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val chatRoomUserData: ChatRoomUserData = arrayList[position]
@@ -115,29 +118,32 @@ var gson:Gson = Gson()
 
         val server = retrofit.create(RoomAPI::class.java)
 
-        server.timelineCheck("datetime", roomId).enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                if (response.body() == "true") {
+        server.timelineCheck("datetime", roomId).enqueue(object : Callback<member> {
+            override fun onResponse(call: Call<member>, response: Response<member>) {
+
+                if (response.body()!!.dateline) {
+                    members = response.body()!!.members
                     timeLineadd()
                     socket.emit("join",gson.toJson(
                         MessageData("JOINMEMBER",
                             "JOINMEMBER",
                             roomId,
                             chatRoomUserData.nickName, "SERVER",
-                            "SERVER")
+                            "SERVER",members)
                     ))
                 } else {
+                    members = response.body()!!.members
                     socket.emit("join",gson.toJson(
                         MessageData("JOINMEMBER",
                             "JOINMEMBER",
                             roomId,
                             chatRoomUserData.nickName, "SERVER",
-                            "SERVER")
+                            "SERVER",members)
                     ))
                 }
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<member>, t: Throwable) {
                 TODO("Not yet implemented")
             }
         })
@@ -153,7 +159,7 @@ var gson:Gson = Gson()
                     roomId,
                     "SERVER", "SERVER",
                     "SERVER"
-                )
+                ,members)
             )
         )
     }

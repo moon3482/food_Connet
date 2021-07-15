@@ -316,7 +316,7 @@ class MainFragmentActivity : AppCompatActivity() {
             ExistingPeriodicWorkPolicy.REPLACE  :  워크매니저를 무조건 다시 실행한다.
          */
         WorkManager.getInstance(context)
-            .enqueueUniquePeriodicWork("GpsWork", ExistingPeriodicWorkPolicy.KEEP, workRequest)
+            .enqueueUniquePeriodicWork("GpsWork", ExistingPeriodicWorkPolicy.REPLACE, workRequest)
     }
 
 }
