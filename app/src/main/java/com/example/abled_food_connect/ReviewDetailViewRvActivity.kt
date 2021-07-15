@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.example.abled_food_connect.adapter.ReviewDetailViewRvAdapter
 import com.example.abled_food_connect.data.ReviewDetailViewLikeAndCommentCountCheckData
 import com.example.abled_food_connect.data.ReviewDetailViewRvData
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
+import com.example.abled_food_connect.databinding.ActivityReviewDetailViewRvBinding
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.interfaces.ReviewDetailRvInterface
 import com.example.abled_food_connect.retrofit.API
@@ -25,6 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 class ReviewDetailViewRvActivity : AppCompatActivity() {
 
 
+    // 전역 변수로 바인딩 객체 선언
+    private var mBinding: ActivityReviewDetailViewRvBinding? = null
+    // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
+    private val binding get() = mBinding!!
 
     //리사이클러뷰 어래이리스트
     private lateinit var DetailRv_arrayList : ArrayList<ReviewDetailViewRvDataItem>
@@ -45,6 +51,15 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_review_detail_view_rv)
 
+
+        // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
+        // 액티비티에서 사용할 바인딩 클래스의 인스턴스 생성
+        mBinding = ActivityReviewDetailViewRvBinding.inflate(layoutInflater)
+
+        // getRoot 메서드로 레이아웃 내부의 최상위 위치 뷰의
+        //인스턴스를 활용하여 생성된 뷰를 액티비티에 표시 합니다.
+        setContentView(binding.root)
+
         var review_id = intent.getStringExtra("review_id")
 
         if (review_id != null) {
@@ -53,8 +68,16 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
         }
 
 
+
+//        setSupportActionBar(binding.Toolbar) //커스텀한 toolbar를 액션바로 사용
+//        supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
+//        binding.Toolbar.title = "리뷰"
+//        //툴바에 백버튼 만들기
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
         //리사이클러뷰
-        detail_rv = findViewById<RecyclerView>(R.id.review_Detail_rv)
+        detail_rv = binding.reviewDetailRv
         detail_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
 
@@ -198,6 +221,20 @@ class ReviewDetailViewRvActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        when (id) {
+
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

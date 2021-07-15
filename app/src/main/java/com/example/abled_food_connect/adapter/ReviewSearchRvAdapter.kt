@@ -3,7 +3,6 @@ package com.example.abled_food_connect.adapter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +10,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
@@ -79,7 +77,7 @@ class ReviewSearchRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvD
 
             var toMoveUserProfileActivity : Intent = Intent(holder.profileSearchIv.context, UserProfileActivity::class.java)
             toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            ContextCompat.startActivity(
+            startActivity(
                 holder.profileSearchIv.context as Activity,
                 toMoveUserProfileActivity,
                 null
@@ -98,7 +96,7 @@ class ReviewSearchRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvD
 
             var toMoveUserProfileActivity : Intent = Intent(holder.profileSearchIv.context, UserProfileActivity::class.java)
             toMoveUserProfileActivity.putExtra("writer_user_tb_id", ReviewDetailList.get(position).writer_user_tb_id)
-            ContextCompat.startActivity(
+            startActivity(
                 holder.profileSearchIv.context as Activity,
                 toMoveUserProfileActivity,
                 null
@@ -174,7 +172,7 @@ class ReviewSearchRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvD
 
             var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
             toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
-            ContextCompat.startActivity(
+            startActivity(
                 holder.commentBtn.context as Activity,
                 toMoveCommentActivity,
                 null

@@ -522,8 +522,7 @@ class UserProfileModifyActivity : AppCompatActivity() {
         var permis = object  : PermissionListener {
             //            어떠한 형식을 상속받는 익명 클래스의 객체를 생성하기 위해 다음과 같이 작성
             override fun onPermissionGranted() {
-                Toast.makeText(this@UserProfileModifyActivity, "권한 허가", Toast.LENGTH_SHORT)
-                    .show()
+                Log.d("TAG", "권한 허가됨")
             }
 
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {

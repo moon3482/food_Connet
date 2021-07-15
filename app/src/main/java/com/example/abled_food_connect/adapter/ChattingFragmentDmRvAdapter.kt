@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.DirectMessageActivity
@@ -49,7 +49,7 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
 
 
 
-        if(DMArrayList.get(position).text_or_image == "Image"){
+        if(DMArrayList.get(position).text_or_image_or_dateline == "Image"){
             holder.dmListMessageTv.text = "사진을 보냈습니다."
         }else{
             holder.dmListMessageTv.text = DMArrayList.get(position).content
@@ -70,7 +70,7 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
             toDirectMessageActivity.putExtra("writer_user_tb_id", DMArrayList.get(position).your_table_id)
             toDirectMessageActivity.putExtra("clicked_user_NicName", DMArrayList.get(position).your_nick_name)
             toDirectMessageActivity.putExtra("clicked_user_ProfileImage", DMArrayList.get(position).your_thumbnail_image)
-            ContextCompat.startActivity(holder.DMListClickBtn.context, toDirectMessageActivity, null)
+            startActivity(holder.DMListClickBtn.context, toDirectMessageActivity, null)
         }
     }
 

@@ -78,7 +78,7 @@ class ReviewCommentChildActivity : AppCompatActivity() {
 
 
         //키보드가 화면 안가리게함
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
 

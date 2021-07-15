@@ -1,6 +1,5 @@
 package com.example.abled_food_connect
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -8,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -82,7 +82,7 @@ class ReviewCommentActivity : AppCompatActivity() {
         //setContentView(R.layout.activity_review_comment)
 
         //키보드가 화면 안가리게함
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
         // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
@@ -95,6 +95,13 @@ class ReviewCommentActivity : AppCompatActivity() {
 
         // 이제부터 binding 바인딩 변수를 활용하여 마음 껏 xml 파일 내의 뷰 id 접근이 가능해집니다.
         // 뷰 id도 파스칼케이스 + 카멜케이스의 네이밍규칙 적용으로 인해서 tv_message -> tvMessage 로 자동 변환 되었습니다.
+
+
+        setSupportActionBar(binding.Toolbar) //커스텀한 toolbar를 액션바로 사용
+        supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
+        binding.Toolbar.title = "리뷰보기"
+        //툴바에 백버튼 만들기
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
         review_id = intent.getIntExtra("review_id",0)
@@ -387,8 +394,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                 binding.contentProfileDetailIv.setOnClickListener(View.OnClickListener {
                     var toMoveUserProfileActivity : Intent = Intent(applicationContext, UserProfileActivity::class.java)
                     toMoveUserProfileActivity.putExtra("writer_user_tb_id", WriterUserTbId)
-                    ContextCompat.startActivity(
-                        applicationContext,
+                    startActivity(
                         toMoveUserProfileActivity,
                         null
                     )
@@ -404,8 +410,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                 binding.contentNicNameDetailTv.setOnClickListener(View.OnClickListener {
                     var toMoveUserProfileActivity : Intent = Intent(applicationContext, UserProfileActivity::class.java)
                     toMoveUserProfileActivity.putExtra("writer_user_tb_id", WriterUserTbId)
-                    ContextCompat.startActivity(
-                        applicationContext,
+                    startActivity(
                         toMoveUserProfileActivity,
                         null
                     )
@@ -528,6 +533,20 @@ class ReviewCommentActivity : AppCompatActivity() {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        when (id) {
+
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
 
 

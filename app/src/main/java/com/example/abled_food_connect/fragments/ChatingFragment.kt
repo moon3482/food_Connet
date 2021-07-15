@@ -54,8 +54,9 @@ class ChatingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val pagerAdapter = ChatFragmentViewPagerAdapter(requireActivity())
-        pagerAdapter.addFragment(ChatDMFragment())
         pagerAdapter.addFragment(ChatGroupFragment())
+        pagerAdapter.addFragment(ChatDMFragment())
+
         viewPager.adapter = pagerAdapter
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -66,10 +67,10 @@ class ChatingFragment : Fragment() {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
                 0 -> {
-                    tab.text = "DM"
+                    tab.text = "그룹채팅"
                 }
                 else -> {
-                    tab.text = "그룹채팅"
+                    tab.text = "DM"
                 }
             }
 

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.data.UserProfileData
@@ -64,19 +65,48 @@ class UserProfileActivity : AppCompatActivity() {
         if(clicked_user_tb_id == MainActivity.user_table_id){
             binding.toMoveDirectMessageActivityBtn.visibility = View.GONE
         }
+
+
+
         binding.toMoveDirectMessageActivityBtn.setOnClickListener(View.OnClickListener {
             var toDirectMessageActivity : Intent = Intent(applicationContext, DirectMessageActivity::class.java)
             toDirectMessageActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
             toDirectMessageActivity.putExtra("clicked_user_NicName", clicked_user_NicName)
             toDirectMessageActivity.putExtra("clicked_user_ProfileImage", clicked_user_ProfileImage)
-            startActivity(toDirectMessageActivity)
+            startActivity(toDirectMessageActivity, null)
+        })
+
+
+
+        binding.toMoveUserProfileBadgeListActivityBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileBadgeListActivity : Intent = Intent(applicationContext, UserProfileBadgeListActivity::class.java)
+            toUserProfileBadgeListActivity.putExtra("user_tb_id",clicked_user_tb_id)
+            toUserProfileBadgeListActivity.putExtra("user_nicname",clicked_user_NicName)
+            startActivity(toUserProfileBadgeListActivity, null)
         })
 
 
         binding.toMoveWrittenReviewListActivityBtn.setOnClickListener(View.OnClickListener {
             var toUserProfileClickedReviewGridListActivity : Intent = Intent(applicationContext, UserProfileClickedReviewGridListActivity::class.java)
             toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
-            startActivity(toUserProfileClickedReviewGridListActivity)
+            startActivity(toUserProfileClickedReviewGridListActivity, null)
+        })
+
+
+        binding.userHistoryBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileJoinHistoryActivityIntent : Intent = Intent(applicationContext, UserProfileJoinHistoryActivity::class.java)
+            toUserProfileJoinHistoryActivityIntent.putExtra("UserNicName", clicked_user_NicName)
+            startActivity(toUserProfileJoinHistoryActivityIntent, null)
+        })
+
+
+
+
+        binding.toMoveUserProfileEvaluationListActivityBtn.setOnClickListener(View.OnClickListener {
+            var toUserProfileEvaluationListActivity : Intent = Intent(applicationContext, UserProfileEvaluationListActivity::class.java)
+            toUserProfileEvaluationListActivity.putExtra("user_tb_id",clicked_user_tb_id)
+            toUserProfileEvaluationListActivity.putExtra("user_nicname",clicked_user_NicName)
+            startActivity(toUserProfileEvaluationListActivity, null)
         })
 
     }
@@ -119,6 +149,8 @@ class UserProfileActivity : AppCompatActivity() {
 
                 if(items!!.introduction == null) {
                     binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
+                }else{
+                    binding.userProfileIntroductionTv.text = items.introduction
                 }
 
                 binding.reviewTitleAndReviewCountTv.text= "작성한 리뷰 ${items.review_count}개"

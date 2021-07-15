@@ -1,5 +1,6 @@
 package com.example.abled_food_connect
 
+import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
@@ -29,14 +30,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.abled_food_connect.data.RoomTbDbInfoData
 import com.example.abled_food_connect.databinding.*
+import com.example.abled_food_connect.fragments.ReviewFragment
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import gun0912.tedimagepicker.builder.TedImagePicker
@@ -81,6 +86,17 @@ class ReviewWriting : AppCompatActivity() {
 
     lateinit var myPath:String
 
+
+    //어떤 방의 리뷰를 작성하는가 - 방번호변수
+    var room_id = 0
+
+    //가게명 및 가게주소
+    lateinit var restaurantName : String
+    lateinit var restaurantAddressStr : String
+
+    lateinit var appointment_day :String
+    lateinit var appointment_time :String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -101,7 +117,16 @@ class ReviewWriting : AppCompatActivity() {
 
 
 
+        setSupportActionBar(binding.Toolbar) //커스텀한 toolbar를 액션바로 사용
+        supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
+        binding.Toolbar.title = "리뷰작성"
+        //툴바에 백버튼 만들기
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+
+        room_id = intent.getIntExtra("room_id",0)
+        Log.d("TAG", room_id.toString())
+        roomTbDbGet(room_id)
 
 
         /*
@@ -304,7 +329,7 @@ class ReviewWriting : AppCompatActivity() {
             .setDeniedMessage("카메라 권한 요청 거부")
             .setPermissions(
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 android.Manifest.permission.CAMERA)
             .check()
     }
@@ -414,7 +439,7 @@ class ReviewWriting : AppCompatActivity() {
 //            //user_gender = binding.userGenderEt.text.toString()
 //            phone_number = binding.phoneNumberInputEt.text.toString()
 
-        server.review_Writing_Request(itemphoto,1,MainActivity.user_table_id,MainActivity.loginUserId,MainActivity.loginUserNickname,"d","d","2021-05-19 14:57:42","2021-05-19","14:57:42",review_description,tasteStarPoint,serviceStarPoint,cleanStarPoint,interiorStarPoint).enqueue(object:
+        server.review_Writing_Request(itemphoto,room_id,MainActivity.user_table_id,MainActivity.loginUserId,MainActivity.loginUserNickname,restaurantAddressStr,restaurantName,"2021-05-19 14:57:42",appointment_day,appointment_time,review_description,tasteStarPoint,serviceStarPoint,cleanStarPoint,interiorStarPoint).enqueue(object:
             Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
@@ -423,9 +448,17 @@ class ReviewWriting : AppCompatActivity() {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response?.isSuccessful) {
                     Toast.makeText(getApplicationContext(), "리뷰를 작성했습니다.", Toast.LENGTH_LONG).show();
-                    var nextIntent : Intent = Intent(this@ReviewWriting, ReviewDetailViewRvActivity::class.java)
-                    nextIntent.putExtra("review_id", response?.body().toString())
-                    startActivity(nextIntent)
+//                    var nextIntent : Intent = Intent(this@ReviewWriting, ReviewDetailViewRvActivity::class.java)
+//                    nextIntent.putExtra("review_id", response?.body().toString())
+//                    startActivity(nextIntent)
+
+                    var toMoveCommentActivityIntent : Intent = Intent(this@ReviewWriting, ReviewCommentActivity::class.java)
+
+                    var review_id = response?.body().toString().toInt()
+                    toMoveCommentActivityIntent.putExtra("review_id", review_id)
+                    startActivity(toMoveCommentActivityIntent)
+
+                    Toast.makeText(applicationContext, "리뷰를 작성했습니다.", Toast.LENGTH_SHORT).show()
                     finish()
                     Log.d("레트로핏 결과2",""+response?.body().toString())
 
@@ -436,6 +469,70 @@ class ReviewWriting : AppCompatActivity() {
                 }
             }
         })
+    }
+
+
+
+
+    fun roomTbDbGet(room_id:Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.roomTbDbInfoGetInterface::class.java)
+
+        //어떤 리뷰를 선택했는지 확인하는 변수 + 좋아요 클릭여부를 확인하기 위하여 사용자 id보냄
+        val room_tb_data_get = api.room_tb_db_info_get(room_id)
+
+
+        room_tb_data_get.enqueue(object : Callback<RoomTbDbInfoData> {
+            override fun onResponse(
+                call: Call<RoomTbDbInfoData>,
+                response: Response<RoomTbDbInfoData>
+            ) {
+                Log.d("룸정보", "룸정보 : ${response.raw()}")
+                Log.d("룸정보", "룸정보 : ${response.body().toString()}")
+
+                var items : RoomTbDbInfoData? =  response.body()
+                Log.d("룸정보", "룸정보 : ${items}")
+
+
+
+                var addressSplit = items!!.roomInfoList.get(0).restaurant_roadaddress.split(" ")
+                restaurantAddressStr = addressSplit[0]+">"+addressSplit[1]
+
+                restaurantName = items!!.roomInfoList.get(0).restaurant_name
+
+
+
+                binding.restaurantAddressInfoTv.text = restaurantAddressStr+">"+restaurantName
+
+
+
+                appointment_day = items!!.roomInfoList.get(0).appointment_day
+
+                appointment_time = items!!.roomInfoList.get(0).appointment_time
+
+
+            }
+
+            override fun onFailure(call: Call<RoomTbDbInfoData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        when (id) {
+
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

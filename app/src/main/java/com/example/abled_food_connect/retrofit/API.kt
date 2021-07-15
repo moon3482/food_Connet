@@ -57,6 +57,17 @@ class API {
 
 
     //프로필 수정 - 원본이미지와 압축된 이미지, 아이디, 자기소개를 보낸다.
+    interface UserProfileEvaluationListInterface {
+        @Multipart
+        @POST("review/user_profile_evaluation_list.php")
+        fun user_profile_evaluation_list_Request(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<UserProfileEvaluationListData>
+
+    }
+
+
+    //프로필 수정 - 원본이미지와 압축된 이미지, 아이디, 자기소개를 보낸다.
     interface UserProfileModifyImageChange_interface {
         @Multipart
         @POST("user_info/user_profile_modify.php")
@@ -67,6 +78,18 @@ class API {
             @Part("nic_name") nic_name: String,
             @Part("introduction") introduction: String
         ): Call<String>
+
+    }
+
+
+    interface roomTbDbInfoGetInterface {
+
+
+        @Multipart
+        @POST("review/room_tb_db_info_get.php")
+        fun room_tb_db_info_get(
+            @Part("room_id") room_id: Int
+        ): Call<RoomTbDbInfoData>
 
     }
 
@@ -109,6 +132,7 @@ class API {
         ): Call<ReviewDetailViewRvData>
 
     }
+
 
     interface reviewLikeBtnClick{
         // 좋아요 버튼 클릭
@@ -236,7 +260,8 @@ class API {
         @Multipart
         @POST("chat/direct_message_list_get.php")
         fun direct_message_list_get(
-            @Part("roomName") roomName: String
+            @Part("roomName") roomName: String,
+            @Part("dm_log_tb_id") dm_log_tb_id: Int
         ): Call<DirectMessageNodeServerSendData>
     }
 
@@ -273,6 +298,18 @@ class API {
     }
 
 
+    interface UserProfileJoinHistoryRvInterface {
+
+        @Multipart
+        @POST("schedule/user_profile_join_history_rv_list_get.php")
+        fun user_profile_join_history_rv_list_get(
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<UserProfileJoinHistoryRvData>
+
+    }
+
+
+
     interface UserProfileClickedReviewGridListRvInterface {
 
         @Multipart
@@ -281,6 +318,113 @@ class API {
             @Part("clicked_user_tb_id") clicked_user_tb_id: String,
             @Part("my_user_tb_id") my_user_tb_id: Int
         ): Call<ReviewDetailViewRvData>
+
+    }
+
+    interface MyPageUserScheduleRvInterface {
+
+        @Multipart
+        @POST("schedule/my_page_user_schedule_get.php")
+        fun my_page_user_schedule_rv_get(
+            @Part("user_tb_nicname") user_tb_nicname: String,
+            @Part("date_reverse") date_reverse: Int //데이트 리버스는 일정리스트에서 예정된 일정의 날짜는 미래의 날짜를 asc, 완료된 일정은 과거읜 날을 desc
+        ): Call<MyPageUserScheduleData>
+
+    }
+
+
+
+    interface UnWrittenReviewListRvInterface {
+
+        @Multipart
+        @POST("schedule/un_written_review_list_get.php")
+        fun un_written_review_list_get(
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<MyPageUserScheduleData>
+
+    }
+
+    interface UserProfileBadgeListDataGetInterface {
+        @Multipart
+        @POST("user_info/user_profile_badge_list_data_get.php")
+        fun user_profile_badge_list_data_get(
+            @Part("user_tb_id") user_tb_id: Int,
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<UserProfileBadgeListData>
+    }
+
+
+
+
+
+
+    interface MeetingEvaluationUserListRvInterface {
+
+        @Multipart
+        @POST("schedule/meeting_evaluation_user_list.php")
+        fun meeting_evaluation_user_list_get(
+            @Part("room_id") room_id: Int
+        ): Call<MeetingEvaluationUserListRvData>
+
+    }
+
+    interface MeetingUserEvaluationWritingInterface {
+
+        @Multipart
+        @POST("schedule/meeting_user_evaluation_writing.php")
+        fun meeting_user_evaluation_writing(
+            @Part("meeting_user_evaluation_Json") meeting_user_evaluation_Json: String,
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("my_user_nicname") my_user_nicname: String
+        ): Call<String>
+
+    }
+
+
+    interface rankingFragmentRvSeasonPointListGetInterface {
+
+        @Multipart
+        @POST("ranking/season_point_list_get.php")
+        fun season_point_list_get(
+            @Part("my_nicname") my_nicname: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
+    interface rankingFragmentRvSeasonTierListGetInterface {
+
+        @Multipart
+        @POST("ranking/season_tier_list_get.php")
+        fun season_tier_list_get(
+            @Part("what_tier") what_tier: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
+    interface rankingRvPagingToDownInterface {
+
+        @Multipart
+        @POST("ranking/ranking_paging_to_down.php")
+        fun paging_to_down_get(
+            @Part("lastArrayNumber") lastArrayNumber: Int,
+            @Part("what_tier") what_tier: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+    interface rankingNicNameSearchInterface {
+
+        @Multipart
+        @POST("ranking/ranking_nicname_search.php")
+        fun anking_nicname_search_get(
+            @Part("searchNicName") searchNicName: String
+
+        ): Call<RankingFragmentRvData>
 
     }
 
