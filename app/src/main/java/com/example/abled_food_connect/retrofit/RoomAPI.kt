@@ -7,6 +7,8 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface RoomAPI {
+
+    //방 생성
     @FormUrlEncoded
     @POST("createRoom.php")
     fun createRoom(
@@ -29,7 +31,7 @@ interface RoomAPI {
         @Field("map_y") map_y: String
     ): Call<API.createRoomHost>
 
-
+    //메인프레그먼트 방리스트 로드
     @FormUrlEncoded
     @POST("MainFragmentLoading.php")
     fun loadingRoomGet(
@@ -37,7 +39,7 @@ interface RoomAPI {
 
     ): Call<LoadingRoom>
 
-
+    //메인프레그먼트에서 방정보보기화면일때 입장중인지 체크
     @FormUrlEncoded
     @POST("RoomJoinCheck.php")
     fun joinRoomCheck(
@@ -46,7 +48,7 @@ interface RoomAPI {
         @Field("hostName") hostName: String
 
     ): Call<JoinRoomCheck>
-
+    //방 입장처리
     @FormUrlEncoded
     @POST("RoomJoin.php")
     fun joinRoom(
@@ -57,11 +59,12 @@ interface RoomAPI {
     ): Call<API.joinRoomClass>
 
 
-    @retrofit2.http.Multipart
-    @POST("/upload")
-    open
-    fun uploadImage(@Part image: Part?): Call<Message?>?
+//    @retrofit2.http.Multipart
+//    @POST("/upload")
+//    open
+//    fun uploadImage(@Part image: Part?): Call<Message?>?
 
+    //날짜 구분선 유무 체크
     @FormUrlEncoded
     @POST("/groupChat/datelineCheck.php")
     fun timelineCheck(
@@ -69,12 +72,8 @@ interface RoomAPI {
         @Field("roomId") roomId: String
     ): Call<member>
 
-    @FormUrlEncoded
-    @POST("/groupChat/datelineCheck.php")
-    fun getPageMaxNum(
-        @Field("roomId") roomId: String?
-    ): Call<Int>
 
+    //그룹채팅방 스크롤 올렸을때 과거 메시지 추가 로드
     @GET("/groupChat/chatPagenation.php")
     fun pagination(
         @Query("roomId") roomId: String,
@@ -82,33 +81,36 @@ interface RoomAPI {
         @Query("userIndex") userIndex: Int
     ): Call<paginationData>
 
+    //그룹 채팅방 메시지 읽음 처리후 메시지갱신 or 최초 메시지 로딩
     @GET("/groupChat/chatPagenation.php")
     fun paginationRead(
         @Query("roomId") roomId: String,
         @Query("pageEnd") pageEnd: Int,
         @Query("userIndex") userIndex: Int
     ): Call<paginationData>
+
+    // 그룹채팅 메시지 읽음 처리
     @FormUrlEncoded
     @POST("/groupChat/readMessage.php")
     fun readMessage(
         @Field("roomId") roomId: String,
         @Field("userIndex") userIndex: Int
     ): Call<String>
-
+    //방 입장신청  보기
     @FormUrlEncoded
     @POST("/groupChat/joinSubscription.php")
     fun joinSubscription(
         @Field("roomId") roomId: String?,
         @Field("userIndexId") userIndexId: String?
     ): Call<String>
-
+    //방 입장신청 체크
     @FormUrlEncoded
     @POST("/groupChat/subscriptionCheck.php")
     fun hostSubscriptionCheck(
         @Field("roomId") roomId: String?,
 
         ): Call<ChatRoomSubscriptionResult>
-
+    //방 입장신청 목록갱신
     @FormUrlEncoded
     @POST("/groupChat/subscriptionUpdate.php")
     fun hostSubscriptionStatusUpdate(
@@ -117,12 +119,14 @@ interface RoomAPI {
 
     ): Call<String>
 
+    //그룹채팅 방입장되어 있는 유저 리스트 로드
     @FormUrlEncoded
     @POST("/groupChat/joinRoomMember.php")
     fun joinRoomMember(
         @Field("roomId") roomId: String
     ): Call<ArrayList<LoadRoomUsers>>
 
+    //그룹채팅 방나가기
     @FormUrlEncoded
     @POST("/groupChat/exitRoom.php")
     fun exitRoom(
@@ -131,6 +135,7 @@ interface RoomAPI {
         @Field("userNickName") userNickName: String
     ): Call<String>
 
+    //채팅프레그먼트에서 그룹채팅목록 불러오기
     @FormUrlEncoded
     @POST("groupChat/LoadGroupChatList.php")
     fun loadGroupChatList(
@@ -140,20 +145,21 @@ interface RoomAPI {
 
     ): Call<LoadingRoom>
 
-
+    //위치보기가 가능한 시간인지 체크
     @FormUrlEncoded
     @POST("groupChat/mapActivityTimeCheck.php")
     fun roomStatusTime(
         @Field("roomId")roomId: String
     ):Call<Double>
 
+    //그룹채팅 위치보기에서 유저위지 받아오기
     @FormUrlEncoded
     @POST("groupChat/mapActivityMember.php")
     fun memberLocation(
         @Field("roomId")roomId: Int
     ):Call<GroupChatLocationData>
 
-
+    //서버에 이미지 보내기
     @Multipart
     @POST("groupChat/groupChatImageSend.php")
     fun groupChatImageSend(

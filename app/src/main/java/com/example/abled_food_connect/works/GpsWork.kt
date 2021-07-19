@@ -1,4 +1,4 @@
-package com.example.abled_food_connect
+package com.example.abled_food_connect.works
 
 import android.Manifest
 import android.content.Context
@@ -8,7 +8,6 @@ import android.location.LocationManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.abled_food_connect.retrofit.MapSearch
 import kotlinx.coroutines.withTimeout

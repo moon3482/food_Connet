@@ -1,6 +1,7 @@
 package com.example.abled_food_connect
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -41,6 +42,7 @@ import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.naver.maps.map.e
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -60,6 +62,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.io.InputStream
+import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -74,7 +77,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var chatroomRoomId: String
     private lateinit var chatroomHostName: String
     private lateinit var thumbnailImage: String
-    private lateinit var chatAdapter: ChatAdapter
+    private val chatAdapter: ChatAdapter = ChatAdapter()
     private lateinit var userList: ChatRoomUserListRCVAdapter
     private lateinit var gson: Gson
 
@@ -152,7 +155,6 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart 호출")
-
 
 
     }
@@ -254,13 +256,14 @@ class ChatRoomActivity : AppCompatActivity() {
         Log.d("SOCKET", "Connection success : " + socket.id())
 
         chatClient = ChatClient.getInstance()
-        chatAdapter = ChatAdapter(this)
+//        chatAdapter = ChatAdapter()
 
 
         binding.userListRCV.layoutManager = LinearLayoutManager(this)
         binding.groupChatRecyclerView.layoutManager = LinearLayoutManager(this)
         (binding.groupChatRecyclerView.layoutManager as LinearLayoutManager).stackFromEnd =
             true
+        binding.groupChatRecyclerView.itemAnimator = null
         binding.groupChatRecyclerView.adapter = chatAdapter
         binding.groupChatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -282,11 +285,11 @@ class ChatRoomActivity : AppCompatActivity() {
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
                 var first = layoutManager.findFirstCompletelyVisibleItemPosition()
-                val count = 0
+                val count = 10
                 last = layoutManager.findLastCompletelyVisibleItemPosition()
                 var lc = chatAdapter.arrayList.size - 1
                 pagenum = layoutManager.itemCount - 1
-                if (first == count && requestPage && layoutManager.itemCount > 31) {
+                if (first <= count && requestPage && layoutManager.itemCount > 31) {
 
                     messageLoad(pagenum)
 
@@ -478,7 +481,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 if (messageData.from == userName) {
                     val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                     val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
 
@@ -497,7 +500,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 } else {
                     val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                     val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                     chatAdapter.arrayList.add(
@@ -516,7 +519,7 @@ class ChatRoomActivity : AppCompatActivity() {
             } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 //                when(true){
 //                    chatAdapter.arrayList[chatAdapter.arrayList.size-1].name == messageData.from&& time.compareTo(
@@ -538,7 +541,7 @@ class ChatRoomActivity : AppCompatActivity() {
             } else if (messageData.from == userName) {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                 chatAdapter.arrayList.add(
@@ -555,7 +558,7 @@ class ChatRoomActivity : AppCompatActivity() {
             } else {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                 chatAdapter.arrayList.add(
@@ -575,7 +578,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     }
 
-    private fun loadChat(messageData: MessageData) {
+    private fun loadChat(messageData: MessageData, status: Int? = 0) {
 
         runOnUiThread(Runnable {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
@@ -584,7 +587,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 if (messageData.from == userName) {
                     val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                     val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
 
@@ -596,14 +599,15 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.RIGHT_IMAGE_MESSAGE,
-                            messageData.members
+                            messageData.members,
+                            status
                         )
                     )
-
+                    chatAdapter.notifyItemInserted(0)
                 } else {
                     val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                     val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                     chatAdapter.arrayList.add(
@@ -614,21 +618,21 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.LEFT_IMAGE_MESSAGE,
-                            messageData.members
+                            messageData.members, status
                         )
                     )
-
+                    chatAdapter.notifyItemInserted(0)
                 }
             } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
                 chatAdapter.arrayList.add(
                     0,
                     ChatItem(
                         messageData.from, messageData.thumbnailImage, messageData.content,
                         date, ItemType.CENTER_MESSAGE,
-                        messageData.members
+                        messageData.members, status
                     )
                 )
                 chatAdapter.notifyItemInserted(0)
@@ -636,7 +640,7 @@ class ChatRoomActivity : AppCompatActivity() {
             } else if (messageData.from == userName) {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                 chatAdapter.arrayList.add(
@@ -647,7 +651,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.RIGHT_MESSAGE,
-                        messageData.members
+                        messageData.members, status
                     )
                 )
                 chatAdapter.notifyItemInserted(0)
@@ -655,7 +659,7 @@ class ChatRoomActivity : AppCompatActivity() {
             } else {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                 chatAdapter.arrayList.add(
@@ -666,7 +670,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.LEFT_MESSAGE,
-                        messageData.members
+                        messageData.members, status
                     )
                 )
                 chatAdapter.notifyItemInserted(0)
@@ -677,7 +681,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     }
 
-    private fun ReadChat(messageData: MessageData) {
+    private fun ReadChat(messageData: MessageData, status: Int? = 0) {
 
         runOnUiThread(Runnable {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
@@ -686,7 +690,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 if (messageData.from == userName) {
                     val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                     val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                     chatAdapter.arrayList.add(
@@ -697,14 +701,14 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.RIGHT_IMAGE_MESSAGE,
-                            messageData.members
+                            messageData.members, status
                         )
                     )
 
                 } else {
                     val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                     val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                    val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                     chatAdapter.arrayList.add(
@@ -715,7 +719,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.LEFT_IMAGE_MESSAGE,
-                            messageData.members
+                            messageData.members, status
                         )
                     )
 
@@ -723,14 +727,14 @@ class ChatRoomActivity : AppCompatActivity() {
             } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
                 chatAdapter.arrayList.add(
                     0,
                     ChatItem(
                         messageData.from, messageData.thumbnailImage, messageData.content,
                         date, ItemType.CENTER_MESSAGE,
-                        messageData.members
+                        messageData.members, status
                     )
                 )
 
@@ -738,7 +742,7 @@ class ChatRoomActivity : AppCompatActivity() {
             } else if (messageData.from == userName) {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
 
@@ -750,14 +754,14 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.RIGHT_MESSAGE,
-                        messageData.members
+                        messageData.members, status
                     )
                 )
 
             } else {
                 val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                 val convertedCurrentDate = sdf.parse(messageData.sendTime)
-                val date = SimpleDateFormat("a hh:mm").format(convertedCurrentDate)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
 
                 chatAdapter.arrayList.add(
@@ -768,12 +772,12 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.LEFT_MESSAGE,
-                        messageData.members
+                        messageData.members, status
                     )
                 )
 
             }
-
+            chatAdapter.notifyDataSetChanged()
         })
 
     }
@@ -864,8 +868,63 @@ class ChatRoomActivity : AppCompatActivity() {
                         Log.e("로드 실행", "로드")
                         val list: paginationData? = response.body()
                         if (list!!.success) {
+                            val sdf1 = SimpleDateFormat("yyyy-mm-dd HH:mm")
+                            val time1 = sdf1.parse(list.ChatLogList[0].sendTime)
+                            val time21 = sdf1.parse(chatAdapter.arrayList[0].sendTime)
+                            val timepr = sdf1.parse(chatAdapter.arrayList[1].sendTime)
+                            if (chatAdapter.arrayList[0].name == list.ChatLogList[0].from && time1.compareTo(
+                                    time21
+                                ) != 0
+                            ) {
+                                chatAdapter.arrayList[0].messageStatus = 1
+                                chatAdapter.notifyItemChanged(0)
+                            } else if (chatAdapter.arrayList[0].name == list.ChatLogList[0].from && time1.compareTo(
+                                    time21
+                                ) == 0
+                            ) {
+                                chatAdapter.arrayList[0].messageStatus = 2
+                                chatAdapter.notifyItemChanged(0)
+                            } else if (chatAdapter.arrayList[0].name == list.ChatLogList[0].from && chatAdapter.arrayList[0].name != chatAdapter.arrayList[1].name && time1.compareTo(
+                                    time21
+                                ) == 0
+                            ) {
+                                chatAdapter.arrayList[0].messageStatus = 3
+                                chatAdapter.notifyItemChanged(0)
+                            }
                             for (index in list.ChatLogList.indices) {
-                                loadChat(list.ChatLogList[index])
+
+
+                                try {
+
+                                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm")
+                                    val time = sdf.parse(list.ChatLogList[index + 1].sendTime)
+                                    val time2 = sdf.parse(list.ChatLogList[index].sendTime)
+                                    when (true) {
+                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
+                                            time2
+                                        ) != 0 -> {
+                                            loadChat(list.ChatLogList[index], 1)
+                                        }
+                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
+                                            time2
+                                        ) == 0 -> {
+                                            loadChat(list.ChatLogList[index], 2)
+                                        }
+                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && list.ChatLogList[index - 1].from != list.ChatLogList[index].from && time.compareTo(
+                                            time2
+                                        ) == 0 -> {
+                                            loadChat(list.ChatLogList[index], 3)
+                                        }
+                                        else -> {
+                                            loadChat(list.ChatLogList[index], 0)
+                                        }
+
+
+                                    }
+                                } catch (e: IndexOutOfBoundsException) {
+                                    loadChat(list.ChatLogList[index], 0)
+                                }
+
 
                             }
                             if (firstLoading) {
@@ -897,6 +956,7 @@ class ChatRoomActivity : AppCompatActivity() {
         val server = retrofit.create(RoomAPI::class.java)
         server.paginationRead(chatroomRoomId, pagenum, MainActivity.user_table_id)
             .enqueue(object : Callback<paginationData> {
+                @SuppressLint("SimpleDateFormat")
                 override fun onResponse(
                     call: Call<paginationData>,
                     response: Response<paginationData>
@@ -909,18 +969,44 @@ class ChatRoomActivity : AppCompatActivity() {
                         if (list!!.success) {
                             Log.e("로드메시지서버", "로드메시지서버")
                             for (index in list.ChatLogList.indices) {
-                                ReadChat(list.ChatLogList[index])
+
+
+                                try {
+                                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm")
+                                    val time = sdf.parse(list.ChatLogList[index + 1].sendTime)
+                                    val time2 = sdf.parse(list.ChatLogList[index].sendTime)
+                                    when (true) {
+                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
+                                            time2
+                                        ) != 0 -> {
+                                            ReadChat(list.ChatLogList[index], 1)
+                                        }
+                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
+                                            time2
+                                        ) == 0 -> {
+                                            ReadChat(list.ChatLogList[index], 2)
+                                        }
+
+                                        else -> {
+                                            ReadChat(list.ChatLogList[index], 0)
+                                        }
+
+
+                                    }
+                                } catch (e: IndexOutOfBoundsException) {
+                                    ReadChat(list.ChatLogList[index], 0)
+                                }
 
 
                             }
-                            chatAdapter.notifyDataSetChanged()
+//                            chatAdapter.notifyDataSetChanged()
                             if (firstLoading) {
                                 binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
                                 firstLoading = false
                             }
                         } else {
                             requestPage = false
-                            Log.e("로드 메세지끝", requestPage.toString())
+                            Log.e("로드메시지서버", requestPage.toString())
                         }
                     }
 

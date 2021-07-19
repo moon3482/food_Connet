@@ -27,41 +27,47 @@
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="true">
+                android:orientation="vertical"
+                >
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/groupChatRecyclerView"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_above="@+id/groupChatInputMessageLinear">
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                </androidx.recyclerview.widget.RecyclerView>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/groupChatRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/groupChatInputMessageLinear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
 
-                    android:layout_weight="1"
+                    android:layout_gravity="bottom"
                     android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/groupChatAddImageButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@null"
                         android:backgroundTint="#00FFFFFF"
                         android:scaleType="fitCenter"
-                        android:background="@null"
                         app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
 
                     <EditText
                         android:id="@+id/groupChatInputMessageEditText"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="textPersonName" />
@@ -74,7 +80,7 @@
                         app:srcCompat="@drawable/ic_baseline_send_24" />
 
                 </LinearLayout>
-            </RelativeLayout>
+            </LinearLayout>
 
 
         </LinearLayout>
