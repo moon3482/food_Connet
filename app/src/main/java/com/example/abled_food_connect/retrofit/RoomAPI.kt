@@ -170,8 +170,8 @@ interface RoomAPI {
         @Part("userNickname")userNickname:String
     ): Call<ChatImageSendingData>
 
-    @FormUrlEncoded
+//    @FormUrlEncoded
     @POST("DateCheck.php")
-    fun dateCheck():Call<ArrayList<DatetimeCheckWork.RoomsSchedule>>
+    fun dateCheck():Call<Long>
 }
 

@@ -340,7 +340,7 @@ class MainFragmentActivity : AppCompatActivity() {
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(
                 "DatetimeCheckWork",
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.REPLACE,
                 workRequest
             )
         Log.d("DatetimeCheckWork", "worker 시작함수")

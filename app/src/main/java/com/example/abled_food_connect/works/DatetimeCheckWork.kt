@@ -30,17 +30,17 @@ class DatetimeCheckWork(val context: Context, workerParameters: WorkerParameters
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.dateCheck().enqueue(object : Callback<ArrayList<DatetimeCheckWork.RoomsSchedule>> {
-            override fun onResponse(call: Call<ArrayList<DatetimeCheckWork.RoomsSchedule>>, response: Response<ArrayList<DatetimeCheckWork.RoomsSchedule>>) {
-                if (response.body()!=null){
-                    for (item in response.body()!!){
-                        doWorkWithPeriodic(context,item.time,item.string)}
-                    }
+        server.dateCheck().enqueue(object : Callback<Long> {
+            override fun onResponse(call: Call<Long>, response: Response<Long>) {
+                if (response.body() != null) {
+                    Log.d("정각","worker 시작함수"+response.body().toString())
+                    doWorkWithSchedule(context, response.body()!!)
+                }
 
                 success = true
             }
 
-            override fun onFailure(call: Call<ArrayList<DatetimeCheckWork.RoomsSchedule>>, t: Throwable) {
+            override fun onFailure(call: Call<Long>, t: Throwable) {
                 success = false
             }
         })
@@ -60,15 +60,24 @@ class DatetimeCheckWork(val context: Context, workerParameters: WorkerParameters
         builder.addInterceptor(interceptor)
         return builder.build()
     }
-    private fun doWorkWithPeriodic(context: Context,delay:Long,roomTag:String) {
-        Log.d("CheckGpsWorker", "worker 시작함수 진입")
-        val workRequest: OneTimeWorkRequest = OneTimeWorkRequestBuilder<GpsWork>().setInitialDelay(delay,
-            TimeUnit.SECONDS).addTag(roomTag).build()
+
+    private fun doWorkWithSchedule(context: Context, delay: Long) {
+        Log.d("정각 스케줄 체크", "worker 시작함수 진입")
+        val workRequest: OneTimeWorkRequest =
+            OneTimeWorkRequestBuilder<ScheduleCheckWork>().setInitialDelay(
+                delay,
+                TimeUnit.SECONDS
+            ).addTag("Schedule").build()
         /*
             ExistingPeriodicWorkPolicy.KEEP     :  워크매니저가 실행중이 아니면 새로 실행하고, 실행중이면 아무작업도 하지 않는다.
             ExistingPeriodicWorkPolicy.REPLACE  :  워크매니저를 무조건 다시 실행한다.
          */
-        WorkManager.getInstance(context).enqueueUniqueWork(roomTag,ExistingWorkPolicy.KEEP,workRequest)
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork("Schedule", ExistingWorkPolicy.REPLACE, workRequest)
     }
-    inner class RoomsSchedule(@SerializedName("roomId") val string: String,@SerializedName("time")val time:Long)
+
+    inner class RoomsSchedule(
+        @SerializedName("roomId") val string: String,
+        @SerializedName("time") val time: Long
+    )
 }
