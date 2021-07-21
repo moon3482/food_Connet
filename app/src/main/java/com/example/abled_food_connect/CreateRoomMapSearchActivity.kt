@@ -60,11 +60,8 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var pickMarker: ClusterDataClass
     lateinit var array: ArrayList<ClusterMarkerData>
     lateinit var gg: ArrayList<Cluster<ClusterDataClass>>
+    lateinit var context: Context
 
-
-    companion object {
-        lateinit var context: Context
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -367,7 +364,8 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
                                         info?.let {
                                             it.zIndex = 200
-                                            it.open(array[0].marker.marker) }
+                                            it.open(array[0].marker.marker)
+                                        }
                                         naverMap.moveCamera(
                                             CameraUpdate.scrollTo(clusterItem.position)
                                                 .animate(CameraAnimation.Easing)

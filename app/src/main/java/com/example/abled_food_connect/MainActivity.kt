@@ -27,10 +27,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.auth.model.OAuthToken
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
         //유저정보 쉐어드프리퍼런스 로드
         sharedLoadData()
-
+        token()
 
 
         nextIntent = Intent(this, UserRegisterActivity::class.java)
@@ -783,6 +785,20 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+fun token(){
+    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+        if (!task.isSuccessful) {
+            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+            return@OnCompleteListener
+        }
 
+        // Get new FCM registration token
+        val token = task.result
+
+        // Log and toast
+        Log.d("토큰", token)
+        Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+    })
+}
 
 }

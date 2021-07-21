@@ -1,17 +1,21 @@
 package com.example.abled_food_connect
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
+import com.example.abled_food_connect.works.DatetimeCheckWork
 import com.example.abled_food_connect.works.GpsWork
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.concurrent.TimeUnit
@@ -26,6 +30,7 @@ class MainFragmentActivity : AppCompatActivity() {
     private lateinit var myPageFragment: MyPageFragment
     private var BackPressTime: Long = 0
     private var context: Context = this
+
 
     //태그 생성
     companion object obuserid {
@@ -94,6 +99,22 @@ class MainFragmentActivity : AppCompatActivity() {
         super.onStop()
         if (intent.hasExtra("review")) {
             intent.removeExtra("review")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+       val manager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            val dialog = AlertDialog.Builder(this)
+            dialog.setMessage("GPS가 꺼저 있습니다. 활성화를 해주세요.")
+                .setNegativeButton("취소",null)
+                .setPositiveButton("설정"
+                ) { dialog, which ->
+                    startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+                .show()
         }
     }
 
@@ -310,14 +331,19 @@ class MainFragmentActivity : AppCompatActivity() {
     }
 
     private fun doWorkWithPeriodic(context: Context) {
-        Log.d("CheckGpsWorker", "worker 시작함수 진입")
-        val workRequest = PeriodicWorkRequestBuilder<GpsWork>(15, TimeUnit.MINUTES).build()
+
+        val workRequest = PeriodicWorkRequestBuilder<DatetimeCheckWork>(3, TimeUnit.HOURS).build()
         /*
             ExistingPeriodicWorkPolicy.KEEP     :  워크매니저가 실행중이 아니면 새로 실행하고, 실행중이면 아무작업도 하지 않는다.
             ExistingPeriodicWorkPolicy.REPLACE  :  워크매니저를 무조건 다시 실행한다.
          */
         WorkManager.getInstance(context)
-            .enqueueUniquePeriodicWork("GpsWork", ExistingPeriodicWorkPolicy.REPLACE, workRequest)
+            .enqueueUniquePeriodicWork(
+                "DatetimeCheckWork",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+            )
+        Log.d("DatetimeCheckWork", "worker 시작함수")
     }
 
 }

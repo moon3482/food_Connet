@@ -13,8 +13,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
-import android.util.SparseArray
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -31,9 +31,7 @@ import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
-import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import net.daum.android.map.*
 import okhttp3.OkHttpClient
@@ -44,10 +42,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.BufferedInputStream
 import java.io.InputStream
-import java.net.URLDecoder
-import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -65,7 +60,6 @@ class CreateRoomActivity : AppCompatActivity() {
         Manifest.permission.ACCESS_COARSE_LOCATION
 
 
-
     )
     private var x: Double? = null
     private var y: Double? = null
@@ -75,6 +69,7 @@ class CreateRoomActivity : AppCompatActivity() {
     lateinit var placeName: String
     lateinit var address: String
     lateinit var roadAddress: String
+    lateinit var context: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,13 +85,14 @@ class CreateRoomActivity : AppCompatActivity() {
         val maximum = binding.maximumAgeTextView
         val minimum = binding.minimumAgeTextView
         placeName = String()
+        context = this
         /*드롭다운 어댑터 설정*/
         maximum.setAdapter(setAdapter(age()))
         minimum.setAdapter(setAdapter(age()))
         numOfPeople.setAdapter(setAdapter(numOfPeople()))
 
         onClickListenerGroup()
-        checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
+
         checkPermissions()
 
         getMapImage(null, null, null)
@@ -110,6 +106,7 @@ class CreateRoomActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
 
     }
 
@@ -164,9 +161,7 @@ class CreateRoomActivity : AppCompatActivity() {
                     || ActivityCompat.shouldShowRequestPermissionRationale(
                         this,
                         REQUIRED_PERMISSIONS[1]
-                    ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                        this,
-                        REQUIRED_PERMISSIONS[2]
+
                     )
                 ) {
                     Toast.makeText(
@@ -176,6 +171,26 @@ class CreateRoomActivity : AppCompatActivity() {
                     ).show()
                     finish()
                 } else {
+                    Toast.makeText(this, "권한 설정이 거부되었습니다.\n설정에서 권한을 허용해야 합니다..", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            var check = true
+            for (result in grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    check = false;
+                    break;
+                }
+            }
+            if (check) {
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    )
+                ) {
                     Toast.makeText(this, "권한 설정이 거부되었습니다.\n설정에서 권한을 허용해야 합니다..", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -845,18 +860,22 @@ class CreateRoomActivity : AppCompatActivity() {
         } else {
             AlertDialog.Builder(this)
                 .setTitle("위치 사용권한")
-                .setMessage("위치사용권한을 항상사용을로 변경해주세요.")
+                .setMessage("위치사용권한을 항상사용으로 변경해주세요.")
                 .setPositiveButton("설정") { _, _ ->
-                    // this request will take user to Application's Setting page
-                    requestPermissions(
-                        arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                        backgroundLocationRequestCode
-                    )
+//                     this request will take user to Application's Setting page
+//                    requestPermissions(
+//                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+//                        backgroundLocationRequestCode
+//                    )
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    startActivity(intent)
+
                 }
                 .setNegativeButton("취소") { dialog, _ ->
                     dialog.dismiss()
                     onBackPressed()
                 }
+                .setCancelable(false)
                 .create()
                 .show()
         }

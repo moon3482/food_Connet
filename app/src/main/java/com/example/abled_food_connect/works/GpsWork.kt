@@ -6,10 +6,12 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import android.util.TimeFormatException
 import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.abled_food_connect.retrofit.MapSearch
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -29,16 +31,22 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
 
 
     override suspend fun doWork(): Result {
-        return withTimeout(10 * 60 * 1000) {
-            while (true) {
-                gps()
-                Thread.sleep(10 * 60 * 1000)
+
+        try {
+            return withTimeout((60 * 60 * 1000)) {
+                while (true) {
+                    gps()
+                    Thread.sleep((3 * 60 * 1000))
+                }
+                return@withTimeout Result.success()
             }
-            return@withTimeout Result.success()
+
+        }catch (e: TimeoutCancellationException){
+            return Result.success()
         }
 
 
-        return Result.success()
+
     }
 
     private fun gps() {

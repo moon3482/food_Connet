@@ -2,6 +2,7 @@ package com.example.abled_food_connect.retrofit
 
 
 import com.example.abled_food_connect.data.*
+import com.example.abled_food_connect.works.DatetimeCheckWork
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -168,5 +169,9 @@ interface RoomAPI {
         @Part("userIndex") userIndex:Int,
         @Part("userNickname")userNickname:String
     ): Call<ChatImageSendingData>
+
+    @FormUrlEncoded
+    @POST("DateCheck.php")
+    fun dateCheck():Call<ArrayList<DatetimeCheckWork.RoomsSchedule>>
 }
 
