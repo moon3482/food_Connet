@@ -6,11 +6,17 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.example.abled_food_connect.adapter.MyPageUserScheduleListActivityViewPagerAdapter
+import com.example.abled_food_connect.adapter.UserProfileBadgeActivityViewPagerAdapter
 import com.example.abled_food_connect.adapter.UserProfileBadgeListRvAdapter
 import com.example.abled_food_connect.data.UserProfileBadgeListData
 import com.example.abled_food_connect.data.UserProfileBadgeListDataItem
 import com.example.abled_food_connect.databinding.ActivityUserProfileBadgeListBinding
+import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.API
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,12 +34,20 @@ class UserProfileBadgeListActivity : AppCompatActivity() {
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
-    lateinit var userNicName : String
-
-    var user_tb_id = 0
-
 
     lateinit var userProfileBadgeListRv : RecyclerView
+
+
+    //뱃지
+    private lateinit var viewPager : ViewPager2
+    private lateinit var tabLayout : TabLayout
+
+
+    //탭 레이아웃으로 뱃지, 이전 랭킹 가져올때 필요한 user_tb_id, 닉네임 변수
+    companion object{
+        var user_tb_id = 0
+        lateinit var userNicName : String
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,70 +70,54 @@ class UserProfileBadgeListActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        if(intent.getStringExtra("user_nicname") != null){
-            userNicName = intent.getStringExtra("user_nicname")!!
-            user_tb_id = intent.getIntExtra("user_tb_id",0)
-            Log.d("userNicName", userNicName)
-        }
+        viewPager = findViewById<ViewPager2>(R.id.viewPager)
+        tabLayout = findViewById<TabLayout>(R.id.tabLayout)
 
+        val pagerAdapter = UserProfileBadgeActivityViewPagerAdapter(this)
 
-        binding.topNoticeTv.text = "${userNicName}님의 뱃지 리스트"
+        // 2개의 Fragment Add
+        pagerAdapter.addFragment(UserProfileBadgeListFragment())
+        pagerAdapter.addFragment(UserProfileRakingListFragment())
 
+        // Adapter
 
-        userProfileBadgeListRv = binding.userProfileBadgeListRv
-        //rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        userProfileBadgeListRv.layoutManager = GridLayoutManager(this,3)
-        userProfileBadgeListRv.setHasFixedSize(true)
+        viewPager.adapter = pagerAdapter
 
-
-
-        if(intent.getStringExtra("user_nicname") != null){
-            userNicName = intent.getStringExtra("user_nicname")!!
-            user_tb_id = intent.getIntExtra("user_tb_id",0)
-            badgeListLoading(user_tb_id,userNicName)
-        }
-
-
-    }
-
-
-    fun badgeListLoading(user_tb_id:Int , user_nic_name : String){
-        val retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.http_request_base_url))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val api = retrofit.create(API.UserProfileBadgeListDataGetInterface::class.java)
-
-
-        val data_get = api.user_profile_badge_list_data_get(user_tb_id,user_nic_name)
-
-
-        data_get.enqueue(object : Callback<UserProfileBadgeListData> {
-            override fun onResponse(
-                call: Call<UserProfileBadgeListData>,
-                response: Response<UserProfileBadgeListData>
-            ) {
-                Log.d("뱃지리스트", "뱃지 컨텐츠 : ${response.raw()}")
-                Log.d("뱃지리스트", "뱃지 컨텐츠 : ${response.body().toString()}")
-
-                var items : UserProfileBadgeListData? =  response.body()
-                var badgeArrayList = ArrayList<UserProfileBadgeListDataItem>()
-
-                badgeArrayList = items!!.badgeList as ArrayList<UserProfileBadgeListDataItem>
-
-                val mAdapter =  UserProfileBadgeListRvAdapter(badgeArrayList)
-                userProfileBadgeListRv.adapter = mAdapter
-
-
-
-
-            }
-
-            override fun onFailure(call: Call<UserProfileBadgeListData>, t: Throwable) {
-                Log.d("뱃지리스트", "실패 : $t")
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                Log.e("ViewPagerFragment", "Page ${position+1}")
             }
         })
+
+
+
+        // TabLayout attach
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            when (position) {
+                0 -> {
+                    tab.text = "뱃지보기"
+                }
+                else -> {
+                    tab.text = "지난랭킹보기"
+                }
+            }
+        }.attach()
+
+
+        if(intent.getStringExtra("user_nicname") != null){
+            userNicName = intent.getStringExtra("user_nicname")!!
+            user_tb_id = intent.getIntExtra("user_tb_id", 0)!!
+            Log.d("userNicName", userNicName)
+            Log.d("user_tb_id", user_tb_id.toString())
+        }
+
+
+
     }
+
+
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

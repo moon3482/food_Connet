@@ -95,6 +95,7 @@ class API {
 
 
 
+
     interface reviewWriting{
         // 리뷰작성하기 보내기
         @Multipart
@@ -207,6 +208,18 @@ class API {
             @Part("review_tb_id") review_id: Int,
             @Part("user_tb_id") user_tb_id: Int
         ): Call<ReviewDetailViewLikeAndCommentCountCheckData>
+    }
+
+
+    interface rankingLatestThreeGetInterface {
+
+
+        @Multipart
+        @POST("ranking/ranking_latest_three_get.php")
+        fun ranking_latest_three_get(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<userProfileRankingLatestThreeData>
+
     }
 
 
@@ -426,6 +439,15 @@ class API {
 
         ): Call<RankingFragmentRvData>
 
+    }
+
+
+    interface userProfileRankingGetInterface {
+        @Multipart
+        @POST("user_info/user_profile_ranking_get.php")
+        fun user_profile_ranking_get(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<userProfileRankingLatestThreeData>
     }
 
 

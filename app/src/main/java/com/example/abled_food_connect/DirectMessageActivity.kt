@@ -24,6 +24,10 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.canhub.cropper.CropImage
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageView
+import com.canhub.cropper.options
 import com.example.abled_food_connect.adapter.DirectMessageRvAdapter
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.databinding.ActivityDirectMessageBinding
@@ -33,8 +37,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -231,11 +233,28 @@ class DirectMessageActivity : AppCompatActivity() {
             }
         }
 
+        //갤러리 또는 카메라를 실행시킨다.
+        val cropImage = registerForActivityResult(CropImageContract()) { result ->
+            if (result.isSuccessful) {
+                // use the returned uri
+                val uriContent = result.originalUri
+                val uriFilePath = result.getUriFilePath(this) // optional usage
+                if (uriFilePath != null) {
+                    ImageUpload(uriFilePath)
+                }
+            } else {
+                // an error occurred
+                val exception = result.error
+            }
+        }
+
         binding.imageSendBtn.setOnClickListener {
             //갤러리 또는 카메라를 실행시킨다.
-            CropImage.activity()
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .start(this);
+            cropImage.launch(
+                options {
+                    setGuidelines(CropImageView.Guidelines.ON)
+                }
+            )
         }
 
         //스낵바 클릭이벤트
@@ -281,6 +300,9 @@ class DirectMessageActivity : AppCompatActivity() {
             }
         })
     }
+
+
+
 
     val onConnect: Emitter.Listener = Emitter.Listener {
         // onConnect는 닉네임과 방번호를 서버로 전달한다.
@@ -404,39 +426,20 @@ class DirectMessageActivity : AppCompatActivity() {
         });
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK){
-            when(requestCode) {
-
-                CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
-                    val result = CropImage.getActivityResult(data)
-                    val resultUri: Uri = result.uri
-
-                    //binding.imageview.setImageURI(Uri.parse(resultUri.toString()))
-
-
-                    ImageUpload(resultUri)
-
-
-                }
-            }
-        }
-    }
 
 
     //서버로 이미지 업로드
 
-    fun ImageUpload(imageUri:Uri){
+    fun ImageUpload(uriFilePath:String){
 
-        val uriPathHelper = UserRegisterActivity.URIPathHelper()
-        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
+//        val uriPathHelper = UserRegisterActivity.URIPathHelper()
+//        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
 
         //creating a file
-        val file = File(filePath)
+        val file = File(uriFilePath)
 
         //이미지의 확장자를 구한다.
-        val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri.toString())
+        val extension = MimeTypeMap.getFileExtensionFromUrl(uriFilePath.toString())
 
 
         var fileName = MainActivity.user_table_id.toString()+"."+extension
@@ -473,8 +476,6 @@ class DirectMessageActivity : AppCompatActivity() {
                     var items : ChatImageSendingData? =  response.body()
 
                     items!!.ImageName
-
-
 
                     //내가 보내는 것이다.
                     //dm_log_tb_id,sendtime,message_check는 서버에서 처리할 것이다.

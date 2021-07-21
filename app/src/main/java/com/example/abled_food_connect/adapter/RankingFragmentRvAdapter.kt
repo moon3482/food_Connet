@@ -1,6 +1,5 @@
 package com.example.abled_food_connect.adapter
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -11,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.bumptech.glide.Glide
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.RankingFragmentRvDataItem

@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
 
                 android:textSize="24dp"
                 android:textStyle="bold" />
@@ -79,6 +79,14 @@
                     android:layout_marginRight="3dp"/>
 
                 <TextView
+                    android:text="-"
+                    android:textStyle="bold"
+                    android:textSize="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"/>
+
+                <TextView
                     android:id="@+id/rankingPointTv"
                     android:textStyle="bold"
                     android:text="2990PT"
@@ -98,6 +106,12 @@
 
 
             </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_gravity="center"
+                android:id="@+id/rankingLatestRv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:gravity="center"
