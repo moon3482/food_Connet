@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Looper
 import android.util.Log
 import android.util.TimeFormatException
 import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.abled_food_connect.retrofit.MapSearch
 import kotlinx.coroutines.TimeoutCancellationException
@@ -20,6 +22,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.*
 
 class GpsWork(val context: Context, workerParameters: WorkerParameters) :
     CoroutineWorker(context, workerParameters) {
@@ -28,23 +32,28 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
     var currentLongitude: Double = 0.0
     var perf = context.getSharedPreferences("pref_user_data", 0)
     val userIndex = perf.getInt("user_table_id", 0)
-
+    val roomId = inputData.getString("roomId");
 
     override suspend fun doWork(): Result {
-
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val date = Date()
+        val startdate = dateFormat.format(date)
         try {
             return withTimeout((60 * 60 * 1000)) {
                 while (true) {
+                    Log.e("시작시간", "시간은 $startdate")
+                    Log.e("시작방이름", "방이름은 $roomId")
                     gps()
+//                    Thread.sleep((3 * 60 * 1000))
                     Thread.sleep((3 * 60 * 1000))
                 }
                 return@withTimeout Result.success()
             }
 
-        }catch (e: TimeoutCancellationException){
+        } catch (e: TimeoutCancellationException) {
+            WorkManager.getInstance(context).cancelUniqueWork(roomId!!)
             return Result.success()
         }
-
 
 
     }
@@ -87,11 +96,11 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
 
                 val locatioNProvider = LocationManager.NETWORK_PROVIDER
                 currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
-            }else {
+            } else {
                 val locatioNProvider = LocationManager.GPS_PROVIDER
                 currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
             }
-            if(currentLatLng == null){
+            if (currentLatLng == null) {
                 val locatioNProvider = LocationManager.NETWORK_PROVIDER
                 currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
             }
@@ -136,4 +145,5 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
         builder.addInterceptor(interceptor)
         return builder.build()
     }
+
 }

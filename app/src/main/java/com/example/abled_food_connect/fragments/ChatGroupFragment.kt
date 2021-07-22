@@ -14,6 +14,8 @@ import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.adapter.GroupChatListFragmentAdapter
 import com.example.abled_food_connect.adapter.MainFragmentAdapter
+import com.example.abled_food_connect.data.GroupChatListData
+import com.example.abled_food_connect.data.LoadingGroupChat
 import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.retrofit.RoomAPI
@@ -51,10 +53,15 @@ lateinit var Gadapter: GroupChatListFragmentAdapter
         val view = inflater.inflate(R.layout.fragment_chat_group, container, false)
         recyclerView = view.findViewById(R.id.ChatGroupRCV)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        loadChatList()
+//        loadChatList()
 
 
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadChatList()
     }
 
 
@@ -67,20 +74,20 @@ lateinit var Gadapter: GroupChatListFragmentAdapter
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.loadGroupChatList(MainActivity.user_table_id.toString(),MainActivity.loginUserNickname).enqueue(object :Callback<LoadingRoom>{
+        server.loadGroupChatList(MainActivity.user_table_id.toString(),MainActivity.loginUserNickname).enqueue(object :Callback<LoadingGroupChat>{
             override fun onResponse(
-                call: retrofit2.Call<LoadingRoom>,
-                response: Response<LoadingRoom>
+                call: retrofit2.Call<LoadingGroupChat>,
+                response: Response<LoadingGroupChat>
             ) {
-                val list: LoadingRoom? = response.body()
+                val list: LoadingGroupChat? = response.body()
                 if(list !=null ) {
-                    val array: ArrayList<MainFragmentItemData> = list.roomList
+                    val array: ArrayList<GroupChatListData> = list.roomList
                     Gadapter = GroupChatListFragmentAdapter(requireContext(),array)
                     recyclerView.adapter = Gadapter
                 }
             }
 
-            override fun onFailure(call: retrofit2.Call<LoadingRoom>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<LoadingGroupChat>, t: Throwable) {
 
             }
         })

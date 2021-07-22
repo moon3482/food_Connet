@@ -1,22 +1,22 @@
 package com.example.abled_food_connect
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
+import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.works.DatetimeCheckWork
-import com.example.abled_food_connect.works.GpsWork
+import com.example.abled_food_connect.works.ScheduleCheckWork
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.concurrent.TimeUnit
 
@@ -333,6 +333,7 @@ class MainFragmentActivity : AppCompatActivity() {
     private fun doWorkWithPeriodic(context: Context) {
 
         val workRequest = PeriodicWorkRequestBuilder<DatetimeCheckWork>(3, TimeUnit.HOURS).build()
+        val workRequestOne = OneTimeWorkRequestBuilder<ScheduleCheckWork>().build()
         /*
             ExistingPeriodicWorkPolicy.KEEP     :  워크매니저가 실행중이 아니면 새로 실행하고, 실행중이면 아무작업도 하지 않는다.
             ExistingPeriodicWorkPolicy.REPLACE  :  워크매니저를 무조건 다시 실행한다.
@@ -343,6 +344,7 @@ class MainFragmentActivity : AppCompatActivity() {
                 ExistingPeriodicWorkPolicy.REPLACE,
                 workRequest
             )
+        WorkManager.getInstance(context).enqueue(workRequestOne)
         Log.d("DatetimeCheckWork", "worker 시작함수")
     }
 

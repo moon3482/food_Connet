@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
+import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
@@ -785,6 +787,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+@SuppressLint("MissingPermission")
 fun token(){
     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
         if (!task.isSuccessful) {
@@ -797,7 +800,14 @@ fun token(){
 
         // Log and toast
         Log.d("토큰", token)
-        Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+
+
+        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationProvider = LocationManager.GPS_PROVIDER
+        val location: Location? = locationManager.getLastKnownLocation(locationProvider)
+        if (location!=null){
+            Log.e("로케이션","위치 : ${location.latitude} , ${location.longitude}")
+        }
     })
 }
 

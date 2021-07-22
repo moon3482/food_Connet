@@ -3,6 +3,7 @@ package com.example.abled_food_connect.retrofit
 
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.works.DatetimeCheckWork
+import com.example.abled_food_connect.works.ScheduleCheckWork
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -144,7 +145,7 @@ interface RoomAPI {
         @Field("userNickName") userNickName: String
 
 
-    ): Call<LoadingRoom>
+    ): Call<LoadingGroupChat>
 
     //위치보기가 가능한 시간인지 체크
     @FormUrlEncoded
@@ -173,5 +174,12 @@ interface RoomAPI {
 //    @FormUrlEncoded
     @POST("DateCheck.php")
     fun dateCheck():Call<Long>
+
+    @FormUrlEncoded
+    @POST("ScheduleCheck.php")
+    fun scheduleCheck(
+        @Field("userIndex")userIndex:Int
+
+    ):Call<ScheduleCheckWork.ScheduleArray>
 }
 

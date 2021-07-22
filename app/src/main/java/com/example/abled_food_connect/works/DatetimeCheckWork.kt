@@ -76,8 +76,5 @@ class DatetimeCheckWork(val context: Context, workerParameters: WorkerParameters
             .enqueueUniqueWork("Schedule", ExistingWorkPolicy.REPLACE, workRequest)
     }
 
-    inner class RoomsSchedule(
-        @SerializedName("roomId") val string: String,
-        @SerializedName("time") val time: Long
-    )
+
 }
