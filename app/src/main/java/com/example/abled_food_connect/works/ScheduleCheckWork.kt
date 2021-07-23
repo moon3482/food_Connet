@@ -36,9 +36,7 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
         when (true) {
 
             (delay > 0) -> {
-                if (check(roomTag)) {
-                    WorkManager.getInstance(context).cancelUniqueWork(roomTag)
-                }
+
                 Log.d("GPSdd", "방번호 : ${roomTag} 실행여부 : ${check(roomTag)}")
                 val data = Data.Builder().put("roomId", roomTag).build()
                 Log.d("CheckGpsWorker", "worker 시작함수 진입")
@@ -47,14 +45,16 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
                         delay,
                         TimeUnit.SECONDS
                     ).build()
+
                 /*
                     ExistingPeriodicWorkPolicy.KEEP     :  워크매니저가 실행중이 아니면 새로 실행하고, 실행중이면 아무작업도 하지 않는다.
                     ExistingPeriodicWorkPolicy.REPLACE  :  워크매니저를 무조건 다시 실행한다.
                  */
                 WorkManager.getInstance(context).enqueueUniqueWork(
                     roomTag,
-                    ExistingWorkPolicy.KEEP, workRequest
+                    ExistingWorkPolicy.REPLACE, workRequest
                 )
+
             }
             else -> {
 
@@ -83,8 +83,14 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
                     if (response.body() != null) {
                         if (response.body()!!.list.size > 0) {
                             for (item in response.body()!!.list) {
-                                doWorkWithGpsWork(context, item.time, item.string)
                                 Log.d("GPS", "방번호 : ${item.string} 실행여부 : ${check(item.string)}")
+                                if (check(item.string)) {
+                                    WorkManager.getInstance(context).cancelUniqueWork(item.string)
+                                    doWorkWithGpsWork(context, item.time, item.string)
+                                } else {
+                                    doWorkWithGpsWork(context, item.time, item.string)
+                                }
+
                             }
                         }
                     }
@@ -105,7 +111,8 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
 
     fun check(tag: String): Boolean {
         val instance = WorkManager.getInstance(context)
-        var status: ListenableFuture<MutableList<WorkInfo>> = instance.getWorkInfosByTag(tag)
+        var status: ListenableFuture<MutableList<WorkInfo>> =
+            instance.getWorkInfosForUniqueWork(tag)
         return try {
             var running = false;
             var list: MutableList<WorkInfo> = status.get()

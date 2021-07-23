@@ -85,6 +85,9 @@ class MainFragment : Fragment() {
             load()
 
         }
+        refreshTextView.setOnRefreshListener {
+            load()
+        }
         hideRoom.setOnClickListener {
             check = when (check) {
                 false -> {
@@ -186,6 +189,7 @@ class MainFragment : Fragment() {
                         MainFragmentAdapter(requireContext(),this@MainFragment, mainFragmentListArray)
                     recyclerView.adapter = recyclerViewAdapter
                     swipeRefresh.isRefreshing = false
+                    refreshTextView.isRefreshing = false
                     if(check){
                         recyclerViewAdapter.filter.filter(MainActivity.user_table_id.toString())
                     }else{

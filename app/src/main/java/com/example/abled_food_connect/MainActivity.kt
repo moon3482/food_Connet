@@ -1,21 +1,27 @@
 package com.example.abled_food_connect
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.provider.Settings
 import android.util.Base64
 import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.abled_food_connect.data.LoginDataClass
 import com.example.abled_food_connect.fragments.MyPageFragment
 import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
@@ -114,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
 
         //유저정보 쉐어드프리퍼런스 로드
-        sharedLoadData()
+
         token()
 
 
@@ -162,43 +168,49 @@ class MainActivity : AppCompatActivity() {
 
 
         btnKakaoLogin.setOnClickListener {
-
-
-            UserApiClient.instance.loginWithKakaoAccount(applicationContext, prompts = listOf(Prompt.LOGIN)) { token, error ->
-                if (error != null) {
-                    Log.e(MyPageFragment.TAG, "로그인 실패", error)
-                }
-                else if (token != null) {
-                    Log.i(MyPageFragment.TAG, "로그인 성공 ${token.accessToken}")
-
-
-
-                    UserApiClient.instance.me { user, error ->
-                        if (error != null) {
-                            Log.e(MyPageFragment.TAG, "사용자 정보 요청 실패", error)
-                        } else if (user != null) {
-                            Log.i(
-                                MyPageFragment.TAG, "사용자 정보 요청 성공" +
-                                        "\n회원번호: ${user.id}" +
-                                        "\n이메일: ${user.kakaoAccount?.email}" +
-                                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                                        "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}" +
-                                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
-                            )
-
-                            RegistUserInfo(user.id.toString(), "KAKAO")
-
-
-
-                        }
-                    }
-
-
-
-
-
+            UserApiClient.instance.run {
+                if (isKakaoTalkLoginAvailable(this@MainActivity)) {
+                    loginWithKakaoTalk(this@MainActivity, callback = callback)
+                } else {
+                    loginWithKakaoAccount(this@MainActivity, callback = callback)
                 }
             }
+
+//            UserApiClient.instance.loginWithKakaoAccount(applicationContext, prompts = listOf(Prompt.LOGIN)) { token, error ->
+//                if (error != null) {
+//                    Log.e(MyPageFragment.TAG, "로그인 실패", error)
+//                }
+//                else if (token != null) {
+//                    Log.i(MyPageFragment.TAG, "로그인 성공 ${token.accessToken}")
+//
+//
+//
+//                    UserApiClient.instance.me { user, error ->
+//                        if (error != null) {
+//                            Log.e(MyPageFragment.TAG, "사용자 정보 요청 실패", error)
+//                        } else if (user != null) {
+//                            Log.i(
+//                                MyPageFragment.TAG, "사용자 정보 요청 성공" +
+//                                        "\n회원번호: ${user.id}" +
+//                                        "\n이메일: ${user.kakaoAccount?.email}" +
+//                                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+//                                        "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}" +
+//                                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+//                            )
+//
+//                            RegistUserInfo(user.id.toString(), "KAKAO")
+//
+//
+//
+//                        }
+//                    }
+//
+//
+//
+//
+//
+//                }
+//            }
 
 //            UserApiClient.instance.logout { error ->
 //                if (error != null) {
@@ -210,11 +222,11 @@ class MainActivity : AppCompatActivity() {
 //            }
 //
 //
-//            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-//                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
-//            } else {
-//                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-//            }
+            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
+            } else {
+                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+            }
         }
         callbackManager = CallbackManager.Factory.create()
 
@@ -384,6 +396,15 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            sharedLoadData()
+        }else{
+            checkBackgroundLocationPermissionAPI30()
+        }
     }
 
     @SuppressLint("LongLogTag")
@@ -719,7 +740,9 @@ class MainActivity : AppCompatActivity() {
 
 
                         startActivity(mainFragmentJoin)
-                        finish()
+                            finish()
+
+
                     } else {
                         Toast.makeText(
                             getApplicationContext(),
@@ -802,13 +825,47 @@ fun token(){
         Log.d("토큰", token)
 
 
-        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val locationProvider = LocationManager.GPS_PROVIDER
-        val location: Location? = locationManager.getLastKnownLocation(locationProvider)
-        if (location!=null){
-            Log.e("로케이션","위치 : ${location.latitude} , ${location.longitude}")
-        }
+//        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        val locationProvider = LocationManager.GPS_PROVIDER
+//        val location: Location? = locationManager.getLastKnownLocation(locationProvider)
+//        if (location!=null){
+//            Log.e("로케이션","위치 : ${location.latitude} , ${location.longitude}")
+//        }
     })
 }
+    @TargetApi(30)
+    private fun Context.checkBackgroundLocationPermissionAPI30() {
+        if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            return
+        } else {
+            AlertDialog.Builder(this)
+                .setTitle("위치 사용권한")
+                .setMessage("위치사용권한을 항상사용으로 변경해주세요.")
+                .setPositiveButton("설정") { _, _ ->
+//                     this request will take user to Application's Setting page
+//                    requestPermissions(
+//                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+//                        backgroundLocationRequestCode
+//                    )
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+                    startActivity(intent)
 
+                }
+                .setNegativeButton("취소") { dialog, _ ->
+                    dialog.dismiss()
+                    onBackPressed()
+                }
+                .setCancelable(false)
+                .create()
+                .show()
+        }
+
+
+    }
+    private fun Context.checkSinglePermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 }

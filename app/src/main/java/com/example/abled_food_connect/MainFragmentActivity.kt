@@ -130,7 +130,8 @@ class MainFragmentActivity : AppCompatActivity() {
 
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
-                    tb.setTitle("홈")
+                    tb.title="홈"
+
 
                     mainFragment = MainFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(

@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -61,9 +62,11 @@ class CreateRoomActivity : AppCompatActivity() {
 
 
     )
+    private val ACCESS_FINE_LOCATION = 1000
     private var x: Double? = null
     private var y: Double? = null
     /*태그 리스트*/val PERMISSIONS_REQUEST_CODE = 100
+    val BACKGROUND_PERMISSIONS_REQUEST_CODE = 1110
     var tagArray: ArrayList<String> = ArrayList()
     lateinit var marker: Marker
     lateinit var placeName: String
@@ -93,7 +96,7 @@ class CreateRoomActivity : AppCompatActivity() {
 
         onClickListenerGroup()
 
-        checkPermissions()
+
 
         getMapImage(null, null, null)
 
@@ -102,11 +105,18 @@ class CreateRoomActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        if (checkLocationService()) {
+            // GPS가 켜져있을 경우
+            permissionCheck()
+        } else {
+            // GPS가 꺼져있을 경우
+            Toast.makeText(this, "GPS를 켜주세요", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
+//        checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
 
     }
 
@@ -171,31 +181,24 @@ class CreateRoomActivity : AppCompatActivity() {
                     ).show()
                     finish()
                 } else {
+
                     Toast.makeText(this, "권한 설정이 거부되었습니다.\n설정에서 권한을 허용해야 합니다..", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
         }
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            var check = true
-            for (result in grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    check = false;
-                    break;
-                }
-            }
-            if (check) {
-            } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        this,
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                    )
-                ) {
-                    Toast.makeText(this, "권한 설정이 거부되었습니다.\n설정에서 권한을 허용해야 합니다..", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
+
+//        if (requestCode == ACCESS_FINE_LOCATION) {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // 권한 요청 후 승인됨 (추적 시작)
+//                Toast.makeText(this, "위치 권한이 승인되었습니다", Toast.LENGTH_SHORT).show()
+//
+//            } else {
+//                // 권한 요청 후 거절됨 (다시 요청 or 토스트)
+//                Toast.makeText(this, "위치 권한이 거절되었습니다", Toast.LENGTH_SHORT).show()
+//                permissionCheck()
+//            }
+//        }
     }
 
     /**
@@ -867,7 +870,7 @@ class CreateRoomActivity : AppCompatActivity() {
 //                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
 //                        backgroundLocationRequestCode
 //                    )
-                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
                     startActivity(intent)
 
                 }
@@ -890,7 +893,50 @@ class CreateRoomActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun permissionCheck() {
+        val preference = getPreferences(MODE_PRIVATE)
+        val isFirstCheck = preference.getBoolean("isFirstPermissionCheck", true)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // 권한이 없는 상태
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // 권한 거절 (다시 한 번 물어봄)
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage("현재 위치를 확인하시려면 위치 권한을 허용해주세요.")
+                builder.setPositiveButton("확인") { dialog, which ->
+                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), ACCESS_FINE_LOCATION)
+                }
+                builder.setNegativeButton("취소") { dialog, which ->
 
+                }
+                builder.show()
+            } else {
+                if (isFirstCheck) {
+                    // 최초 권한 요청
+                    preference.edit().putBoolean("isFirstPermissionCheck", false).apply()
+                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), ACCESS_FINE_LOCATION)
+                } else {
+                    // 다시 묻지 않음 클릭 (앱 정보 화면으로 이동)
+                    val builder = AlertDialog.Builder(this)
+                    builder.setMessage("현재 위치를 확인하시려면 설정에서 위치 권한을 허용해주세요.")
+                    builder.setPositiveButton("설정으로 이동") { dialog, which ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+                        startActivity(intent)
+                    }
+                    builder.setNegativeButton("취소") { dialog, which ->
+
+                    }
+                    builder.show()
+                }
+            }
+        } else {
+            // 권한이 있는 상태
+
+        }
+    }
+    private fun checkLocationService(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
 }
 
 

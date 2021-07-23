@@ -31,7 +31,10 @@
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true">
-
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="location|microphone"
+            tools:node="merge" />
         <activity android:name=".GroupChatLocationMapActivity"></activity>
         <!-- <service android:foregroundServiceType="location|camera|microphone"/> -->
         <activity android:name=".JoinRoomSubscriptionActivity" />
@@ -94,19 +97,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity" >
+        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Redirect URI: "kakao{NATIVE_APP_KEY}://oauth" -->
-                <data
-                    android:host="oauth"
+                <data android:host="oauth"
                     android:scheme="kakao79386308695f07328a0a5316dcb46a0a" />
             </intent-filter>
         </activity>
+
+
         <activity android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat"/>
         <service

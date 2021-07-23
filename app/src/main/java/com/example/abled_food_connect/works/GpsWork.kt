@@ -1,17 +1,29 @@
 package com.example.abled_food_connect.works
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.location.Location
 import android.location.LocationManager
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.os.Build
 import android.os.Looper
 import android.util.Log
 import android.util.TimeFormatException
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.example.abled_food_connect.R
 import com.example.abled_food_connect.retrofit.MapSearch
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
@@ -39,13 +51,15 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
         val date = Date()
         val startdate = dateFormat.format(date)
         try {
-            return withTimeout((60 * 60 * 1000)) {
+            return withTimeout((10 * 60 * 1000)) {
                 while (true) {
                     Log.e("시작시간", "시간은 $startdate")
                     Log.e("시작방이름", "방이름은 $roomId")
+//                    val progress = "위치정보 조회중"
+//                    setForeground(createForegroundInfo(progress))
                     gps()
 //                    Thread.sleep((3 * 60 * 1000))
-                    Thread.sleep((3 * 60 * 1000))
+                    Thread.sleep((2 * 60 * 1000))
                 }
                 return@withTimeout Result.success()
             }
@@ -144,6 +158,45 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         builder.addInterceptor(interceptor)
         return builder.build()
+    }
+    private fun createForegroundInfo(progress: String): ForegroundInfo {
+        val id = "app"
+        val title = "위치 정보"
+        // This PendingIntent can be used to cancel the worker
+//        val intent = WorkManager.getInstance(applicationContext)
+//            .createCancelPendingIntent(getId())
+
+        // Create a Notification channel if necessary
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createChannel()
+        }
+
+        val notification = NotificationCompat.Builder(applicationContext, id)
+            .setContentTitle(title)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setTicker(title)
+            .setContentText(progress)
+            .setOngoing(true)
+            // Add the cancel action to the notification which can
+            // be used to cancel the worker
+//            .addAction(android.R.drawable.ic_delete, cancel, intent)
+            .build()
+
+        return ForegroundInfo( FOREGROUND_SERVICE_TYPE_LOCATION,notification)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createChannel() {
+        val name = "app"
+        val descriptionText = "text"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val mChannel = NotificationChannel("app", name, importance)
+        mChannel.description = descriptionText
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
     }
 
 }

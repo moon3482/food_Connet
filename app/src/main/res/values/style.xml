@@ -19,7 +19,8 @@
     <style name="MainToolbar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimaryDark">#09F6C7</item> <!-- Toolbar의 배경색-->
         <item name="colorPrimary">#09F6C7</item> <!-- Toolbar의 타이틀 텍스트-->
-        <item name="subtitleTextAppearance">@color/white</item> <!-- Toolbar의 서브타이틀 텍스트-->
+        <item name="titleTextColor">@color/black</item>
+        <item name="android:textStyle">bold</item><!-- Toolbar의 서브타이틀 텍스트-->
     </style>
 
     <!--플로팅 버튼 모양 크기-->
