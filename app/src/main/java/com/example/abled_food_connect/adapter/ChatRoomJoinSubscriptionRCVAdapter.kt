@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.abled_food_connect.JoinRoomSubscriptionActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.array.array
@@ -57,6 +59,7 @@ var gson:Gson = Gson()
             updateSubscriptionStatus(chatRoomUserData.subscriptionId.toString(),"3")
             arrayList.removeAt(position)
             notifyDataSetChanged()
+
         }
         holder.InformationButton.setOnClickListener {
             val intent = Intent(context,UserProfileActivity::class.java)

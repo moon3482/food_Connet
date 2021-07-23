@@ -315,7 +315,7 @@ class MainActivity : AppCompatActivity() {
         mOAuthLoginInstance = OAuthLogin.getInstance()
 
         //네이버 웹뷰로 로그인 옵션을 추가가
-       mOAuthLoginInstance.enableWebViewLoginOnly()
+        mOAuthLoginInstance.enableWebViewLoginOnly()
 
         //만약 네이버 앱이 설치되어있는 경우, 앱으로 로그인 가능하게 설정한다.
 //        try {
@@ -400,10 +400,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-            sharedLoadData()
+        if (Build.VERSION.SDK_INT>=30) {
+            if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                sharedLoadData()
+            } else {
+                checkBackgroundLocationPermissionAPI30()
+            }
         }else{
-            checkBackgroundLocationPermissionAPI30()
+            sharedLoadData()
         }
     }
 
@@ -740,7 +744,7 @@ class MainActivity : AppCompatActivity() {
 
 
                         startActivity(mainFragmentJoin)
-                            finish()
+                        finish()
 
 
                     } else {
@@ -810,19 +814,20 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-@SuppressLint("MissingPermission")
-fun token(){
-    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-        if (!task.isSuccessful) {
-            Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-            return@OnCompleteListener
-        }
 
-        // Get new FCM registration token
-        val token = task.result
+    @SuppressLint("MissingPermission")
+    fun token() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
 
-        // Log and toast
-        Log.d("토큰", token)
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            Log.d("토큰", token)
 
 
 //        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -831,8 +836,9 @@ fun token(){
 //        if (location!=null){
 //            Log.e("로케이션","위치 : ${location.latitude} , ${location.longitude}")
 //        }
-    })
-}
+        })
+    }
+
     @TargetApi(30)
     private fun Context.checkBackgroundLocationPermissionAPI30() {
         if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
@@ -847,7 +853,10 @@ fun token(){
 //                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
 //                        backgroundLocationRequestCode
 //                    )
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:$packageName")
+                    )
                     startActivity(intent)
 
                 }
@@ -862,6 +871,7 @@ fun token(){
 
 
     }
+
     private fun Context.checkSinglePermission(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             this,

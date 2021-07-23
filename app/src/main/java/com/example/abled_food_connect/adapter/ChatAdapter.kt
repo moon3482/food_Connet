@@ -36,7 +36,6 @@ class ChatAdapter :
 //        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
 
-
         return when (viewType) {
 
             ItemType.LEFT_MESSAGE -> {
@@ -69,7 +68,7 @@ class ChatAdapter :
                         parent,
                         false
                     )
-             LeftImageMessage(context, binding)
+                LeftImageMessage(context, binding)
             }
             ItemType.RIGHT_IMAGE_MESSAGE -> {
 //                view = inflater.inflate(R.layout.chat_my_image_message, parent, false)
@@ -165,31 +164,13 @@ class ChatAdapter :
         RecyclerView.ViewHolder(binding.root), DatetimeToTime {
         fun bind(data: ChatItem) {
 
-            when (data.messageStatus) {
-                1 -> {
-                    binding.root.setPadding(0,5,0,5)
-                    binding.chatOthersImage.visibility = View.INVISIBLE
-                    binding.chatOthersNickName.visibility = View.GONE
-                }
-                2 -> {
-                    binding.root.setPadding(0,5,0,5)
-                    binding.chatOthersImage.visibility = View.INVISIBLE
-                    binding.chatOthersNickName.visibility = View.GONE
-                    binding.chatOthersTimeStamp.visibility = View.GONE
-                }
-                3 -> {
-                    binding.root.setPadding(0,5,0,5)
-                    binding.chatOthersImage.visibility = View.INVISIBLE
-                    binding.chatOthersNickName.visibility = View.GONE
-                    binding.chatOthersTimeStamp.visibility = View.VISIBLE
-                }
-                else -> {
-                    binding.chatOthersNickName.text = data.name
-                    binding.chatOthersNickName.visibility = View.VISIBLE
-                    binding.chatOthersImage.visibility = View.VISIBLE
-                    binding.chatOthersImage.load(context.getString(R.string.http_request_base_url) + data.ThumbnailImage)
-                }
-            }
+
+            binding.chatOthersNickName.text = data.name
+            binding.chatOthersNickName.visibility = View.VISIBLE
+            binding.chatOthersImage.visibility = View.VISIBLE
+            binding.chatOthersImage.load(context.getString(R.string.http_request_base_url) + data.ThumbnailImage)
+
+
             val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
 
             binding.chatOthersMessageText.text = data.content
@@ -205,7 +186,7 @@ class ChatAdapter :
     }
 
     class RightMessage(private val binding: ChatMyMessageBinding) :
-        RecyclerView.ViewHolder(binding.root),DatetimeToTime {
+        RecyclerView.ViewHolder(binding.root), DatetimeToTime {
         fun bind(data: ChatItem) {
 
             val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
@@ -223,52 +204,52 @@ class ChatAdapter :
 
     }
 
-        class LeftImageMessage(
-            private val context: Context,
-            private val binding: ChatOthersImageMessageBinding
-        ) : RecyclerView.ViewHolder(binding.root),DatetimeToTime {
-            fun bind(data: ChatItem) {
-                val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
-                binding.ImageChatOthersProFileImage.load(context.getString(R.string.http_request_base_url) + data.ThumbnailImage)
-                binding.ImageChatOthersImage.load(context.getString(R.string.http_request_base_url) + data.content)
-                binding.ImageChatOthersNickName.text = data.name
-                binding.ImageChatOthersTimeStamp.text = isDatetimeToTime(data)
-                if (array > 0) {
-                    binding.ImageReadMembersOthersMessage.text = array.toString()
-                } else {
-                    binding.ImageReadMembersOthersMessage.visibility = View.GONE
-                }
+    class LeftImageMessage(
+        private val context: Context,
+        private val binding: ChatOthersImageMessageBinding
+    ) : RecyclerView.ViewHolder(binding.root), DatetimeToTime {
+        fun bind(data: ChatItem) {
+            val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
+            binding.ImageChatOthersProFileImage.load(context.getString(R.string.http_request_base_url) + data.ThumbnailImage)
+            binding.ImageChatOthersImage.load(context.getString(R.string.http_request_base_url) + data.content)
+            binding.ImageChatOthersNickName.text = data.name
+            binding.ImageChatOthersTimeStamp.text = isDatetimeToTime(data)
+            if (array > 0) {
+                binding.ImageReadMembersOthersMessage.text = array.toString()
+            } else {
+                binding.ImageReadMembersOthersMessage.visibility = View.GONE
             }
         }
+    }
 
-        class RightImageMessage(
-            private val context: Context,
-            private val binding: ChatMyImageMessageBinding
-        ) : RecyclerView.ViewHolder(binding.root),DatetimeToTime {
-            fun bind(data: ChatItem) {
-                val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
+    class RightImageMessage(
+        private val context: Context,
+        private val binding: ChatMyImageMessageBinding
+    ) : RecyclerView.ViewHolder(binding.root), DatetimeToTime {
+        fun bind(data: ChatItem) {
+            val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
 
-                binding.ImageChatMyImage.load(context.getString(R.string.http_request_base_url) + data.content)
-                binding.ImageChatMyTimeStamp.text = isDatetimeToTime(data)
-                if (array > 0) {
-                    binding.ImageReadMembersMyMessage.text = array.toString()
-                } else {
-                    binding.ImageReadMembersMyMessage.visibility = View.GONE
-                }
+            binding.ImageChatMyImage.load(context.getString(R.string.http_request_base_url) + data.content)
+            binding.ImageChatMyTimeStamp.text = isDatetimeToTime(data)
+            if (array > 0) {
+                binding.ImageReadMembersMyMessage.text = array.toString()
+            } else {
+                binding.ImageReadMembersMyMessage.visibility = View.GONE
             }
         }
+    }
 
-        class ServerMessage(private val binding: ChatServerItemBinding) :
-            RecyclerView.ViewHolder(binding.root) {
-            fun bind(data: ChatItem) {
-                binding.contentText.text = data.content
-            }
-
-        }
-
-        class StartAndEnd(private val binding: ChatStarEndBinding) :
-            RecyclerView.ViewHolder(binding.root) {
-
+    class ServerMessage(private val binding: ChatServerItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(data: ChatItem) {
+            binding.contentText.text = data.content
         }
 
     }
+
+    class StartAndEnd(private val binding: ChatStarEndBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+    }
+
+}

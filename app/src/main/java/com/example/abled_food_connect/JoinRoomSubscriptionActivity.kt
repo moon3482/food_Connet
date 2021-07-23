@@ -2,6 +2,7 @@ package com.example.abled_food_connect
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.abled_food_connect.adapter.ChatRoomJoinSubscriptionRCVAdapter
 import com.example.abled_food_connect.data.ChatRoomSubscriptionResult
@@ -38,6 +39,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
 
     }
 
+
     override fun onStart() {
         super.onStart()
         init()
@@ -71,6 +73,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
                                 userList.add(item)
                             }
                         }
+
                         binding.joinRoomSubscriptionRCV.layoutManager =
                             LinearLayoutManager(this@JoinRoomSubscriptionActivity)
                         binding.joinRoomSubscriptionRCV.adapter =
@@ -78,6 +81,14 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
                                 this@JoinRoomSubscriptionActivity,
                                 userList,socket,roomId
                             )
+
+                        if(userList.size>0){
+                           binding.joinRoomSubscriptionRCV.visibility = View.VISIBLE
+                            binding.tvNonSubscription.visibility = View.GONE
+                        }else{
+                            binding.joinRoomSubscriptionRCV.visibility =View.GONE
+                            binding.tvNonSubscription.visibility=View.VISIBLE
+                        }
                     }
                 }
 
