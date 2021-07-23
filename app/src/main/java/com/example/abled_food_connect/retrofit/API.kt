@@ -451,6 +451,47 @@ class API {
     }
 
 
+    interface clickedCommentDataLoadingInterface{
+        // 리뷰삭제
+        @Multipart
+        @POST("review/clicked_comment_data_loading.php")
+        fun clicked_comment_data_loading(
+            @Part("review_id") review_id: Int,
+            @Part("comment_tb_id") comment_tb_id: Int
+
+
+        ): Call<ReviewParentPageCommentGetData>
+    }
+
+
+    interface reviewDeleteBtn{
+        // 리뷰삭제
+        @Multipart
+        @POST("review/review_delete_btn_click.php")
+        fun review_delete_btn_click(
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("what_click_review_tb_id") what_click_review_tb_id: Int
+
+        ): Call<String>
+    }
+
+
+
+    interface commentDeleteBtn{
+        // 리뷰삭제
+        @Multipart
+        @POST("review/comment_delete_btn_click.php")
+        fun comment_delete_btn_click(
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("what_click_comment_id") what_click_comment_id: Int,
+            @Part("review_id") review_id: Int,
+            @Part("parentOrChild") parentOrChild: Int,
+            @Part("groupNum") groupNum: Int
+
+        ): Call<String>
+    }
+
+
 
     fun joinRoom(context:Context,roomId:String,nickName:String,userIndexId:String){
 

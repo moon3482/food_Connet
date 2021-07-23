@@ -4,24 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.example.abled_food_connect.adapter.MyPageUserScheduleListActivityViewPagerAdapter
 import com.example.abled_food_connect.adapter.UserProfileBadgeActivityViewPagerAdapter
-import com.example.abled_food_connect.adapter.UserProfileBadgeListRvAdapter
-import com.example.abled_food_connect.data.UserProfileBadgeListData
-import com.example.abled_food_connect.data.UserProfileBadgeListDataItem
 import com.example.abled_food_connect.databinding.ActivityUserProfileBadgeListBinding
 import com.example.abled_food_connect.fragments.*
-import com.example.abled_food_connect.retrofit.API
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class UserProfileBadgeListActivity : AppCompatActivity() {
@@ -65,7 +54,7 @@ class UserProfileBadgeListActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.Toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
-        binding.Toolbar.title = "뱃지보기"
+        binding.Toolbar.title = "뱃지/지난랭킹보기"
         //툴바에 백버튼 만들기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

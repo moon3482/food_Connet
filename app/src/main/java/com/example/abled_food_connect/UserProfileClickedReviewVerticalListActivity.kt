@@ -94,7 +94,15 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
         mAdapter =  UserProfileClickedReviewVerticalListAdapter(reviewDetailViewRvDataArraylist)
         mAdapter.notifyDataSetChanged()
+        mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
+            override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
+                whatClickPostion = position
+                this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
+
+            }
+        })
         detail_rv.adapter = mAdapter
+
 
 
 
@@ -204,10 +212,6 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
                     mAdapter =  UserProfileClickedReviewVerticalListAdapter(reviewDetailViewRvDataArraylist)
                     mAdapter.notifyItemChanged(whatClickPostion)
-                    detail_rv.adapter = mAdapter
-
-                    detail_rv.getLayoutManager()?.scrollToPosition(whatClickPostion)
-
                     //클릭리스너 등록
                     mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
                         override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
@@ -216,6 +220,12 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
                         }
                     })
+
+                    detail_rv.adapter = mAdapter
+
+                    detail_rv.getLayoutManager()?.scrollToPosition(whatClickPostion)
+
+
 
 
                 }

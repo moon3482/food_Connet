@@ -180,6 +180,7 @@ class ReviewDetailViewRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailVie
 
             var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
             toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
+            toMoveCommentActivity.putExtra("clicked_review_btn", 1)
             startActivity(holder.commentBtn.context as Activity,toMoveCommentActivity,null)
 
 

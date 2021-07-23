@@ -1,6 +1,7 @@
 package com.example.abled_food_connect
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -12,13 +13,16 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.example.abled_food_connect.adapter.ReviewChildPageCommenRvAdapter
 import com.example.abled_food_connect.adapter.ReviewParentPageCommentRvAdapter
 import com.example.abled_food_connect.adapter.Review_Detail_ViewPagerAdapter
 import com.example.abled_food_connect.data.*
@@ -75,11 +79,21 @@ class ReviewCommentActivity : AppCompatActivity() {
     //db에 저장될때 자식 코멘트는 부모와 동일한 groupNum을 가진다.
     var groupNum : Int = -1
 
+    var clicked_review_btn = 0
 
+
+    // 어떤 부모댓글을 클릭했는지 저장하는 변수
+    var whatParentPosition = -1
+
+    // 그 부모댓글의 리뷰id
+    var what_parent_review_id = 0
+
+    // comment_tb_id
+    var what_parent_comment_tb_id = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_review_comment)
+        setContentView(R.layout.activity_review_comment)
 
         //키보드가 화면 안가리게함
         //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -106,6 +120,10 @@ class ReviewCommentActivity : AppCompatActivity() {
 
         review_id = intent.getIntExtra("review_id",0)
         //리뷰 정보를 가져온다
+
+        //댓글버튼을 누른 것인지 아닌지 체크
+        //댓글버튼을 누르고 들어왔다면, 엑티비티 입장시 댓글화면으로 이동함.
+        clicked_review_btn = intent.getIntExtra("clicked_review_btn",0)
         reviewContentLoading(review_id)
 
 
@@ -119,6 +137,56 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
 
+        binding.reviewDotBtn.setOnClickListener(View.OnClickListener {
+
+
+            var pop = PopupMenu(this,binding.reviewDotBtn)
+
+            menuInflater.inflate(R.menu.review_content_3_dot_menu, pop.menu)
+
+            // 2. 람다식으로 처리
+            pop.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.reviewDeleteBtn ->{
+                        var builder = AlertDialog.Builder(this)
+                        builder.setTitle("리뷰삭제")
+                        builder.setMessage("리뷰를 삭제하시겠습니까?")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+                                    }
+
+                                    DialogInterface.BUTTON_NEGATIVE ->{
+
+                                        reviewDeleteBtnClick(review_id)
+                                        Toast.makeText(applicationContext, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                                    }
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("취소", listener)
+                        builder.setNegativeButton("삭제", listener)
+
+                        builder.show()
+                    }
+                }
+                false
+            }
+            pop.show()
+
+
+        })
+
+
+
+
+
 
 
 
@@ -128,6 +196,7 @@ class ReviewCommentActivity : AppCompatActivity() {
         reviewCommentRv = binding.reviewCommentRv
         reviewCommentRv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+        reviewCommentRv.setHasFixedSize(false)
 
 
         //리사이클러뷰 구분선
@@ -179,6 +248,14 @@ class ReviewCommentActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if(whatParentPosition != -1){
+            clickedCommentDataLoading()
+        }
+    }
+
     //댓글 목록 불러오기
     fun ParentCommentLoading(review_id:Int){
         val retrofit = Retrofit.Builder()
@@ -206,16 +283,38 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                     review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(comment_ArrayList,writerNicname)
                     review_comment_Child_rv_adapter.notifyDataSetChanged()
+
+                    //클릭리스너 등록
+                    review_comment_Child_rv_adapter.setItemClickListener( object : ReviewParentPageCommentRvAdapter.ItemClickListener{
+
+                        override fun onClick(view: View, position: Int, review_id :Int ,comment_tb_id : Int) {
+                            whatParentPosition = position
+                            what_parent_review_id = review_id
+                            what_parent_comment_tb_id = comment_tb_id
+                        }
+                    })
+
+
+
                     reviewCommentRv.adapter = review_comment_Child_rv_adapter
 
 
 
 
 
-                    Handler().postDelayed(Runnable {
-                        //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
-                        binding.nestedScroll.smoothScrollBy(0,binding.contentViewPager2.top)
-                    }, 500)
+                    //댓글 클릭시 댓클창 상단으로 이동
+                    if(clicked_review_btn == 1){
+                        Handler().postDelayed(Runnable {
+                            //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
+                            binding.nestedScroll.smoothScrollBy(0,binding.reviewCommentRv.top)
+                        }, 500)
+                    }else{
+                        Handler().postDelayed(Runnable {
+                            //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
+                            binding.nestedScroll.smoothScrollBy(0,binding.contentViewPager2.top)
+                        }, 500)
+                    }
+
 
 
 
@@ -230,6 +329,7 @@ class ReviewCommentActivity : AppCompatActivity() {
             }
         })
     }
+
 
 
 
@@ -268,6 +368,17 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                     review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(comment_ArrayList,writerNicname)
                     review_comment_Child_rv_adapter.notifyDataSetChanged()
+
+                    //클릭리스너 등록
+                    review_comment_Child_rv_adapter.setItemClickListener( object : ReviewParentPageCommentRvAdapter.ItemClickListener{
+
+                        override fun onClick(view: View, position: Int, review_id :Int ,comment_tb_id : Int) {
+                            whatParentPosition = position
+                            what_parent_review_id = review_id
+                            what_parent_comment_tb_id = comment_tb_id
+                        }
+                    })
+
                     reviewCommentRv.adapter = review_comment_Child_rv_adapter
 
 
@@ -400,6 +511,10 @@ class ReviewCommentActivity : AppCompatActivity() {
                     )
                 })
 
+                if(MainActivity.user_table_id == items!!.roomList.get(0).writer_user_tb_id){
+                    binding.reviewDotBtn.visibility = View.VISIBLE
+                }
+
 
 
                 //작성자 닉네임
@@ -519,6 +634,113 @@ class ReviewCommentActivity : AppCompatActivity() {
         })
     }
 
+
+
+    fun reviewDeleteBtnClick(what_click_review_tb_id:Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.reviewDeleteBtn::class.java)
+        val review_Like_Btn_Click = api.review_delete_btn_click(MainActivity.user_table_id,what_click_review_tb_id)
+
+
+        review_Like_Btn_Click.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                if(response.body() != null) {
+                    val returnString: String = response.body()!!
+
+                    if(returnString =="true"){
+                        Log.d("트루", "트루")
+                    }else{
+                        Log.d("false", "false")
+                    }
+
+
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+
+    fun clickedCommentDataLoading(){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.clickedCommentDataLoadingInterface::class.java)
+        val data_load = api.clicked_comment_data_loading(what_parent_review_id,what_parent_comment_tb_id)
+
+
+        data_load.enqueue(object : Callback<ReviewParentPageCommentGetData> {
+            override fun onResponse(
+                call: Call<ReviewParentPageCommentGetData>,
+                response: Response<ReviewParentPageCommentGetData>
+            ) {
+                Log.d(ReviewFragment.TAG, "데이터로드 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "데이터로드 : ${response.body().toString()}")
+
+                if(response.body() != null) {
+                    val Item: ReviewParentPageCommentGetData = response.body()!!
+
+
+                    var ItemArray: ArrayList<ReviewParentPageCommentGetDataItem>
+                    ItemArray = Item.commentList as ArrayList<ReviewParentPageCommentGetDataItem>
+
+
+                    if(ItemArray[0].deleteCheck ==1){
+                        comment_ArrayList.removeAt(whatParentPosition)
+                        reviewCommentRv.adapter?.notifyItemRemoved(whatParentPosition)
+                        reviewCommentRv.adapter?.notifyItemRangeChanged(whatParentPosition,comment_ArrayList.size)
+                    }else{
+                        comment_ArrayList.set(whatParentPosition,ItemArray[0])
+                        reviewCommentRv.adapter?.notifyItemChanged(whatParentPosition)
+                    }
+
+                    var totalCommentCount = comment_ArrayList.size
+
+                    for(i in 0..comment_ArrayList.size-1) {
+                        totalCommentCount += comment_ArrayList.get(i).comment_class_child_count
+                    }
+
+                    //댓글 개수
+                    binding.contentCommentCountTv.text = totalCommentCount.toString()
+
+                    Log.d("totalCommentCount", totalCommentCount.toString())
+
+                    //댓글 없을때 문구 처리
+                    if(totalCommentCount != 0){
+                        binding.noCommentTv.visibility = View.GONE
+                    }else{
+                        binding.noCommentTv.visibility = View.VISIBLE
+                    }
+
+
+
+
+                    whatParentPosition = -1
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<ReviewParentPageCommentGetData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
 
 
 
