@@ -291,6 +291,20 @@ class ReviewCommentActivity : AppCompatActivity() {
                             whatParentPosition = position
                             what_parent_review_id = review_id
                             what_parent_comment_tb_id = comment_tb_id
+
+                            var totalCommentCount = comment_ArrayList.size
+                            Log.d("어래이사이즈", totalCommentCount.toString())
+
+
+                            for(i in 0..comment_ArrayList.size-1) {
+                                totalCommentCount += comment_ArrayList.get(i).comment_class_child_count
+                                Log.d("있으면 출력", totalCommentCount.toString())
+                            }
+
+                            Log.d("나오면좋겠다", totalCommentCount.toString())
+
+                            //댓글 개수
+                            binding.contentCommentCountTv.text = totalCommentCount.toString()
                         }
                     })
 
@@ -376,6 +390,20 @@ class ReviewCommentActivity : AppCompatActivity() {
                             whatParentPosition = position
                             what_parent_review_id = review_id
                             what_parent_comment_tb_id = comment_tb_id
+
+                            var totalCommentCount = comment_ArrayList.size
+                            Log.d("어래이사이즈", totalCommentCount.toString())
+
+
+                            for(i in 0..comment_ArrayList.size-1) {
+                                totalCommentCount += comment_ArrayList.get(i).comment_class_child_count
+                                Log.d("있으면 출력", totalCommentCount.toString())
+                            }
+
+                            Log.d("나오면좋겠다", totalCommentCount.toString())
+
+                            //댓글 개수
+                            binding.contentCommentCountTv.text = totalCommentCount.toString()
                         }
                     })
 

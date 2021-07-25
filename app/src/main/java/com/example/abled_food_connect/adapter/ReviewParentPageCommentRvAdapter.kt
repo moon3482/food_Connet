@@ -119,8 +119,11 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
 
                                     DialogInterface.BUTTON_NEGATIVE ->{
 
-                                        reviewDeleteBtnClick(holder.commentDotBtn.context,childCommentList.get(position).comment_id,position,childCommentList.get(position).review_id,childCommentList.get(position).comment_class,childCommentList.get(position).groupNum)
+
+                                        reviewDeleteBtnClick(holder.commentDotBtn,holder.commentDotBtn.context,childCommentList.get(position).comment_id,position,childCommentList.get(position).review_id,childCommentList.get(position).comment_class,childCommentList.get(position).groupNum)
                                         Toast.makeText(holder.commentDotBtn.context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show()
+
+
 
                                     }
 
@@ -216,7 +219,7 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
 
 
     //댓글 삭제버튼
-    fun reviewDeleteBtnClick(context : Context, what_click_comment_tb_id:Int,position: Int,review_id:Int,parentOrChild: Int ,groupNum: Int){
+    fun reviewDeleteBtnClick(view: View,context : Context, what_click_comment_tb_id:Int,position: Int,review_id:Int,parentOrChild: Int ,groupNum: Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -239,6 +242,9 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
                     if(returnString =="true"){
                         Log.d("트루", "트루")
                         removeItem(position)
+                        // 아래의 클릭리스너는 삭제후 클릭이벤트만 작동하면 되기 때문에 파라미터 값은 어떤 값이든 상관없다.
+                        // 댓글 삭제 후, 새로고침을 위해 작성되었다.
+                        itemClickListener.onClick(view,-1,-1, -1)
                     }else{
                         Log.d("false", "false")
                     }

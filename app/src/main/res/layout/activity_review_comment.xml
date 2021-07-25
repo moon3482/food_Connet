@@ -348,7 +348,7 @@
 
             <TextView
                 android:gravity="center"
-                android:text="아직 댓글이 없습니다"
+                android:text="댓글이 없습니다"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
