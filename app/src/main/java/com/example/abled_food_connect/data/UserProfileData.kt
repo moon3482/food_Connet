@@ -26,5 +26,20 @@ data class UserProfileData(
     @SerializedName("introduction")
     val introduction: String,
     @SerializedName("review_count")
-    val review_count: Int
+    val review_count: Int,
+    //랭킹관련 변수
+    @SerializedName("ranking_tb_id")
+    val ranking_tb_id: Int,
+    @SerializedName("tier")
+    val tier: String,
+    @SerializedName("now_season")
+    val now_season: String,
+    @SerializedName("rank")
+    val rank: String,
+    @SerializedName("tier_image")
+    val tier_image: String,
+    @SerializedName("rank_point")
+    val rank_point: Int,
+    @SerializedName("number")
+    val number: Int
 )

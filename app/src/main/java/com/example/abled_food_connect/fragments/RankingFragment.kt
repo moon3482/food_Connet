@@ -8,6 +8,7 @@ import android.view.*
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
@@ -33,6 +34,9 @@ class RankingFragment:Fragment() {
 
     //내 랭킹정보를 보여주는 리니어 레이아웃
     lateinit var myRankingInfoLinearLayout : LinearLayout
+
+    //정보가 없을 경우 보여주는 텍스트뷰
+    lateinit var noListAlertTv : TextView
 
     lateinit var filter_item :MenuItem
 
@@ -62,6 +66,7 @@ class RankingFragment:Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.ranking_fragments, container, false)
 
+        noListAlertTv = view.findViewById(R.id.noListAlertTv)
 
         rankingFragmentRv = view.findViewById(R.id.rankingFragmentRv)
 
@@ -406,6 +411,12 @@ class RankingFragment:Fragment() {
 
 
                 rankingFragmentRvDataArrayList = items!!.rankingList as ArrayList<RankingFragmentRvDataItem>
+
+                if(rankingFragmentRvDataArrayList.size>0){
+                    noListAlertTv.visibility = View.GONE
+                }else{
+                    noListAlertTv.visibility = View.VISIBLE
+                }
                 rankingFragmentRvDataArrayList.add(0,RankingFragmentRvDataItem(0,"",0,"유저","","포인트","순위",0,"티어","",1))
 
 

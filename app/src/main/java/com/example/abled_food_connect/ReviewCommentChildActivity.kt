@@ -1,6 +1,8 @@
 package com.example.abled_food_connect
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -12,6 +14,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.adapter.ReviewChildPageCommenRvAdapter
@@ -126,6 +129,13 @@ class ReviewCommentChildActivity : AppCompatActivity() {
         reviewCommentRv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
 
+        //리사이클러뷰 구분선
+        val dividerItemDecoration =
+            DividerItemDecoration(reviewCommentRv.context, LinearLayoutManager(this).orientation)
+
+        reviewCommentRv.addItemDecoration(dividerItemDecoration)
+        reviewCommentRv.setHasFixedSize(false)
+
 
 
 
@@ -212,7 +222,7 @@ class ReviewCommentChildActivity : AppCompatActivity() {
                     Log.d(ReviewFragment.TAG, "자식목록불러와 ${reviewChildPageCommentGetData.childPageCommentList}")
                     Log.d(ReviewFragment.TAG, "자식목록불러와 : ${isSuccess}")
 
-                    review_comment_rv_adapter =  ReviewChildPageCommenRvAdapter(comment_ArrayList,writerNicname)
+                    review_comment_rv_adapter =  ReviewChildPageCommenRvAdapter(comment_ArrayList,writerNicname,this@ReviewCommentChildActivity)
                     review_comment_rv_adapter.notifyDataSetChanged()
                     reviewCommentRv.adapter = review_comment_rv_adapter
 
@@ -275,42 +285,84 @@ class ReviewCommentChildActivity : AppCompatActivity() {
                     comment_ArrayList = reviewChildPageCommentGetData.childPageCommentList as ArrayList<ReviewChildPageCommentGetDataItem>
 
 
+                    //부모 댓글이 있는지 확인한다.
+                    var Iscomment_order_zero = 0
+                    for(i in 0..comment_ArrayList.size-1){
 
-                    Log.d(ReviewFragment.TAG, "목록불러와 ${reviewChildPageCommentGetData.childPageCommentList}")
-                    Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
-                    Log.d(ReviewFragment.TAG, "목록불러와 : ${reviewChildPageCommentGetData.comment_count}")
-
-
-
-                    review_comment_rv_adapter =  ReviewChildPageCommenRvAdapter(comment_ArrayList,writerNicname)
-                    review_comment_rv_adapter.notifyDataSetChanged()
-                    reviewCommentRv.adapter = review_comment_rv_adapter
-
-
-
-                    //클릭리스너 등록
-                    review_comment_rv_adapter.setItemClickListener( object : ReviewChildPageCommenRvAdapter.ItemClickListener{
-                        override fun onClick(view: View, commentWriterUserTbId: Int, commentWriterUserNicname: String, childOrParent : Int, groupNum:Int) {
-                            binding.childToCommentAlertTextBar.visibility = View.VISIBLE
-                            binding.tosendTargetUserNicName.text = commentWriterUserNicname
-                            binding.writingCommentEt.requestFocus()
-                            view.hideKeyboard()
-                            view.showKeyboard()
-
-                            this@ReviewCommentChildActivity.sendTargetUserTable_id = commentWriterUserTbId
-                            this@ReviewCommentChildActivity.sendTargetUserNicName = commentWriterUserNicname
-                            this@ReviewCommentChildActivity.groupNum = groupNum
-
-                            //1일 경우 자식 댓글(코멘트로 등록됨)
-                            this@ReviewCommentChildActivity.childOrParent = 1
-
+                        if(comment_ArrayList.get(0).comment_order ==0){
+                            Iscomment_order_zero = 1
                         }
-                    })
+                    }
 
-                    Handler().postDelayed(Runnable {
-                        //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
-                        reviewCommentRv.scrollToPosition(comment_ArrayList.size-1);
-                    }, 500)
+                    Log.d("제로값", Iscomment_order_zero.toString())
+
+                    //부모댓글이 없으면, 댓글을 남길 수 없다는 창이 뜬다.
+                    if(Iscomment_order_zero == 0){
+
+
+                        var builder = androidx.appcompat.app.AlertDialog.Builder(this@ReviewCommentChildActivity)
+                        builder.setTitle("알림")
+                        builder.setMessage("대댓글을 남길 수 없습니다.\n"+"댓글 작성자가 댓글을 삭제하셨습니다.")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        onBackPressed()
+                                    }
+
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("확인", listener)
+
+                        builder.show()
+
+                    }else{
+                        Log.d(ReviewFragment.TAG, "목록불러와 ${reviewChildPageCommentGetData.childPageCommentList}")
+                        Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
+                        Log.d(ReviewFragment.TAG, "목록불러와 : ${reviewChildPageCommentGetData.comment_count}")
+
+
+
+                        review_comment_rv_adapter =  ReviewChildPageCommenRvAdapter(comment_ArrayList,writerNicname,this@ReviewCommentChildActivity)
+                        review_comment_rv_adapter.notifyDataSetChanged()
+                        reviewCommentRv.adapter = review_comment_rv_adapter
+
+
+
+                        //클릭리스너 등록
+                        review_comment_rv_adapter.setItemClickListener( object : ReviewChildPageCommenRvAdapter.ItemClickListener{
+                            override fun onClick(view: View, commentWriterUserTbId: Int, commentWriterUserNicname: String, childOrParent : Int, groupNum:Int) {
+                                binding.childToCommentAlertTextBar.visibility = View.VISIBLE
+                                binding.tosendTargetUserNicName.text = commentWriterUserNicname
+                                binding.writingCommentEt.requestFocus()
+                                view.hideKeyboard()
+                                view.showKeyboard()
+
+                                this@ReviewCommentChildActivity.sendTargetUserTable_id = commentWriterUserTbId
+                                this@ReviewCommentChildActivity.sendTargetUserNicName = commentWriterUserNicname
+                                this@ReviewCommentChildActivity.groupNum = groupNum
+
+                                //1일 경우 자식 댓글(코멘트로 등록됨)
+                                this@ReviewCommentChildActivity.childOrParent = 1
+
+                            }
+                        })
+
+                        Handler().postDelayed(Runnable {
+                            //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
+                            binding.childNestedSv.scrollTo(0, reviewCommentRv.bottom)
+                        }, 500)
+                    }
+
+
+
+
+
 
 
 

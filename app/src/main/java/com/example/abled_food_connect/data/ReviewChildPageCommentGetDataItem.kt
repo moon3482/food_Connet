@@ -20,7 +20,7 @@ data class ReviewChildPageCommentGetDataItem(
     @SerializedName("groupNum")
     val groupNum : Int,
     @SerializedName("comment_order")
-    val order : Int,
+    val comment_order : Int,
     @SerializedName("comment_Writing_DateTime")
     val comment_Writing_DateTime : String,
     @SerializedName("sendTargetUserTable_id")

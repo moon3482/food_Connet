@@ -1,14 +1,15 @@
 package com.example.abled_food_connect.adapter
 
 import android.app.Activity
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -18,8 +19,34 @@ import com.example.abled_food_connect.R
 import com.example.abled_food_connect.ReviewCommentChildActivity
 import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.ReviewParentPageCommentGetDataItem
+import com.example.abled_food_connect.fragments.ReviewFragment
+import com.example.abled_food_connect.retrofit.API
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewParentPageCommentGetDataItem>,var reviewWritingUserNicname : String) : RecyclerView.Adapter<ReviewParentPageCommentRvAdapter.CustromViewHolder>(){
+
+
+
+    //클릭리스너
+    //클릭 인터페이스 정의
+    interface ItemClickListener {
+        fun onClick(view: View, position: Int, review_id :Int ,comment_tb_id : Int)
+
+    }
+
+    //클릭리스너 선언
+    private lateinit var itemClickListener: ItemClickListener
+
+    //클릭리스너 등록 매소드
+    fun setItemClickListener(itemClickListener: ItemClickListener) {
+        this.itemClickListener = itemClickListener
+    }
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewParentPageCommentRvAdapter.CustromViewHolder {
@@ -64,6 +91,57 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
             )
         })
 
+        if(MainActivity.user_table_id == childCommentList.get(position).writing_user_id){
+            holder.commentDotBtn.visibility = View.VISIBLE
+        }
+
+        holder.commentDotBtn.setOnClickListener(View.OnClickListener {
+            var pop = PopupMenu(holder.commentDotBtn.context,holder.commentDotBtn)
+
+            pop.menuInflater.inflate(R.menu.comment_3_dot_menu, pop.menu)
+
+            // 2. 람다식으로 처리
+            pop.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.commentDeleteBtn ->{
+                        var builder = AlertDialog.Builder(holder.commentDotBtn.context)
+                        builder.setTitle("댓글삭제")
+                        builder.setMessage("댓글을 삭제하시겠습니까?")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+                                        Log.d("position", position.toString())
+                                    }
+
+                                    DialogInterface.BUTTON_NEGATIVE ->{
+
+
+                                        reviewDeleteBtnClick(holder.commentDotBtn,holder.commentDotBtn.context,childCommentList.get(position).comment_id,position,childCommentList.get(position).review_id,childCommentList.get(position).comment_class,childCommentList.get(position).groupNum)
+                                        Toast.makeText(holder.commentDotBtn.context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show()
+
+
+
+                                    }
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("취소", listener)
+                        builder.setNegativeButton("삭제", listener)
+
+                        builder.show()
+                    }
+                }
+                false
+            }
+            pop.show()
+        })
+
         if(childCommentList.get(position).nick_name == reviewWritingUserNicname){
             holder.isReveiwWriterTv.visibility = View.VISIBLE
         }
@@ -78,6 +156,8 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
 
         holder.childCommentWrtingBtn.setOnClickListener(View.OnClickListener {
 
+            itemClickListener.onClick(it,position,childCommentList.get(position).review_id, childCommentList.get(position).comment_id)
+
             var toMoveChildCommentActivity : Intent = Intent(holder.childCommentWrtingBtn.context, ReviewCommentChildActivity::class.java)
             toMoveChildCommentActivity.putExtra("review_id", childCommentList.get(position).review_id)
             toMoveChildCommentActivity.putExtra("groupNum", childCommentList.get(position).groupNum)
@@ -88,6 +168,9 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
         })
 
         holder.childCommentOpenBtnLinearLayout.setOnClickListener(View.OnClickListener {
+
+            itemClickListener.onClick(it,position,childCommentList.get(position).review_id, childCommentList.get(position).comment_id)
+
 
             var toMoveChildCommentActivity : Intent = Intent(holder.childCommentWrtingBtn.context, ReviewCommentChildActivity::class.java)
             toMoveChildCommentActivity.putExtra("review_id", childCommentList.get(position).review_id)
@@ -109,13 +192,18 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
 
     fun removeItem(position : Int){
         childCommentList.removeAt(position)
-        notifyDataSetChanged()
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position,getItemCount())
     }
 
 
 
 
     class CustromViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        //삭제버튼 나오는 3dot버튼
+        val commentDotBtn: ImageView = itemView.findViewById(R.id.commentDotBtn)
+
         val commentProfileIv: ImageView = itemView.findViewById(R.id.commentProfileIv)
         val commentNicnameTv: TextView = itemView.findViewById(R.id.commentNicnameTv)
         val isReveiwWriterTv: TextView = itemView.findViewById(R.id.isReveiwWriterTv)
@@ -126,6 +214,51 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
         val childCommentOpenBtnLinearLayout: LinearLayout = itemView.findViewById(R.id.childCommentOpenBtnLinearLayout)
 
 
+    }
+
+
+
+    //댓글 삭제버튼
+    fun reviewDeleteBtnClick(view: View,context : Context, what_click_comment_tb_id:Int,position: Int,review_id:Int,parentOrChild: Int ,groupNum: Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(context.getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.commentDeleteBtn::class.java)
+        val comment_del = api.comment_delete_btn_click(MainActivity.user_table_id,what_click_comment_tb_id,review_id,parentOrChild,groupNum)
+
+
+        comment_del.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                if(response.body() != null) {
+                    val returnString: String = response.body()!!
+
+                    if(returnString =="true"){
+                        Log.d("트루", "트루")
+                        removeItem(position)
+                        // 아래의 클릭리스너는 삭제후 클릭이벤트만 작동하면 되기 때문에 파라미터 값은 어떤 값이든 상관없다.
+                        // 댓글 삭제 후, 새로고침을 위해 작성되었다.
+                        itemClickListener.onClick(view,-1,-1, -1)
+                    }else{
+                        Log.d("false", "false")
+                    }
+
+
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
     }
 
 }

@@ -1,17 +1,18 @@
 package com.example.abled_food_connect
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.example.abled_food_connect.adapter.userProfileRankingLatestThreeRvAdapter
 import com.example.abled_food_connect.data.UserProfileData
+import com.example.abled_food_connect.data.UserProfileEvaluationListRvData
+import com.example.abled_food_connect.data.userProfileRankingLatestThreeData
+import com.example.abled_food_connect.data.userProfileRankingLatestThreeDataItem
 import com.example.abled_food_connect.databinding.ActivityUserProfileBinding
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
@@ -34,7 +35,7 @@ class UserProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_user_profile)
+        setContentView(R.layout.activity_user_profile)
 
         // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
         // 액티비티에서 사용할 바인딩 클래스의 인스턴스 생성
@@ -59,6 +60,12 @@ class UserProfileActivity : AppCompatActivity() {
 
         //유저 정보를 가져온다.
         userProfileLoading(clicked_user_tb_id)
+        RankingLatestThreeLoading(clicked_user_tb_id)
+
+
+        binding.rankingLatestRv.layoutManager = LinearLayoutManager(this).also { it.orientation = LinearLayoutManager.HORIZONTAL }
+        binding.rankingLatestRv.setHasFixedSize(true)
+
 
 
 
@@ -113,6 +120,49 @@ class UserProfileActivity : AppCompatActivity() {
 
 
 
+    fun RankingLatestThreeLoading(user_tb_id:Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.rankingLatestThreeGetInterface::class.java)
+
+        //어떤 리뷰를 선택했는지 확인하는 변수 + 좋아요 클릭여부를 확인하기 위하여 사용자 id보냄
+        val ranking_get = api.ranking_latest_three_get(user_tb_id)
+
+
+        ranking_get.enqueue(object : Callback<userProfileRankingLatestThreeData> {
+            override fun onResponse(
+                call: Call<userProfileRankingLatestThreeData>,
+                response: Response<userProfileRankingLatestThreeData>
+            ) {
+                Log.d("최근랭킹 3개", "리뷰 컨텐츠 : ${response.raw()}")
+                Log.d("최근 랭킹 3개", "리뷰 컨텐츠 : ${response.body().toString()}")
+
+                var items : userProfileRankingLatestThreeData? =  response.body()
+
+                if (items != null) {
+
+                    var RankingLatestThreeArrayList = ArrayList<userProfileRankingLatestThreeDataItem>()
+                    RankingLatestThreeArrayList = items.RankingLatestThreeList as ArrayList<userProfileRankingLatestThreeDataItem>
+
+                    val mAdapter =  userProfileRankingLatestThreeRvAdapter(RankingLatestThreeArrayList)
+                    binding.rankingLatestRv.adapter = mAdapter
+                }
+
+
+
+            }
+
+            override fun onFailure(call: Call<userProfileRankingLatestThreeData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+
+
+
     fun userProfileLoading(user_tb_id:Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
@@ -147,13 +197,29 @@ class UserProfileActivity : AppCompatActivity() {
                 clicked_user_NicName = items!!.nick_name
 
 
-                if(items!!.introduction == null) {
+                if(items!!.introduction == null || items!!.introduction.length == 0) {
                     binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
                 }else{
                     binding.userProfileIntroductionTv.text = items.introduction
                 }
 
                 binding.reviewTitleAndReviewCountTv.text= "작성한 리뷰 ${items.review_count}개"
+
+                //랭킹관련
+
+                binding.rankTv.text = "(${items.rank}위)"
+
+
+                binding.tierTv.text = "${items.tier}"
+                binding.rankingPointTv.text = "${items.rank_point}PT"
+
+
+                Glide.with(applicationContext)
+                    .load(getString(R.string.http_request_base_url)+items!!.tier_image)
+                    .into(binding.tierBadgeImageIv)
+
+
+
 
             }
 

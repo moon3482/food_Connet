@@ -1,24 +1,26 @@
 package com.example.abled_food_connect
 
+import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -35,8 +37,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import com.naver.maps.map.e
-
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -52,7 +52,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.net.URISyntaxException
 
-
 class DirectMessageActivity : AppCompatActivity() {
 
     // 전역 변수로 바인딩 객체 선언
@@ -60,28 +59,29 @@ class DirectMessageActivity : AppCompatActivity() {
 
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
-    val REQUEST_IMAGE_CAPTURE = 1
+
 
     //NodeJS 통신을 위한 전역변수 설정
-    lateinit var mySocket: Socket
-    private lateinit var roomName: String
-    var messageText: String = ""
+    lateinit var mySocket : Socket
+    private lateinit var roomName : String
+    var messageText : String = ""
 
-    val REQUEST_PERMISSION_CAMERA = 110
+
     //내정보
 
 
-    private var MyUserTableId: Int = MainActivity.user_table_id
-    private var MyUserNicName: String = MainActivity.loginUserNickname
-    private var MyProfileImage: String = MainActivity.userThumbnailImage
+    private var MyUserTableId : Int = MainActivity.user_table_id
+    private var MyUserNicName : String = MainActivity.loginUserNickname
+    private var MyProfileImage : String = MainActivity.userThumbnailImage
+
 
 
     //상대정보
     //프로필 클릭한 상대의 유저 테이블 아이디
     //방 이름 및 DB 저장시 사용한다.
-    private var clicked_user_tb_id: Int = 0
-    private lateinit var clicked_user_NicName: String
-    private lateinit var clicked_user_ProfileImage: String
+    private var clicked_user_tb_id : Int = 0
+    private lateinit var clicked_user_NicName : String
+    private lateinit var clicked_user_ProfileImage : String
 
 
     //gson
@@ -95,28 +95,13 @@ class DirectMessageActivity : AppCompatActivity() {
 
     //이전 메시지 테이블 번호
     var before_Dm_tb_id = 0
-
     //최상단 메시지 테이블 번호
     var top_DM_tb_id = 0
 
 
     //리사이클러뷰 맨 아래를 보고 있는가?
     var isRvScrollBottom = false
-    val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) {
-            // use the returned uri
-                val uriContent = result.originalUri
-                val uriFilePath = result.getUriFilePath(this) // optional usage
 
-
-            ImageUpload(uriFilePath)
-
-
-        } else {
-            // an error occurred
-            val exception = result.error
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,8 +127,9 @@ class DirectMessageActivity : AppCompatActivity() {
         settingPermission()
 
 
+
         //어떤 상대를 클릭했는지 인텐트로 받아온다.
-        clicked_user_tb_id = intent.getIntExtra("writer_user_tb_id", 0)
+        clicked_user_tb_id = intent.getIntExtra("writer_user_tb_id",0)
         clicked_user_NicName = intent.getStringExtra("clicked_user_NicName")!!
         clicked_user_ProfileImage = intent.getStringExtra("clicked_user_ProfileImage")!!
         Log.d("상대의 id는?", clicked_user_tb_id.toString())
@@ -161,18 +147,21 @@ class DirectMessageActivity : AppCompatActivity() {
         //userProfileLoading(MainActivity.user_table_id)
 
 
+
+
+
         //방이름은 '유저테이블아이디+"and"+유저테이블아이디' 형식이다.
         //테이블 아이디 순서는 작은 것이 앞쪽에 오도록 한다.
 
-        if (clicked_user_tb_id < MyUserTableId) {
-            roomName = clicked_user_tb_id.toString() + "and" + MyUserTableId.toString()
-        } else {
-            roomName = MyUserTableId.toString() + "and" + clicked_user_tb_id.toString()
+        if(clicked_user_tb_id < MyUserTableId  ){
+            roomName = clicked_user_tb_id.toString()+"and"+ MyUserTableId.toString()
+        }else{
+            roomName = MyUserTableId.toString() +"and"+ clicked_user_tb_id.toString()
         }
 
         //DB 방정보에 유저가 등록되어있는지 확인.
         //미 등록시 방에 유저를 등록시킨다.
-        DM_Room_Join_Checking(roomName, MyUserTableId, clicked_user_tb_id)
+        DM_Room_Join_Checking(roomName,MyUserTableId, clicked_user_tb_id)
 
 
         //채팅내역을 가져온다.
@@ -182,7 +171,7 @@ class DirectMessageActivity : AppCompatActivity() {
         try {
             mySocket = IO.socket("http://52.78.107.230:3000")
             //소켓이 접속할 uri을 설정한다.
-        } catch (e: URISyntaxException) {
+        }catch (e: URISyntaxException) {
             e.printStackTrace()
         }
 
@@ -213,7 +202,7 @@ class DirectMessageActivity : AppCompatActivity() {
 
         binding.messageSendBtn.setOnClickListener {
 
-            if (binding.editText.text.toString().length > 0) {
+            if(binding.editText.text.toString().length>0) {
                 //내가 보내는 것이다.
                 //dm_log_tb_id,sendtime,message_check는 서버에서 처리할 것이다.
                 var g1 = DirectMessageNodeServerSendDataItem(
@@ -244,50 +233,57 @@ class DirectMessageActivity : AppCompatActivity() {
             }
         }
 
+        //갤러리 또는 카메라를 실행시킨다.
+        val cropImage = registerForActivityResult(CropImageContract()) { result ->
+            if (result.isSuccessful) {
+                // use the returned uri
+                val uriContent = result.originalUri
+                val uriFilePath = result.getUriFilePath(this) // optional usage
+                if (uriFilePath != null) {
+                    ImageUpload(uriFilePath)
+                }
+            } else {
+                // an error occurred
+                val exception = result.error
+            }
+        }
+
         binding.imageSendBtn.setOnClickListener {
             //갤러리 또는 카메라를 실행시킨다.
-//            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-//                takePictureIntent.resolveActivity(packageManager)?.also {
-//                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-//                }
-//            }
-
             cropImage.launch(
                 options {
                     setGuidelines(CropImageView.Guidelines.ON)
                 }
             )
-
         }
 
         //스낵바 클릭이벤트
 
 
+
         binding.snackbarLinearLayout.setOnClickListener {
             //스낵바를 클릭하면 리사이클러뷰 최하단으로 이동
-            binding.directMessageChatListRv.layoutManager!!.scrollToPosition(
-                direct_message_data_Arraylist.size - 1
-            )
+            binding.directMessageChatListRv.layoutManager!!.scrollToPosition(direct_message_data_Arraylist.size-1)
 
         }
 
 
         // 스크롤 리스너
-        binding.directMessageChatListRv.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
+        binding.directMessageChatListRv.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
 
-                val lastVisibleItemPosition =
-                    (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() // 화면에 보이는 마지막 아이템의 position
+
+
+                val lastVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition() // 화면에 보이는 마지막 아이템의 position
                 val itemTotalCount = recyclerView.adapter!!.itemCount - 1 // 어댑터에 등록된 아이템의 총 개수 -1
 
 
                 Log.d("보는 위치", "${lastVisibleItemPosition}")
                 // 스크롤이 일정위치까지 올라가면 올리면 페이징 데이터를 가져온다.
                 if (!binding.directMessageChatListRv.canScrollVertically(-1)) {
-                    rvTopPaging(roomName, direct_message_data_Arraylist.get(0).dm_log_tb_id)
+                    rvTopPaging(roomName,direct_message_data_Arraylist.get(0).dm_log_tb_id)
                 }
 
 
@@ -298,44 +294,41 @@ class DirectMessageActivity : AppCompatActivity() {
 
                     isRvScrollBottom = true
 
-                } else {
+                }else{
                     isRvScrollBottom = false
                 }
             }
         })
     }
 
+
+
+
     val onConnect: Emitter.Listener = Emitter.Listener {
         // onConnect는 닉네임과 방번호를 서버로 전달한다.
         //서버 측에서는 이 username을 whoIsON Array 에 추가를 할 것입니다.
 
 
-        mySocket.emit(
-            "login",
-            roomName + "," + MyUserTableId.toString() + "," + clicked_user_tb_id.toString()
-        )
+        mySocket.emit("login", roomName+","+MyUserTableId.toString()+","+clicked_user_tb_id.toString())
         //mySocket.emit("user_room_name", roomName)
-        Log.d("Tag", "Socket is connected with ${MyUserTableId.toString() + roomName}")
+        Log.d("Tag", "Socket is connected with ${MyUserTableId.toString()+roomName}")
     }
 
-    val newUserComing: Emitter.Listener = Emitter.Listener {
+    val newUserComing : Emitter.Listener = Emitter.Listener {
         //서버에서 도착한 메시지 받기.
-        Log.d("유저가 접속했습니다.", it[0].toString())
+        Log.d("유저가 접속했습니다.",  it[0].toString())
 
 
-        for (i in 0..direct_message_data_Arraylist.size - 1) {
-            if (direct_message_data_Arraylist.get(i).user_tb_id == MainActivity.user_table_id && direct_message_data_Arraylist.get(
-                    i
-                ).message_check == ""
-            ) {
+        for(i in 0..direct_message_data_Arraylist.size-1){
+            if(direct_message_data_Arraylist.get(i).user_tb_id == MainActivity.user_table_id && direct_message_data_Arraylist.get(i).message_check == ""){
                 Log.d("읽지않은 메시지가 있습니다.", "나와라")
-                direct_message_data_Arraylist.get(i).message_check = "읽음"
+                direct_message_data_Arraylist.get(i).message_check ="읽음"
 
 
             }
         }
 
-        runOnUiThread({
+        runOnUiThread( {
             binding.directMessageChatListRv.adapter?.notifyDataSetChanged()
         });
 
@@ -346,9 +339,12 @@ class DirectMessageActivity : AppCompatActivity() {
     }
 
 
+
+
+
     val fromServerMessage_Get: Emitter.Listener = Emitter.Listener {
         //서버에서 도착한 메시지 받기.
-        Log.d("Tag", it[0].toString())
+        Log.d("Tag",  it[0].toString())
 
         val data = it[0] as JSONObject
         Log.d("Tag", data.toString())
@@ -365,42 +361,16 @@ class DirectMessageActivity : AppCompatActivity() {
         val send_time_split = send_time.split(" ")
         val show_time_split = send_time_split[1].split(":")
 
-        var toShowTimeStr = show_time_split[0] + ":" + show_time_split[1]
+        var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 
-        if (from_user_tb_id == MyUserTableId) {
-
-
-            direct_message_data_Arraylist.add(
-                DirectMessageRvData(
-                    dm_log_tb_id,
-                    room_name,
-                    MyUserTableId,
-                    MyUserNicName,
-                    "http://52.78.107.230/" + MyProfileImage,
-                    content,
-                    text_or_image_or_dateline,
-                    send_time,
-                    toShowTimeStr,
-                    message_check
-                )
-            )
+        if(from_user_tb_id == MyUserTableId){
 
 
-        } else {
-            direct_message_data_Arraylist.add(
-                DirectMessageRvData(
-                    dm_log_tb_id,
-                    room_name,
-                    clicked_user_tb_id,
-                    clicked_user_NicName,
-                    "http://52.78.107.230/" + clicked_user_ProfileImage,
-                    content,
-                    text_or_image_or_dateline,
-                    send_time,
-                    toShowTimeStr,
-                    message_check
-                )
-            )
+            direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+
+
+        }else{
+            direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
 
         }
 
@@ -411,24 +381,24 @@ class DirectMessageActivity : AppCompatActivity() {
 
 
 
-        runOnUiThread {
+        runOnUiThread( {
 
             directMessageRvAdapter.notifyDataSetChanged()
 
-            if (from_user_tb_id != MyUserTableId) {
+            if(from_user_tb_id != MyUserTableId){
                 //스낵바에 메시지 출력하기
 
 
                 Glide.with(binding.snackbarProfileIv.context)
-                    .load(getString(R.string.http_request_base_url) + clicked_user_ProfileImage)
+                    .load(getString(R.string.http_request_base_url)+clicked_user_ProfileImage)
                     .circleCrop()
                     .into(binding.snackbarProfileIv)
 
                 binding.snackberNicNameTv.text = clicked_user_NicName
 
-                if (text_or_image_or_dateline == "Text") {
+                if(text_or_image_or_dateline == "Text"){
                     binding.snackberContentTv.text = content
-                } else if (text_or_image_or_dateline == "Image") {
+                }else if(text_or_image_or_dateline == "Image"){
                     binding.snackberContentTv.text = "이미지를 받았습니다."
                 }
 
@@ -437,74 +407,47 @@ class DirectMessageActivity : AppCompatActivity() {
 
             }
 
-            if (isRvScrollBottom == true) {
+            if(isRvScrollBottom == true){
 
                 //리사이클러뷰 최하단에 있으면 새로운 메시지가 왔을 때, 자동으로 다음 메시지 보이게한다.
-                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size - 1)
+                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size-1)
             }
 
             //만약 내가 보낸 내용이면 최하단으로 이동한다.
-            if (from_user_tb_id == MyUserTableId) {
+            if(from_user_tb_id == MyUserTableId){
 
                 //리사이클러뷰 최하단에 있으면 새로운 메시지가 왔을 때, 자동으로 다음 메시지 보이게한다.
-                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size - 1)
+                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size-1)
             }
 
 
-        };
+
+
+        });
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == RESULT_OK) {
-            when (requestCode) {
-
-                CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
-                    Log.e("이미지 크롭", "들어옴")
-
-                    //binding.imageview.setImageURI(Uri.parse(resultUri.toString()))
-
-
-
-
-                }
-
-
-
-
-
-
-
-
-
-
-            }
-        }
-    }
 
 
     //서버로 이미지 업로드
 
-    fun ImageUpload(imageUri:String?) {
+    fun ImageUpload(uriFilePath:String){
 
-//        val uriPathHelper = UserRegisterActivity.URIPathHelper()
-//        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
+        val uriPathHelper = UserRegisterActivity.URIPathHelper()
+        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
 
         //creating a file
-        val file = File(imageUri)
+        val file = File(uriFilePath)
 
         //이미지의 확장자를 구한다.
-        val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri.toString())
+        val extension = MimeTypeMap.getFileExtensionFromUrl(uriFilePath.toString())
 
 
-        var fileName = MainActivity.user_table_id.toString() + "." + extension
-        var requestBody: RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
-        var body: MultipartBody.Part =
-            MultipartBody.Part.createFormData("uploaded_file", fileName, requestBody)
+        var fileName = MainActivity.user_table_id.toString()+"."+extension
+        var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),file)
+        var body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file",fileName,requestBody)
 
         //The gson builder
-        var gson: Gson = GsonBuilder()
+        var gson : Gson =  GsonBuilder()
             .setLenient()
             .create()
 
@@ -521,51 +464,33 @@ class DirectMessageActivity : AppCompatActivity() {
         var server = retrofit.create(API.chatImageSend_interface::class.java)
 
 
-        server.chat_image_send_interface_Request(body)
-            .enqueue(object : Callback<ChatImageSendingData> {
-                override fun onFailure(call: Call<ChatImageSendingData>, t: Throwable) {
-                    t.message?.let { Log.d("레트로핏 결과1", it) }
+        server.chat_image_send_interface_Request(body).enqueue(object: Callback<ChatImageSendingData> {
+            override fun onFailure(call: Call<ChatImageSendingData>, t: Throwable) {
+                t.message?.let { Log.d("레트로핏 결과1", it) }
+            }
+
+            override fun onResponse(call: Call<ChatImageSendingData>, response: Response<ChatImageSendingData>) {
+                if (response?.isSuccessful) {
+                    Log.d("이미지를 업로드했습니다",""+response?.body().toString())
+
+                    var items : ChatImageSendingData? =  response.body()
+
+                    items!!.ImageName
+
+                    //내가 보내는 것이다.
+                    //dm_log_tb_id,sendtime,message_check는 서버에서 처리할 것이다.
+                    var g1 = DirectMessageNodeServerSendDataItem(0,roomName,MyUserTableId,clicked_user_tb_id,items!!.ImageName,"Image","","")
+                    var msg_json = gson.toJson(g1)
+
+                    mySocket.emit("message_from_client", msg_json)
+
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
+                    Log.d("이미지업로드실패",""+response?.body().toString())
                 }
-
-                override fun onResponse(
-                    call: Call<ChatImageSendingData>,
-                    response: Response<ChatImageSendingData>
-                ) {
-                    if (response?.isSuccessful) {
-                        Log.d("이미지를 업로드했습니다", "" + response?.body().toString())
-
-                        var items: ChatImageSendingData? = response.body()
-
-                        items!!.ImageName
-
-
-                        //내가 보내는 것이다.
-                        //dm_log_tb_id,sendtime,message_check는 서버에서 처리할 것이다.
-                        var g1 = DirectMessageNodeServerSendDataItem(
-                            0,
-                            roomName,
-                            MyUserTableId,
-                            clicked_user_tb_id,
-                            items!!.ImageName,
-                            "Image",
-                            "",
-                            ""
-                        )
-                        var msg_json = gson.toJson(g1)
-
-                        mySocket.emit("message_from_client", msg_json)
-
-
-                    } else {
-                        Toast.makeText(
-                            getApplicationContext(),
-                            "Some error occurred...",
-                            Toast.LENGTH_LONG
-                        ).show();
-                        Log.d("이미지업로드실패", "" + response?.body().toString())
-                    }
-                }
-            })
+            }
+        })
     }
 
     class URIPathHelper {
@@ -587,10 +512,7 @@ class DirectMessageActivity : AppCompatActivity() {
 
                 } else if (isDownloadsDocument(uri)) {
                     val id = DocumentsContract.getDocumentId(uri)
-                    val contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"),
-                        java.lang.Long.valueOf(id)
-                    )
+                    val contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
                     return getDataColumn(context, contentUri, null, null)
                 } else if (isMediaDocument(uri)) {
                     val docId = DocumentsContract.getDocumentId(uri)
@@ -616,20 +538,12 @@ class DirectMessageActivity : AppCompatActivity() {
             return null
         }
 
-        fun getDataColumn(
-            context: Context,
-            uri: Uri?,
-            selection: String?,
-            selectionArgs: Array<String>?
-        ): String? {
+        fun getDataColumn(context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
             var cursor: Cursor? = null
             val column = "_data"
             val projection = arrayOf(column)
             try {
-                cursor = uri?.let {
-                    context.getContentResolver()
-                        .query(it, projection, selection, selectionArgs, null)
-                }
+                cursor = uri?.let { context.getContentResolver().query(it, projection, selection, selectionArgs,null) }
                 if (cursor != null && cursor.moveToFirst()) {
                     val column_index: Int = cursor.getColumnIndexOrThrow(column)
                     return cursor.getString(column_index)
@@ -652,6 +566,7 @@ class DirectMessageActivity : AppCompatActivity() {
             return "com.android.providers.media.documents" == uri.authority
         }
     }
+
 
 
     override fun onResume() {
@@ -683,7 +598,7 @@ class DirectMessageActivity : AppCompatActivity() {
     }
 
 
-    fun DM_Room_Join_Checking(dm_room_name: String, my_user_tb_id: Int, your_user_tb_id: Int) {
+    fun DM_Room_Join_Checking(dm_room_name:String, my_user_tb_id:Int , your_user_tb_id:Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -691,8 +606,7 @@ class DirectMessageActivity : AppCompatActivity() {
         val api = retrofit.create(API.dmRoomJoinCheck_Interface::class.java)
 
         //db에 방이 있는지 확인한다.
-        val dm_room_join_check_get =
-            api.dm_room_join_check(dm_room_name, my_user_tb_id, your_user_tb_id)
+        val dm_room_join_check_get = api.dm_room_join_check(dm_room_name,my_user_tb_id,your_user_tb_id)
 
 
         dm_room_join_check_get.enqueue(object : Callback<String> {
@@ -703,7 +617,8 @@ class DirectMessageActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "DM_ROOM 조회결과 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "DM_ROOM 조회결과 : ${response.body().toString()}")
 
-                var items: String? = response.body()
+                var items : String? =  response.body()
+
 
 
             }
@@ -715,7 +630,9 @@ class DirectMessageActivity : AppCompatActivity() {
     }
 
 
-    fun chattingListLoading(roomName: String) {
+
+
+    fun chattingListLoading(roomName: String){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -723,7 +640,7 @@ class DirectMessageActivity : AppCompatActivity() {
         val api = retrofit.create(API.getChattingList_Interface::class.java)
 
         //채팅리스트를 불러온다
-        val chatting_list_get = api.direct_message_list_get(roomName, -1)
+        val chatting_list_get = api.direct_message_list_get(roomName,-1)
 
 
         chatting_list_get.enqueue(object : Callback<DirectMessageNodeServerSendData> {
@@ -734,68 +651,42 @@ class DirectMessageActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.body().toString()}")
 
-                var items: DirectMessageNodeServerSendData? = response.body()
+                var items : DirectMessageNodeServerSendData? =  response.body()
 
-                var directMessageNodeServerSendDataItem =
-                    items!!.chattingList as ArrayList<DirectMessageNodeServerSendDataItem>
+                var directMessageNodeServerSendDataItem = items!!.chattingList as ArrayList<DirectMessageNodeServerSendDataItem>
 
-                for (i: Int in 0..directMessageNodeServerSendDataItem.size - 1) {
+                for(i : Int in 0..directMessageNodeServerSendDataItem.size-1){
 
                     var dm_log_tb_id = directMessageNodeServerSendDataItem.get(i).dm_log_tb_id
                     var room_name = directMessageNodeServerSendDataItem.get(i).room_name
                     var from_user_tb_id = directMessageNodeServerSendDataItem.get(i).from_user_tb_id
                     var to_user_tb_id = directMessageNodeServerSendDataItem.get(i).to_user_tb_id
                     var content = directMessageNodeServerSendDataItem.get(i).content
-                    var text_or_image_or_dateline =
-                        directMessageNodeServerSendDataItem.get(i).text_or_image_or_dateline
+                    var text_or_image_or_dateline = directMessageNodeServerSendDataItem.get(i).text_or_image_or_dateline
                     var send_time = directMessageNodeServerSendDataItem.get(i).send_time
                     var message_check = directMessageNodeServerSendDataItem.get(i).message_check
 
                     val send_time_split = send_time.split(" ")
                     val show_time_split = send_time_split[1].split(":")
 
-                    var toShowTimeStr = show_time_split[0] + ":" + show_time_split[1]
+                    var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 
-                    if (from_user_tb_id == MyUserTableId) {
-                        direct_message_data_Arraylist.add(
-                            DirectMessageRvData(
-                                dm_log_tb_id,
-                                room_name,
-                                MyUserTableId,
-                                MyUserNicName,
-                                "http://52.78.107.230/" + MyProfileImage,
-                                content,
-                                text_or_image_or_dateline,
-                                send_time,
-                                toShowTimeStr,
-                                message_check
-                            )
-                        )
-                    } else {
-                        direct_message_data_Arraylist.add(
-                            DirectMessageRvData(
-                                dm_log_tb_id,
-                                room_name,
-                                clicked_user_tb_id,
-                                clicked_user_NicName,
-                                "http://52.78.107.230/" + clicked_user_ProfileImage,
-                                content,
-                                text_or_image_or_dateline,
-                                send_time,
-                                toShowTimeStr,
-                                message_check
-                            )
-                        )
+                    if(from_user_tb_id == MyUserTableId){
+                        direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+                    }else{
+                        direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                     }
                 }
 
 
 
 
-                directMessageRvAdapter = DirectMessageRvAdapter(direct_message_data_Arraylist)
+                directMessageRvAdapter =  DirectMessageRvAdapter(direct_message_data_Arraylist)
                 directMessageRvAdapter.notifyDataSetChanged()
                 binding.directMessageChatListRv.adapter = directMessageRvAdapter
-                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size - 1);
+                binding.directMessageChatListRv.scrollToPosition(direct_message_data_Arraylist.size-1);
+
+
 
 
             }
@@ -807,7 +698,7 @@ class DirectMessageActivity : AppCompatActivity() {
     }
 
 
-    fun rvTopPaging(roomName: String, dm_log_tb_id: Int) {
+    fun rvTopPaging(roomName: String,dm_log_tb_id : Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -815,7 +706,7 @@ class DirectMessageActivity : AppCompatActivity() {
         val api = retrofit.create(API.getChattingList_Interface::class.java)
 
         //채팅리스트를 불러온다
-        val chatting_list_get = api.direct_message_list_get(roomName, dm_log_tb_id)
+        val chatting_list_get = api.direct_message_list_get(roomName,dm_log_tb_id)
 
 
         chatting_list_get.enqueue(object : Callback<DirectMessageNodeServerSendData> {
@@ -826,68 +717,34 @@ class DirectMessageActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.body().toString()}")
 
-                var items: DirectMessageNodeServerSendData? = response.body()
+                var items : DirectMessageNodeServerSendData? =  response.body()
 
-                var directMessageNodeServerSendDataItem =
-                    items!!.chattingList as ArrayList<DirectMessageNodeServerSendDataItem>
+                var directMessageNodeServerSendDataItem = items!!.chattingList as ArrayList<DirectMessageNodeServerSendDataItem>
 
                 var insetCount = 0
-                if (directMessageNodeServerSendDataItem.size > 0) {
+                if(directMessageNodeServerSendDataItem.size>0){
 
-                    for (i: Int in 0..directMessageNodeServerSendDataItem.size - 1) {
+                    for(i : Int in 0..directMessageNodeServerSendDataItem.size-1){
 
-                        Log.d(
-                            ReviewFragment.TAG,
-                            "나와 : ${directMessageNodeServerSendDataItem.get(i)}"
-                        )
+                        Log.d(ReviewFragment.TAG, "나와 : ${directMessageNodeServerSendDataItem.get(i)}")
                         var dm_log_tb_id = directMessageNodeServerSendDataItem.get(i).dm_log_tb_id
                         var room_name = directMessageNodeServerSendDataItem.get(i).room_name
-                        var from_user_tb_id =
-                            directMessageNodeServerSendDataItem.get(i).from_user_tb_id
+                        var from_user_tb_id = directMessageNodeServerSendDataItem.get(i).from_user_tb_id
                         var to_user_tb_id = directMessageNodeServerSendDataItem.get(i).to_user_tb_id
                         var content = directMessageNodeServerSendDataItem.get(i).content
-                        var text_or_image_or_dateline =
-                            directMessageNodeServerSendDataItem.get(i).text_or_image_or_dateline
+                        var text_or_image_or_dateline = directMessageNodeServerSendDataItem.get(i).text_or_image_or_dateline
                         var send_time = directMessageNodeServerSendDataItem.get(i).send_time
                         var message_check = directMessageNodeServerSendDataItem.get(i).message_check
 
                         val send_time_split = send_time.split(" ")
                         val show_time_split = send_time_split[1].split(":")
 
-                        var toShowTimeStr = show_time_split[0] + ":" + show_time_split[1]
+                        var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 
-                        if (from_user_tb_id == MyUserTableId) {
-                            direct_message_data_Arraylist.add(
-                                0,
-                                DirectMessageRvData(
-                                    dm_log_tb_id,
-                                    room_name,
-                                    MyUserTableId,
-                                    MyUserNicName,
-                                    "http://52.78.107.230/" + MyProfileImage,
-                                    content,
-                                    text_or_image_or_dateline,
-                                    send_time,
-                                    toShowTimeStr,
-                                    message_check
-                                )
-                            )
-                        } else {
-                            direct_message_data_Arraylist.add(
-                                0,
-                                DirectMessageRvData(
-                                    dm_log_tb_id,
-                                    room_name,
-                                    clicked_user_tb_id,
-                                    clicked_user_NicName,
-                                    "http://52.78.107.230/" + clicked_user_ProfileImage,
-                                    content,
-                                    text_or_image_or_dateline,
-                                    send_time,
-                                    toShowTimeStr,
-                                    message_check
-                                )
-                            )
+                        if(from_user_tb_id == MyUserTableId){
+                            direct_message_data_Arraylist.add(0,DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+                        }else{
+                            direct_message_data_Arraylist.add(0,DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                         }
 
                         insetCount++
@@ -898,14 +755,14 @@ class DirectMessageActivity : AppCompatActivity() {
 
 
                     runOnUiThread({
-                        binding.directMessageChatListRv.adapter?.notifyItemRangeInserted(
-                            0,
-                            insetCount
-                        )
+                        binding.directMessageChatListRv.adapter?.notifyItemRangeInserted(0, insetCount)
 
                     })
 
                 }
+
+
+
 
 
             }
@@ -915,6 +772,7 @@ class DirectMessageActivity : AppCompatActivity() {
             }
         })
     }
+
 
 
 //    fun NewUserchattingListLoading(roomName: String){
@@ -993,7 +851,16 @@ class DirectMessageActivity : AppCompatActivity() {
 //    }
 
 
-    fun userProfileLoading(user_tb_id: Int) {
+
+
+
+
+
+
+
+
+
+    fun userProfileLoading(user_tb_id:Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -1012,7 +879,7 @@ class DirectMessageActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.body().toString()}")
 
-                var items: UserProfileData? = response.body()
+                var items : UserProfileData? =  response.body()
 
 
                 //로그인한 유저의 프로필 이미지 가져오기
@@ -1030,8 +897,8 @@ class DirectMessageActivity : AppCompatActivity() {
 
 
     //권한 요청
-    fun settingPermission() {
-        var permis = object : PermissionListener {
+    fun settingPermission(){
+        var permis = object  : PermissionListener {
             //            어떠한 형식을 상속받는 익명 클래스의 객체를 생성하기 위해 다음과 같이 작성
             override fun onPermissionGranted() {
                 Log.d("TAG", "권한 허가됨")
@@ -1051,8 +918,7 @@ class DirectMessageActivity : AppCompatActivity() {
             .setPermissions(
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA
-            )
+                android.Manifest.permission.CAMERA)
             .check()
     }
 }

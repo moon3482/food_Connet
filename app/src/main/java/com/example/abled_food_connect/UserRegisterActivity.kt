@@ -4,16 +4,13 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentUris
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
@@ -27,19 +24,22 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import com.canhub.cropper.CropImage
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageView
+import com.canhub.cropper.options
+import com.example.abled_food_connect.databinding.ActivityUserRegisterBinding
 import com.example.abled_food_connect.interfaces.retrofit_interface
 import com.example.abled_food_connect.retrofit.API
-import com.example.abled_food_connect.databinding.ActivityUserRegisterBinding
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -72,8 +72,8 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
     //이미지 Uri
-    lateinit var userProfileImageUri : Uri
-    lateinit var thumbnail_userProfileImageUri : Uri
+    lateinit var userProfileImageUri : String
+    lateinit var thumbnail_userProfileImageUri : String
 
 
 
@@ -145,12 +145,81 @@ class UserRegisterActivity : AppCompatActivity() {
         // 카메라 및 이미지 권한체크
         settingPermission()
 
-        //이미지뷰를 누르면 사진을 변경할 수 있다.
+
+
+        val cropImage = registerForActivityResult(CropImageContract()) { result ->
+            if (result.isSuccessful) {
+                // use the returned uri
+                Log.d("TAG", "석세스")
+                val uriContent = result.originalUri
+                val uriFilePath = result.getUriFilePath(this) // optional usage
+
+
+
+                //profile_get_check에 이미지를 가져왔다는 표시를 해준다
+                //ok가 아니면 가입완료를 눌렀을 경우, 이미지요청 토스트 메시지가 출력된다.
+                profile_get_check = "OK"
+
+                //이미지를 가져와서 이미지 뷰에 보여준다.
+                binding.userProfileIv.setImageURI(uriContent)
+
+
+                //이미지 uri를 비트맵으로 변환한다.
+                val bitmap =
+                    MediaStore.Images.Media.getBitmap(applicationContext.getContentResolver(), uriContent)
+
+                //썸네일 크기 줄이기 비트맵 크기를 1/2로 줄인다.
+
+                var width : Int =bitmap.width
+                var height : Int = bitmap.height
+
+                var resize_bitmap : Bitmap
+                if(width>100||height>100){
+                    resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, 300, 300*height/width, true)
+
+                }else{
+                    resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, width/2, height/2, true)
+                }
+
+                //썸네일 용량 줄이기 비트맵 화질을 낮춘다.
+                resize_bitmap = compressBitmap(resize_bitmap)!!
+
+
+
+
+
+//                Log.d("uri", resultUri.toString())
+
+
+
+                if (uriFilePath != null) {
+                    userProfileImageUri = uriFilePath
+                    thumbnail_userProfileImageUri =  getRealPathFromURI(getImageUri(applicationContext,resize_bitmap)!!)!!
+                    //thumbnail_userProfileImageUri =
+
+                    Log.d("uriContent", uriContent.toString())
+                    Log.d("uriFilePath", uriFilePath)
+                    Log.d("uri", userProfileImageUri)
+                    Log.d("uri", thumbnail_userProfileImageUri)
+                }
+
+
+
+
+            } else {
+                // an error occurred
+                val exception = result.error
+            }
+        }
+
+        //이미지뷰를 누르면 갤러리 또는 카메라를 실행시킨다.
         binding.userProfileIv.setOnClickListener {
 
-            CropImage.activity()
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .start(this);
+            cropImage.launch(
+                options {
+                    setGuidelines(CropImageView.Guidelines.ON)
+                }
+            )
 
         }
 
@@ -439,8 +508,6 @@ class UserRegisterActivity : AppCompatActivity() {
     }
 
 
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK){
@@ -449,49 +516,17 @@ class UserRegisterActivity : AppCompatActivity() {
                 CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
 
                     //profile_get_check에 글을 넣어준다
-                    profile_get_check = "OK"
+                    Log.d("TAG", "크롭이미지 리퀘스트코드")
 
-                    //이미지를 가져와서 이미지 뷰에 보여준다.
-                    val result = CropImage.getActivityResult(data)
-                    val resultUri: Uri = result.uri
-                    binding.userProfileIv.setImageURI(Uri.parse(resultUri.toString()))
-
-
-                    //이미지 uri를 비트맵으로 변환한다.
-                    val bitmap =
-                        MediaStore.Images.Media.getBitmap(applicationContext.getContentResolver(), resultUri)
-
-                    //썸네일 크기 줄이기 비트맵 크기를 1/2로 줄인다.
-
-                    var width : Int =bitmap.width
-                    var height : Int = bitmap.height
-
-                    var resize_bitmap : Bitmap
-                    if(width>100||height>100){
-                        resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, 300, 300*height/width, true)
-
-                    }else{
-                        resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, width/2, height/2, true)
-                    }
-
-                    //썸네일 용량 줄이기 비트맵 화질을 낮춘다.
-                    resize_bitmap = compressBitmap(resize_bitmap)!!
-
-
-
-
-
-                    Log.d("uri", resultUri.toString())
-                    Log.d("uri", getImageUri(applicationContext,bitmap).toString())
-                    Log.d("uri", getImageUri(applicationContext,resize_bitmap).toString())
-
-
-                    userProfileImageUri = resultUri
-                    thumbnail_userProfileImageUri = getImageUri(applicationContext,resize_bitmap)!!
                 }
             }
         }
     }
+
+
+
+
+
 
     //비트맵 이미지를 압축시칸다.
     private fun compressBitmap(bitmap: Bitmap): Bitmap? {
@@ -511,42 +546,56 @@ class UserRegisterActivity : AppCompatActivity() {
     }
 
 
+    private fun getRealPathFromURI(contentURI: Uri): String? {
+        val result: String?
+        val cursor = contentResolver.query(contentURI, null, null, null, null)
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.path
+        } else {
+            cursor.moveToFirst()
+            val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            result = cursor.getString(idx)
+            cursor.close()
+        }
+        return result
+    }
 
 
 
 
 
-    fun RegistUserInfo(imageUri:Uri,thumbnail_ImageUri:Uri){
 
-        //원본이미지
-        val uriPathHelper = UserProfileModifyActivity.URIPathHelper()
-        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
+    fun RegistUserInfo(imageUri:String,thumbnail_ImageUri:String){
+
+//        //원본이미지
+//        val uriPathHelper = UserProfileModifyActivity.URIPathHelper()
+//        var filePath = imageUri?.let { uriPathHelper.getPath(this, it) }
 
         //creating a file
-        val file = File(filePath)
+        val file = File(imageUri)
 
         //이미지의 확장자를 구한다.
-        val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri.toString())
+        val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri)
 
 
-        var fileName = MainActivity.loginUserId+"."+extension
+        var fileName = user_id+"."+extension
         var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),file)
         var body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file",fileName,requestBody)
 
 
-        //썸네일이미지
-        val thumbnail_uriPathHelper = UserProfileModifyActivity.URIPathHelper()
-        var thumbnail_filePath = thumbnail_ImageUri?.let { thumbnail_uriPathHelper.getPath(this, it) }
+//        //썸네일이미지
+//        val thumbnail_uriPathHelper = UserProfileModifyActivity.URIPathHelper()
+//        var thumbnail_filePath = thumbnail_ImageUri?.let { thumbnail_uriPathHelper.getPath(this, it) }
 
         //creating a file
-        val thumbnail_file = File(thumbnail_filePath)
+        val thumbnail_file = File(thumbnail_ImageUri)
 
         //이미지의 확장자를 구한다.
-        val thumbnail_extension = MimeTypeMap.getFileExtensionFromUrl(thumbnail_ImageUri.toString())
+        val thumbnail_extension = MimeTypeMap.getFileExtensionFromUrl(thumbnail_ImageUri)
 
 
         //var thumbnail_fileName = MainActivity.user_table_id.toString()+"."+thumbnail_extension
-        var thumbnail_fileName = MainActivity.loginUserId+".jpeg"
+        var thumbnail_fileName = user_id+".jpeg"
         var thumbnail_requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),thumbnail_file)
         var thumbnail_body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file1",thumbnail_fileName,thumbnail_requestBody)
 

@@ -38,6 +38,46 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/tierBadgeImageIv"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginRight="3dp"/>
+
+                <TextView
+                    android:id="@+id/tierTv"
+                    android:text="골드"
+                    android:textStyle="bold"
+                    android:textSize="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"/>
+
+                <TextView
+                    android:id="@+id/rankingPointTv"
+                    android:textStyle="bold"
+                    android:text="2990PT"
+                    android:textSize="15dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/rankTv"
+                    android:textStyle="bold"
+                    android:text="(1위)"
+                    android:textSize="15dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/toUserProfileModifyActivityBtn"
                 android:textColor="@color/com_facebook_blue"
@@ -188,7 +228,7 @@
                 android:background="#fff"
                 android:elevation="4dp"
                 android:padding="20dp"
-                android:text="뱃지보기"
+                android:text="뱃지/지난랭킹보기"
                 android:textSize="18dp"
                 android:textStyle="bold"
                 android:layout_weight="1"/>
