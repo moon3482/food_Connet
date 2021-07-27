@@ -1,28 +1,20 @@
 package com.example.abled_food_connect.adapter
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.OriginalSize
 import coil.transform.RoundedCornersTransformation
 import com.example.abled_food_connect.R
-import com.example.abled_food_connect.array.array
 import com.example.abled_food_connect.data.ChatItem
 import com.example.abled_food_connect.data.DatetimeToTime
 import com.example.abled_food_connect.data.ItemType
 import com.example.abled_food_connect.databinding.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
-import de.hdodenhof.circleimageview.CircleImageView
-import java.text.SimpleDateFormat
-import kotlin.collections.ArrayList
 
 class ChatAdapter :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -211,7 +203,10 @@ class ChatAdapter :
         fun bind(data: ChatItem) {
             val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
             binding.ImageChatOthersProFileImage.load(context.getString(R.string.http_request_base_url) + data.ThumbnailImage)
-            binding.ImageChatOthersImage.load(context.getString(R.string.http_request_base_url) + data.content)
+            binding.ImageChatOthersImage.load(context.getString(R.string.http_request_base_url) + data.content){
+                size(OriginalSize)
+                transformations(RoundedCornersTransformation(30f))
+            }
             binding.ImageChatOthersNickName.text = data.name
             binding.ImageChatOthersTimeStamp.text = isDatetimeToTime(data)
             if (array > 0) {
@@ -229,7 +224,11 @@ class ChatAdapter :
         fun bind(data: ChatItem) {
             val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
 
-            binding.ImageChatMyImage.load(context.getString(R.string.http_request_base_url) + data.content)
+            binding.ImageChatMyImage.load(context.getString(R.string.http_request_base_url) + data.content){
+                size(OriginalSize)
+                transformations(RoundedCornersTransformation(30f))
+
+            }
             binding.ImageChatMyTimeStamp.text = isDatetimeToTime(data)
             if (array > 0) {
                 binding.ImageReadMembersMyMessage.text = array.toString()

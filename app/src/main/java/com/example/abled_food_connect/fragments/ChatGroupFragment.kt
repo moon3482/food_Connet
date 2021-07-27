@@ -2,7 +2,6 @@ package com.example.abled_food_connect.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.telecom.Call
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,12 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.adapter.GroupChatListFragmentAdapter
-import com.example.abled_food_connect.adapter.MainFragmentAdapter
-import com.example.abled_food_connect.data.*
+import com.example.abled_food_connect.data.GroupChatListData
+import com.example.abled_food_connect.data.LoadingGroupChat
+import com.example.abled_food_connect.data.RoomData
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import io.socket.client.IO
@@ -85,6 +84,7 @@ class ChatGroupFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d(ChatGroupFragment.TAG, "그룹채팅 프래그먼트 onResume()")
+
     }
     override fun onPause() {
         super.onPause()

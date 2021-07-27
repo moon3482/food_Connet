@@ -10,8 +10,14 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
     private  val TAG = "MyFirebaseMsgService"
@@ -50,6 +56,8 @@ private fun sendNotification(title:String,messageBody: String) {
         .setColor(getColor(R.color.txt_white_gray))
         .setContentTitle(title)
         .setContentText(messageBody)
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
         .setAutoCancel(true)
         .setSound(defaultSoundUri)
         .setContentIntent(pendingIntent)
@@ -60,11 +68,35 @@ private fun sendNotification(title:String,messageBody: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val channel = NotificationChannel(channelId,
             "Channel human readable title",
-            NotificationManager.IMPORTANCE_DEFAULT)
+            NotificationManager.IMPORTANCE_HIGH)
         notificationManager.createNotificationChannel(channel)
     }
 
     notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
 }
 
+    override fun onNewToken(p0: String) {
+        super.onNewToken(p0)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(RoomAPI::class.java).tokenInsert(MainActivity.user_table_id,p0).enqueue(object:
+            Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful){
+                    if (response.body() == "true"){
+
+                    }else{
+
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+
+            }
+        })
+    }
 }
