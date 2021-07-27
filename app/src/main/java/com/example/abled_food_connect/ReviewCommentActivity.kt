@@ -44,6 +44,8 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
     private var review_id : Int = 0
+    private var room_id : Int = 0
+
 
 
 
@@ -113,7 +115,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.Toolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
-        binding.Toolbar.title = "리뷰보기"
+        binding.Toolbar.title = "리뷰"
         //툴바에 백버튼 만들기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -162,8 +164,8 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                                     DialogInterface.BUTTON_NEGATIVE ->{
 
-                                        reviewDeleteBtnClick(review_id)
-                                        Toast.makeText(applicationContext, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                                        reviewDeleteBtnClick(review_id,room_id)
+
                                     }
 
                                 }
@@ -518,6 +520,8 @@ class ReviewCommentActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "리뷰 코멘트 성공 : ${items!!.roomList}")
 
 
+                room_id = items!!.roomList.get(0).room_tb_id
+
                 //작성자 프로필
                 Glide.with(applicationContext)
                     .load(getString(R.string.http_request_base_url)+items!!.roomList.get(0).profile_image)
@@ -664,13 +668,13 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
 
-    fun reviewDeleteBtnClick(what_click_review_tb_id:Int){
+    fun reviewDeleteBtnClick(what_click_review_tb_id:Int,room_id: Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewDeleteBtn::class.java)
-        val review_Like_Btn_Click = api.review_delete_btn_click(MainActivity.user_table_id,what_click_review_tb_id)
+        val review_Like_Btn_Click = api.review_delete_btn_click(MainActivity.user_table_id,what_click_review_tb_id,room_id)
 
 
         review_Like_Btn_Click.enqueue(object : Callback<String> {
@@ -685,7 +689,8 @@ class ReviewCommentActivity : AppCompatActivity() {
                     val returnString: String = response.body()!!
 
                     if(returnString =="true"){
-                        Log.d("트루", "트루")
+                        Toast.makeText(applicationContext, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        onBackPressed()
                     }else{
                         Log.d("false", "false")
                     }

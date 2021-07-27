@@ -312,13 +312,11 @@ class API {
 
 
     interface UserProfileJoinHistoryRvInterface {
-
         @Multipart
         @POST("schedule/user_profile_join_history_rv_list_get.php")
         fun user_profile_join_history_rv_list_get(
             @Part("user_tb_nicname") user_tb_nicname: String
         ): Call<UserProfileJoinHistoryRvData>
-
     }
 
 
@@ -470,7 +468,8 @@ class API {
         @POST("review/review_delete_btn_click.php")
         fun review_delete_btn_click(
             @Part("my_user_tb_id") my_user_tb_id: Int,
-            @Part("what_click_review_tb_id") what_click_review_tb_id: Int
+            @Part("what_click_review_tb_id") what_click_review_tb_id: Int,
+            @Part("room_id") room_id: Int
 
         ): Call<String>
     }
