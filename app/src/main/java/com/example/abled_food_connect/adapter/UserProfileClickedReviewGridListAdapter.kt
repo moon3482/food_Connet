@@ -12,10 +12,12 @@ import coil.load
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.UserProfileClickedReviewGridListActivity
 import com.example.abled_food_connect.UserProfileClickedReviewVerticalListActivity
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
 
 class UserProfileClickedReviewGridListAdapter (val reviewDetailViewRvDataArraylist: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<UserProfileClickedReviewGridListAdapter.CustromViewHolder>(){
+
 
 
 
@@ -40,6 +42,8 @@ class UserProfileClickedReviewGridListAdapter (val reviewDetailViewRvDataArrayli
 
 
         holder.reveiwPicture.setOnClickListener(View.OnClickListener {
+
+
             var toMoveVerticalListActivityIntent = Intent(holder.reveiwPicture.context, UserProfileClickedReviewVerticalListActivity::class.java)
 
             //그리드뷰의 어레이리스트를 버티컬뷰 어레이리스트로 사용할 수 있게 넘겨준다.
@@ -47,6 +51,9 @@ class UserProfileClickedReviewGridListAdapter (val reviewDetailViewRvDataArrayli
 
             //몇번째 포지션 아이템을 선택했는가. 버티컬뷰로 이동했을때 해당 포지션의 스크롤로 이동한다.
             toMoveVerticalListActivityIntent.putExtra("whatClickPositionInGridView", position)
+
+            //그리드뷰에서 클릭한 데이터인가?.
+            toMoveVerticalListActivityIntent.putExtra("isSentGridView", "yes")
 
             startActivity(holder.reveiwPicture.context,toMoveVerticalListActivityIntent,null)
         })

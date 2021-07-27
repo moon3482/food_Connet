@@ -452,11 +452,11 @@ class ReviewWriting : AppCompatActivity() {
 //                    nextIntent.putExtra("review_id", response?.body().toString())
 //                    startActivity(nextIntent)
 
-                    var toMoveCommentActivityIntent : Intent = Intent(this@ReviewWriting, ReviewCommentActivity::class.java)
+                    var toMoveUserProfileClickedReviewVerticalListActivityIntent : Intent = Intent(this@ReviewWriting, UserProfileClickedReviewVerticalListActivity::class.java)
 
                     var review_id = response?.body().toString().toInt()
-                    toMoveCommentActivityIntent.putExtra("review_id", review_id)
-                    startActivity(toMoveCommentActivityIntent)
+                    toMoveUserProfileClickedReviewVerticalListActivityIntent.putExtra("review_id", review_id)
+                    startActivity(toMoveUserProfileClickedReviewVerticalListActivityIntent)
 
                     Toast.makeText(applicationContext, "리뷰를 작성했습니다.", Toast.LENGTH_SHORT).show()
                     finish()
