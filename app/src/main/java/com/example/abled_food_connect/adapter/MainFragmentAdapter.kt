@@ -2,7 +2,6 @@ package com.example.abled_food_connect.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.RoomInformationActivity
@@ -96,13 +94,7 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
         }
         location = location.substring(0, location.length - 1)
         testholder.roomLocation.text = location
-        testholder.itemView.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-
-                joinRoomCheckMethod(maindata, maindata.address)
-
-            }
-        })
+        testholder.itemView.setOnClickListener { joinRoomCheckMethod(maindata, maindata.address) }
 
 
     }
@@ -153,11 +145,14 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         intent.putExtra("date", mainData.date)
                         intent.putExtra("shopName", mainData.shopName)
                         intent.putExtra("roomStatus", mainData.roomStatus)
-                        intent.putExtra("numOfPeople", mainData.numOfPeople.toString())
+                        intent.putExtra("numOfPeople", mainData.numOfPeople)
                         intent.putExtra("keyWords", mainData.keyWords)
-                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople.toString())
+                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
                         intent.putExtra("mapX", mainData.mapX)
                         intent.putExtra("mapY", mainData.mapY)
+                        intent.putExtra("roomGender",mainData.gender)
+                        intent.putExtra("minimumAge",mainData.minimumAge)
+                        intent.putExtra("maximumAge",mainData.maximumAge)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
                         intent.putExtra("join", "0")
                         context.startActivity(intent)
@@ -171,11 +166,14 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         intent.putExtra("date", mainData.date)
                         intent.putExtra("shopName", mainData.shopName)
                         intent.putExtra("roomStatus", mainData.roomStatus)
-                        intent.putExtra("numOfPeople", mainData.numOfPeople.toString())
+                        intent.putExtra("numOfPeople", mainData.numOfPeople)
                         intent.putExtra("keyWords", mainData.keyWords)
                         intent.putExtra("mapX", mainData.mapX)
                         intent.putExtra("mapY", mainData.mapY)
-                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople.toString())
+                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
+                        intent.putExtra("minimumAge",mainData.minimumAge)
+                        intent.putExtra("maximumAge",mainData.maximumAge)
+                        intent.putExtra("roomGender",mainData.gender)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
                         intent.putExtra("join", "1")
                         context.startActivity(intent)
@@ -206,7 +204,7 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                 val filterCheck = constraint.toString()
                 if (filterCheck.isEmpty()) {
                     filList = unList
-                    Log.e("필터 동작","없을때")
+
                 } else {
                     filList = ArrayList<MainFragmentItemData>()
                     for (index in unList) {
@@ -216,7 +214,7 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         }
 
                     }
-                    Log.e("필터 동작","있을때")
+
                     filList
                 }
                 val filterResult = FilterResults()

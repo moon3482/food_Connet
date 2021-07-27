@@ -1,13 +1,12 @@
 package com.example.abled_food_connect
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.abled_food_connect.adapter.ChatRoomJoinSubscriptionRCVAdapter
 import com.example.abled_food_connect.data.ChatRoomSubscriptionResult
 import com.example.abled_food_connect.data.ChatRoomUserData
-import com.example.abled_food_connect.data.MessageData
 import com.example.abled_food_connect.data.RoomData
 import com.example.abled_food_connect.databinding.ActivityJoinRoomSubscriptionBinding
 import com.example.abled_food_connect.retrofit.RoomAPI

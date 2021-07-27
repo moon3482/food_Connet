@@ -2,7 +2,6 @@ package com.example.abled_food_connect.retrofit
 
 
 import com.example.abled_food_connect.data.*
-import com.example.abled_food_connect.works.DatetimeCheckWork
 import com.example.abled_food_connect.works.ScheduleCheckWork
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -104,7 +103,7 @@ interface RoomAPI {
     fun joinSubscription(
         @Field("roomId") roomId: String?,
         @Field("userIndexId") userIndexId: String?
-    ): Call<String>
+    ): Call<SubscriptionData>
     //방 입장신청 체크
     @FormUrlEncoded
     @POST("/groupChat/subscriptionCheck.php")
@@ -181,5 +180,13 @@ interface RoomAPI {
         @Field("userIndex")userIndex:Int
 
     ):Call<ScheduleCheckWork.ScheduleArray>
+
+    @FormUrlEncoded
+    @POST("tokenInsert.php")
+    fun tokenInsert(
+        @Field("userIndex")userIndex:Int,
+        @Field("token")token:String
+
+    ):Call<String>
 }
 

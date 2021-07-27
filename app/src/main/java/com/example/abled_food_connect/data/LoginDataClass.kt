@@ -13,5 +13,9 @@ data class LoginDataClass(
     @SerializedName("userNickname")
     val userNickname: String,
     @SerializedName("userThumbnailImage")
-    val userThumbnailImage:String
+    val userThumbnailImage: String,
+    @SerializedName("userGender")
+    val userGender: String,
+    @SerializedName("userAge")
+    val userAge: Int
 )

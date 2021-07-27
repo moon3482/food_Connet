@@ -2,6 +2,7 @@ package com.example.abled_food_connect
 
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,9 +11,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.AbsListView
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
+import com.example.abled_food_connect.data.SubscriptionData
 import com.example.abled_food_connect.databinding.ActivityRoomInformationBinding
 import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
@@ -34,6 +35,9 @@ class RoomInformationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         var view = binding.root
         setContentView(view)
+        val shared = getSharedPreferences("pref_user_data", Context.MODE_PRIVATE)
+        val userAge = shared.getInt("userAge", 0)
+        val userGender = shared.getString("userGender", "")
         val intent = intent
         val roomId = intent.getStringExtra("roomId")
         val title = intent.getStringExtra("title")
@@ -43,11 +47,14 @@ class RoomInformationActivity : AppCompatActivity() {
         val date = intent.getStringExtra("date")
         val shopName = intent.getStringExtra("shopName")
         val roomStatus = intent.getDoubleExtra("roomStatus", 0.0);
-        val nowNumOfPeople = intent.getStringExtra("nowNumOfPeople")
-        val numOfPeople = intent.getStringExtra("numOfPeople")
+        val nowNumOfPeople = intent.getIntExtra("nowNumOfPeople", 0)
+        val numOfPeople = intent.getIntExtra("numOfPeople", 0)
         val keyWords = intent.getStringExtra("keyWords")
         val imageUrl = intent.getStringExtra("imageUrl")
         val join = intent.getStringExtra("join")
+        val minimumAge = intent.getIntExtra("minimumAge", 0)
+        val maximumAge = intent.getIntExtra("maximumAge", 0)
+        val roomGender = intent.getStringExtra("roomGender")
         val mapX = intent.getDoubleExtra("mapX", 0.0)
         val mapY = intent.getDoubleExtra("mapY", 0.0)
         if (join == "0") {
@@ -61,7 +68,45 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RoomInfoSubscriptionRoomBtn.setOnClickListener {
 
             if (roomId != null) {
-                joinSubscription(roomId,MainActivity.user_table_id.toString())
+                if (numOfPeople > nowNumOfPeople) {
+                    when (true) {
+
+                        roomGender.equals(userGender) -> {
+                            Log.e("userAge", userAge.toString())
+                            if (userAge in minimumAge..maximumAge) {
+                                joinSubscription(roomId, MainActivity.user_table_id.toString())
+                            } else {
+                                val dialog = AlertDialog.Builder(this)
+                                dialog.setMessage("해당방의 모집 나이에 맞지 않습니다.")
+                                    .setPositiveButton("확인", null)
+                                    .show()
+                            }
+                        }
+                        roomGender.equals("any") -> {
+                            Log.e("userAge", userAge.toString())
+                            if (userAge in minimumAge..maximumAge) {
+                                joinSubscription(roomId, MainActivity.user_table_id.toString())
+                            } else {
+                                val dialog = AlertDialog.Builder(this)
+                                dialog.setMessage("해당방의 모집 나이에 맞지 않습니다.")
+                                    .setPositiveButton("확인", null)
+                                    .show()
+                            }
+                        }
+                        else -> {
+                            val dialog = AlertDialog.Builder(this)
+                            dialog.setMessage("해당방의 모집 성별이 맞지 않습니다.")
+                                .setPositiveButton("확인", null)
+                                .show()
+                        }
+
+
+                    }
+
+
+                } else {
+                    joinSubscription(roomId, MainActivity.user_table_id.toString())
+                }
             }
 
         }
@@ -176,7 +221,8 @@ class RoomInformationActivity : AppCompatActivity() {
                 binding.RoomInfoMapImageView.setOnClickListener {
                     mapClick = true
 
-                    val url = "nmap://place?lat=${y}&lng=${x}&name=${placeName}\n\n${address}&appname=${packageName}"
+                    val url =
+                        "nmap://place?lat=${y}&lng=${x}&name=${placeName}\n\n${address}&appname=${packageName}"
 //                    val url = "nmap://search?query=${placeName}&appname=${packageName}"
 
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -216,7 +262,7 @@ class RoomInformationActivity : AppCompatActivity() {
         return builder.build()
     }
 
-    fun joinSubscription(room:String,userIndex:String){
+    fun joinSubscription(room: String, userIndex: String) {
 
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
@@ -224,31 +270,47 @@ class RoomInformationActivity : AppCompatActivity() {
             .client(createOkHttpClient())
             .build()
 
-        val server = retrofit.create(RoomAPI::class.java).joinSubscription(room,userIndex).enqueue(object :Callback<String>{
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                if(response.body() == "true"){
-                    val dialog = AlertDialog.Builder(this@RoomInformationActivity)
-                    dialog.setTitle("참여 신청을 보냈습니다.")
-                    dialog.setPositiveButton("확인", null)
-                    dialog.show()
-                }else if(response.body() == null){
-                    val dialog = AlertDialog.Builder(this@RoomInformationActivity)
-                    dialog.setTitle("참여 신청에 실패 하였습니다.")
-                    dialog.setPositiveButton("확인", null)
-                    dialog.show()
+        retrofit.create(RoomAPI::class.java).joinSubscription(room, userIndex)
+            .enqueue(object : Callback<SubscriptionData> {
+                override fun onResponse(call: Call<SubscriptionData>, response: Response<SubscriptionData>) {
+                    if (response.isSuccessful) {
+
+                        when (response.body()!!.status) {
+
+                            "true" -> {
+                                val dialog = AlertDialog.Builder(this@RoomInformationActivity)
+                                dialog.setTitle("참여 신청을 보냈습니다.")
+                                dialog.setPositiveButton("확인", null)
+                                dialog.show()
+                            }
+                            "null" -> {
+                                val dialog = AlertDialog.Builder(this@RoomInformationActivity)
+                                dialog.setTitle("참여 신청에 실패 하였습니다.")
+                                dialog.setPositiveButton("확인", null)
+                                dialog.show()
+                            }
+                            "full" -> {
+
+                                val dialog = AlertDialog.Builder(this@RoomInformationActivity)
+                                dialog.setTitle("방이 꽉 찼습니다")
+                                dialog.setPositiveButton("확인", null)
+                                dialog.show()
+                            }
+                            else -> {
+                                val dialog = AlertDialog.Builder(this@RoomInformationActivity)
+                                dialog.setTitle("이미 보낸 신청이 있습니다.")
+                                dialog.setPositiveButton("확인", null)
+                                dialog.show()
+                            }
+                        }
+                    }
+
                 }
-                else{
-                    val dialog = AlertDialog.Builder(this@RoomInformationActivity)
-                    dialog.setTitle("이미 보낸 신청이 있습니다.")
-                    dialog.setPositiveButton("확인", null)
-                    dialog.show()
+
+                override fun onFailure(call: Call<SubscriptionData>, t: Throwable) {
+
                 }
-            }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
-
-            }
-
-        })
+            })
     }
 }

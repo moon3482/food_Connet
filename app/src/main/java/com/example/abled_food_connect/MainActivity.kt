@@ -8,8 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
-import android.location.Location
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,8 +21,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.abled_food_connect.data.LoginDataClass
-import com.example.abled_food_connect.fragments.MyPageFragment
 import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.facebook.*
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
@@ -44,7 +42,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
@@ -53,13 +50,11 @@ import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var callbackManager: CallbackManager
@@ -90,6 +85,8 @@ class MainActivity : AppCompatActivity() {
         var loginUserId: String = ""
         var loginUserNickname: String = ""
         var userThumbnailImage: String = ""
+        var userGender:String = ""
+        var userAge:Int = 0
     }
 
 
@@ -168,12 +165,10 @@ class MainActivity : AppCompatActivity() {
 
 
         btnKakaoLogin.setOnClickListener {
-            UserApiClient.instance.run {
-                if (isKakaoTalkLoginAvailable(this@MainActivity)) {
-                    loginWithKakaoTalk(this@MainActivity, callback = callback)
-                } else {
-                    loginWithKakaoAccount(this@MainActivity, callback = callback)
-                }
+            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
+            } else {
+                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
             }
 
 //            UserApiClient.instance.loginWithKakaoAccount(applicationContext, prompts = listOf(Prompt.LOGIN)) { token, error ->
@@ -222,11 +217,7 @@ class MainActivity : AppCompatActivity() {
 //            }
 //
 //
-            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
-            } else {
-                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-            }
+
         }
         callbackManager = CallbackManager.Factory.create()
 
@@ -737,6 +728,8 @@ class MainActivity : AppCompatActivity() {
                         loginUserId = loginId
                         loginUserNickname = loginNickname
                         userThumbnailImage = loginThumbnailImage
+                        userAge = userlogin.userAge
+                        userGender = userlogin.userGender
 
 
                         //쉐어드프리퍼런스에 값을 저장한다.
@@ -792,6 +785,8 @@ class MainActivity : AppCompatActivity() {
         edit.putString("loginUserId", loginUserId)
         edit.putString("loginUserNickname", loginUserNickname)
         edit.putString("userThumbnailImage", userThumbnailImage)
+        edit.putString("userGender", userGender)
+        edit.putInt("userAge",userAge)
         edit.putBoolean("login_check", true)
         edit.apply()//저장완료
 
@@ -804,6 +799,8 @@ class MainActivity : AppCompatActivity() {
         loginUserId = pref.getString("loginUserId", "")!!
         loginUserNickname = pref.getString("loginUserNickname", "")!!
         userThumbnailImage = pref.getString("userThumbnailImage", "")!!
+        userAge = pref.getInt("userAge",0)
+        userGender = pref.getString("userGender","")!!
         sharedLoginCheckBoolean = pref.getBoolean("login_check", false)!!
 
         //자동로그인 확인
@@ -817,6 +814,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     fun token() {
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w(TAG, "Fetching FCM registration token failed", task.exception)
@@ -828,6 +826,28 @@ class MainActivity : AppCompatActivity() {
 
             // Log and toast
             Log.d("토큰", token)
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(getString(R.string.http_request_base_url))
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(createOkHttpClient())
+                .build()
+
+            retrofit.create(RoomAPI::class.java).tokenInsert(user_table_id,token).enqueue(object:Callback<String>{
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                  if (response.isSuccessful){
+                      if (response.body() == "true"){
+
+                      }else{
+
+                      }
+                  }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+
+                }
+            })
 
 
 //        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
