@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.adapter.MeetingUserEvaluationRvAdapter
-import com.example.abled_food_connect.adapter.ReviewParentPageCommentRvAdapter
 import com.example.abled_food_connect.data.ChattingFragmentDmRvDataItem
 import com.example.abled_food_connect.data.MeetingEvaluationUserListRvData
 import com.example.abled_food_connect.data.MeetingEvaluationUserListRvDataItem

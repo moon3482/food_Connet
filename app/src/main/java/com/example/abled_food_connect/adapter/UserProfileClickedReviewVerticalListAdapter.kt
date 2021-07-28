@@ -2,20 +2,23 @@ package com.example.abled_food_connect.adapter
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.opengl.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.*
+import com.example.abled_food_connect.data.ReviewDeleteCheckData
+import com.example.abled_food_connect.data.ReviewDetailViewRvData
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
 import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.example.abled_food_connect.fragments.ReviewFragment
@@ -27,9 +30,10 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<UserProfileClickedReviewVerticalListAdapter.CustromViewHolder>(){
+class UserProfileClickedReviewVerticalListAdapter () : RecyclerView.Adapter<UserProfileClickedReviewVerticalListAdapter.CustromViewHolder>(){
 
 
+    var ReviewDetailList = ArrayList<ReviewDetailViewRvDataItem>()
 
     //클릭리스너
 
@@ -117,6 +121,68 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
 
 
 
+        //리뷰 3dot 버튼
+
+        if(ReviewDetailList.get(position).writer_user_tb_id == MainActivity.user_table_id){
+            holder.reviewDotBtn.visibility = View.VISIBLE
+
+
+
+
+
+        }else{
+            holder.reviewDotBtn.visibility = View.GONE
+        }
+
+        holder.reviewDotBtn.setOnClickListener(View.OnClickListener {
+
+
+            var pop = PopupMenu(holder.reviewDotBtn.context,holder.reviewDotBtn)
+
+            pop.menuInflater.inflate(R.menu.review_content_3_dot_menu, pop.menu)
+
+            // 2. 람다식으로 처리
+            pop.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.reviewDeleteBtn ->{
+                        var builder = AlertDialog.Builder(holder.reviewDotBtn.context)
+                        builder.setTitle("리뷰삭제")
+                        builder.setMessage("리뷰를 삭제하시겠습니까?")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+                                    }
+
+                                    DialogInterface.BUTTON_NEGATIVE ->{
+
+                                        reviewDeleteBtnClick(holder.reviewDotBtn.context,ReviewDetailList.get(position).review_id,ReviewDetailList.get(position).room_tb_id,position)
+
+                                    }
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("취소", listener)
+                        builder.setNegativeButton("삭제", listener)
+
+                        builder.show()
+                    }
+                }
+                false
+            }
+            pop.show()
+
+
+        })
+
+
+
+
         var imagesList = mutableListOf<String>()
         imagesList.clear()
 
@@ -189,16 +255,15 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
 
             itemClickListner.onClick(it,position,ReviewDetailList.get(position).review_id)
 
-            var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
-            toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
-            startActivity(
-                holder.commentBtn.context as Activity,
-                toMoveCommentActivity,
-                null
-            )
+
+            reviewDeleteCheck(holder.commentBtn.context,ReviewDetailList.get(position).review_id,position)
+
 
 
         })
+
+
+
 
 
 
@@ -211,6 +276,14 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
         ReviewDetailList.add(prof)
         notifyDataSetChanged()
 
+    }
+
+    fun removeItem(position : Int){
+
+
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(0,ReviewDetailList.size-1)
+        ReviewDetailList.removeAt(position)
     }
 
 
@@ -268,6 +341,122 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
         //댓글 버튼
         val commentBtn = itemView.findViewById<LinearLayout>(R.id.commentBtn)
 
+        val reviewDotBtn = itemView.findViewById<ImageView>(R.id.reviewDotBtn)
+
+    }
+
+
+
+    //클릭 시, 삭제된 리뷰인지 확인.
+    fun reviewDeleteCheck(context: Context,review_tb_id:Int,position: Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(context.getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.deleteReviewCheckInterface::class.java)
+        val review_delete = api.review_delete_check(review_tb_id)
+
+
+        review_delete.enqueue(object : Callback<ReviewDeleteCheckData> {
+            override fun onResponse(
+                call: Call<ReviewDeleteCheckData>,
+                response: Response<ReviewDeleteCheckData>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                var items : ReviewDeleteCheckData? =  response.body()
+
+                if (items != null) {
+                    if(items.review_deleted == 1){
+
+
+                        var builder = AlertDialog.Builder(context)
+                        builder.setTitle("알림")
+                        builder.setMessage("삭제된 리뷰입니다")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+
+                                        removeItem(position)
+                                    }
+
+
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("확인", listener)
+
+                        builder.show()
+
+                    }else{
+                        var toMoveCommentActivity : Intent = Intent(context, ReviewCommentActivity::class.java)
+                        toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
+                        startActivity(
+                            context as Activity,
+                            toMoveCommentActivity,
+                            null
+                        )
+                    }
+
+                }
+
+
+
+
+
+            }
+
+            override fun onFailure(call: Call<ReviewDeleteCheckData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+
+    fun reviewDeleteBtnClick(context: Context,what_click_review_tb_id:Int,room_id: Int,position: Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(context.getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.reviewDeleteBtn::class.java)
+        val review_Like_Btn_Click = api.review_delete_btn_click(MainActivity.user_table_id,what_click_review_tb_id,room_id)
+
+
+        review_Like_Btn_Click.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                if(response.body() != null) {
+                    val returnString: String = response.body()!!
+
+                    if(returnString =="true"){
+                        Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        removeItem(position)
+                    }else{
+                        Log.d("false", "false")
+                    }
+
+
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
     }
 
 
@@ -294,26 +483,68 @@ class UserProfileClickedReviewVerticalListAdapter (var ReviewDetailList: ArrayLi
                 Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
 
                 if(response.body() != null) {
+
                     val ReviewLikeBtnClickData: ReviewLikeBtnClickData = response.body()!!
 
                     var heart_making = ReviewLikeBtnClickData.heart_making
                     var how_many_like_count: Int = ReviewLikeBtnClickData.how_many_like_count
                     var isSuccess: Boolean = ReviewLikeBtnClickData.success
+                    var review_deleted: Int = ReviewLikeBtnClickData.review_deleted
 
-                    Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
-                    Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
+                    if(review_deleted == 1){
+                        //리뷰 삭제됬으면 리스트에서 삭제.
 
-                    ReviewDetailList.get(position).like_count = how_many_like_count.toString()
 
-                    if(heart_making == true){
-                        ReviewDetailList.get(position).heart_making = true
-                        Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
-                    }else if(heart_making == false){
-                        ReviewDetailList.get(position).heart_making = false
-                        Log.d(ReviewFragment.TAG, "false : ${heart_making}")
+
+
+                        var builder = AlertDialog.Builder(context)
+                        builder.setTitle("알림")
+                        builder.setMessage("삭제된 리뷰입니다")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+
+                                        removeItem(position)
+                                    }
+
+//                                DialogInterface.BUTTON_NEGATIVE ->{
+//
+//                                }
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("확인", listener)
+                        //builder.setNegativeButton("닫기", listener)
+
+                        builder.show()
+
+                    }else{
+
+                        //리뷰 삭제 안됬으면, 갱신
+
+                        Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
+                        Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
+
+                        ReviewDetailList.get(position).like_count = how_many_like_count.toString()
+
+                        if(heart_making == true){
+                            ReviewDetailList.get(position).heart_making = true
+                            Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
+                        }else if(heart_making == false){
+                            ReviewDetailList.get(position).heart_making = false
+                            Log.d(ReviewFragment.TAG, "false : ${heart_making}")
+                        }
+
+                        notifyItemChanged(position)
                     }
 
-                    notifyItemChanged(position)
+
 
 
                 }

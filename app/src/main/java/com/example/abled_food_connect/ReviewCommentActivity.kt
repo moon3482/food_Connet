@@ -43,7 +43,7 @@ class ReviewCommentActivity : AppCompatActivity() {
     private val binding get() = mBinding!!
 
 
-    private var review_id : Int = 0
+    private var review_id : Int = -1
     private var room_id : Int = 0
 
 
@@ -121,6 +121,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
         review_id = intent.getIntExtra("review_id",0)
+        reviewDeleteCheck(review_id)
         //리뷰 정보를 가져온다
 
         //댓글버튼을 누른 것인지 아닌지 체크
@@ -208,8 +209,6 @@ class ReviewCommentActivity : AppCompatActivity() {
         reviewCommentRv.addItemDecoration(dividerItemDecoration)
 
 
-
-
         //하단 댓글 코멘트 남기는 창
         writingCommentEt= binding.writingCommentEt
 
@@ -256,7 +255,14 @@ class ReviewCommentActivity : AppCompatActivity() {
         if(whatParentPosition != -1){
             clickedCommentDataLoading()
         }
+
+        if(room_id != -1){
+            //삭제된 글인지 확인
+            reviewDeleteCheck(review_id)
+        }
     }
+
+
 
     //댓글 목록 불러오기
     fun ParentCommentLoading(review_id:Int){
@@ -283,7 +289,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                     Log.d(ReviewFragment.TAG, "목록불러와 ${reviewParentPageCommentGetData.commentList}")
                     Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
 
-                    review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(comment_ArrayList,writerNicname)
+                    review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(this@ReviewCommentActivity,comment_ArrayList,writerNicname)
                     review_comment_Child_rv_adapter.notifyDataSetChanged()
 
                     //클릭리스너 등록
@@ -337,7 +343,6 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                 }
 
-
             }
 
             override fun onFailure(call: Call<ReviewParentPageCommentGetData>, t: Throwable) {
@@ -372,55 +377,110 @@ class ReviewCommentActivity : AppCompatActivity() {
                 if(response.body() != null) {
                     val reviewParentPageCommentGetData: ReviewParentPageCommentGetData = response.body()!!
                     var isSuccess: Boolean = reviewParentPageCommentGetData.success
-                    var how_many_like_count = reviewParentPageCommentGetData.comment_count
-
-                    comment_ArrayList = reviewParentPageCommentGetData.commentList as ArrayList<ReviewParentPageCommentGetDataItem>
-
-
-                    binding.contentCommentCountTv.text = how_many_like_count
-
-                    Log.d(ReviewFragment.TAG, "목록불러와 ${reviewParentPageCommentGetData.commentList}")
-                    Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
-
-                    review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(comment_ArrayList,writerNicname)
-                    review_comment_Child_rv_adapter.notifyDataSetChanged()
-
-                    //클릭리스너 등록
-                    review_comment_Child_rv_adapter.setItemClickListener( object : ReviewParentPageCommentRvAdapter.ItemClickListener{
-
-                        override fun onClick(view: View, position: Int, review_id :Int ,comment_tb_id : Int) {
-                            whatParentPosition = position
-                            what_parent_review_id = review_id
-                            what_parent_comment_tb_id = comment_tb_id
-
-                            var totalCommentCount = comment_ArrayList.size
-                            Log.d("어래이사이즈", totalCommentCount.toString())
+                    var comment_count = reviewParentPageCommentGetData.comment_count
+                    var review_deleted = reviewParentPageCommentGetData.review_deleted
 
 
-                            for(i in 0..comment_ArrayList.size-1) {
-                                totalCommentCount += comment_ArrayList.get(i).comment_class_child_count
-                                Log.d("있으면 출력", totalCommentCount.toString())
+                    //만약 댓글을 달았는데, 리뷰가 삭제되었다면.
+                    if(review_deleted == 1){
+                        var builder = AlertDialog.Builder(this@ReviewCommentActivity)
+                        builder.setTitle("알림")
+                        builder.setMessage("작성자가 삭제한 리뷰입니다.")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+
+                                        onBackPressed()
+                                        finish()
+                                    }
+
+//                                DialogInterface.BUTTON_NEGATIVE ->{
+//
+//                                }
+
+                                }
                             }
-
-                            Log.d("나오면좋겠다", totalCommentCount.toString())
-
-                            //댓글 개수
-                            binding.contentCommentCountTv.text = totalCommentCount.toString()
                         }
-                    })
 
-                    reviewCommentRv.adapter = review_comment_Child_rv_adapter
+                        builder.setPositiveButton("확인", listener)
+                        //builder.setNegativeButton("닫기", listener)
 
-
-
-
-
+                        builder.show()
+                    }else{
 
 
-                    Handler().postDelayed(Runnable {
-                        //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
-                        binding.nestedScroll.scrollTo(0, reviewCommentRv.bottom)
-                    }, 500)
+                        comment_ArrayList = reviewParentPageCommentGetData.commentList as ArrayList<ReviewParentPageCommentGetDataItem>
+
+
+
+                        var totalCommentCount = comment_ArrayList.size
+                        Log.d("어래이사이즈", totalCommentCount.toString())
+
+
+                        for(i in 0..comment_ArrayList.size-1) {
+                            totalCommentCount += comment_ArrayList.get(i).comment_class_child_count
+                            Log.d("있으면 출력", totalCommentCount.toString())
+                        }
+
+                        Log.d("나오면좋겠다", totalCommentCount.toString())
+
+                        //댓글 개수
+                        binding.contentCommentCountTv.text = totalCommentCount.toString()
+
+
+                        Log.d(ReviewFragment.TAG, "목록불러와 ${reviewParentPageCommentGetData.commentList}")
+                        Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
+
+                        review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(this@ReviewCommentActivity,comment_ArrayList,writerNicname)
+                        review_comment_Child_rv_adapter.notifyDataSetChanged()
+
+                        //클릭리스너 등록
+                        review_comment_Child_rv_adapter.setItemClickListener( object : ReviewParentPageCommentRvAdapter.ItemClickListener{
+
+                            override fun onClick(view: View, position: Int, review_id :Int ,comment_tb_id : Int) {
+                                whatParentPosition = position
+                                what_parent_review_id = review_id
+                                what_parent_comment_tb_id = comment_tb_id
+
+
+                                var totalCommentCount = comment_ArrayList.size
+                                Log.d("어래이사이즈", totalCommentCount.toString())
+
+
+                                for(i in 0..comment_ArrayList.size-1) {
+                                    totalCommentCount += comment_ArrayList.get(i).comment_class_child_count
+                                    Log.d("있으면 출력", totalCommentCount.toString())
+                                }
+
+                                Log.d("나오면좋겠다", totalCommentCount.toString())
+
+                                //댓글 개수
+                                binding.contentCommentCountTv.text = totalCommentCount.toString()
+
+
+                            }
+                        })
+
+                        reviewCommentRv.adapter = review_comment_Child_rv_adapter
+
+
+
+
+
+
+
+                        Handler().postDelayed(Runnable {
+                            //댓글엑티비티에오면 스크롤을 댓글창이 보이게 맞춰준다.
+                            binding.nestedScroll.scrollTo(0, reviewCommentRv.bottom)
+                        }, 500)
+
+                    }
+
+
 
 
 
@@ -431,6 +491,78 @@ class ReviewCommentActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ReviewParentPageCommentGetData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+
+    //클릭 시, 삭제된 리뷰인지 확인.
+    fun reviewDeleteCheck(review_id:Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.deleteReviewCheckInterface::class.java)
+        val review_delete = api.review_delete_check(review_id)
+
+
+        review_delete.enqueue(object : Callback<ReviewDeleteCheckData> {
+            override fun onResponse(
+                call: Call<ReviewDeleteCheckData>,
+                response: Response<ReviewDeleteCheckData>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                var items : ReviewDeleteCheckData? =  response.body()
+
+                if (items != null) {
+                    if(items.review_deleted == 1){
+
+                        var builder = AlertDialog.Builder(this@ReviewCommentActivity)
+                        builder.setTitle("알림")
+                        builder.setMessage("작성자가 삭제한 리뷰입니다.")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+
+                                        onBackPressed()
+                                        finish()
+                                    }
+
+//                                DialogInterface.BUTTON_NEGATIVE ->{
+//
+//                                }
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("확인", listener)
+                        //builder.setNegativeButton("닫기", listener)
+
+                        builder.show()
+
+
+                    }else{
+
+
+                    }
+
+                }
+
+
+
+
+
+            }
+
+            override fun onFailure(call: Call<ReviewDeleteCheckData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })
@@ -460,26 +592,69 @@ class ReviewCommentActivity : AppCompatActivity() {
                     var heart_making = ReviewLikeBtnClickData.heart_making
                     var how_many_like_count: Int = ReviewLikeBtnClickData.how_many_like_count
                     var isSuccess: Boolean = ReviewLikeBtnClickData.success
+                    var review_deleted: Int = ReviewLikeBtnClickData.review_deleted
+
+
+                    if(review_deleted == 1){
+                        //리뷰 삭제됬으면 리스트에서 삭제.
 
 
 
 
-                    Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
-                    Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
+                        var builder = AlertDialog.Builder(this@ReviewCommentActivity)
+                        builder.setTitle("알림")
+                        builder.setMessage("작성자가 삭제한 리뷰입니다.")
 
-                    binding.contentLikeCountTv.text = how_many_like_count.toString()
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
 
-                    if(heart_making == true){
-                        binding.contentHeartIv.setColorFilter(Color.parseColor("#77ff0000"))
-                        Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
+                                        onBackPressed()
+                                        finish()
+                                    }
+
+//                                DialogInterface.BUTTON_NEGATIVE ->{
+//
+//                                }
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("확인", listener)
+                        //builder.setNegativeButton("닫기", listener)
+
+                        builder.show()
+
+                    }else{
 
 
-                    }else if(heart_making == false){
-                        binding.contentHeartIv.setColorFilter(Color.parseColor("#55111111"))
-                        Log.d(ReviewFragment.TAG, "false : ${heart_making}")
+                        Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
+                        Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
+
+                        binding.contentLikeCountTv.text = how_many_like_count.toString()
+
+                        if(heart_making == true){
+                            binding.contentHeartIv.setColorFilter(Color.parseColor("#77ff0000"))
+                            Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
+
+
+                        }else if(heart_making == false){
+                            binding.contentHeartIv.setColorFilter(Color.parseColor("#55111111"))
+                            Log.d(ReviewFragment.TAG, "false : ${heart_making}")
+
+
+                        }
 
 
                     }
+
+
+
+
 
 
                 }

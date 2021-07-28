@@ -43,8 +43,7 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
 
     //리사이클러뷰 어댑터
-    lateinit var mAdapter : UserProfileClickedReviewVerticalListAdapter
-
+    var mAdapter : UserProfileClickedReviewVerticalListAdapter = UserProfileClickedReviewVerticalListAdapter()
 
     private var whatClickPostion : Int = 0
     private var whatClickReviewId : Int = 0
@@ -90,6 +89,16 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
         (detail_rv.layoutManager as LinearLayoutManager).setStackFromEnd(false)
 
 
+        mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
+            override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
+                whatClickPostion = position
+                this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
+
+            }
+        })
+
+        detail_rv.adapter = mAdapter
+
         //리사이클러뷰 구분선
         val dividerItemDecoration =
             DividerItemDecoration(detail_rv.context, LinearLayoutManager(this).orientation)
@@ -119,17 +128,8 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
 
 
-            mAdapter =  UserProfileClickedReviewVerticalListAdapter(reviewDetailViewRvDataArraylist)
+            mAdapter.ReviewDetailList = reviewDetailViewRvDataArraylist
             mAdapter.notifyDataSetChanged()
-            mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
-                override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
-                    whatClickPostion = position
-                    this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
-
-                }
-            })
-
-            detail_rv.adapter = mAdapter
 
 
 
@@ -174,19 +174,23 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
                 Log.d(ReviewFragment.TAG, "성공 : ${items!!.roomList}")
 
+                reviewDetailViewRvDataArraylist.clear()
                 reviewDetailViewRvDataArraylist = items!!.roomList as ArrayList<ReviewDetailViewRvDataItem>
 
 
-                mAdapter =  UserProfileClickedReviewVerticalListAdapter(reviewDetailViewRvDataArraylist)
+                mAdapter.ReviewDetailList = reviewDetailViewRvDataArraylist
                 mAdapter.notifyDataSetChanged()
-                mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
-                    override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
-                        whatClickPostion = position
-                        this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
 
-                    }
-                })
-                detail_rv.adapter = mAdapter
+//                mAdapter =  UserProfileClickedReviewVerticalListAdapter(reviewDetailViewRvDataArraylist)
+//                mAdapter.notifyDataSetChanged()
+//                mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
+//                    override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
+//                        whatClickPostion = position
+//                        this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
+//
+//                    }
+//                })
+//                detail_rv.adapter = mAdapter
 
             }
 
@@ -233,28 +237,39 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
                     var islikeClicked = reviewDetailViewLikeAndCommentCountCheckData.islikeClicked
                     var like_count = reviewDetailViewLikeAndCommentCountCheckData.like_count
                     var comment_count = reviewDetailViewLikeAndCommentCountCheckData.comment_count
+                    var review_deleted  = reviewDetailViewLikeAndCommentCountCheckData.review_deleted
 
                     Log.d(ReviewFragment.TAG, "나오시오 : ${reviewDetailViewLikeAndCommentCountCheckData}")
 
+                    if(review_deleted==1){
 
-                    reviewDetailViewRvDataArraylist.get(whatClickPostion).heart_making = islikeClicked
-                    reviewDetailViewRvDataArraylist.get(whatClickPostion).like_count = like_count.toString()
-                    reviewDetailViewRvDataArraylist.get(whatClickPostion).comment_count = comment_count.toString()
+                        mAdapter.removeItem(whatClickPostion)
+                    }else{
 
-                    mAdapter =  UserProfileClickedReviewVerticalListAdapter(reviewDetailViewRvDataArraylist)
-                    mAdapter.notifyItemChanged(whatClickPostion)
-                    //클릭리스너 등록
-                    mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
-                        override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
-                            whatClickPostion = position
-                            this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
+                        reviewDetailViewRvDataArraylist.get(whatClickPostion).heart_making = islikeClicked
+                        reviewDetailViewRvDataArraylist.get(whatClickPostion).like_count = like_count.toString()
+                        reviewDetailViewRvDataArraylist.get(whatClickPostion).comment_count = comment_count.toString()
 
-                        }
-                    })
+                        mAdapter.notifyItemChanged(whatClickPostion)
 
-                    detail_rv.adapter = mAdapter
+//                        mAdapter =  UserProfileClickedReviewVerticalListAdapter(reviewDetailViewRvDataArraylist)
+//                        mAdapter.notifyItemChanged(whatClickPostion)
+//                        //클릭리스너 등록
+//                        mAdapter.setItemClickListener( object : UserProfileClickedReviewVerticalListAdapter.ItemClickListener{
+//                            override fun onClick(view: View, position : Int, whatClickReviewId : Int) {
+//                                whatClickPostion = position
+//                                this@UserProfileClickedReviewVerticalListActivity.whatClickReviewId = whatClickReviewId
+//
+//                            }
+//                        })
+//
+//                        detail_rv.adapter = mAdapter
+//
+//                        detail_rv.getLayoutManager()?.scrollToPosition(whatClickPostion)
 
-                    detail_rv.getLayoutManager()?.scrollToPosition(whatClickPostion)
+                    }
+
+
                 }
 
             }

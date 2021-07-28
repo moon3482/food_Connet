@@ -2,9 +2,6 @@ package com.example.abled_food_connect.retrofit
 
 
 import android.content.Context
-import android.content.Intent
-import android.widget.Toast
-import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.*
 import com.google.gson.annotations.SerializedName
@@ -320,6 +317,17 @@ class API {
     }
 
 
+    interface deleteReviewCheckInterface {
+
+        @Multipart
+        @POST("review/review_delete_check.php")
+        fun review_delete_check(
+            @Part("review_tb_id") review_tb_id: Int
+        ): Call<ReviewDeleteCheckData>
+
+    }
+
+
 
     interface UserProfileClickedReviewGridListRvInterface {
 
@@ -331,6 +339,18 @@ class API {
         ): Call<ReviewDetailViewRvData>
 
     }
+
+
+    interface deletedReviewCheckUserProfileClickedReviewGridListRvInterface {
+
+        @Multipart
+        @POST("review/deleted_Review_Check_user_profile_clicked_review_grid_rv_list_get.php")
+        fun deleted_Review_Check_user_profile_clicked_review_grid_rv_list_get(
+            @Part("review_id") review_id: Int
+        ): Call<String>
+
+    }
+
 
     interface MyPageUserScheduleRvInterface {
 
@@ -477,7 +497,7 @@ class API {
 
 
     interface commentDeleteBtn{
-        // 리뷰삭제
+        // 댓글삭제
         @Multipart
         @POST("review/comment_delete_btn_click.php")
         fun comment_delete_btn_click(
@@ -487,7 +507,7 @@ class API {
             @Part("parentOrChild") parentOrChild: Int,
             @Part("groupNum") groupNum: Int
 
-        ): Call<String>
+        ): Call<CommentDeleteData>
     }
 
 
