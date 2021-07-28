@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -17,7 +16,6 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.webkit.MimeTypeMap
-import android.widget.ImageSwitcher
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -26,8 +24,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.request.ImageRequest
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageView
 import com.canhub.cropper.options
@@ -35,20 +31,14 @@ import com.example.abled_food_connect.adapter.ChatAdapter
 import com.example.abled_food_connect.adapter.ChatRoomUserListRCVAdapter
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.databinding.ActivityChatRoomBinding
-import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.ChatClient
 import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.naver.maps.map.e
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -62,7 +52,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.io.InputStream
-import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -80,7 +69,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private val chatAdapter: ChatAdapter = ChatAdapter()
     private lateinit var userList: ChatRoomUserListRCVAdapter
     private lateinit var gson: Gson
-
+    var timer = true
     private var pagenum: Int = 0
     private lateinit var snackbar: Snackbar
     private lateinit var snackbarTextView: TextView
@@ -288,10 +277,15 @@ class ChatRoomActivity : AppCompatActivity() {
                 val count = 10
                 last = layoutManager.findLastCompletelyVisibleItemPosition()
                 var lc = chatAdapter.arrayList.size - 1
-                pagenum = layoutManager.itemCount - 1
-                if (first <= count && requestPage && layoutManager.itemCount > 31) {
+                pagenum = layoutManager.itemCount
+                if (first <= count && requestPage&&timer) {
 
                     messageLoad(pagenum)
+                    Thread{
+                        timer = false
+                        Thread.sleep(200)
+                        timer = true
+                    }.start()
 
                 } else if (last >= lc && snackbar.isShown) {
                     snackbar.dismiss()
@@ -578,7 +572,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     }
 
-    private fun loadChat(messageData: MessageData, status: Int? = 0) {
+    private fun loadChat(messageData: MessageData) {
 
         runOnUiThread(Runnable {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
@@ -599,8 +593,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.RIGHT_IMAGE_MESSAGE,
-                            messageData.members,
-                            status
+                            messageData.members
                         )
                     )
                     chatAdapter.notifyItemInserted(0)
@@ -618,7 +611,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.LEFT_IMAGE_MESSAGE,
-                            messageData.members, status
+                            messageData.members
                         )
                     )
                     chatAdapter.notifyItemInserted(0)
@@ -632,7 +625,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     ChatItem(
                         messageData.from, messageData.thumbnailImage, messageData.content,
                         date, ItemType.CENTER_MESSAGE,
-                        messageData.members, status
+                        messageData.members
                     )
                 )
                 chatAdapter.notifyItemInserted(0)
@@ -651,7 +644,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.RIGHT_MESSAGE,
-                        messageData.members, status
+                        messageData.members
                     )
                 )
                 chatAdapter.notifyItemInserted(0)
@@ -670,7 +663,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.LEFT_MESSAGE,
-                        messageData.members, status
+                        messageData.members
                     )
                 )
                 chatAdapter.notifyItemInserted(0)
@@ -681,7 +674,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     }
 
-    private fun ReadChat(messageData: MessageData, status: Int? = 0) {
+    private fun ReadChat(messageData: MessageData) {
 
         runOnUiThread(Runnable {
             if (messageData.type == "ENTER" || messageData.type == "LEFT") {
@@ -701,7 +694,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.RIGHT_IMAGE_MESSAGE,
-                            messageData.members, status
+                            messageData.members
                         )
                     )
 
@@ -719,7 +712,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             messageData.content,
                             date,
                             ItemType.LEFT_IMAGE_MESSAGE,
-                            messageData.members, status
+                            messageData.members
                         )
                     )
 
@@ -734,7 +727,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     ChatItem(
                         messageData.from, messageData.thumbnailImage, messageData.content,
                         date, ItemType.CENTER_MESSAGE,
-                        messageData.members, status
+                        messageData.members
                     )
                 )
 
@@ -754,7 +747,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.RIGHT_MESSAGE,
-                        messageData.members, status
+                        messageData.members
                     )
                 )
 
@@ -772,7 +765,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         messageData.content,
                         date,
                         ItemType.LEFT_MESSAGE,
-                        messageData.members, status
+                        messageData.members
                     )
                 )
 
@@ -868,63 +861,9 @@ class ChatRoomActivity : AppCompatActivity() {
                         Log.e("로드 실행", "로드")
                         val list: paginationData? = response.body()
                         if (list!!.success) {
-                            val sdf1 = SimpleDateFormat("yyyy-mm-dd HH:mm")
-                            val time1 = sdf1.parse(list.ChatLogList[0].sendTime)
-                            val time21 = sdf1.parse(chatAdapter.arrayList[0].sendTime)
-                            val timepr = sdf1.parse(chatAdapter.arrayList[1].sendTime)
-                            if (chatAdapter.arrayList[0].name == list.ChatLogList[0].from && time1.compareTo(
-                                    time21
-                                ) != 0
-                            ) {
-                                chatAdapter.arrayList[0].messageStatus = 1
-                                chatAdapter.notifyItemChanged(0)
-                            } else if (chatAdapter.arrayList[0].name == list.ChatLogList[0].from && time1.compareTo(
-                                    time21
-                                ) == 0
-                            ) {
-                                chatAdapter.arrayList[0].messageStatus = 2
-                                chatAdapter.notifyItemChanged(0)
-                            } else if (chatAdapter.arrayList[0].name == list.ChatLogList[0].from && chatAdapter.arrayList[0].name != chatAdapter.arrayList[1].name && time1.compareTo(
-                                    time21
-                                ) == 0
-                            ) {
-                                chatAdapter.arrayList[0].messageStatus = 3
-                                chatAdapter.notifyItemChanged(0)
-                            }
                             for (index in list.ChatLogList.indices) {
 
-
-                                try {
-
-                                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm")
-                                    val time = sdf.parse(list.ChatLogList[index + 1].sendTime)
-                                    val time2 = sdf.parse(list.ChatLogList[index].sendTime)
-                                    when (true) {
-                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
-                                            time2
-                                        ) != 0 -> {
-                                            loadChat(list.ChatLogList[index], 1)
-                                        }
-                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
-                                            time2
-                                        ) == 0 -> {
-                                            loadChat(list.ChatLogList[index], 2)
-                                        }
-                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && list.ChatLogList[index - 1].from != list.ChatLogList[index].from && time.compareTo(
-                                            time2
-                                        ) == 0 -> {
-                                            loadChat(list.ChatLogList[index], 3)
-                                        }
-                                        else -> {
-                                            loadChat(list.ChatLogList[index], 0)
-                                        }
-
-
-                                    }
-                                } catch (e: IndexOutOfBoundsException) {
-                                    loadChat(list.ChatLogList[index], 0)
-                                }
-
+                                loadChat(list.ChatLogList[index])
 
                             }
                             if (firstLoading) {
@@ -967,36 +906,10 @@ class ChatRoomActivity : AppCompatActivity() {
                     if (response.body() != null) {
                         val list: paginationData? = response.body()
                         if (list!!.success) {
-                            Log.e("로드메시지서버", "로드메시지서버")
+
                             for (index in list.ChatLogList.indices) {
 
-
-                                try {
-                                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm")
-                                    val time = sdf.parse(list.ChatLogList[index + 1].sendTime)
-                                    val time2 = sdf.parse(list.ChatLogList[index].sendTime)
-                                    when (true) {
-                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
-                                            time2
-                                        ) != 0 -> {
-                                            ReadChat(list.ChatLogList[index], 1)
-                                        }
-                                        list.ChatLogList[index + 1].from == list.ChatLogList[index].from && time.compareTo(
-                                            time2
-                                        ) == 0 -> {
-                                            ReadChat(list.ChatLogList[index], 2)
-                                        }
-
-                                        else -> {
-                                            ReadChat(list.ChatLogList[index], 0)
-                                        }
-
-
-                                    }
-                                } catch (e: IndexOutOfBoundsException) {
-                                    ReadChat(list.ChatLogList[index], 0)
-                                }
-
+                                ReadChat(list.ChatLogList[index])
 
                             }
 //                            chatAdapter.notifyDataSetChanged()
@@ -1006,7 +919,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             }
                         } else {
                             requestPage = false
-                            Log.e("로드메시지서버", requestPage.toString())
+
                         }
                     }
 

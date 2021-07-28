@@ -250,5 +250,8 @@ class ChatAdapter :
         RecyclerView.ViewHolder(binding.root) {
 
     }
+    fun isArrayComparisonChange(array:ArrayList<ChatItem>){
+
+    }
 
 }

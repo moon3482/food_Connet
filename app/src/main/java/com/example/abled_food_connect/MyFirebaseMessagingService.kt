@@ -1,11 +1,13 @@
 package com.example.abled_food_connect
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
@@ -36,7 +38,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
             val body = it["body"]
             if (title != null) {
                 if (body != null) {
-                    sendNotification(title,body)
+                    sendNotification2(title,body)
                 }
             }
         };
@@ -56,8 +58,8 @@ private fun sendNotification(title:String,messageBody: String) {
         .setColor(getColor(R.color.txt_white_gray))
         .setContentTitle(title)
         .setContentText(messageBody)
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+        .setPriority(Notification.PRIORITY_HIGH)
+        .setDefaults(Notification.DEFAULT_VIBRATE)
         .setAutoCancel(true)
         .setSound(defaultSoundUri)
         .setContentIntent(pendingIntent)
@@ -98,5 +100,37 @@ private fun sendNotification(title:String,messageBody: String) {
 
             }
         })
+    }
+    private fun sendNotification2(messageBody: String, title: String) {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+        val channelId = "id"
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_noti_icon)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setColor(Color.parseColor("#E91E63"))
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channelName = "ssssdsadas"
+            val channel =
+                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(channel)
+        }
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
     }
 }

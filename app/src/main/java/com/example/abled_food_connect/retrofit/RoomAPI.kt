@@ -83,7 +83,7 @@ interface RoomAPI {
     ): Call<paginationData>
 
     //그룹 채팅방 메시지 읽음 처리후 메시지갱신 or 최초 메시지 로딩
-    @GET("/groupChat/chatPagenation.php")
+    @GET("/groupChat/chatload.php")
     fun paginationRead(
         @Query("roomId") roomId: String,
         @Query("pageEnd") pageEnd: Int,
