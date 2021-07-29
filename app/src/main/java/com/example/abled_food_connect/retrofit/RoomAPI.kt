@@ -49,6 +49,7 @@ interface RoomAPI {
         @Field("hostName") hostName: String
 
     ): Call<JoinRoomCheck>
+
     //방 입장처리
     @FormUrlEncoded
     @POST("RoomJoin.php")
@@ -97,6 +98,7 @@ interface RoomAPI {
         @Field("roomId") roomId: String,
         @Field("userIndex") userIndex: Int
     ): Call<String>
+
     //방 입장신청  보기
     @FormUrlEncoded
     @POST("/groupChat/joinSubscription.php")
@@ -104,6 +106,7 @@ interface RoomAPI {
         @Field("roomId") roomId: String?,
         @Field("userIndexId") userIndexId: String?
     ): Call<SubscriptionData>
+
     //방 입장신청 체크
     @FormUrlEncoded
     @POST("/groupChat/subscriptionCheck.php")
@@ -111,6 +114,7 @@ interface RoomAPI {
         @Field("roomId") roomId: String?,
 
         ): Call<ChatRoomSubscriptionResult>
+
     //방 입장신청 목록갱신
     @FormUrlEncoded
     @POST("/groupChat/subscriptionUpdate.php")
@@ -150,43 +154,50 @@ interface RoomAPI {
     @FormUrlEncoded
     @POST("groupChat/mapActivityTimeCheck.php")
     fun roomStatusTime(
-        @Field("roomId")roomId: String
-    ):Call<Double>
+        @Field("roomId") roomId: String
+    ): Call<Double>
 
     //그룹채팅 위치보기에서 유저위지 받아오기
     @FormUrlEncoded
     @POST("groupChat/mapActivityMember.php")
     fun memberLocation(
-        @Field("roomId")roomId: Int
-    ):Call<GroupChatLocationData>
+        @Field("roomId") roomId: Int
+    ): Call<GroupChatLocationData>
 
     //서버에 이미지 보내기
     @Multipart
     @POST("groupChat/groupChatImageSend.php")
     fun groupChatImageSend(
-        @Part imageFile : MultipartBody.Part,
+        @Part imageFile: MultipartBody.Part,
         @Part("roomId") roomId: String,
-        @Part("userIndex") userIndex:Int,
-        @Part("userNickname")userNickname:String
+        @Part("userIndex") userIndex: Int,
+        @Part("userNickname") userNickname: String
     ): Call<ChatImageSendingData>
 
-//    @FormUrlEncoded
+    //    @FormUrlEncoded
     @POST("DateCheck.php")
-    fun dateCheck():Call<Long>
+    fun dateCheck(): Call<Long>
 
     @FormUrlEncoded
     @POST("ScheduleCheck.php")
     fun scheduleCheck(
-        @Field("userIndex")userIndex:Int
+        @Field("userIndex") userIndex: Int
 
-    ):Call<ScheduleCheckWork.ScheduleArray>
+    ): Call<ScheduleCheckWork.ScheduleArray>
 
     @FormUrlEncoded
     @POST("tokenInsert.php")
     fun tokenInsert(
-        @Field("userIndex")userIndex:Int,
-        @Field("token")token:String
+        @Field("userIndex") userIndex: Int,
+        @Field("token") token: String
 
-    ):Call<String>
+    ): Call<String>
+
+    @FormUrlEncoded
+    @POST("roomSearch.php")
+    fun roomSearch(
+        @Field("type") type: String,
+        @Field("content") content: String
+    ): Call<LoadingRoom>
 }
 

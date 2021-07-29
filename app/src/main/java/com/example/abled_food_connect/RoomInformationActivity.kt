@@ -47,7 +47,7 @@ class RoomInformationActivity : AppCompatActivity() {
         val date = intent.getStringExtra("date")
         val shopName = intent.getStringExtra("shopName")
         val roomStatus = intent.getDoubleExtra("roomStatus", 0.0);
-        val nowNumOfPeople = intent.getIntExtra("nowNumOfPeople", 0)
+        val nowNumOfPeople = intent.getStringExtra("nowNumOfPeople")
         val numOfPeople = intent.getIntExtra("numOfPeople", 0)
         val keyWords = intent.getStringExtra("keyWords")
         val imageUrl = intent.getStringExtra("imageUrl")
@@ -68,7 +68,7 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RoomInfoSubscriptionRoomBtn.setOnClickListener {
 
             if (roomId != null) {
-                if (numOfPeople > nowNumOfPeople) {
+                if (numOfPeople > nowNumOfPeople!!.toInt()) {
                     when (true) {
 
                         roomGender.equals(userGender) -> {
@@ -135,7 +135,7 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RoomInfomationDate.text = date
         binding.RoomInformationCategoryIntroduceTextview.text = info
         binding.RoomInformationCategoryAddressTextview.text = address
-        binding.RoomInformationCategoryNumOfPeopleTextview.text = "$nowNumOfPeople/${numOfPeople}명"
+        binding.RoomInformationCategoryNumOfPeopleTextview.text = "${nowNumOfPeople.toString()}/${numOfPeople}명"
         binding.RoomInfoHostIdTextView.text = hostName
         binding.RoomInfoShopName.text = shopName
 

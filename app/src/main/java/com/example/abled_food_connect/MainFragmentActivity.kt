@@ -1,5 +1,6 @@
 package com.example.abled_food_connect
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
@@ -15,9 +16,19 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
 import com.example.abled_food_connect.fragments.*
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.example.abled_food_connect.works.DatetimeCheckWork
 import com.example.abled_food_connect.works.ScheduleCheckWork
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.messaging.FirebaseMessaging
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 
@@ -85,7 +96,7 @@ class MainFragmentActivity : AppCompatActivity() {
                 startActivity(nextIntent)
 
             })
-
+        token()
 
     }
 
@@ -133,6 +144,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     tb.title="홈"
 
 
+
                     mainFragment = MainFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
                         R.animator.fade_in,
@@ -147,6 +159,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("리뷰")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     reviewFragment = ReviewFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
@@ -162,6 +175,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("랭킹")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     rankingFragment = RankingFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
@@ -177,6 +191,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("채팅")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     chatingFragment = ChatingFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
@@ -193,6 +208,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("마이페이지")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
                         R.animator.fade_in,
@@ -207,6 +223,13 @@ class MainFragmentActivity : AppCompatActivity() {
 
             true
         }
+
+
+
+
+
+
+
 
     //프래그먼트에 따라 플로팅버튼 보여주기
     private fun showFloatingButtonVisible(itemid: Int) {
@@ -348,6 +371,60 @@ class MainFragmentActivity : AppCompatActivity() {
         WorkManager.getInstance(context).enqueue(workRequestOne)
         Log.d("DatetimeCheckWork", "worker 시작함수")
     }
+    @SuppressLint("MissingPermission")
+    fun token() {
 
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            Log.d("토큰", token)
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(getString(R.string.http_request_base_url))
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(createOkHttpClient())
+                .build()
+
+            retrofit.create(RoomAPI::class.java).tokenInsert(MainActivity.user_table_id,token).enqueue(object:
+                Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.isSuccessful){
+                        if (response.body() == "true"){
+
+                        }else{
+
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+
+                }
+            })
+
+
+//        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        val locationProvider = LocationManager.GPS_PROVIDER
+//        val location: Location? = locationManager.getLastKnownLocation(locationProvider)
+//        if (location!=null){
+//            Log.e("로케이션","위치 : ${location.latitude} , ${location.longitude}")
+//        }
+        })
+    }
+    private fun createOkHttpClient(): OkHttpClient {
+        //Log.d ("TAG","OkhttpClient");
+        val builder = OkHttpClient.Builder()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        builder.addInterceptor(interceptor)
+        return builder.build()
+    }
 }
 

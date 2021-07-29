@@ -504,7 +504,7 @@ class CreateRoomActivity : AppCompatActivity() {
                         intent.putExtra("date", room.roomId.date)
                         intent.putExtra("shopName", room.roomId.shopName)
                         intent.putExtra("roomStatus", room.roomId.roomStatus)
-                        intent.putExtra("nowNumOfPeople", 1)
+                        intent.putExtra("nowNumOfPeople", "1")
                         intent.putExtra("numOfPeople", room.roomId.numOfPeople)
                         intent.putExtra("keyWords", room.roomId.keyWords)
                         intent.putExtra("mapX", room.roomId.mapX)

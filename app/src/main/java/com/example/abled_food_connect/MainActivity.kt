@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
 
         //유저정보 쉐어드프리퍼런스 로드
 
-        token()
+
 
 
         nextIntent = Intent(this, UserRegisterActivity::class.java)
@@ -812,52 +812,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @SuppressLint("MissingPermission")
-    fun token() {
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-            // Log and toast
-            Log.d("토큰", token)
-
-            val retrofit = Retrofit.Builder()
-                .baseUrl(getString(R.string.http_request_base_url))
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(createOkHttpClient())
-                .build()
-
-            retrofit.create(RoomAPI::class.java).tokenInsert(user_table_id,token).enqueue(object:Callback<String>{
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                  if (response.isSuccessful){
-                      if (response.body() == "true"){
-
-                      }else{
-
-                      }
-                  }
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-
-                }
-            })
-
-
-//        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        val locationProvider = LocationManager.GPS_PROVIDER
-//        val location: Location? = locationManager.getLastKnownLocation(locationProvider)
-//        if (location!=null){
-//            Log.e("로케이션","위치 : ${location.latitude} , ${location.longitude}")
-//        }
-        })
-    }
 
     @TargetApi(30)
     private fun Context.checkBackgroundLocationPermissionAPI30() {

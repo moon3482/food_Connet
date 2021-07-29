@@ -22,20 +22,30 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/numOfPeople"
+            android:singleLine="true"
+
+
             android:textSize="20dp"
-
-
             android:textStyle="bold"
             tools:text="가게이름" />
+        <TextView
+            android:id="@+id/groupChatListDate"
+            android:layout_width="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginStart="10dp"
+            android:gravity="center_vertical|end"
+            tools:text="날짜" />
 
         <LinearLayout
             android:id="@+id/numOfPeople"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:background="@drawable/group_chat_list_num_of_people"
             android:orientation="horizontal"
-            android:layout_centerVertical="true"
             android:paddingStart="10dp"
             android:paddingEnd="10dp">
 
@@ -51,35 +61,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:textStyle="bold"
                 android:textColor="@color/white"
+                android:textStyle="bold"
                 tools:text="6" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/groupChatListShopName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/group_chat_list_shop_name_background"
-            android:gravity="center"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:layout_centerVertical="true"
-            android:textColor="@color/white"
-            android:textSize="15dp"
-            android:textStyle="bold"
-            tools:text="제목" />
-
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/groupChatListShopName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/group_chat_list_shop_name_background"
+        android:gravity="center"
+        android:paddingStart="10dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="2dp"
+        android:textColor="@color/white"
+        android:textSize="15dp"
+        android:textStyle="bold"
+        tools:text="제목" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:gravity="end">
 
         <TextView
@@ -87,8 +95,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
-            android:paddingTop="5dp"
             android:layout_weight="1"
+            android:paddingTop="5dp"
             android:singleLine="true"
             android:textStyle="bold"
             tools:text="메시지 내용" />
@@ -99,20 +107,12 @@
             android:gravity="end"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/groupChatListDate"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:layout_marginStart="10dp"
-                android:gravity="center_vertical|end"
-                tools:text="날짜" />
 
             <TextView
                 android:id="@+id/nonRead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/social_login_google_button"
                 android:paddingStart="7dp"
                 android:paddingTop="2dp"

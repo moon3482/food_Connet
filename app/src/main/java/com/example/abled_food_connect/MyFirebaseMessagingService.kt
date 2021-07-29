@@ -1,13 +1,9 @@
 package com.example.abled_food_connect
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
@@ -101,7 +97,7 @@ private fun sendNotification(title:String,messageBody: String) {
             }
         })
     }
-    private fun sendNotification2(messageBody: String, title: String) {
+    private fun sendNotification2(title: String,messageBody: String) {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
@@ -110,17 +106,28 @@ private fun sendNotification(title:String,messageBody: String) {
             PendingIntent.FLAG_ONE_SHOT
         )
         val channelId = "id"
+        val groupId = packageName
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_noti_icon)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(false)
             .setContentTitle(title)
             .setContentText(messageBody)
             .setAutoCancel(true)
-            .setColor(Color.parseColor("#E91E63"))
+            .setColor(getColor(R.color.txt_white_gray))
             .setPriority(Notification.PRIORITY_HIGH)
             .setDefaults(Notification.DEFAULT_VIBRATE)
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
+            .setChannelId(channelId)
+            .setGroup(groupId)
+            .setGroupSummary(true)
+            .build()
+
+
+
+
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         // Since android Oreo notification channel is needed.
@@ -129,8 +136,16 @@ private fun sendNotification(title:String,messageBody: String) {
             val channelName = "ssssdsadas"
             val channel =
                 NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            channel.vibrationPattern = longArrayOf(0, 1500)
+
+
+
+
             notificationManager.createNotificationChannel(channel)
+            notificationManager.createNotificationChannelGroup(NotificationChannelGroup(channelId,groupId))
+
         }
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+
+        notificationManager.notify(0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */, notificationBuilder)
     }
 }

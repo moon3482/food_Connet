@@ -26,10 +26,19 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, private val list: ArrayList<MainFragmentItemData>) :
+class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
     var unList = list
     var filList = ArrayList<MainFragmentItemData>()
+    lateinit var mMainFragment: MainFragment
+
+    constructor(
+        context: Context,
+        mainFragment: MainFragment,
+        list: ArrayList<MainFragmentItemData>
+    ) : this(context, list) {
+        mMainFragment = mainFragment
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -76,9 +85,9 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
             val text: String = context.getString(R.string.limit_age_badge)
             testholder.roomAge.text = String.format(text, maindata.minimumAge, maindata.maximumAge)
         }
-        if(maindata.joinMember.contains(MainActivity.user_table_id.toString())){
+        if (maindata.joinMember.contains(MainActivity.user_table_id.toString())) {
             testholder.joinCheckImageView.visibility = View.VISIBLE
-        }else{
+        } else {
             testholder.joinCheckImageView.visibility = View.INVISIBLE
         }
         testholder.shopName.text = maindata.placeName
@@ -114,7 +123,7 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
         var roomLocation: TextView = view.findViewById(R.id.tvRoomLocation)
         var roomNumberOfPeople: TextView = view.findViewById(R.id.tvRoomNumberOfPeople)
         var roomAge: TextView = view.findViewById(R.id.tvAge)
-        var joinCheckImageView:ImageView = view.findViewById(R.id.joinCheckImageView)
+        var joinCheckImageView: ImageView = view.findViewById(R.id.joinCheckImageView)
 
 
     }
@@ -150,9 +159,9 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
                         intent.putExtra("mapX", mainData.mapX)
                         intent.putExtra("mapY", mainData.mapY)
-                        intent.putExtra("roomGender",mainData.gender)
-                        intent.putExtra("minimumAge",mainData.minimumAge)
-                        intent.putExtra("maximumAge",mainData.maximumAge)
+                        intent.putExtra("roomGender", mainData.gender)
+                        intent.putExtra("minimumAge", mainData.minimumAge)
+                        intent.putExtra("maximumAge", mainData.maximumAge)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
                         intent.putExtra("join", "0")
                         context.startActivity(intent)
@@ -171,9 +180,9 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         intent.putExtra("mapX", mainData.mapX)
                         intent.putExtra("mapY", mainData.mapY)
                         intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
-                        intent.putExtra("minimumAge",mainData.minimumAge)
-                        intent.putExtra("maximumAge",mainData.maximumAge)
-                        intent.putExtra("roomGender",mainData.gender)
+                        intent.putExtra("minimumAge", mainData.minimumAge)
+                        intent.putExtra("maximumAge", mainData.maximumAge)
+                        intent.putExtra("roomGender", mainData.gender)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
                         intent.putExtra("join", "1")
                         context.startActivity(intent)
@@ -225,12 +234,14 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 filList = results?.values as ArrayList<MainFragmentItemData>
                 notifyDataSetChanged()
-                if(filList.size==0){
-                    mainFragment.swipeRefresh.visibility = View.GONE
-                    mainFragment.refreshTextView.visibility = View.VISIBLE
-                }else{
-                    mainFragment.swipeRefresh.visibility = View.VISIBLE
-                    mainFragment.refreshTextView.visibility = View.GONE
+                if (this@MainFragmentAdapter::mMainFragment.isInitialized) {
+                    if (filList.size == 0) {
+                        mMainFragment.swipeRefresh.visibility = View.GONE
+                        mMainFragment.refreshTextView.visibility = View.VISIBLE
+                    } else {
+                        mMainFragment.swipeRefresh.visibility = View.VISIBLE
+                        mMainFragment.refreshTextView.visibility = View.GONE
+                    }
                 }
             }
         }
