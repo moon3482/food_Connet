@@ -2,7 +2,6 @@ package com.example.abled_food_connect.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.RoomInformationActivity
@@ -28,10 +26,19 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, private val list: ArrayList<MainFragmentItemData>) :
+class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
     var unList = list
     var filList = ArrayList<MainFragmentItemData>()
+    lateinit var mMainFragment: MainFragment
+
+    constructor(
+        context: Context,
+        mainFragment: MainFragment,
+        list: ArrayList<MainFragmentItemData>
+    ) : this(context, list) {
+        mMainFragment = mainFragment
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -78,9 +85,9 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
             val text: String = context.getString(R.string.limit_age_badge)
             testholder.roomAge.text = String.format(text, maindata.minimumAge, maindata.maximumAge)
         }
-        if(maindata.joinMember.contains(MainActivity.user_table_id.toString())){
+        if (maindata.joinMember.contains(MainActivity.user_table_id.toString())) {
             testholder.joinCheckImageView.visibility = View.VISIBLE
-        }else{
+        } else {
             testholder.joinCheckImageView.visibility = View.INVISIBLE
         }
         testholder.shopName.text = maindata.placeName
@@ -88,21 +95,15 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
         testholder.roomNumberOfPeople.text =
             "${maindata.nowNumOfPeople.toString()}/${(maindata.numOfPeople).toString()}명"
         testholder.roomDateTime.text = maindata.date
-        val splitAddress = maindata.address.toString().split("구")
+        val splitAddress = maindata.address.toString().split(" ")
         val splitAddress2 = splitAddress[0].split(" ")
         var location: String = ""
-        for (index in splitAddress2.indices) {
-            location += splitAddress2[index] + ">"
+        for (index in 0..2) {
+            location += splitAddress[index] + ">"
         }
-        location = location.substring(0, location.length - 1) + "구"
+        location = location.substring(0, location.length - 1)
         testholder.roomLocation.text = location
-        testholder.itemView.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-
-                joinRoomCheckMethod(maindata, maindata.address)
-
-            }
-        })
+        testholder.itemView.setOnClickListener { joinRoomCheckMethod(maindata, maindata.address) }
 
 
     }
@@ -122,7 +123,7 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
         var roomLocation: TextView = view.findViewById(R.id.tvRoomLocation)
         var roomNumberOfPeople: TextView = view.findViewById(R.id.tvRoomNumberOfPeople)
         var roomAge: TextView = view.findViewById(R.id.tvAge)
-        var joinCheckImageView:ImageView = view.findViewById(R.id.joinCheckImageView)
+        var joinCheckImageView: ImageView = view.findViewById(R.id.joinCheckImageView)
 
 
     }
@@ -153,11 +154,14 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         intent.putExtra("date", mainData.date)
                         intent.putExtra("shopName", mainData.shopName)
                         intent.putExtra("roomStatus", mainData.roomStatus)
-                        intent.putExtra("numOfPeople", mainData.numOfPeople.toString())
+                        intent.putExtra("numOfPeople", mainData.numOfPeople)
                         intent.putExtra("keyWords", mainData.keyWords)
-                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople.toString())
+                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
                         intent.putExtra("mapX", mainData.mapX)
                         intent.putExtra("mapY", mainData.mapY)
+                        intent.putExtra("roomGender", mainData.gender)
+                        intent.putExtra("minimumAge", mainData.minimumAge)
+                        intent.putExtra("maximumAge", mainData.maximumAge)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
                         intent.putExtra("join", "0")
                         context.startActivity(intent)
@@ -171,11 +175,14 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         intent.putExtra("date", mainData.date)
                         intent.putExtra("shopName", mainData.shopName)
                         intent.putExtra("roomStatus", mainData.roomStatus)
-                        intent.putExtra("numOfPeople", mainData.numOfPeople.toString())
+                        intent.putExtra("numOfPeople", mainData.numOfPeople)
                         intent.putExtra("keyWords", mainData.keyWords)
                         intent.putExtra("mapX", mainData.mapX)
                         intent.putExtra("mapY", mainData.mapY)
-                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople.toString())
+                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
+                        intent.putExtra("minimumAge", mainData.minimumAge)
+                        intent.putExtra("maximumAge", mainData.maximumAge)
+                        intent.putExtra("roomGender", mainData.gender)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
                         intent.putExtra("join", "1")
                         context.startActivity(intent)
@@ -206,7 +213,7 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                 val filterCheck = constraint.toString()
                 if (filterCheck.isEmpty()) {
                     filList = unList
-                    Log.e("필터 동작","없을때")
+
                 } else {
                     filList = ArrayList<MainFragmentItemData>()
                     for (index in unList) {
@@ -216,7 +223,7 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
                         }
 
                     }
-                    Log.e("필터 동작","있을때")
+
                     filList
                 }
                 val filterResult = FilterResults()
@@ -227,12 +234,14 @@ class MainFragmentAdapter(val context: Context,val mainFragment: MainFragment, p
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 filList = results?.values as ArrayList<MainFragmentItemData>
                 notifyDataSetChanged()
-                if(filList.size==0){
-                    mainFragment.swipeRefresh.visibility = View.GONE
-                    mainFragment.refreshTextView.visibility = View.VISIBLE
-                }else{
-                    mainFragment.swipeRefresh.visibility = View.VISIBLE
-                    mainFragment.refreshTextView.visibility = View.GONE
+                if (this@MainFragmentAdapter::mMainFragment.isInitialized) {
+                    if (filList.size == 0) {
+                        mMainFragment.swipeRefresh.visibility = View.GONE
+                        mMainFragment.refreshTextView.visibility = View.VISIBLE
+                    } else {
+                        mMainFragment.swipeRefresh.visibility = View.VISIBLE
+                        mMainFragment.refreshTextView.visibility = View.GONE
+                    }
                 }
             }
         }

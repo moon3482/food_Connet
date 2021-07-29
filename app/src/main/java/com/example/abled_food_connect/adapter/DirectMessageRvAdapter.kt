@@ -129,8 +129,8 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
 
     inner class MyMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private val MyMessage: TextView = view.findViewById(R.id.chatMyMessageText)
-        private val chatMyTimeStamp: TextView = view.findViewById(R.id.chatMyTimeStamp)
+        private val MyMessage: TextView = view.findViewById(R.id.ImageChatMyMessageText)
+        private val chatMyTimeStamp: TextView = view.findViewById(R.id.ImageChatMyTimeStamp)
         private val messageCheckTv:TextView = view.findViewById(R.id.messageCheckTv)
 
         fun bind(item: DirectMessageRvData) {
@@ -173,7 +173,7 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
     inner class MyImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val chatMyIv: ImageView = view.findViewById(R.id.chatMyIv)
-        private val chatMyTimeStamp: TextView = view.findViewById(R.id.chatMyTimeStamp)
+        private val chatMyTimeStamp: TextView = view.findViewById(R.id.ImageChatMyTimeStamp)
         private val messageCheckTv:TextView = view.findViewById(R.id.messageCheckTv)
 
         fun bind(item: DirectMessageRvData) {

@@ -1,11 +1,10 @@
 package com.example.abled_food_connect.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.RoomSearchActivity
 import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MainFragmentItemData
@@ -85,6 +85,9 @@ class MainFragment : Fragment() {
             load()
 
         }
+        refreshTextView.setOnRefreshListener {
+            load()
+        }
         hideRoom.setOnClickListener {
             check = when (check) {
                 false -> {
@@ -104,7 +107,7 @@ class MainFragment : Fragment() {
 
         }
         load()
-
+        setHasOptionsMenu(true)
         return view
     }
 
@@ -158,6 +161,25 @@ class MainFragment : Fragment() {
         Log.d(TAG, "메인프래그먼트 onDetach()")
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.room_search,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.toolbarSearchButton -> {
+                activity.let {
+                    val intent = Intent(context,RoomSearchActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+            else->{
+
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     fun load() {
 
         val gson: Gson = GsonBuilder()
@@ -181,11 +203,12 @@ class MainFragment : Fragment() {
 
                     val list: LoadingRoom = response.body()!!
                     val array: ArrayList<MainFragmentItemData> = list.roomList
-                    mainFragmentListArray = list.roomList as ArrayList<MainFragmentItemData>
+                    mainFragmentListArray = list.roomList
                     recyclerViewAdapter =
                         MainFragmentAdapter(requireContext(),this@MainFragment, mainFragmentListArray)
                     recyclerView.adapter = recyclerViewAdapter
                     swipeRefresh.isRefreshing = false
+                    refreshTextView.isRefreshing = false
                     if(check){
                         recyclerViewAdapter.filter.filter(MainActivity.user_table_id.toString())
                     }else{

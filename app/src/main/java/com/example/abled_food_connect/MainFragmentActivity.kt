@@ -1,24 +1,35 @@
 package com.example.abled_food_connect
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
 import com.example.abled_food_connect.fragments.*
 import com.example.abled_food_connect.retrofit.RoomAPI
-import com.example.abled_food_connect.databinding.ActivityMainFragmentBinding
+import com.example.abled_food_connect.works.DatetimeCheckWork
+import com.example.abled_food_connect.works.ScheduleCheckWork
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.google.firebase.messaging.FirebaseMessaging
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 class MainFragmentActivity : AppCompatActivity() {
@@ -29,6 +40,8 @@ class MainFragmentActivity : AppCompatActivity() {
     private lateinit var chatingFragment: ChatingFragment
     private lateinit var myPageFragment: MyPageFragment
     private var BackPressTime: Long = 0
+    private var context: Context = this
+
 
     //태그 생성
     companion object obuserid {
@@ -36,7 +49,6 @@ class MainFragmentActivity : AppCompatActivity() {
 
 
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,18 +96,36 @@ class MainFragmentActivity : AppCompatActivity() {
                 startActivity(nextIntent)
 
             })
+        token()
+
     }
 
 
     override fun onStart() {
         super.onStart()
-
+        doWorkWithPeriodic(this)
     }
 
     override fun onStop() {
         super.onStop()
         if (intent.hasExtra("review")) {
             intent.removeExtra("review")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+       val manager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            val dialog = AlertDialog.Builder(this)
+            dialog.setMessage("GPS가 꺼저 있습니다. 활성화를 해주세요.")
+                .setNegativeButton("취소",null)
+                .setPositiveButton("설정"
+                ) { dialog, which ->
+                    startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+                .show()
         }
     }
 
@@ -111,7 +141,9 @@ class MainFragmentActivity : AppCompatActivity() {
 
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
-                    tb.setTitle("홈")
+                    tb.title="홈"
+
+
 
                     mainFragment = MainFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
@@ -127,6 +159,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("리뷰")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     reviewFragment = ReviewFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
@@ -142,6 +175,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("랭킹")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     rankingFragment = RankingFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
@@ -157,6 +191,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("채팅")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     chatingFragment = ChatingFragment.newInstance()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
@@ -173,6 +208,7 @@ class MainFragmentActivity : AppCompatActivity() {
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
                     tb.setTitle("마이페이지")
+
                     binding.mainFragmentCreateRoomBtn.hide()
                     supportFragmentManager.beginTransaction().setCustomAnimations(
                         R.animator.fade_in,
@@ -187,6 +223,13 @@ class MainFragmentActivity : AppCompatActivity() {
 
             true
         }
+
+
+
+
+
+
+
 
     //프래그먼트에 따라 플로팅버튼 보여주기
     private fun showFloatingButtonVisible(itemid: Int) {
@@ -305,12 +348,83 @@ class MainFragmentActivity : AppCompatActivity() {
             BackPressTime = System.currentTimeMillis()
             Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show()
             return
-        }else{
+        } else {
             super.onBackPressed()
         }
 
     }
 
+    private fun doWorkWithPeriodic(context: Context) {
 
+        val workRequest = PeriodicWorkRequestBuilder<DatetimeCheckWork>(3, TimeUnit.HOURS).build()
+        val workRequestOne = OneTimeWorkRequestBuilder<ScheduleCheckWork>().build()
+        /*
+            ExistingPeriodicWorkPolicy.KEEP     :  워크매니저가 실행중이 아니면 새로 실행하고, 실행중이면 아무작업도 하지 않는다.
+            ExistingPeriodicWorkPolicy.REPLACE  :  워크매니저를 무조건 다시 실행한다.
+         */
+        WorkManager.getInstance(context)
+            .enqueueUniquePeriodicWork(
+                "DatetimeCheckWork",
+                ExistingPeriodicWorkPolicy.REPLACE,
+                workRequest
+            )
+        WorkManager.getInstance(context).enqueue(workRequestOne)
+        Log.d("DatetimeCheckWork", "worker 시작함수")
+    }
+    @SuppressLint("MissingPermission")
+    fun token() {
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            Log.d("토큰", token)
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(getString(R.string.http_request_base_url))
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(createOkHttpClient())
+                .build()
+
+            retrofit.create(RoomAPI::class.java).tokenInsert(MainActivity.user_table_id,token).enqueue(object:
+                Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.isSuccessful){
+                        if (response.body() == "true"){
+
+                        }else{
+
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+
+                }
+            })
+
+
+//        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        val locationProvider = LocationManager.GPS_PROVIDER
+//        val location: Location? = locationManager.getLastKnownLocation(locationProvider)
+//        if (location!=null){
+//            Log.e("로케이션","위치 : ${location.latitude} , ${location.longitude}")
+//        }
+        })
+    }
+    private fun createOkHttpClient(): OkHttpClient {
+        //Log.d ("TAG","OkhttpClient");
+        val builder = OkHttpClient.Builder()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        builder.addInterceptor(interceptor)
+        return builder.build()
+    }
 }
 

@@ -1,16 +1,16 @@
 package com.example.abled_food_connect
 
+import android.app.ProgressDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.adapter.userProfileRankingLatestThreeRvAdapter
 import com.example.abled_food_connect.data.UserProfileData
-import com.example.abled_food_connect.data.UserProfileEvaluationListRvData
 import com.example.abled_food_connect.data.userProfileRankingLatestThreeData
 import com.example.abled_food_connect.data.userProfileRankingLatestThreeDataItem
 import com.example.abled_food_connect.databinding.ActivityUserProfileBinding
@@ -26,12 +26,15 @@ class UserProfileActivity : AppCompatActivity() {
 
     // 전역 변수로 바인딩 객체 선언
     private var mBinding: ActivityUserProfileBinding? = null
+
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
-    private var clicked_user_tb_id : Int = 0
-    private lateinit var clicked_user_NicName : String
-    private lateinit var clicked_user_ProfileImage : String
+    private var clicked_user_tb_id: Int = 0
+    private lateinit var clicked_user_NicName: String
+    private lateinit var clicked_user_ProfileImage: String
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,27 +59,29 @@ class UserProfileActivity : AppCompatActivity() {
 
 
         //어떤 유저를 선택했는지 이전엑티비티에서 유저 테이블 아이디를 받아온다.
-        clicked_user_tb_id = intent.getIntExtra("writer_user_tb_id",0)
+        clicked_user_tb_id = intent.getIntExtra("writer_user_tb_id", 0)
 
         //유저 정보를 가져온다.
         userProfileLoading(clicked_user_tb_id)
         RankingLatestThreeLoading(clicked_user_tb_id)
 
 
-        binding.rankingLatestRv.layoutManager = LinearLayoutManager(this).also { it.orientation = LinearLayoutManager.HORIZONTAL }
+        binding.rankingLatestRv.layoutManager =
+            LinearLayoutManager(this).also { it.orientation = LinearLayoutManager.HORIZONTAL }
         binding.rankingLatestRv.setHasFixedSize(true)
 
 
 
 
-        if(clicked_user_tb_id == MainActivity.user_table_id){
+        if (clicked_user_tb_id == MainActivity.user_table_id) {
             binding.toMoveDirectMessageActivityBtn.visibility = View.GONE
         }
 
 
 
         binding.toMoveDirectMessageActivityBtn.setOnClickListener(View.OnClickListener {
-            var toDirectMessageActivity : Intent = Intent(applicationContext, DirectMessageActivity::class.java)
+            var toDirectMessageActivity: Intent =
+                Intent(applicationContext, DirectMessageActivity::class.java)
             toDirectMessageActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
             toDirectMessageActivity.putExtra("clicked_user_NicName", clicked_user_NicName)
             toDirectMessageActivity.putExtra("clicked_user_ProfileImage", clicked_user_ProfileImage)
@@ -86,22 +91,28 @@ class UserProfileActivity : AppCompatActivity() {
 
 
         binding.toMoveUserProfileBadgeListActivityBtn.setOnClickListener(View.OnClickListener {
-            var toUserProfileBadgeListActivity : Intent = Intent(applicationContext, UserProfileBadgeListActivity::class.java)
-            toUserProfileBadgeListActivity.putExtra("user_tb_id",clicked_user_tb_id)
-            toUserProfileBadgeListActivity.putExtra("user_nicname",clicked_user_NicName)
+            var toUserProfileBadgeListActivity: Intent =
+                Intent(applicationContext, UserProfileBadgeListActivity::class.java)
+            toUserProfileBadgeListActivity.putExtra("user_tb_id", clicked_user_tb_id)
+            toUserProfileBadgeListActivity.putExtra("user_nicname", clicked_user_NicName)
             startActivity(toUserProfileBadgeListActivity, null)
         })
 
 
         binding.toMoveWrittenReviewListActivityBtn.setOnClickListener(View.OnClickListener {
-            var toUserProfileClickedReviewGridListActivity : Intent = Intent(applicationContext, UserProfileClickedReviewGridListActivity::class.java)
-            toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", clicked_user_tb_id)
+            var toUserProfileClickedReviewGridListActivity: Intent =
+                Intent(applicationContext, UserProfileClickedReviewGridListActivity::class.java)
+            toUserProfileClickedReviewGridListActivity.putExtra(
+                "writer_user_tb_id",
+                clicked_user_tb_id
+            )
             startActivity(toUserProfileClickedReviewGridListActivity, null)
         })
 
 
         binding.userHistoryBtn.setOnClickListener(View.OnClickListener {
-            var toUserProfileJoinHistoryActivityIntent : Intent = Intent(applicationContext, UserProfileJoinHistoryActivity::class.java)
+            var toUserProfileJoinHistoryActivityIntent: Intent =
+                Intent(applicationContext, UserProfileJoinHistoryActivity::class.java)
             toUserProfileJoinHistoryActivityIntent.putExtra("UserNicName", clicked_user_NicName)
             startActivity(toUserProfileJoinHistoryActivityIntent, null)
         })
@@ -110,17 +121,17 @@ class UserProfileActivity : AppCompatActivity() {
 
 
         binding.toMoveUserProfileEvaluationListActivityBtn.setOnClickListener(View.OnClickListener {
-            var toUserProfileEvaluationListActivity : Intent = Intent(applicationContext, UserProfileEvaluationListActivity::class.java)
-            toUserProfileEvaluationListActivity.putExtra("user_tb_id",clicked_user_tb_id)
-            toUserProfileEvaluationListActivity.putExtra("user_nicname",clicked_user_NicName)
+            var toUserProfileEvaluationListActivity: Intent =
+                Intent(applicationContext, UserProfileEvaluationListActivity::class.java)
+            toUserProfileEvaluationListActivity.putExtra("user_tb_id", clicked_user_tb_id)
+            toUserProfileEvaluationListActivity.putExtra("user_nicname", clicked_user_NicName)
             startActivity(toUserProfileEvaluationListActivity, null)
         })
 
     }
 
 
-
-    fun RankingLatestThreeLoading(user_tb_id:Int){
+    fun RankingLatestThreeLoading(user_tb_id: Int) {
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -136,20 +147,23 @@ class UserProfileActivity : AppCompatActivity() {
                 call: Call<userProfileRankingLatestThreeData>,
                 response: Response<userProfileRankingLatestThreeData>
             ) {
+
                 Log.d("최근랭킹 3개", "리뷰 컨텐츠 : ${response.raw()}")
                 Log.d("최근 랭킹 3개", "리뷰 컨텐츠 : ${response.body().toString()}")
 
-                var items : userProfileRankingLatestThreeData? =  response.body()
+                var items: userProfileRankingLatestThreeData? = response.body()
 
                 if (items != null) {
 
-                    var RankingLatestThreeArrayList = ArrayList<userProfileRankingLatestThreeDataItem>()
-                    RankingLatestThreeArrayList = items.RankingLatestThreeList as ArrayList<userProfileRankingLatestThreeDataItem>
+                    var RankingLatestThreeArrayList =
+                        ArrayList<userProfileRankingLatestThreeDataItem>()
+                    RankingLatestThreeArrayList =
+                        items.RankingLatestThreeList as ArrayList<userProfileRankingLatestThreeDataItem>
 
-                    val mAdapter =  userProfileRankingLatestThreeRvAdapter(RankingLatestThreeArrayList)
+                    val mAdapter =
+                        userProfileRankingLatestThreeRvAdapter(RankingLatestThreeArrayList)
                     binding.rankingLatestRv.adapter = mAdapter
                 }
-
 
 
             }
@@ -161,9 +175,7 @@ class UserProfileActivity : AppCompatActivity() {
     }
 
 
-
-
-    fun userProfileLoading(user_tb_id:Int){
+    fun userProfileLoading(user_tb_id: Int) {
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -182,12 +194,12 @@ class UserProfileActivity : AppCompatActivity() {
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.body().toString()}")
 
-                var items : UserProfileData? =  response.body()
+                var items: UserProfileData? = response.body()
 
 
                 //작성자 프로필
                 Glide.with(applicationContext)
-                    .load(getString(R.string.http_request_base_url)+items!!.profile_image)
+                    .load(getString(R.string.http_request_base_url) + items!!.profile_image)
                     .circleCrop()
                     .into(binding.userProfileIv)
 
@@ -197,13 +209,13 @@ class UserProfileActivity : AppCompatActivity() {
                 clicked_user_NicName = items!!.nick_name
 
 
-                if(items!!.introduction == null || items!!.introduction.length == 0) {
+                if (items!!.introduction == null || items!!.introduction.length == 0) {
                     binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
-                }else{
+                } else {
                     binding.userProfileIntroductionTv.text = items.introduction
                 }
 
-                binding.reviewTitleAndReviewCountTv.text= "작성한 리뷰 ${items.review_count}개"
+                binding.reviewTitleAndReviewCountTv.text = "작성한 리뷰 ${items.review_count}개"
 
                 //랭킹관련
 
@@ -215,10 +227,8 @@ class UserProfileActivity : AppCompatActivity() {
 
 
                 Glide.with(applicationContext)
-                    .load(getString(R.string.http_request_base_url)+items!!.tier_image)
+                    .load(getString(R.string.http_request_base_url) + items!!.tier_image)
                     .into(binding.tierBadgeImageIv)
-
-
 
 
             }

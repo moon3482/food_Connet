@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">푸드 커넥트</string>
     <string name="join">입장</string>
+    <string name="lastLogin">lastLogin</string>
 
     <!--메인 액티비티사용 텍스트-->
     <string name="naver_login">네이버 로그인</string>

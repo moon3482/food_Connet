@@ -8,7 +8,8 @@ class MessageData(
     @SerializedName("to") val to: String,
     @SerializedName("content") val content: String,
     @SerializedName("thumbnailImage") val thumbnailImage: String,
-    @SerializedName("sendTime") val sendTime: String? = null
+    @SerializedName("sendTime") val sendTime: String? = null,
+    @SerializedName("members") val members:String
 ) {
 
 }

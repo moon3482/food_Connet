@@ -26,7 +26,8 @@
                 android:background="?attr/colorPrimary"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="@style/MainToolbar"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed" />
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
+              />
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout

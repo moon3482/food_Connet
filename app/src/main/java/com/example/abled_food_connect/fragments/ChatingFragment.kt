@@ -48,12 +48,13 @@ class ChatingFragment : Fragment() {
         viewPager = view.findViewById(R.id.chatViewPager)
         tabLayout = view.findViewById(R.id.ChatFragmentTabLayout)
 
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val pagerAdapter = ChatFragmentViewPagerAdapter(requireActivity())
+        val pagerAdapter = ChatFragmentViewPagerAdapter(childFragmentManager,lifecycle)
         pagerAdapter.addFragment(ChatGroupFragment())
         pagerAdapter.addFragment(ChatDMFragment())
 

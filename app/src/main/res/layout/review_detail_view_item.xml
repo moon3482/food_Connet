@@ -132,15 +132,15 @@
             android:layout_centerInParent="true" />
         <!--        android:layout_above="@+id/indicator"-->
         <me.relex.circleindicator.CircleIndicator3
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            app:ci_drawable="@drawable/black_radius"
             android:id="@+id/indicator"
             android:layout_width="match_parent"
             android:layout_height="18dp"
-            android:layout_marginBottom="10dp"
-            android:background="#ffffff"
-            android:visibility="gone"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/view_pager2"
-            app:ci_drawable="@drawable/black_radius" />
+            />
 
     </RelativeLayout>
 

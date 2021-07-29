@@ -1,11 +1,11 @@
 package com.example.abled_food_connect.fragments
 
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
@@ -33,8 +33,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.SignInButton
-import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -89,6 +87,9 @@ class MyPageFragment:Fragment() {
         fun newInstance(): MyPageFragment{
             return MyPageFragment()
         }
+
+            lateinit var progressBar: ProgressDialog
+
     }
 
     override fun onResume() {
@@ -128,7 +129,10 @@ class MyPageFragment:Fragment() {
         userProfileIv = view.findViewById<ImageView>(R.id.userProfileIv)
         userProfileNicNameTv = view.findViewById<TextView>(R.id.userProfileNicNameTv)
         userProfileIntroductionTv = view.findViewById<TextView>(R.id.userProfileIntroductionTv)
-
+        progressBar = ProgressDialog(requireContext())
+        progressBar.setMessage("로딩중..")
+        progressBar.setProgressStyle(ProgressDialog.BUTTON_POSITIVE)
+        progressBar.show()
 
 
 
@@ -436,7 +440,7 @@ class MyPageFragment:Fragment() {
                 if (task.isSuccessful) {
 
                     val user = Firebase.auth.currentUser
-                    val uid = user.uid
+                    val uid = user!!.uid
                     Log.d("사용자 식별자 id", uid)
 
                     if(table_user_id == uid){
@@ -444,7 +448,7 @@ class MyPageFragment:Fragment() {
 
 
                         //구글 계정연동 해제
-                        auth!!.getCurrentUser().delete()
+                        auth!!.getCurrentUser()!!.delete()
 
                         //구글 로그아웃
                         FirebaseAuth.getInstance().signOut()
@@ -847,7 +851,7 @@ class MyPageFragment:Fragment() {
 
                 rankTv.text = "(${items.rank}위)"
 
-
+                progressBar.dismiss()
 
             }
 

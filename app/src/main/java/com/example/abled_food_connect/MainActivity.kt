@@ -1,22 +1,28 @@
 package com.example.abled_food_connect
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.provider.Settings
 import android.util.Base64
 import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.abled_food_connect.data.LoginDataClass
-import com.example.abled_food_connect.fragments.MyPageFragment
 import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.facebook.*
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
@@ -27,14 +33,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
@@ -43,13 +50,11 @@ import com.nhn.android.naverlogin.ui.view.OAuthLoginButton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var callbackManager: CallbackManager
@@ -76,12 +81,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var mContext: Context
 
     companion object {
-        var user_table_id : Int = 0
+        var user_table_id: Int = 0
         var loginUserId: String = ""
-        var loginUserNickname : String = ""
-        var userThumbnailImage : String = ""
+        var loginUserNickname: String = ""
+        var userThumbnailImage: String = ""
+        var userGender:String = ""
+        var userAge:Int = 0
     }
-
 
 
     var sharedLoginCheckBoolean: Boolean = false
@@ -99,7 +105,6 @@ class MainActivity : AppCompatActivity() {
     var googleSignInClient: GoogleSignInClient? = null
     var GOOGLE_LOGIN_CODE = 9001
 
-
     lateinit var nextIntent: Intent
 
 
@@ -112,11 +117,12 @@ class MainActivity : AppCompatActivity() {
 
 
         //유저정보 쉐어드프리퍼런스 로드
-        sharedLoadData()
+
 
 
 
         nextIntent = Intent(this, UserRegisterActivity::class.java)
+
 
         val keyHash = Utility.getKeyHash(this)
         Log.e("해시", keyHash)
@@ -159,43 +165,47 @@ class MainActivity : AppCompatActivity() {
 
 
         btnKakaoLogin.setOnClickListener {
-
-
-            UserApiClient.instance.loginWithKakaoAccount(applicationContext, prompts = listOf(Prompt.LOGIN)) { token, error ->
-                if (error != null) {
-                    Log.e(MyPageFragment.TAG, "로그인 실패", error)
-                }
-                else if (token != null) {
-                    Log.i(MyPageFragment.TAG, "로그인 성공 ${token.accessToken}")
-
-
-
-                    UserApiClient.instance.me { user, error ->
-                        if (error != null) {
-                            Log.e(MyPageFragment.TAG, "사용자 정보 요청 실패", error)
-                        } else if (user != null) {
-                            Log.i(
-                                MyPageFragment.TAG, "사용자 정보 요청 성공" +
-                                        "\n회원번호: ${user.id}" +
-                                        "\n이메일: ${user.kakaoAccount?.email}" +
-                                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                                        "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}" +
-                                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
-                            )
-
-                            RegistUserInfo(user.id.toString(), "KAKAO")
-
-
-
-                        }
-                    }
-
-
-
-
-
-                }
+            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
+            } else {
+                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
             }
+
+//            UserApiClient.instance.loginWithKakaoAccount(applicationContext, prompts = listOf(Prompt.LOGIN)) { token, error ->
+//                if (error != null) {
+//                    Log.e(MyPageFragment.TAG, "로그인 실패", error)
+//                }
+//                else if (token != null) {
+//                    Log.i(MyPageFragment.TAG, "로그인 성공 ${token.accessToken}")
+//
+//
+//
+//                    UserApiClient.instance.me { user, error ->
+//                        if (error != null) {
+//                            Log.e(MyPageFragment.TAG, "사용자 정보 요청 실패", error)
+//                        } else if (user != null) {
+//                            Log.i(
+//                                MyPageFragment.TAG, "사용자 정보 요청 성공" +
+//                                        "\n회원번호: ${user.id}" +
+//                                        "\n이메일: ${user.kakaoAccount?.email}" +
+//                                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+//                                        "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}" +
+//                                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+//                            )
+//
+//                            RegistUserInfo(user.id.toString(), "KAKAO")
+//
+//
+//
+//                        }
+//                    }
+//
+//
+//
+//
+//
+//                }
+//            }
 
 //            UserApiClient.instance.logout { error ->
 //                if (error != null) {
@@ -207,11 +217,7 @@ class MainActivity : AppCompatActivity() {
 //            }
 //
 //
-//            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-//                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
-//            } else {
-//                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-//            }
+
         }
         callbackManager = CallbackManager.Factory.create()
 
@@ -300,7 +306,7 @@ class MainActivity : AppCompatActivity() {
         mOAuthLoginInstance = OAuthLogin.getInstance()
 
         //네이버 웹뷰로 로그인 옵션을 추가가
-       mOAuthLoginInstance.enableWebViewLoginOnly()
+        mOAuthLoginInstance.enableWebViewLoginOnly()
 
         //만약 네이버 앱이 설치되어있는 경우, 앱으로 로그인 가능하게 설정한다.
 //        try {
@@ -331,7 +337,6 @@ class MainActivity : AppCompatActivity() {
 
             buttonOAuthLoginImg.performClick()
         }
-
 
 
         /*
@@ -384,6 +389,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT>=30) {
+            if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                sharedLoadData()
+            } else {
+                checkBackgroundLocationPermissionAPI30()
+            }
+        }else{
+            sharedLoadData()
+        }
+    }
+
     @SuppressLint("LongLogTag")
     fun getUserProfile(token: AccessToken?, userId: String?) {
 
@@ -409,7 +427,7 @@ class MainActivity : AppCompatActivity() {
                 accessToken = token.toString()
 
                 // Facebook Id
-                if (jsonObject.has("id")) {
+                if (jsonObject!!.has("id")) {
                     val facebookId = jsonObject.getString("id")
                     Log.i("Facebook Id: ", facebookId.toString())
                     id = facebookId.toString()
@@ -629,14 +647,14 @@ class MainActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // 로그인 성공 시
                     val user = Firebase.auth.currentUser
-                    val name = user.displayName
-                    val email = user.email
-                    val photoUrl = user.photoUrl
+                    val name = user!!.displayName
+                    val email = user!!.email
+                    val photoUrl = user!!.photoUrl
                     val uid = user.uid
 
                     Log.d("나와라", "구글 로그인하였습니다.")
-                    Log.d("이름", name)
-                    Log.d("이메일", email)
+                    Log.d("이름", name.toString())
+                    Log.d("이메일", email.toString())
                     Log.d("프로필사진", photoUrl.toString())
                     Log.d("사용자 식별자 id", uid)
 
@@ -709,7 +727,9 @@ class MainActivity : AppCompatActivity() {
                         user_table_id = get_user_table_id
                         loginUserId = loginId
                         loginUserNickname = loginNickname
-                        userThumbnailImage =loginThumbnailImage
+                        userThumbnailImage = loginThumbnailImage
+                        userAge = userlogin.userAge
+                        userGender = userlogin.userGender
 
 
                         //쉐어드프리퍼런스에 값을 저장한다.
@@ -718,6 +738,8 @@ class MainActivity : AppCompatActivity() {
 
                         startActivity(mainFragmentJoin)
                         finish()
+
+
                     } else {
                         Toast.makeText(
                             getApplicationContext(),
@@ -755,32 +777,34 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
-    private fun sharedSaveData(){
-        val pref = getSharedPreferences("pref_user_data",0)
+    private fun sharedSaveData() {
+        val pref = getSharedPreferences("pref_user_data", 0)
         val edit = pref.edit()
 
-        edit.putInt("user_table_id",user_table_id)
-        edit.putString("loginUserId",loginUserId)
-        edit.putString("loginUserNickname",loginUserNickname)
-        edit.putString("userThumbnailImage",userThumbnailImage)
-        edit.putBoolean("login_check",true)
+        edit.putInt("user_table_id", user_table_id)
+        edit.putString("loginUserId", loginUserId)
+        edit.putString("loginUserNickname", loginUserNickname)
+        edit.putString("userThumbnailImage", userThumbnailImage)
+        edit.putString("userGender", userGender)
+        edit.putInt("userAge",userAge)
+        edit.putBoolean("login_check", true)
         edit.apply()//저장완료
 
 
     }
 
-    private fun sharedLoadData(){
-        val pref =getSharedPreferences("pref_user_data",0)
-        user_table_id = pref.getInt("user_table_id",0)
-        loginUserId = pref.getString("loginUserId","")!!
-        loginUserNickname = pref.getString("loginUserNickname","")!!
-        userThumbnailImage = pref.getString("userThumbnailImage","")!!
-        sharedLoginCheckBoolean = pref.getBoolean("login_check",false)!!
+    private fun sharedLoadData() {
+        val pref = getSharedPreferences("pref_user_data", 0)
+        user_table_id = pref.getInt("user_table_id", 0)
+        loginUserId = pref.getString("loginUserId", "")!!
+        loginUserNickname = pref.getString("loginUserNickname", "")!!
+        userThumbnailImage = pref.getString("userThumbnailImage", "")!!
+        userAge = pref.getInt("userAge",0)
+        userGender = pref.getString("userGender","")!!
+        sharedLoginCheckBoolean = pref.getBoolean("login_check", false)!!
 
         //자동로그인 확인
-        if(sharedLoginCheckBoolean == true) {
+        if (sharedLoginCheckBoolean == true) {
             val mainFragmentJoin = Intent(this@MainActivity, MainFragmentActivity::class.java)
             startActivity(mainFragmentJoin)
             finish()
@@ -788,4 +812,45 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+
+    @TargetApi(30)
+    private fun Context.checkBackgroundLocationPermissionAPI30() {
+        if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            return
+        } else {
+            AlertDialog.Builder(this)
+                .setTitle("위치 사용권한")
+                .setMessage("위치사용권한을 항상사용으로 변경해주세요.")
+                .setPositiveButton("설정") { _, _ ->
+//                     this request will take user to Application's Setting page
+//                    requestPermissions(
+//                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+//                        backgroundLocationRequestCode
+//                    )
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:$packageName")
+                    )
+                    startActivity(intent)
+
+                }
+                .setNegativeButton("취소") { dialog, _ ->
+                    dialog.dismiss()
+                    onBackPressed()
+                }
+                .setCancelable(false)
+                .create()
+                .show()
+        }
+
+
+    }
+
+    private fun Context.checkSinglePermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 }
