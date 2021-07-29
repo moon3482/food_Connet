@@ -58,7 +58,7 @@ class UserProfileClickedReviewGridListAdapter () : RecyclerView.Adapter<UserProf
         holder.reveiwPicture.setOnClickListener(View.OnClickListener {
 
 
-            userProfileLoading(holder.reveiwPicture.context,reviewDetailViewRvDataArraylist.get(position).review_id,position)
+            reviewDeleteCheck(holder.reveiwPicture.context,reviewDetailViewRvDataArraylist.get(position).review_id,position)
 
 
         })
@@ -96,7 +96,8 @@ class UserProfileClickedReviewGridListAdapter () : RecyclerView.Adapter<UserProf
 
 
 
-    fun userProfileLoading(context: Context,review_id:Int,position: Int){
+    //그리드뷰에서 클릭한 리뷰가 삭제된 리뷰인지 확인한다.
+    fun reviewDeleteCheck(context: Context,review_id:Int,position: Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
