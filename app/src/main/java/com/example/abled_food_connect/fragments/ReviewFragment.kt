@@ -56,6 +56,13 @@ class ReviewFragment:Fragment() {
         Log.d(TAG,"리뷰프래그먼트 onAttach()")
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        Log.d(TAG,"리뷰프래그먼트 onResume()")
+        reviewDbLoading()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,6 +70,7 @@ class ReviewFragment:Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
 
+        Log.d(TAG,"리뷰프래그먼트 onCreateView()")
 
 
         reviewDbLoading()
@@ -95,6 +103,8 @@ class ReviewFragment:Fragment() {
     }
 
 
+
+
     fun reviewDbLoading(){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
@@ -118,6 +128,7 @@ class ReviewFragment:Fragment() {
                 Log.d(TAG, "성공 : ${items!!.roomList}")
 
 
+                gridView_arrayList.clear()
                 gridView_arrayList = items!!.roomList as ArrayList<ReviewFragmentLodingDataItem>
 
                 mAdapter.reviewList = gridView_arrayList
