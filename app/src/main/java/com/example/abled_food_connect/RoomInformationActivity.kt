@@ -1,6 +1,7 @@
 package com.example.abled_food_connect
 
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -31,6 +32,7 @@ import java.io.InputStream
 class RoomInformationActivity : AppCompatActivity() {
     val binding by lazy { ActivityRoomInformationBinding.inflate(layoutInflater) }
     private var mapClick = true
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var view = binding.root
@@ -47,8 +49,9 @@ class RoomInformationActivity : AppCompatActivity() {
         val date = intent.getStringExtra("date")
         val shopName = intent.getStringExtra("shopName")
         val roomStatus = intent.getDoubleExtra("roomStatus", 0.0);
-        val nowNumOfPeople = intent.getStringExtra("nowNumOfPeople")
-        val numOfPeople = intent.getIntExtra("numOfPeople", 0)
+        var nowNumOfPeople = intent.getStringExtra("nowNumOfPeople")
+        Log.e("지금 숫자", nowNumOfPeople!!)
+        val numOfPeople = intent.getStringExtra("numOfPeople")
         val keyWords = intent.getStringExtra("keyWords")
         val imageUrl = intent.getStringExtra("imageUrl")
         val join = intent.getStringExtra("join")
@@ -68,7 +71,7 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RoomInfoSubscriptionRoomBtn.setOnClickListener {
 
             if (roomId != null) {
-                if (numOfPeople > nowNumOfPeople!!.toInt()) {
+                if (numOfPeople!!.toInt() > nowNumOfPeople!!.toInt()) {
                     when (true) {
 
                         roomGender.equals(userGender) -> {
@@ -135,7 +138,7 @@ class RoomInformationActivity : AppCompatActivity() {
         binding.RoomInfomationDate.text = date
         binding.RoomInformationCategoryIntroduceTextview.text = info
         binding.RoomInformationCategoryAddressTextview.text = address
-        binding.RoomInformationCategoryNumOfPeopleTextview.text = "${nowNumOfPeople.toString()}/${numOfPeople}명"
+        binding.RoomInformationCategoryNumOfPeopleTextview.text = "${nowNumOfPeople}/${numOfPeople}명"
         binding.RoomInfoHostIdTextView.text = hostName
         binding.RoomInfoShopName.text = shopName
 
@@ -161,7 +164,7 @@ class RoomInformationActivity : AppCompatActivity() {
             intent.putExtra("roomStatus", roomStatus)
             intent.putExtra("numOfPeople", numOfPeople.toString())
             intent.putExtra("keyWords", keyWords)
-            intent.putExtra("nowNumOfPeople", nowNumOfPeople.toString())
+            intent.putExtra("nowNumOfPeople", nowNumOfPeople)
             intent.putExtra("mapX", mapX)
             intent.putExtra("mapY", mapY)
             intent.putExtra("imageUrl", imageUrl)

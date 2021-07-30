@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
@@ -247,7 +248,9 @@ class ChatRoomActivity : AppCompatActivity() {
         chatClient = ChatClient.getInstance()
 //        chatAdapter = ChatAdapter()
 
+        binding.roomFinishButton.setOnClickListener {
 
+        }
         binding.userListRCV.layoutManager = LinearLayoutManager(this)
         binding.groupChatRecyclerView.layoutManager = LinearLayoutManager(this)
         (binding.groupChatRecyclerView.layoutManager as LinearLayoutManager).stackFromEnd =
@@ -278,10 +281,10 @@ class ChatRoomActivity : AppCompatActivity() {
                 last = layoutManager.findLastCompletelyVisibleItemPosition()
                 var lc = chatAdapter.arrayList.size - 1
                 pagenum = layoutManager.itemCount
-                if (first <= count && requestPage&&timer) {
+                if (first <= count && requestPage && timer) {
 
                     messageLoad(pagenum)
-                    Thread{
+                    Thread {
                         timer = false
                         Thread.sleep(200)
                         timer = true
@@ -906,7 +909,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     if (response.body() != null) {
                         val list: paginationData? = response.body()
                         if (list!!.success) {
-
+                            members = response.body()!!.members
                             for (index in list.ChatLogList.indices) {
 
                                 ReadChat(list.ChatLogList[index])
@@ -1117,6 +1120,7 @@ class ChatRoomActivity : AppCompatActivity() {
         val join = intent.getStringExtra("join")
         val mapX = intent.getDoubleExtra("mapX", 0.0)
         val mapY = intent.getDoubleExtra("mapY", 0.0)
+        val finish = intent.getStringExtra("finish")
 
         if (roomStatus > 5) {
             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
@@ -1132,6 +1136,17 @@ class ChatRoomActivity : AppCompatActivity() {
             binding.RoomInformationStatus.text = "임박"
 
         } else if (roomStatus < 0) {
+            if (hostName == MainActivity.loginUserNickname && nowNumOfPeople!!.toInt() > 1) {
+                binding.finishLinear.visibility = View.VISIBLE
+                if (finish!!.toInt() == 1) {
+                    binding.roomFinishButton.isEnabled = false
+                    binding.roomFinishButton.setBackgroundColor(Color.GRAY)
+                    binding.roomFinishButton.text = "완료됨"
+                }
+            } else {
+                binding.finishLinear.visibility = View.GONE
+            }
+
             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
             binding.RoomInformationStatus.text = "마감"
         }
@@ -1234,20 +1249,27 @@ class ChatRoomActivity : AppCompatActivity() {
             .enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.body() == "true") {
-                        socket.emit(
-                            "outRoom", gson.toJson(
-                                MessageData(
-                                    "EXITROOM",
-                                    "EXITROOM",
-                                    chatroomRoomId,
-                                    MainActivity.loginUserNickname, "SERVER",
-                                    "SERVER", members
+                        if (this@ChatRoomActivity::members.isInitialized) {
+                            val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                            val date = Date()
+                            val strDate = sdf.format(date)
+                            socket.emit(
+                                "outRoom", gson.toJson(
+                                    MessageData(
+                                        "EXITROOM",
+                                        "EXITROOM",
+                                        chatroomRoomId,
+                                        MainActivity.loginUserNickname, "SERVER",
+                                        strDate, members
+                                    )
                                 )
                             )
-                        )
 
-                        onBackPressed()
-                        Handler().postDelayed(Runnable { onBackPressed() }, 500)
+                            onBackPressed()
+                            Handler().postDelayed(Runnable { onBackPressed() }, 500)
+                        } else {
+                            Log.e("생성안됨", "안됨")
+                        }
                     }
                 }
 

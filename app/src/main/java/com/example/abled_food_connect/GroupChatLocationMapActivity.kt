@@ -1,8 +1,6 @@
 package com.example.abled_food_connect
 
 import android.Manifest
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.AlertDialog
@@ -13,7 +11,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
-import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -161,6 +158,7 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                             var roomMarker = Marker()
                             roomMarker.position = LatLng(roomInfo.mapY,roomInfo.mapX)
+                            builder.include(roomMarker.position)
                             roomMarker.icon = MarkerIcons.RED
                             roomMarker.map = it
                             var roomInfoWindow = InfoWindow()

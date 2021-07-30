@@ -10,9 +10,9 @@ data class MainFragmentItemData(
     @SerializedName("info")
     var info: String,
     @SerializedName("nowNumOfPeople")
-    var nowNumOfPeople: Int,
+    var nowNumOfPeople: String,
     @SerializedName("numOfPeople")
-    var numOfPeople: Int,
+    var numOfPeople: String,
     @SerializedName("date")
     var date: String,
     @SerializedName("time")
@@ -42,7 +42,9 @@ data class MainFragmentItemData(
     @SerializedName("map_y")
     var mapY:Double,
     @SerializedName("joinMember")
-    var joinMember:ArrayList<String>
+    var joinMember:ArrayList<String>,
+    @SerializedName("finish")
+    var finish:String
 
 ) {
     private fun CreateRoom() {
