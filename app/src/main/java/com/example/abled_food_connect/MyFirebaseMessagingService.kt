@@ -38,16 +38,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         remoteMessage.data?.let {
           when(true){
               !it["finish"].isNullOrEmpty()->{
-                  finishRoomCheckSendNotification(it["title"]!!,it["body"]!!)
+                  finishRoomCheckSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!)
               }
               !it["finishedGroup"].isNullOrEmpty() ->{
-               finishGroupFCMSendNotification(it["title"]!!,it["body"]!!)
+               finishGroupFCMSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!)
               }
               !it["finished"].isNullOrEmpty()->{
-                  finishDoneSendNotification(it["title"]!!,it["body"]!!)
+                  finishDoneSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!)
               }
               else->{
-                  messageSendNotification(it["title"]!!,it["body"]!!)
+                  messageSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!)
               }
           }
         };
@@ -118,9 +118,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             })
     }
 
-    private fun messageSendNotification(title: String, messageBody: String) {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun messageSendNotification(title: String, messageBody: String,roomId:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("FCMRoomId",roomId)
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
@@ -169,9 +170,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         )
     }
 
-    private fun finishRoomCheckSendNotification(title: String, messageBody: String) {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun finishRoomCheckSendNotification(title: String, messageBody: String,roomId:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("FCMRoomId",roomId)
+
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
@@ -222,9 +225,10 @@ val icon = (ResourcesCompat.getDrawable(resources, R.drawable.ic_finish, null) a
             notificationBuilder
         )
     }
-    private fun finishDoneSendNotification(title: String, messageBody: String) {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun finishDoneSendNotification(title: String, messageBody: String,roomId:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("FCMRoomId",roomId)
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
@@ -276,9 +280,10 @@ val icon = (ResourcesCompat.getDrawable(resources, R.drawable.ic_finish, null) a
             notificationBuilder
         )
     }
-    private fun finishGroupFCMSendNotification(title: String, messageBody: String) {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun finishGroupFCMSendNotification(title: String, messageBody: String,roomId:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("FCMRoomId",roomId)
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,

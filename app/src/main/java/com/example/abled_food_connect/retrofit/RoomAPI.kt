@@ -199,5 +199,12 @@ interface RoomAPI {
         @Field("type") type: String,
         @Field("content") content: String
     ): Call<LoadingRoom>
+
+    @FormUrlEncoded
+    @POST("groupChat/LoadChatRoomInfo.php")
+    fun groupChatRoomInfoLoad(
+        @Field("roomId") userId: String
+
+    ): Call<LoadingRoom>
 }
 

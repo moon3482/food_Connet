@@ -1,6 +1,7 @@
 package com.example.abled_food_connect.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ class ChatAdapter :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var arrayList = ArrayList<ChatItem>()
+    var comArrayList = ArrayList<ChatItem>()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -149,6 +151,17 @@ class ChatAdapter :
 
     override fun getItemCount(): Int {
         return arrayList.size
+    }
+    fun messageRefresh(){
+        Log.e("어레이",arrayList.size.toString())
+        Log.e("어레이2",comArrayList.size.toString())
+        for(num in arrayList.indices){
+            if (arrayList[num].readMember.hashCode() != comArrayList[num].hashCode()){
+                arrayList[num].readMember = comArrayList[num].readMember
+                notifyItemChanged(num)
+            }
+        }
+        comArrayList.clear()
     }
 
 
