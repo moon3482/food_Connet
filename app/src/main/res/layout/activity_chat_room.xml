@@ -28,15 +28,46 @@
                 android:theme="?attr/actionBarTheme" />
 
             <LinearLayout
+                android:id="@+id/finishLinear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/room_search_background"
+                    android:gravity="center"
+                    android:text="모임이 완료 되었다면 \n모임 완료 버튼을 눌러주세요" />
+
+                <Button
+                    android:id="@+id/roomFinishButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:backgroundTint="@color/orange"
+                    android:text="모임 완료"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_above="@+id/groupChatInputMessageLinear"
                     android:orientation="vertical">
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -45,14 +76,13 @@
                         android:layout_height="match_parent">
 
                     </androidx.recyclerview.widget.RecyclerView>
-                </LinearLayout>
+                </RelativeLayout>
 
                 <LinearLayout
                     android:id="@+id/groupChatInputMessageLinear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
-                    android:layout_gravity="bottom"
+                    android:layout_alignParentBottom="true"
                     android:orientation="horizontal">
 
                     <ImageButton
@@ -62,7 +92,8 @@
                         android:background="@null"
                         android:backgroundTint="#00FFFFFF"
                         android:scaleType="fitCenter"
-                        app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+                        app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24"
+                        tools:ignore="SpeakableTextPresentCheck" />
 
                     <EditText
                         android:id="@+id/groupChatInputMessageEditText"
@@ -70,17 +101,20 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        android:minHeight="48dp"
+                        tools:ignore="SpeakableTextPresentCheck" />
 
                     <ImageButton
                         android:id="@+id/groupChatSendMessageButton"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:backgroundTint="@color/app_theme_color"
-                        app:srcCompat="@drawable/ic_baseline_send_24" />
+                        app:srcCompat="@drawable/ic_baseline_send_24"
+                        tools:ignore="SpeakableTextPresentCheck" />
 
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
 
 
         </LinearLayout>

@@ -78,7 +78,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
                         binding.joinRoomSubscriptionRCV.adapter =
                             ChatRoomJoinSubscriptionRCVAdapter(
                                 this@JoinRoomSubscriptionActivity,
-                                userList,socket,roomId
+                                userList,socket,roomId,this@JoinRoomSubscriptionActivity
                             )
 
                         if(userList.size>0){

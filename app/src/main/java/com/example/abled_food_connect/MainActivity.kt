@@ -3,16 +3,13 @@ package com.example.abled_food_connect
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
-import android.provider.Settings
 import android.util.Base64
 import android.util.Log
 import android.widget.LinearLayout
@@ -22,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.abled_food_connect.data.LoginDataClass
 import com.example.abled_food_connect.interfaces.CheckingRegisteredUser
-import com.example.abled_food_connect.retrofit.RoomAPI
 import com.facebook.*
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
@@ -33,12 +29,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kakao.sdk.auth.model.OAuthToken
@@ -116,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         val btnKakaoLogin: LinearLayout = findViewById(R.id.btnKakaoLogin)
 
 
-        //유저정보 쉐어드프리퍼런스 로드
+
 
 
 
@@ -396,6 +390,7 @@ class MainActivity : AppCompatActivity() {
                 sharedLoadData()
             } else {
                 checkBackgroundLocationPermissionAPI30()
+
             }
         }else{
             sharedLoadData()
@@ -806,6 +801,10 @@ class MainActivity : AppCompatActivity() {
         //자동로그인 확인
         if (sharedLoginCheckBoolean == true) {
             val mainFragmentJoin = Intent(this@MainActivity, MainFragmentActivity::class.java)
+            if(intent.hasExtra("FCMRoomId")){
+                val roomId = intent.getStringExtra("FCMRoomId")
+                mainFragmentJoin.putExtra("FCMRoomId",roomId)
+            }
             startActivity(mainFragmentJoin)
             finish()
         }
@@ -819,29 +818,30 @@ class MainActivity : AppCompatActivity() {
         if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
             return
         } else {
-            AlertDialog.Builder(this)
-                .setTitle("위치 사용권한")
-                .setMessage("위치사용권한을 항상사용으로 변경해주세요.")
-                .setPositiveButton("설정") { _, _ ->
-//                     this request will take user to Application's Setting page
-//                    requestPermissions(
-//                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-//                        backgroundLocationRequestCode
+            startActivity(Intent(this,PermissionGrantedActivity::class.java))
+//            AlertDialog.Builder(this)
+//                .setTitle("위치 사용권한")
+//                .setMessage("위치사용권한을 항상사용으로 변경해주세요.")
+//                .setPositiveButton("설정") { _, _ ->
+////                     this request will take user to Application's Setting page
+////                    requestPermissions(
+////                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+////                        backgroundLocationRequestCode
+////                    )
+//                    val intent = Intent(
+//                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+//                        Uri.parse("package:$packageName")
 //                    )
-                    val intent = Intent(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:$packageName")
-                    )
-                    startActivity(intent)
-
-                }
-                .setNegativeButton("취소") { dialog, _ ->
-                    dialog.dismiss()
-                    onBackPressed()
-                }
-                .setCancelable(false)
-                .create()
-                .show()
+//                    startActivity(intent)
+//
+//                }
+//                .setNegativeButton("취소") { dialog, _ ->
+//                    dialog.dismiss()
+//                    onBackPressed()
+//                }
+//                .setCancelable(false)
+//                .create()
+//                .show()
         }
 
 

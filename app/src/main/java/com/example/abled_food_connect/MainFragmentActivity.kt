@@ -66,20 +66,28 @@ class MainFragmentActivity : AppCompatActivity() {
         setSupportActionBar(binding.maintoolbar)
         val tb = supportActionBar!!
         tb.setTitle("홈")
-
-        //프래그먼트 인스턴스화
-        mainFragment = MainFragment.newInstance()
-
         //첫화면에서 리뷰 플로팅 버튼 숨김
         binding.mainFragmentCreateReviewBtn.hide()
+        if (intent.hasExtra("FCMRoomId")) {
 
-        //프래그먼트 매니저에 메인프래그먼트 등록
-        supportFragmentManager.beginTransaction().setCustomAnimations(
-            R.animator.fade_in,
-            R.animator.fade_out,
-            R.animator.fade_in,
-            R.animator.fade_out
-        ).add(R.id.view, mainFragment).commit()
+            binding.bottomNav.selectedItemId = R.id.menu_chat
+            val roomid = intent.getStringExtra("FCMRoomId")
+            val intent = Intent(this, ChatRoomActivity::class.java)
+            intent.putExtra("roomId", roomid)
+            startActivity(intent)
+
+        } else {
+            //프래그먼트 인스턴스화
+            mainFragment = MainFragment.newInstance()
+
+            //프래그먼트 매니저에 메인프래그먼트 등록
+            supportFragmentManager.beginTransaction().setCustomAnimations(
+                R.animator.fade_in,
+                R.animator.fade_out,
+                R.animator.fade_in,
+                R.animator.fade_out
+            ).add(R.id.view, mainFragment).commit()
+        }
 
         //방만들기 플로팅 버튼 클릭리스너
         binding.mainFragmentCreateRoomBtn.setOnClickListener {
@@ -98,6 +106,7 @@ class MainFragmentActivity : AppCompatActivity() {
             })
         token()
 
+
     }
 
 
@@ -115,17 +124,19 @@ class MainFragmentActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-       val manager: LocationManager =
+        val manager: LocationManager =
             getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             val dialog = AlertDialog.Builder(this)
             dialog.setMessage("GPS가 꺼저 있습니다. 활성화를 해주세요.")
-                .setNegativeButton("취소",null)
-                .setPositiveButton("설정"
+                .setNegativeButton("취소", null)
+                .setPositiveButton(
+                    "설정"
                 ) { dialog, which ->
                     startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
                 .show()
+
         }
     }
 
@@ -141,7 +152,7 @@ class MainFragmentActivity : AppCompatActivity() {
 
                     setSupportActionBar(binding.maintoolbar)
                     val tb = supportActionBar!!
-                    tb.title="홈"
+                    tb.title = "홈"
 
 
 
@@ -223,12 +234,6 @@ class MainFragmentActivity : AppCompatActivity() {
 
             true
         }
-
-
-
-
-
-
 
 
     //프래그먼트에 따라 플로팅버튼 보여주기
@@ -371,6 +376,7 @@ class MainFragmentActivity : AppCompatActivity() {
         WorkManager.getInstance(context).enqueue(workRequestOne)
         Log.d("DatetimeCheckWork", "worker 시작함수")
     }
+
     @SuppressLint("MissingPermission")
     fun token() {
 
@@ -392,22 +398,23 @@ class MainFragmentActivity : AppCompatActivity() {
                 .client(createOkHttpClient())
                 .build()
 
-            retrofit.create(RoomAPI::class.java).tokenInsert(MainActivity.user_table_id,token).enqueue(object:
-                Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.isSuccessful){
-                        if (response.body() == "true"){
+            retrofit.create(RoomAPI::class.java).tokenInsert(MainActivity.user_table_id, token)
+                .enqueue(object :
+                    Callback<String> {
+                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                        if (response.isSuccessful) {
+                            if (response.body() == "true") {
 
-                        }else{
+                            } else {
 
+                            }
                         }
                     }
-                }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
+                    override fun onFailure(call: Call<String>, t: Throwable) {
 
-                }
-            })
+                    }
+                })
 
 
 //        val locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -418,6 +425,7 @@ class MainFragmentActivity : AppCompatActivity() {
 //        }
         })
     }
+
     private fun createOkHttpClient(): OkHttpClient {
         //Log.d ("TAG","OkhttpClient");
         val builder = OkHttpClient.Builder()

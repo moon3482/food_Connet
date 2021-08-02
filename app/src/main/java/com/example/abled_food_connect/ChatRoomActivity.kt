@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
@@ -77,6 +78,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var hostName: String
     private lateinit var roomId: String
     private lateinit var vi: View
+    private var userIndex: Int = 0
 
     var rcheight: Int = 0
     var last: Int = 0
@@ -126,6 +128,9 @@ class ChatRoomActivity : AppCompatActivity() {
         Log.e("유져 정보", chatroomRoomId.toString() + userName)
         notiIcon = binding.chatRoomNewSubscriptionCircle
         gson = Gson()
+        val pref = getSharedPreferences("pref_user_data", 0)
+        MainActivity.user_table_id = pref.getInt("user_table_id", 0)
+
 //binding.groupChatRecyclerView.viewTreeObserver.addOnGlobalLayoutListener {
 //
 //
@@ -158,9 +163,12 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onResume()
         Log.d(TAG, "onResume 호출")
         socket.connect()
-        readMessage()
+        messageRead(pagenum)
         hostSubscriptionCheck()
-        joinMember()
+        if (this::hostName.isInitialized) {
+            joinMember()
+        }
+
         socket.emit(
             "read",
             gson.toJson(RoomData(userName, chatroomRoomId, MainActivity.user_table_id))
@@ -247,7 +255,9 @@ class ChatRoomActivity : AppCompatActivity() {
         chatClient = ChatClient.getInstance()
 //        chatAdapter = ChatAdapter()
 
+        binding.roomFinishButton.setOnClickListener {
 
+        }
         binding.userListRCV.layoutManager = LinearLayoutManager(this)
         binding.groupChatRecyclerView.layoutManager = LinearLayoutManager(this)
         (binding.groupChatRecyclerView.layoutManager as LinearLayoutManager).stackFromEnd =
@@ -276,14 +286,14 @@ class ChatRoomActivity : AppCompatActivity() {
                 var first = layoutManager.findFirstCompletelyVisibleItemPosition()
                 val count = 10
                 last = layoutManager.findLastCompletelyVisibleItemPosition()
-                var lc = chatAdapter.arrayList.size - 1
+                var lc = chatAdapter.arrayList.size
                 pagenum = layoutManager.itemCount
-                if (first <= count && requestPage&&timer) {
+                if (first <= count && requestPage && timer) {
 
                     messageLoad(pagenum)
-                    Thread{
+                    Thread {
                         timer = false
-                        Thread.sleep(200)
+                        Thread.sleep(500)
                         timer = true
                     }.start()
 
@@ -687,7 +697,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
 
                     chatAdapter.arrayList.add(
-                        0,
+
                         ChatItem(
                             messageData.from,
                             messageData.thumbnailImage,
@@ -705,7 +715,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
 
                     chatAdapter.arrayList.add(
-                        0,
+
                         ChatItem(
                             messageData.from,
                             messageData.thumbnailImage,
@@ -723,7 +733,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
 
                 chatAdapter.arrayList.add(
-                    0,
+
                     ChatItem(
                         messageData.from, messageData.thumbnailImage, messageData.content,
                         date, ItemType.CENTER_MESSAGE,
@@ -740,7 +750,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
 
                 chatAdapter.arrayList.add(
-                    0,
+
                     ChatItem(
                         messageData.from,
                         messageData.thumbnailImage,
@@ -758,7 +768,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
 
                 chatAdapter.arrayList.add(
-                    0,
+
                     ChatItem(
                         messageData.from,
                         messageData.thumbnailImage,
@@ -770,10 +780,111 @@ class ChatRoomActivity : AppCompatActivity() {
                 )
 
             }
-            chatAdapter.notifyDataSetChanged()
+
         })
 
     }
+
+    private fun intoReadChat(messageData: MessageData) {
+
+        runOnUiThread(Runnable {
+            if (messageData.type == "ENTER" || messageData.type == "LEFT") {
+
+            } else if (messageData.type == "IMAGE") {
+                if (messageData.from == userName) {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
+
+
+                    chatAdapter.comArrayList.add(
+
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.RIGHT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                } else {
+                    val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                    val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                    val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
+
+
+                    chatAdapter.comArrayList.add(
+
+                        ChatItem(
+                            messageData.from,
+                            messageData.thumbnailImage,
+                            messageData.content,
+                            date,
+                            ItemType.LEFT_IMAGE_MESSAGE,
+                            messageData.members
+                        )
+                    )
+
+                }
+            } else if (messageData.type == "TIMELINE" || messageData.type == "JOINMEMBER" || messageData.type == "EXITROOM") {
+                val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
+
+                chatAdapter.comArrayList.add(
+
+                    ChatItem(
+                        messageData.from, messageData.thumbnailImage, messageData.content,
+                        date, ItemType.CENTER_MESSAGE,
+                        messageData.members
+                    )
+                )
+
+
+            } else if (messageData.from == userName) {
+                val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
+
+
+
+                chatAdapter.comArrayList.add(
+
+                    ChatItem(
+                        messageData.from,
+                        messageData.thumbnailImage,
+                        messageData.content,
+                        date,
+                        ItemType.RIGHT_MESSAGE,
+                        messageData.members
+                    )
+                )
+
+            } else {
+                val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                val convertedCurrentDate = sdf.parse(messageData.sendTime)
+                val date = SimpleDateFormat("yyyy-mm-dd HH:mm:ss").format(convertedCurrentDate)
+
+
+                chatAdapter.comArrayList.add(
+
+                    ChatItem(
+                        messageData.from,
+                        messageData.thumbnailImage,
+                        messageData.content,
+                        date,
+                        ItemType.LEFT_MESSAGE,
+                        messageData.members
+                    )
+                )
+
+            }
+        })
+
+    }
+
 
     fun timelimeCheck(type: String? = null) {
 
@@ -866,13 +977,18 @@ class ChatRoomActivity : AppCompatActivity() {
                                 loadChat(list.ChatLogList[index])
 
                             }
+                            Log.e("채팅로드 갯수", list.ChatLogList.size.toString())
                             if (firstLoading) {
                                 binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
                                 firstLoading = false
                             }
                         } else {
                             requestPage = false
-                            Log.e("로드 메세지끝", requestPage.toString())
+
+                            Log.e(
+                                "로드 메세지끝",
+                                "${requestPage.toString()} 사이즈 :${chatAdapter.arrayList.size}"
+                            )
                         }
                     }
 
@@ -901,17 +1017,70 @@ class ChatRoomActivity : AppCompatActivity() {
                     response: Response<paginationData>
                 ) {
 
-                    chatAdapter.arrayList.clear()
 
                     if (response.body() != null) {
                         val list: paginationData? = response.body()
                         if (list!!.success) {
-
-                            for (index in list.ChatLogList.indices) {
+                            members = response.body()!!.members
+                            for (index in list.ChatLogList.size - 1 downTo 0) {
 
                                 ReadChat(list.ChatLogList[index])
 
                             }
+                            Log.e("채팅리드갯수", list.ChatLogList.size.toString())
+//                            chatAdapter.notifyDataSetChanged()
+
+                            Handler().postDelayed(Runnable {
+                                binding.groupChatRecyclerView.scrollToPosition(chatAdapter.arrayList.size)
+                            },1000)
+
+
+
+                            firstLoading = false
+
+                        } else {
+                            requestPage = false
+
+                        }
+                    }
+
+                }
+
+                override fun onFailure(call: Call<paginationData>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    private fun userIntoMessageRead(pagenum: Int) {
+        val retrofit =
+            Retrofit.Builder()
+                .baseUrl("http://52.78.107.230/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(createOkHttpClient())
+                .build()
+
+        val server = retrofit.create(RoomAPI::class.java)
+        server.paginationRead(chatroomRoomId, pagenum, MainActivity.user_table_id)
+            .enqueue(object : Callback<paginationData> {
+                @SuppressLint("SimpleDateFormat")
+                override fun onResponse(
+                    call: Call<paginationData>,
+                    response: Response<paginationData>
+                ) {
+
+
+                    if (response.body() != null) {
+                        val list: paginationData? = response.body()
+                        if (list!!.success) {
+                            members = response.body()!!.members
+                            for (index in list.ChatLogList.size - 1 downTo 0) {
+
+                                intoReadChat(list.ChatLogList[index])
+
+                            }
+                            chatAdapter.messageRefresh()
+                            Log.e("채팅리드갯수", list.ChatLogList.size.toString())
 //                            chatAdapter.notifyDataSetChanged()
                             if (firstLoading) {
                                 binding.groupChatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
@@ -1103,49 +1272,79 @@ class ChatRoomActivity : AppCompatActivity() {
 
     fun roomInfoLoad() {
         roomId = intent.getStringExtra("roomId")!!
-        val title = intent.getStringExtra("title")
-        val info = intent.getStringExtra("info")
-        hostName = intent.getStringExtra("hostName")!!
-        val address = intent.getStringExtra("address")!!
-        val date = intent.getStringExtra("date")
-        val shopName = intent.getStringExtra("shopName")
-        val roomStatus = intent.getDoubleExtra("roomStatus", 0.0);
-        val nowNumOfPeople = intent.getStringExtra("nowNumOfPeople")
-        val numOfPeople = intent.getStringExtra("numOfPeople")
-        val keyWords = intent.getStringExtra("keyWords")
-        val imageUrl = intent.getStringExtra("imageUrl")
-        val join = intent.getStringExtra("join")
-        val mapX = intent.getDoubleExtra("mapX", 0.0)
-        val mapY = intent.getDoubleExtra("mapY", 0.0)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
 
-        if (roomStatus > 5) {
-            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
-            binding.RoomInformationStatus.text = "모집중"
-        } else if (roomStatus > 0.9) {
-            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
-            val text: String = getString(R.string.room_status_imminent_time)
-            binding.RoomInformationStatus.text =
-                String.format(text, Math.round(roomStatus).toInt())
+        retrofit.create(RoomAPI::class.java).groupChatRoomInfoLoad(roomId)
+            .enqueue(object : Callback<LoadingRoom> {
+                override fun onResponse(call: Call<LoadingRoom>, response: Response<LoadingRoom>) {
+                    if (response.body()!!.success) {
+                        val data = response!!.body()!!.roomList
+                        val title = data[0].title
+                        val info = data[0].info
+                        hostName = data[0].hostName
+                        val address = data[0].address
+                        val date = data[0].date
+                        val shopName = data[0].shopName
+                        val roomStatus = data[0].roomStatus
+                        val nowNumOfPeople = data[0].nowNumOfPeople
+                        val numOfPeople = data[0].numOfPeople
+                        val mapX = data[0].mapX
+                        val mapY = data[0].mapY
+                        val finish = data[0].finish
+                        if (roomStatus > 5) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
+                            binding.RoomInformationStatus.text = "모집중"
+                        } else if (roomStatus > 0.9) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+                            val text: String = getString(R.string.room_status_imminent_time)
+                            binding.RoomInformationStatus.text =
+                                String.format(text, Math.round(roomStatus).toInt())
 
-        } else if (roomStatus < 0.9 && roomStatus > 0.0) {
-            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
-            binding.RoomInformationStatus.text = "임박"
+                        } else if (roomStatus < 0.9 && roomStatus > 0.0) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
+                            binding.RoomInformationStatus.text = "임박"
 
-        } else if (roomStatus < 0) {
-            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
-            binding.RoomInformationStatus.text = "마감"
-        }
+                        } else if (roomStatus < 0) {
+                            if (hostName == MainActivity.loginUserNickname && nowNumOfPeople!!.toInt() > 1) {
+                                binding.finishLinear.visibility = View.VISIBLE
+                                if (finish!!.toInt() == 1) {
+                                    binding.roomFinishButton.isEnabled = false
+                                    binding.roomFinishButton.setBackgroundColor(Color.GRAY)
+                                    binding.roomFinishButton.text = "완료됨"
+                                }
+                            } else {
+                                binding.finishLinear.visibility = View.GONE
+                            }
 
-        binding.RoomInfomationDate.text = date
-        binding.RoomInfoShopName.text = shopName
-        binding.RoomInformationCategoryTitleTextview.text = title
-        binding.RoomInformationCategoryIntroduceTextview.text = info
-        binding.RoomInformationCategoryNumOfPeopleTextview.text =
-            "${nowNumOfPeople}/${numOfPeople}명"
-        binding.RoomInformationCategoryAddressTextview.text = address
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
+                            binding.RoomInformationStatus.text = "마감"
+                        }
 
-        getMapImage(mapX, mapY, shopName, address)
-        joinMember()
+                        binding.RoomInfomationDate.text = date
+                        binding.RoomInfoShopName.text = shopName
+                        binding.RoomInformationCategoryTitleTextview.text = title
+                        binding.RoomInformationCategoryIntroduceTextview.text = info
+                        binding.RoomInformationCategoryNumOfPeopleTextview.text =
+                            "${nowNumOfPeople}/${numOfPeople}명"
+                        binding.RoomInformationCategoryAddressTextview.text = address
+
+                        getMapImage(mapX, mapY, shopName, address)
+                        joinMember()
+                    }
+
+                }
+
+                override fun onFailure(call: Call<LoadingRoom>, t: Throwable) {
+                    Toast.makeText(this@ChatRoomActivity, "서버와 연결이 원활하지 않습니다.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
+
+
     }
 
 
@@ -1234,20 +1433,27 @@ class ChatRoomActivity : AppCompatActivity() {
             .enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.body() == "true") {
-                        socket.emit(
-                            "outRoom", gson.toJson(
-                                MessageData(
-                                    "EXITROOM",
-                                    "EXITROOM",
-                                    chatroomRoomId,
-                                    MainActivity.loginUserNickname, "SERVER",
-                                    "SERVER", members
+                        if (this@ChatRoomActivity::members.isInitialized) {
+                            val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                            val date = Date()
+                            val strDate = sdf.format(date)
+                            socket.emit(
+                                "outRoom", gson.toJson(
+                                    MessageData(
+                                        "EXITROOM",
+                                        "EXITROOM",
+                                        chatroomRoomId,
+                                        MainActivity.loginUserNickname, "SERVER",
+                                        strDate, members
+                                    )
                                 )
                             )
-                        )
 
-                        onBackPressed()
-                        Handler().postDelayed(Runnable { onBackPressed() }, 500)
+                            onBackPressed()
+                            Handler().postDelayed(Runnable { onBackPressed() }, 500)
+                        } else {
+                            Log.e("생성안됨", "안됨")
+                        }
                     }
                 }
 
@@ -1337,7 +1543,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         val layoutManager =
                             LinearLayoutManager::class.java.cast(binding.groupChatRecyclerView.layoutManager)
                         pagenum = layoutManager.itemCount
-                        messageRead(pagenum)
+                        userIntoMessageRead(pagenum)
                     }
 
 

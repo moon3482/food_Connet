@@ -37,7 +37,7 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
 
             (delay > 0) -> {
 
-                Log.d("GPSdd", "방번호 : ${roomTag} 실행여부 : ${check(roomTag)}")
+
                 val data = Data.Builder().put("roomId", roomTag).build()
                 Log.d("CheckGpsWorker", "worker 시작함수 진입")
                 val workRequest: OneTimeWorkRequest =
@@ -54,7 +54,7 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
                     roomTag,
                     ExistingWorkPolicy.REPLACE, workRequest
                 )
-
+                Log.d("GPSdd", "방번호 : ${roomTag} 실행여부 : ${check(roomTag)}")
             }
             else -> {
 
@@ -83,13 +83,12 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
                     if (response.body() != null) {
                         if (response.body()!!.list.size > 0) {
                             for (item in response.body()!!.list) {
-                                Log.d("GPS", "방번호 : ${item.string} 실행여부 : ${check(item.string)}")
-                                if (check(item.string)) {
-                                    WorkManager.getInstance(context).cancelUniqueWork(item.string)
+
+
                                     doWorkWithGpsWork(context, item.time, item.string)
-                                } else {
-                                    doWorkWithGpsWork(context, item.time, item.string)
-                                }
+
+
+
 
                             }
                         }

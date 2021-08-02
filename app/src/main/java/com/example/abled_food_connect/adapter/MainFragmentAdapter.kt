@@ -163,6 +163,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                         intent.putExtra("minimumAge", mainData.minimumAge)
                         intent.putExtra("maximumAge", mainData.maximumAge)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
+                        intent.putExtra("finish",mainData.finish)
                         intent.putExtra("join", "0")
                         context.startActivity(intent)
                     } else {
@@ -184,6 +185,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                         intent.putExtra("maximumAge", mainData.maximumAge)
                         intent.putExtra("roomGender", mainData.gender)
                         intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
+                        intent.putExtra("finish",mainData.finish)
                         intent.putExtra("join", "1")
                         context.startActivity(intent)
 

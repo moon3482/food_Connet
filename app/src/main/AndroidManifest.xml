@@ -9,6 +9,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
+
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -30,15 +31,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RoomSearchActivity"
-            android:windowSoftInputMode="stateAlwaysVisible"></activity>
+        <activity
+            android:name=".PermissionGrantedActivity"
+            android:exported="true" />
+        <activity
+            android:name=".RoomSearchActivity"
+            android:windowSoftInputMode="stateAlwaysVisible" />
 
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="location|microphone"
             tools:node="merge" />
 
-        <activity android:name=".UserProfileBadgeListActivity"></activity>
+        <activity android:name=".UserProfileBadgeListActivity" />
         <activity android:name=".GroupChatLocationMapActivity" />
         <activity android:name=".UserProfileEvaluationListActivity" />
         <activity android:name=".UserProfileJoinHistoryActivity" />

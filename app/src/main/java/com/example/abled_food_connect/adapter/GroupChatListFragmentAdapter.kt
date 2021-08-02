@@ -51,6 +51,7 @@ class GroupChatListFragmentAdapter(
             intent.putExtra("nowNumOfPeople", mainFragmentItemData.nowNumOfPeople.toString())
             intent.putExtra("mapX", mainFragmentItemData.mapX)
             intent.putExtra("mapY", mainFragmentItemData.mapY)
+            intent.putExtra("finish",mainFragmentItemData.finish)
             intent.putExtra("imageUrl", "imageUrl")
             context.startActivity(intent)
         }

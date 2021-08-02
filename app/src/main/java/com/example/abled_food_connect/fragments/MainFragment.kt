@@ -67,7 +67,9 @@ class MainFragment : Fragment() {
     ): View? {
         Log.d(TAG, "메인프래그먼트 onCreateView()")
         val view = inflater.inflate(R.layout.main_fragment, container, false)
-
+        val pref = requireContext().getSharedPreferences("pref_user_data", 0)
+        MainActivity.user_table_id = pref.getInt("user_table_id", 0)
+        MainActivity.loginUserId = pref.getString("loginUserId", "")!!
 
         hideRoom = view.findViewById(R.id.hideJoinRoom)
         checkImage = view.findViewById(R.id.hideRoomCheck)
@@ -106,7 +108,7 @@ class MainFragment : Fragment() {
 
 
         }
-        load()
+
         setHasOptionsMenu(true)
         return view
     }
@@ -131,7 +133,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "메인프래그먼트 onResume()")
-
+        load()
 
     }
 

@@ -50,6 +50,8 @@ class GroupChatListData(
     @SerializedName("sendTime")
     var sendTime: String,
     @SerializedName("nonRead")
-    var nonReadCount:Int
+    var nonReadCount:Int,
+    @SerializedName("finish")
+    var finish:String
 
 )
