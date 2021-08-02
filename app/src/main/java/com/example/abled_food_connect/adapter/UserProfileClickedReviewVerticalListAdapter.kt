@@ -126,10 +126,6 @@ class UserProfileClickedReviewVerticalListAdapter () : RecyclerView.Adapter<User
         if(ReviewDetailList.get(position).writer_user_tb_id == MainActivity.user_table_id){
             holder.reviewDotBtn.visibility = View.VISIBLE
 
-
-
-
-
         }else{
             holder.reviewDotBtn.visibility = View.GONE
         }
