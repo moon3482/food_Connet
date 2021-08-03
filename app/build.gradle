@@ -80,7 +80,7 @@ dependencies {
     implementation 'gun0912.ted:tedonactivityresult-rx2:1.0.6'
 
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
-    implementation 'com.github.CanHub:Android-Image-Cropper:3.2.1'
+    implementation 'com.github.CanHub:Android-Image-Cropper:3.2.2'
     //파이어베이스 구글로그인
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:27.1.0')

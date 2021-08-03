@@ -35,8 +35,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.notification!!.body);
         }
 
+
         remoteMessage.data?.let {
             when(true){
+                !it["isdm"].isNullOrEmpty()->{
+
+                    DMSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["fromUserProfileImage"]!!,it["fromUserNickname"]!!,it["fromUserTbId"]!!)
+
+                }
+
+
                 !it["finish"].isNullOrEmpty()->{
                     finishRoomCheckSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!)
                 }
@@ -50,11 +58,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     messageSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!)
                 }
             }
-        };
+        }
     }
 
-    //
-//
+
     private fun sendNotification(title: String, messageBody: String) {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -335,4 +342,69 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             notificationBuilder
         )
     }
+
+
+
+    //DM을 받았을 때
+    private fun DMSendNotification(title: String, messageBody: String, roomId:String, fromUserProfileImage:String, fromUserNickname:String,fromUserTbId:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("isDM",true)
+        intent.putExtra("FCM_DM_RoomId",roomId)
+        intent.putExtra("fromUserProfileImage",fromUserProfileImage)
+        intent.putExtra("fromUserNickname",fromUserNickname)
+        intent.putExtra("fromUserTbId",fromUserTbId)
+
+
+
+        Log.d("FCM_DM_RoomId", roomId)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+        val channelId = "DM"
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_noti_icon)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(false)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setColor(getColor(R.color.txt_white_gray))
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+            .setChannelId(channelId)
+            .setGroupSummary(true)
+            .build()
+
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channelName = "DM"
+            val channel =
+                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            channel.vibrationPattern = longArrayOf(0, 1500)
+
+
+
+
+            notificationManager.createNotificationChannel(channel)
+
+
+        }
+
+        notificationManager.notify(
+            0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+            notificationBuilder
+        )
+    }
+
+
 }

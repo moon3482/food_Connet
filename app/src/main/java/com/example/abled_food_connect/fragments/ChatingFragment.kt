@@ -6,8 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.adapter.ChatFragmentViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
@@ -23,6 +25,10 @@ class ChatingFragment : Fragment() {
         fun newInstance(): ChatingFragment {
             return ChatingFragment()
         }
+
+        //0은 그룹채팅, 1은 DM이다.
+        var isGroupOrDm = 0
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,13 +64,21 @@ class ChatingFragment : Fragment() {
         pagerAdapter.addFragment(ChatGroupFragment())
         pagerAdapter.addFragment(ChatDMFragment())
 
+
+
         viewPager.adapter = pagerAdapter
+
+
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                Log.e("페이지", "페이지${position}")
             }
         })
+
+
+
+
+
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
                 0 -> {
@@ -77,12 +91,30 @@ class ChatingFragment : Fragment() {
 
         }.attach()
 
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(p0: TabLayout.Tab?) {}
+            override fun onTabUnselected(p0: TabLayout.Tab?) {}
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                isGroupOrDm = tab.position
+            }
+        })
+
+
+
+
+        //FCM으로 DM메시지를 받은 경우, DM리스트를 보여주기 위함
+        viewPager.post {
+            if(isGroupOrDm == 1) {
+                viewPager.setCurrentItem(1, false)
+            }
+        }
+
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-
     }
 
 }
