@@ -1,8 +1,10 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +13,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.*
+import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MyPageUserScheduleDataItem
+import com.example.abled_food_connect.data.ScheduleClickRoomInfoData
+import com.example.abled_food_connect.fragments.ReviewFragment
+import com.example.abled_food_connect.retrofit.API
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -199,6 +210,13 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
 
 
 
+        //방정보엑티비티로 이동
+        holder.roomInfoBtnLinearLayout.setOnClickListener({
+            roomInfoGet(holder.roomInfoBtnLinearLayout.context,ScheduleDataList.get(position).room_id,ScheduleDataList.get(position).name_host)
+        })
+
+
+
     }
 
     fun addItem(prof: MyPageUserScheduleDataItem){
@@ -217,6 +235,9 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
 
 
     class CustromViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        val roomInfoBtnLinearLayout = itemView.findViewById<LinearLayout>(R.id.roomInfoBtnLinearLayout)
+
         val hostOrGuestIv = itemView.findViewById<ImageView>(R.id.hostOrGuestIv)
         val hostorGusetTv = itemView.findViewById<TextView>(R.id.hostorGusetTv)
         val meetingDateTv = itemView.findViewById<TextView>(R.id.meetingDateTv)
@@ -231,6 +252,61 @@ class MyScheduleTodayScheduleListRvAdapter (val ScheduleDataList: ArrayList<MyPa
 
 
 
+    }
+
+
+
+    fun roomInfoGet(context: Context, room_id:Int, hostName:String){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(context.getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.roomInfoGetInterface::class.java)
+        val get_Data = api.room_info_get(room_id,hostName)
+
+
+        get_Data.enqueue(object :
+            Callback<ScheduleClickRoomInfoData> {
+            override fun onResponse(
+                call: Call<ScheduleClickRoomInfoData>,
+                response: Response<ScheduleClickRoomInfoData>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                var items : ScheduleClickRoomInfoData? =  response.body()
+
+
+
+
+
+                val intent =
+                    Intent(context, RoomInformationActivity::class.java)
+                intent.putExtra("roomId", items!!.roomList.get(0).roomId)
+                intent.putExtra("title", items!!.roomList.get(0).title)
+                intent.putExtra("info", items!!.roomList.get(0).info)
+                intent.putExtra("hostName", items!!.roomList.get(0).hostName)
+                intent.putExtra("address", items!!.roomList.get(0).address)
+                intent.putExtra("date", items!!.roomList.get(0).date)
+                intent.putExtra("shopName", items!!.roomList.get(0).shopName)
+                intent.putExtra("roomStatus", items!!.roomList.get(0).roomStatus)
+                intent.putExtra("nowNumOfPeople",  items!!.roomList.get(0).nowNumOfPeople)
+                intent.putExtra("numOfPeople", items!!.roomList.get(0).numOfPeople)
+                intent.putExtra("keyWords", items!!.roomList.get(0).keyWords)
+                intent.putExtra("mapX", items!!.roomList.get(0).mapX)
+                intent.putExtra("mapY", items!!.roomList.get(0).mapY)
+                intent.putExtra("nowNumOfPeople", items!!.roomList.get(0).nowNumOfPeople.toString())
+                intent.putExtra("imageUrl", items.hostImage)
+                intent.putExtra("join", "1")
+                context.startActivity(intent)
+
+
+            }
+
+            override fun onFailure(call: Call<ScheduleClickRoomInfoData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
     }
 
 }

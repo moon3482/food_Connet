@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".UserProfileActivity"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
-
-<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    >
-
+    tools:context=".UserProfileActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/userProfileToolbar"
@@ -21,6 +15,25 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/MainToolbar" />
+
+<ScrollView
+    android:visibility="gone"
+    android:id="@+id/whenAccountNotDeletedLinearLayout"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+    >
+
+    <!--프로필에 들어왔는데 탈퇴한 유저가 아닐경우-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+
+
+
+
 
 
     <LinearLayout
@@ -303,7 +316,28 @@
 
 
 
+    </LinearLayout>
+    <!--프로필에 들어왔는데 탈퇴한 유저가 아닐경우가 아닐경우 리니어 레이아웃 여기까지-->
 
 
-</LinearLayout>
+
 </ScrollView>
+
+    <!--탈퇴한 유저인 경우-->
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/whenAccountDeletedLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        >
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="탈퇴한 유저입니다."/>
+
+    </LinearLayout>
+</LinearLayout>

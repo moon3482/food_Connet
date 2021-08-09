@@ -512,6 +512,39 @@ class API {
 
 
 
+    //일정리스트에서 방제목을 클릭하면, 방정보를 가져온다.
+    //방정보 엑티비티로 가기 위해서는 방정보에 필요한 데이터를 가져와서 넘겨줘야한다.
+    interface roomInfoGetInterface {
+        @Multipart
+        @POST("schedule/room_info_get.php")
+        fun room_info_get(
+            @Part("room_id") room_id: Int,
+            @Part("hostName") hostName: String
+        ): Call<ScheduleClickRoomInfoData>
+
+    }
+
+
+
+    interface whenLogoutFcmtokenDeleteInterface {
+        @Multipart
+        @POST("user_info/when_logout_fcmtoken_delete.php")
+        fun when_logout_fcmtoken_delete(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<whenLogoutFcmtokenDeleteData>
+    }
+
+
+    interface userAccountDeleteInterface {
+        @Multipart
+        @POST("user_info/user_account_delete.php")
+        fun user_account_delete(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<userAccountDeleteData>
+    }
+
+
+
     fun joinRoom(context:Context,roomId:String,nickName:String,userIndexId:String){
 
         val retrofit = Retrofit.Builder()

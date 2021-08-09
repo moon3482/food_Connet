@@ -55,6 +55,7 @@
 
 
     <LinearLayout
+        android:id="@+id/toProfileActivityLinearLayout"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="horizontal"

@@ -22,7 +22,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.abled_food_connect.*
-import com.example.abled_food_connect.data.UserProfileData
+import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.retrofit.API
 import com.facebook.*
 import com.facebook.login.LoginBehavior
@@ -81,6 +81,20 @@ class MyPageFragment:Fragment() {
 
     lateinit var callbackManager: CallbackManager
 
+    //탈퇴 - DB 데이터 처리 관련 레트로핏 변수
+    val userAccountDeleteRetrofit = Retrofit.Builder()
+        .baseUrl("http://52.78.107.230/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    val userAccountDeleteApi = userAccountDeleteRetrofit.create(API.userAccountDeleteInterface::class.java)
+    val account_delete = userAccountDeleteApi.user_account_delete(MainActivity.user_table_id)
+
+
+    //현재 탈퇴버튼을 눌렀는지 확인하는 변수
+    //0이면 onResume에서 데이터를 갱신한다.
+    //1이면 갱신하지 않는다.
+
+    var now_Account_delete = 0
 
     companion object{
         const val TAG : String = "마이페이지 프래그먼트 로그"
@@ -95,17 +109,22 @@ class MyPageFragment:Fragment() {
     override fun onResume() {
         super.onResume()
 
-        //작성자 프로필
-        Glide.with(userProfileIv.context)
-            .load(getString(R.string.http_request_base_url)+MainActivity.userThumbnailImage)
-            .circleCrop()
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .into(userProfileIv)
+        if(now_Account_delete == 0){
+            //작성자 프로필
+            Glide.with(userProfileIv.context)
+                .load(getString(R.string.http_request_base_url)+MainActivity.userThumbnailImage)
+                .circleCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(userProfileIv)
 
-        userProfileNicNameTv.text = MainActivity.loginUserNickname
-        //유저 정보를 DB에서 가져온다.
-        userProfileLoading(MainActivity.user_table_id)
+            userProfileNicNameTv.text = MainActivity.loginUserNickname
+            //유저 정보를 DB에서 가져온다.
+            userProfileLoading(MainActivity.user_table_id)
+        }else{
+            now_Account_delete = 0
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -211,14 +230,6 @@ class MyPageFragment:Fragment() {
 
                                 logout()
 
-                                val intent = Intent(context, MainActivity::class.java)
-                                startActivity(intent)
-                                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                                } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
-
-                                activity!!.finish()
-
 
                             }
 
@@ -254,6 +265,9 @@ class MyPageFragment:Fragment() {
                             activity?.let{
 
                                 accountDelete()
+
+                                //탈퇴버튼을 눌렀는지 확인하는 변수
+                                now_Account_delete = 1
 
 
 
@@ -321,82 +335,125 @@ class MyPageFragment:Fragment() {
     }
 
 
+
     fun logout(){
 
 
-        //카카오 로그아웃
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.whenLogoutFcmtokenDeleteInterface::class.java)
 
-        if(social_login_type == "KAKAO"){
-            UserApiClient.instance.logout { error ->
-                if (error != null) {
-                    Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
+        //어떤 리뷰를 선택했는지 확인하는 변수 + 좋아요 클릭여부를 확인하기 위하여 사용자 id보냄
+        val fcm_delete = api.when_logout_fcmtoken_delete(MainActivity.user_table_id)
+
+
+        fcm_delete.enqueue(object : Callback<whenLogoutFcmtokenDeleteData> {
+            override fun onResponse(
+                call: Call<whenLogoutFcmtokenDeleteData>,
+                response: Response<whenLogoutFcmtokenDeleteData>
+            ) {
+                Log.d(MyPageFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
+                Log.d(MyPageFragment.TAG, "리뷰 컨텐츠 : ${response.body().toString()}")
+
+                var items: whenLogoutFcmtokenDeleteData? = response.body()
+
+                if(items!!.success == true){
+
+                    //카카오 로그아웃
+
+                    if(social_login_type == "KAKAO"){
+                        UserApiClient.instance.logout { error ->
+                            if (error != null) {
+                                Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
+                            }
+                            else {
+                                Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
+                            }
+                        }
+                    }
+
+                    else if(social_login_type == "FACEBOOK"){
+                        //페이스북 로그아웃
+                        LoginManager.getInstance().logOut()
+                        Log.d(TAG, "logout: facebook 로그아웃")
+                    }
+
+                    else if(social_login_type == "NAVER"){
+                        //네이버 로그아웃
+                        OAuthLogin.getInstance().logout(context)
+                        Log.d("TAG", OAuthLogin.getInstance().getState(context).toString())
+                        OAuthLogin.getInstance().getState(context)
+                    }
+
+                    else if(social_login_type == "GOOGLE"){
+
+                        Log.d(TAG, "logout: 구글 로그아웃")
+
+                        //구글 로그아웃
+                        FirebaseAuth.getInstance().signOut()
+
+                        // 구글 로그인을 위해 구성되어야 하는 코드 (Id, Email request)
+                        var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .build()
+
+
+                        var googleSignInClient: GoogleSignInClient? = null
+
+                        googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }
+
+                        if (googleSignInClient != null) {
+
+                            //실질적인 구글 클라이언트 로그인 기록이 초기화된다.
+                            googleSignInClient.signOut()
+                        }
+
+
+                    }
+
+                    Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_LONG).show()
+
+
+
+                    val pref = activity?.getSharedPreferences("pref_user_data",0)
+                    val edit = pref?.edit()
+                    if (edit != null) {
+                        edit.putBoolean("login_check",false)
+                        edit.apply()//저장완료
+                    }
+
+                    //로그인 엑티비티로 이동
+                    val intent = Intent(context, MainActivity::class.java)
+                    startActivity(intent)
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
+                    } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+
+                    requireActivity().finish()
+
+
+                }else{
+
+                    Toast.makeText(context, "로그아웃 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+
                 }
-                else {
-                    Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
-                }
-            }
-        }
-
-        else if(social_login_type == "FACEBOOK"){
-            //페이스북 로그아웃
-            LoginManager.getInstance().logOut()
-            Log.d(TAG, "logout: facebook 로그아웃")
-        }
-
-        else if(social_login_type == "NAVER"){
-            //네이버 로그아웃
-            OAuthLogin.getInstance().logout(context)
-            Log.d("TAG", OAuthLogin.getInstance().getState(context).toString())
-            OAuthLogin.getInstance().getState(context)
-        }
-
-        else if(social_login_type == "GOOGLE"){
-
-            Log.d(TAG, "logout: 구글 로그아웃")
-
-            //구글 로그아웃
-            FirebaseAuth.getInstance().signOut()
-
-            // 구글 로그인을 위해 구성되어야 하는 코드 (Id, Email request)
-            var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
 
 
-            var googleSignInClient: GoogleSignInClient? = null
 
-            googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }
 
-            if (googleSignInClient != null) {
 
-                //실질적인 구글 클라이언트 로그인 기록이 초기화된다.
-                googleSignInClient.signOut()
             }
 
-
-        }
-
-
-
-
+            override fun onFailure(call: Call<whenLogoutFcmtokenDeleteData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
 
 
 
-
-
-
-
-
-
-
-
-        val pref = activity?.getSharedPreferences("pref_user_data",0)
-        val edit = pref?.edit()
-        if (edit != null) {
-            edit.putBoolean("login_check",false)
-            edit.apply()//저장완료
-        }
 
 
 
@@ -432,6 +489,7 @@ class MyPageFragment:Fragment() {
     } // googleLogin
 
 
+    //구글 소셜로그인 - 연동해제 및 탈퇴처리.
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
         var credential = GoogleAuthProvider.getCredential(account?.idToken, null)
 
@@ -443,45 +501,86 @@ class MyPageFragment:Fragment() {
                     val uid = user!!.uid
                     Log.d("사용자 식별자 id", uid)
 
+
+                    //현재 접속중인 계정과 탈퇴를 위해 로그인한 구글계정이 동일한지 확인
                     if(table_user_id == uid){
-                        Toast.makeText(requireContext(), "회원탈퇴가 완료되었습니다.", Toast.LENGTH_LONG).show()
-
-
-                        //구글 계정연동 해제
-                        auth!!.getCurrentUser()!!.delete()
-
-                        //구글 로그아웃
-                        FirebaseAuth.getInstance().signOut()
-
-                        // 구글 로그인을 위해 구성되어야 하는 코드 (Id, Email request)
-                        var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(R.string.default_web_client_id))
-                            .requestEmail()
-                            .build()
-
-
-                        var googleSignInClient: GoogleSignInClient? = null
-
-                        googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }
-
-                        if (googleSignInClient != null) {
-
-                            //실질적인 구글 클라이언트 로그인 기록이 초기화된다.
-                            googleSignInClient.signOut()
-                        }
 
 
 
+                        //일치하면, DB탈퇴관련 레트로핏을 실행시킨다.
+                        account_delete.enqueue(object : Callback<userAccountDeleteData> {
+                            override fun onResponse(
+                                call: Call<userAccountDeleteData>,
+                                response: Response<userAccountDeleteData>
+                            ) {
+                                Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
+                                Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
+
+                                if(response.body() != null) {
+                                    val Item: userAccountDeleteData = response.body()!!
 
 
-                        //로그인화면으로 이동
-                        val intent = Intent(context, MainActivity::class.java)
-                        startActivity(intent)
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+                                    if(Item.success == true){
+                                        //DB에서 탈퇴관련 데이터 정리 완료
+                                        Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
 
-                        requireActivity().finish()
+
+                                        //구글 계정연동 해제
+                                        auth!!.getCurrentUser()!!.delete()
+
+                                        Toast.makeText(requireContext(), "회원탈퇴가 완료되었습니다.", Toast.LENGTH_LONG).show()
+
+                                        //구글 로그아웃
+                                        FirebaseAuth.getInstance().signOut()
+
+                                        // 구글 로그인을 위해 구성되어야 하는 코드 (Id, Email request)
+                                        var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                            .requestIdToken(getString(R.string.default_web_client_id))
+                                            .requestEmail()
+                                            .build()
+
+
+                                        var googleSignInClient: GoogleSignInClient? = null
+
+                                        googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }
+
+                                        if (googleSignInClient != null) {
+
+                                            //실질적인 구글 클라이언트 로그인 기록이 초기화된다.
+                                            googleSignInClient.signOut()
+                                        }
+
+
+
+
+
+                                        //구글연동해제 이후 로그인엑티비티로 이동
+                                        val intent = Intent(context, MainActivity::class.java)
+                                        startActivity(intent)
+                                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+
+                                        requireActivity().finish()
+
+
+                                    }else{
+                                        //DB에서 탈퇴관련 데이터 정리 실패
+                                        Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
+                                        Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
+                                    }
+
+
+                                }
+
+
+                            }
+
+                            override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+                                Log.d(MyPageFragment.TAG, "실패 : $t")
+                            }
+                        })
+
 
 
                     }else{
@@ -500,6 +599,18 @@ class MyPageFragment:Fragment() {
     } //firebaseAuthWithGoogle
 
 
+
+
+
+    /*탈퇴하기 - 각각의 소셜로그인마다 탈퇴 처리를 해야해서, 소스가 지저분합니다.
+    * 탈퇴로직
+    * 탈퇴버튼 클릭 -> 소셜로그인->
+    * 본인이 현재 접속한 소셜로그인계정과 일치 -> DB계정 탈퇴처리 레트로핏 작동 -> 리스폰스 == true시 소셜로그인 연동 해제
+    * 카카오, 페이스북, 구글, 네이버
+    * */
+    //소셜로그인 탈퇴시 소셜로그인 연동해제를 위해서 세션을 연결시겨야한다.
+    //또한 본인이 현재 접속중인 계정과 일치여부를 확인하기 위함도 있다.
+    //소셜로그인이 완료+현재 접속 중인 계정과 일치 시, 탈퇴처리가 이루어진다.
 
     fun accountDelete(){
 
@@ -522,48 +633,83 @@ class MyPageFragment:Fragment() {
 
 
 
+                    //카카오톡 로그인 리퀘스트
                     UserApiClient.instance.me { user, error ->
                         if (error != null) {
                             Log.e(TAG, "사용자 정보 요청 실패", error)
                         } else if (user != null) {
-                            Log.i(
-                                TAG, "사용자 정보 요청 성공" +
-                                        "\n회원번호: ${user.id}" +
-                                        "\n이메일: ${user.kakaoAccount?.email}" +
-                                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                                        "\n프로필사진 원본: ${user.kakaoAccount?.profile?.profileImageUrl}" +
-                                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
-                            )
 
+                            //현재 접속중인 계정과 탈퇴를 위해 로그인한 카카오계정이 동일한지 확인
                             if(user.id.toString() == table_user_id){
-                                Toast.makeText(context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
-                                UserApiClient.instance.unlink  { error ->
-                                    if (error != null) {
-                                        Log.e(TAG, "카카오 회원 탈퇴 실패.", error)
-                                    }
-                                    else {
-                                        Log.i(TAG, "카카오 회원 탈퇴성공. SDK에서 토큰 삭제됨")
 
-                                        UserApiClient.instance.logout { error ->
-                                            if (error != null) {
-                                                Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
+                                //계정이 일치하면, DB탈퇴관련 레트로핏을 실행시킨다.
+                                account_delete.enqueue(object : Callback<userAccountDeleteData> {
+                                    override fun onResponse(
+                                        call: Call<userAccountDeleteData>,
+                                        response: Response<userAccountDeleteData>
+                                    ) {
+                                        Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
+                                        Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
+
+                                        if(response.body() != null) {
+                                            val Item: userAccountDeleteData = response.body()!!
+
+
+                                            if(Item.success == true){
+                                                //DB에서 탈퇴관련 데이터 정리 완료
+                                                Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
+
+
+
+                                                //카카오 소셜로그인 연동해제
+                                                UserApiClient.instance.unlink  { error ->
+                                                    if (error != null) {
+                                                        Log.e(TAG, "카카오 회원 탈퇴 실패.", error)
+                                                    }
+                                                    else {
+
+                                                        UserApiClient.instance.logout { error ->
+                                                            if (error != null) {
+                                                                Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
+                                                            }
+                                                            else {
+                                                                Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
+                                                            }
+                                                        }
+
+
+                                                        //연동해제 이후 로그인엑티비티로 이동
+                                                        val intent = Intent(context, MainActivity::class.java)
+                                                        startActivity(intent)
+                                                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+
+                                                        requireActivity().finish()
+
+                                                    }
+                                                }
+
+
+
+                                            }else{
+                                                //DB에서 탈퇴관련 데이터 정리 실패
+                                                Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
+                                                Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
                                             }
-                                            else {
-                                                Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
-                                            }
+
+
                                         }
 
-                                        val intent = Intent(context, MainActivity::class.java)
-                                        startActivity(intent)
-                                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
-
-                                        requireActivity().finish()
 
                                     }
-                                }
+
+                                    override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+                                        Log.d(MyPageFragment.TAG, "실패 : $t")
+                                    }
+                                })
+
                             }else{
                                 Toast.makeText(context, "현재 접속중인 계정과 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
                             }
@@ -601,15 +747,62 @@ class MyPageFragment:Fragment() {
                 .registerCallback(callbackManager, object : FacebookCallback<LoginResult?> {
                     override fun onSuccess(loginResult: LoginResult?) {
                         Log.d("TAG", "Success Login")
-                        Toast.makeText(requireContext(), "Login 성공", Toast.LENGTH_LONG).show()
-                        //삭제요청 리퀘스트
-                        var request = GraphRequest(loginResult?.accessToken, "/me/permissions", null, HttpMethod.DELETE, GraphRequest.Callback() { response -> })
-                        request.executeAsync()
+
+
+                        //로그인 후, DB탈퇴관련 레트로핏을 실행시킨다.
+
+                        account_delete.enqueue(object : Callback<userAccountDeleteData> {
+                            override fun onResponse(
+                                call: Call<userAccountDeleteData>,
+                                response: Response<userAccountDeleteData>
+                            ) {
+                                Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
+                                Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
+
+                                if(response.body() != null) {
+                                    val Item: userAccountDeleteData = response.body()!!
+
+
+                                    if(Item.success == true){
+                                        //DB에서 탈퇴관련 데이터 정리 완료
+                                        Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
+
+
+                                        //페이스북 계정 연동해제 리퀘스트
+                                        var request = GraphRequest(loginResult?.accessToken, "/me/permissions", null, HttpMethod.DELETE, GraphRequest.Callback() { response -> })
+                                        request.executeAsync()
+
+
+                                        //연동해제 이후 로그인엑티비티로 이동
+                                        val intent = Intent(context, MainActivity::class.java)
+                                        startActivity(intent)
+                                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+
+                                        requireActivity().finish()
+
+
+                                    }else{
+                                        //DB에서 탈퇴관련 데이터 정리 실패
+                                        Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
+                                        Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
+                                    }
+
+
+                                }
+
+
+                            }
+
+                            override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+                                Log.d(MyPageFragment.TAG, "실패 : $t")
+                            }
+                        })
 
 
 
-//                 val mainFragmentJoin = Intent(this@MainActivity,MainFragmentActivity::class.java)
-//                    startActivity(mainFragmentJoin)
+
                     }
 
                     override fun onCancel() {
@@ -625,39 +818,6 @@ class MyPageFragment:Fragment() {
 
 
 
-
-//                val request = GraphRequest.newMeRequest(accessToken) { `object`, response ->
-//                    try {
-//                        //here is the data that you want
-//
-//                        userEmail = `object`.getString("email")
-//                        Log.e("TAGG", userEmail)
-//                        userName = `object`.getString("name")
-//                        Log.e("TAGG", userName)
-//                        jobj1 = `object`.optJSONObject("picture")
-//                        Log.e("TAGG", jobj1.toString())
-//                        jobj2 = jobj1.optJSONObject("data")
-//                        Log.e("TAGG", jobj2.toString())
-//                        userPicture = jobj2.getString("url")
-//                        Log.e("TAGG", userPicture)
-//
-//
-//
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                    }
-//
-//                    goTomain()
-//
-//                }
-//
-//                val parameters = Bundle()
-//                parameters.putString("fields", "name,email,picture")
-//                request.parameters = parameters
-
-
-
-
         }
 
         else if(social_login_type == "NAVER"){
@@ -669,6 +829,7 @@ class MyPageFragment:Fragment() {
 
             //네이버 로그인 창을 띄운다.
             //로그인에 성공하면 계정연결 해제가 이루어진다.
+            //네이버 연동해제는 mOAuthLoginHandler를 확인할 것.
             OAuthLogin.getInstance().startOauthLoginActivity(activity,mOAuthLoginHandler)
 
 
@@ -701,6 +862,8 @@ class MyPageFragment:Fragment() {
                 googleSignInClient.signOut()
             }
 
+            //구글 로그인 후, 현재 로그인한 계정과 일치하면 탈퇴처리를 진행한다.
+            //구글 탈퇴는 firebaseAuthWithGoogle를 확인할 것
             googleLogin()
             Toast.makeText(context, "현재 계정과 동일한 구글 계정을 선택해주세요. 로그인한 계정과 동일할 경우 탈퇴처리가 완료됩니다.", Toast.LENGTH_LONG).show()
 
@@ -727,6 +890,7 @@ class MyPageFragment:Fragment() {
 
 
 
+    //네이버 소셜로그인 - 연동해제 및 탈퇴처리.
     val mOAuthLoginHandler: OAuthLoginHandler = object : OAuthLoginHandler() {
         override fun run(success: Boolean) {
             if (success) {
@@ -754,29 +918,66 @@ class MyPageFragment:Fragment() {
 
                 //네이버 유저 고유아이디
                 val id = jObject.getString("id")
-                //네이버 유저 프로필
-                var profile_image = jObject.getString("profile_image")
-                //profile_image 문자열에 "\\"을 제거해야 제대로 된 이미지 url을 찾을 수 있다.
-                profile_image = profile_image.replace("\\", "")
-                Log.d("고유ID", id)
-                Log.d("프로필이미지", profile_image)
 
+                //현재 접속중인 계정과 탈퇴를 위해 로그인한 네이버계정이 동일한지 확인
                 if(table_user_id == id){
-                    OAuthLogin.getInstance().logoutAndDeleteToken(context)
-                    Log.d("TAG", OAuthLogin.getInstance().getState(context).toString())
-                    OAuthLogin.getInstance().getState(context)
 
 
-                    Toast.makeText(context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                    //계정이 일치하면, DB탈퇴관련 레트로핏을 실행시킨다.
+                    account_delete.enqueue(object : retrofit2.Callback<userAccountDeleteData> {
+                        override fun onResponse(
+                            call: Call<userAccountDeleteData>,
+                            response: Response<userAccountDeleteData>
+                        ) {
+                            Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
+                            Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
 
-                    val intent = Intent(context, MainActivity::class.java)
-                    startActivity(intent)
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                    } else {
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+                            if(response.body() != null) {
+                                val Item: userAccountDeleteData = response.body()!!
 
-                    requireActivity().finish()
+
+                                if(Item.success == true){
+                                    //DB에서 탈퇴관련 데이터 정리 완료
+                                    Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
+
+                                    OAuthLogin.getInstance().logoutAndDeleteToken(context)
+                                    Log.d("TAG", OAuthLogin.getInstance().getState(context).toString())
+                                    OAuthLogin.getInstance().getState(context)
+
+
+                                    Toast.makeText(context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+
+                                    //연동해제 이후 로그인엑티비티로 이동
+                                    val intent = Intent(context, MainActivity::class.java)
+                                    startActivity(intent)
+                                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    } else {
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+
+                                    requireActivity().finish()
+
+
+                                }else{
+                                    //DB에서 탈퇴관련 데이터 정리 실패
+                                    Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
+                                    Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
+                                }
+
+
+                            }
+
+
+                        }
+
+                        override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+                            Log.d(MyPageFragment.TAG, "실패 : $t")
+                        }
+                    })
+
+
+
+
                 }else{
                     Toast.makeText(context, "현재 접속 중인 계정과 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
 
@@ -801,6 +1002,42 @@ class MyPageFragment:Fragment() {
     }
 
 
+//    //탈퇴 - DB처리
+//    fun userAccountDelete(){
+//
+//        account_delete.enqueue(object : Callback<userAccountDeleteData> {
+//            override fun onResponse(
+//                call: Call<userAccountDeleteData>,
+//                response: Response<userAccountDeleteData>
+//            ) {
+//                Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
+//                Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
+//
+//                if(response.body() != null) {
+//                    val Item: userAccountDeleteData = response.body()!!
+//
+//
+//                    if(Item.success == true){
+//                        //DB에서 탈퇴관련 데이터 정리 완료
+//                        Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
+//                    }else{
+//                        //DB에서 탈퇴관련 데이터 정리 실패
+//                        Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
+//                    }
+//
+//
+//                }
+//
+//
+//            }
+//
+//            override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+//                Log.d(MyPageFragment.TAG, "실패 : $t")
+//            }
+//        })
+//    }
+
+
     fun userProfileLoading(user_tb_id:Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
@@ -821,9 +1058,6 @@ class MyPageFragment:Fragment() {
                 Log.d(ReviewFragment.TAG, "프로필 정보 : ${response.body().toString()}")
 
                 var items : UserProfileData? =  response.body()
-
-
-
 
 
                 social_login_type = items!!.social_login_type
