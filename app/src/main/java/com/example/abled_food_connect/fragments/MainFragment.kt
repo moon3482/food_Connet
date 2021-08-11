@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.abled_food_connect.ActionAlarmActivity
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.RoomSearchActivity
@@ -169,6 +170,15 @@ class MainFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
+
+            R.id.actionAlarmButton -> {
+                activity.let {
+                    val intent = Intent(context, ActionAlarmActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+
+
             R.id.toolbarSearchButton -> {
                 activity.let {
                     val intent = Intent(context,RoomSearchActivity::class.java)

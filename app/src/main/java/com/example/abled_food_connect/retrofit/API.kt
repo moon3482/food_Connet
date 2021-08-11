@@ -551,6 +551,15 @@ class API {
         ): Call<userAccountDeleteData>
     }
 
+    interface ActionAlarmListGetInterface{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/action_alarm_list_get.php")
+        fun action_alarm_list_get(
+            @Part("user_tb_id") user_tb_id: Int,
+        ): Call<ActionAlarmListData>
+    }
+
 
 
     fun joinRoom(context:Context,roomId:String,nickName:String,userIndexId:String){
