@@ -56,6 +56,13 @@ class MainFragmentActivity : AppCompatActivity() {
         setContentView(binding.root)
         Log.d(TAG, "홈액티비티 onCreate()")
 
+        val pref = getSharedPreferences("pref_user_data", 0)
+        MainActivity.user_table_id = pref.getInt("user_table_id", 0)
+        MainActivity.loginUserId = pref.getString("loginUserId", "")!!
+        MainActivity.loginUserNickname = pref.getString("loginUserNickname", "")!!
+        MainActivity.userThumbnailImage = pref.getString("userThumbnailImage", "")!!
+        MainActivity.userAge = pref.getInt("userAge",0)
+        MainActivity.userGender = pref.getString("userGender","")!!
 
         //바텀네비게이션 클릭리스너 달기
         binding.bottomNav.setOnNavigationItemSelectedListener(
@@ -76,9 +83,13 @@ class MainFragmentActivity : AppCompatActivity() {
             intent.putExtra("roomId", roomid)
             startActivity(intent)
 
+        }else if(intent.hasExtra("review")){
+            binding.bottomNav.selectedItemId = R.id.menu_mypage
+            val roomid = intent.getStringExtra("FCMRoomId")
+            val intent = Intent(this, UnwrittenReviewListActivity::class.java)
+            intent.putExtra("roomId", roomid)
+            startActivity(intent)
         }
-
-        //FCM이 DM 메시지일경우.
         else if(intent.getBooleanExtra("isDM",false) == true){
             customGetIntent()
         }

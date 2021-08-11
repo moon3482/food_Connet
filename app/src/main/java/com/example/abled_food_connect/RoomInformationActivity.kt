@@ -29,6 +29,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.InputStream
 
 
+
+
+
 class RoomInformationActivity : AppCompatActivity() {
     val binding by lazy { ActivityRoomInformationBinding.inflate(layoutInflater) }
     private var mapClick = true
@@ -41,6 +44,9 @@ class RoomInformationActivity : AppCompatActivity() {
         val userAge = shared.getInt("userAge", 0)
         val userGender = shared.getString("userGender", "")
         val intent = intent
+        if (!intent.hasExtra("roomId")){
+            restart(this)
+        }
         val roomId = intent.getStringExtra("roomId")
         val title = intent.getStringExtra("title")
         val info = intent.getStringExtra("info")
@@ -52,6 +58,7 @@ class RoomInformationActivity : AppCompatActivity() {
         var nowNumOfPeople = intent.getStringExtra("nowNumOfPeople")
         Log.e("지금 숫자", nowNumOfPeople!!)
         val numOfPeople = intent.getStringExtra("numOfPeople")
+        val hostIndex = intent.getStringExtra("hostIndex")
         val keyWords = intent.getStringExtra("keyWords")
         val imageUrl = intent.getStringExtra("imageUrl")
         val join = intent.getStringExtra("join")
@@ -316,4 +323,13 @@ class RoomInformationActivity : AppCompatActivity() {
 
             })
     }
+    private fun restart(context: Context) {
+        val packageManager = context.packageManager
+        val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+        val componentName = intent!!.component
+        val mainIntent = Intent.makeRestartActivityTask(componentName)
+        context.startActivity(mainIntent)
+        Runtime.getRuntime().exit(0)
+    }
+
 }

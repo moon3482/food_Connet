@@ -88,19 +88,21 @@ class ChatGroupFragment : Fragment() {
     }
     override fun onPause() {
         super.onPause()
+
         Log.d(ChatGroupFragment.TAG, "그룹채팅 프래그먼트 onPause()")
+        socket.disconnect()
     }
 
     override fun onStop() {
         super.onStop()
         Log.d(ChatGroupFragment.TAG, "그룹채팅 프래그먼트 onStop()")
-        socket.disconnect()
+
     }
 
     fun socketLoadChatList() {
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.http_request_base_url))
+            .baseUrl(context?.getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .client(createOkHttpClient())
             .build()

@@ -3,6 +3,7 @@ package com.example.abled_food_connect.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MainFragmentAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
+class RoomSearchAdapter(val context: Context, private val list: ArrayList<MainFragmentItemData>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
     var unList = list
     var filList = ArrayList<MainFragmentItemData>()
@@ -146,58 +147,58 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                 ) {
                     val joinRoomCheck = response.body()
                     if (joinRoomCheck!!.isRoom){
-                    if (joinRoomCheck!!.success) {
-                        val intent = Intent(context, RoomInformationActivity::class.java)
-                        intent.putExtra("roomId", mainData.roomId)
-                        intent.putExtra("title", mainData.title)
-                        intent.putExtra("info", mainData.info)
-                        intent.putExtra("hostName", mainData.hostName)
-                        intent.putExtra("address", addressParse)
-                        intent.putExtra("date", mainData.date)
-                        intent.putExtra("shopName", mainData.shopName)
-                        intent.putExtra("roomStatus", mainData.roomStatus)
-                        intent.putExtra("numOfPeople", mainData.numOfPeople)
-                        intent.putExtra("keyWords", mainData.keyWords)
-                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
-                        intent.putExtra("mapX", mainData.mapX)
-                        intent.putExtra("mapY", mainData.mapY)
-                        intent.putExtra("roomGender", mainData.gender)
-                        intent.putExtra("minimumAge", mainData.minimumAge)
-                        intent.putExtra("maximumAge", mainData.maximumAge)
-                        intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
-                        intent.putExtra("finish",mainData.finish)
-                        intent.putExtra("join", "0")
-                        context.startActivity(intent)
-                    } else {
-                        val intent = Intent(context, RoomInformationActivity::class.java)
-                        intent.putExtra("roomId", mainData.roomId)
-                        intent.putExtra("title", mainData.title)
-                        intent.putExtra("info", mainData.info)
-                        intent.putExtra("hostName", mainData.hostName)
-                        intent.putExtra("address", addressParse)
-                        intent.putExtra("date", mainData.date)
-                        intent.putExtra("shopName", mainData.shopName)
-                        intent.putExtra("roomStatus", mainData.roomStatus)
-                        intent.putExtra("numOfPeople", mainData.numOfPeople)
-                        intent.putExtra("keyWords", mainData.keyWords)
-                        intent.putExtra("mapX", mainData.mapX)
-                        intent.putExtra("mapY", mainData.mapY)
-                        intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
-                        intent.putExtra("minimumAge", mainData.minimumAge)
-                        intent.putExtra("maximumAge", mainData.maximumAge)
-                        intent.putExtra("roomGender", mainData.gender)
-                        intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
-                        intent.putExtra("finish",mainData.finish)
-                        intent.putExtra("join", "1")
-                        context.startActivity(intent)
+                        if (joinRoomCheck!!.success) {
+                            val intent = Intent(context, RoomInformationActivity::class.java)
+                            intent.putExtra("roomId", mainData.roomId)
+                            intent.putExtra("title", mainData.title)
+                            intent.putExtra("info", mainData.info)
+                            intent.putExtra("hostName", mainData.hostName)
+                            intent.putExtra("address", addressParse)
+                            intent.putExtra("date", mainData.date)
+                            intent.putExtra("shopName", mainData.shopName)
+                            intent.putExtra("roomStatus", mainData.roomStatus)
+                            intent.putExtra("numOfPeople", mainData.numOfPeople)
+                            intent.putExtra("keyWords", mainData.keyWords)
+                            intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
+                            intent.putExtra("mapX", mainData.mapX)
+                            intent.putExtra("mapY", mainData.mapY)
+                            intent.putExtra("roomGender", mainData.gender)
+                            intent.putExtra("minimumAge", mainData.minimumAge)
+                            intent.putExtra("maximumAge", mainData.maximumAge)
+                            intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
+                            intent.putExtra("finish",mainData.finish)
+                            intent.putExtra("join", "0")
+                            context.startActivity(intent)
+                        } else {
+                            val intent = Intent(context, RoomInformationActivity::class.java)
+                            intent.putExtra("roomId", mainData.roomId)
+                            intent.putExtra("title", mainData.title)
+                            intent.putExtra("info", mainData.info)
+                            intent.putExtra("hostName", mainData.hostName)
+                            intent.putExtra("address", addressParse)
+                            intent.putExtra("date", mainData.date)
+                            intent.putExtra("shopName", mainData.shopName)
+                            intent.putExtra("roomStatus", mainData.roomStatus)
+                            intent.putExtra("numOfPeople", mainData.numOfPeople)
+                            intent.putExtra("keyWords", mainData.keyWords)
+                            intent.putExtra("mapX", mainData.mapX)
+                            intent.putExtra("mapY", mainData.mapY)
+                            intent.putExtra("nowNumOfPeople", mainData.nowNumOfPeople)
+                            intent.putExtra("minimumAge", mainData.minimumAge)
+                            intent.putExtra("maximumAge", mainData.maximumAge)
+                            intent.putExtra("roomGender", mainData.gender)
+                            intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
+                            intent.putExtra("finish",mainData.finish)
+                            intent.putExtra("join", "1")
+                            context.startActivity(intent)
 
-                    }
-                }else{
-                    val dialog = AlertDialog.Builder(context)
+                        }
+                    }else{
+                        val dialog = AlertDialog.Builder(context)
                         dialog.setMessage("해당방을 찾을수 없습니다.")
                             .setPositiveButton("확인"
                             ) { dialog, which ->
-                                mMainFragment.load()
+
                             }.setCancelable(false).create().show()
                     }}
 
@@ -222,16 +223,16 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val filterCheck = constraint.toString()
-                if (filterCheck.isNullOrEmpty()) {
-
+                if (filterCheck == "null") {
+                    Log.e("어댑터필터", "안함")
                     filList = unList
 
                 } else {
-
+                    Log.e("어댑터필터", "${filterCheck}동작")
                     filList = ArrayList<MainFragmentItemData>()
                     for (index in unList) {
 
-                        if (!index.joinMember.contains(filterCheck)) {
+                        if (index.roomStatus >= 0.0) {
                             filList.add(index)
                         }
 
@@ -248,14 +249,14 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                 filList = results?.values as ArrayList<MainFragmentItemData>
                 notifyDataSetChanged()
 
-                    if (filList.size == 0) {
-                        mMainFragment.swipeRefresh.visibility = View.GONE
-                        mMainFragment.refreshTextView.visibility = View.VISIBLE
-                    } else {
-                        mMainFragment.swipeRefresh.visibility = View.VISIBLE
-                        mMainFragment.refreshTextView.visibility = View.GONE
-
-                }
+//                if (filList.size == 0) {
+//                    mMainFragment.swipeRefresh.visibility = View.GONE
+//                    mMainFragment.refreshTextView.visibility = View.VISIBLE
+//                } else {
+//                    mMainFragment.swipeRefresh.visibility = View.VISIBLE
+//                    mMainFragment.refreshTextView.visibility = View.GONE
+//
+//                }
             }
         }
     }

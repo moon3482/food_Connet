@@ -294,7 +294,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun finishGroupFCMSendNotification(title: String, messageBody: String,roomId:String) {
         val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra("FCMRoomId",roomId)
+        intent.putExtra("review",roomId)
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,

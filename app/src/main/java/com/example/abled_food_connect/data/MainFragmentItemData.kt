@@ -35,6 +35,8 @@ data class MainFragmentItemData(
     var maximumAge: Int,
     @SerializedName("hostName")
     var hostName: String,
+    @SerializedName("hostIndex")
+    var hostIndex: String,
     @SerializedName("roomStatus")
     var roomStatus: Double,
     @SerializedName("map_x")

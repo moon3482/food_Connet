@@ -50,6 +50,7 @@ class ChatingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d(TAG, "채팅 프래그먼트 onCreateView()")
         val view = inflater.inflate(R.layout.chating_fragments, container, false)
         viewPager = view.findViewById(R.id.chatViewPager)
         tabLayout = view.findViewById(R.id.ChatFragmentTabLayout)
@@ -60,7 +61,8 @@ class ChatingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val pagerAdapter = ChatFragmentViewPagerAdapter(childFragmentManager,lifecycle)
+        Log.d(TAG, "채팅 프래그먼트 onViewCreated()")
+        val pagerAdapter = ChatFragmentViewPagerAdapter(childFragmentManager, lifecycle)
         pagerAdapter.addFragment(ChatGroupFragment())
         pagerAdapter.addFragment(ChatDMFragment())
 

@@ -480,6 +480,7 @@ class CreateRoomActivity : AppCompatActivity() {
             minAge,
             maxAge,
             hostName,
+            MainActivity.user_table_id,
             mapx.toString(),
             mapy.toString()
         )
@@ -505,6 +506,7 @@ class CreateRoomActivity : AppCompatActivity() {
                         intent.putExtra("shopName", room.roomId.shopName)
                         intent.putExtra("roomStatus", room.roomId.roomStatus)
                         intent.putExtra("nowNumOfPeople",  room.roomId.nowNumOfPeople)
+                        intent.putExtra("hostIndex",room.roomId.hostIndex)
                         Log.e("nowNumOfPeople",room.roomId.nowNumOfPeople)
                         intent.putExtra("numOfPeople", room.roomId.numOfPeople)
                         intent.putExtra("keyWords", room.roomId.keyWords)

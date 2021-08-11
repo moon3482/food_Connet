@@ -37,6 +37,8 @@ import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -86,6 +88,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var notiIcon: ImageView
     private var requestPage: Boolean = true
     private var firstLoading: Boolean = true
+    private var users = ArrayList<LoadRoomUsers>()
     private val REQUIRED_PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_BACKGROUND_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -130,12 +133,17 @@ class ChatRoomActivity : AppCompatActivity() {
         gson = Gson()
         val pref = getSharedPreferences("pref_user_data", 0)
         MainActivity.user_table_id = pref.getInt("user_table_id", 0)
-
+        MainActivity.loginUserId = pref.getString("loginUserId", "")!!
+        MainActivity.loginUserNickname = pref.getString("loginUserNickname", "")!!
+        MainActivity.userThumbnailImage = pref.getString("userThumbnailImage", "")!!
+        MainActivity.userAge = pref.getInt("userAge", 0)
+        MainActivity.userGender = pref.getString("userGender", "")!!
+        userReadMessage()
 //binding.groupChatRecyclerView.viewTreeObserver.addOnGlobalLayoutListener {
 //
 //
 //}
-        init()
+
         snackbar = Snackbar.make(binding.groupChatRecyclerView, "", Snackbar.LENGTH_INDEFINITE)
         snackbarView = snackbar.view
 
@@ -149,6 +157,7 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart 호출")
+        init()
 
 
     }
@@ -163,10 +172,10 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onResume()
         Log.d(TAG, "onResume 호출")
         socket.connect()
-        messageRead(pagenum)
+        joinMember()
         hostSubscriptionCheck()
         if (this::hostName.isInitialized) {
-            joinMember()
+
         }
 
         socket.emit(
@@ -178,16 +187,19 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause 호출")
+        socket.emit(
+            "left",
+            gson.toJson(RoomData(userName, chatroomRoomId, MainActivity.user_table_id))
+        )
+
     }
 
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop 호출")
-        socket.emit(
-            "left",
-            gson.toJson(RoomData(userName, chatroomRoomId, MainActivity.user_table_id))
-        )
+//        chatAdapter.arrayList.clear()
         socket.disconnect()
+
     }
 
     override fun onDestroy() {
@@ -254,8 +266,34 @@ class ChatRoomActivity : AppCompatActivity() {
 
         chatClient = ChatClient.getInstance()
 //        chatAdapter = ChatAdapter()
-
+//완료 버튼
         binding.roomFinishButton.setOnClickListener {
+            val retrofit =
+                Retrofit.Builder()
+                    .baseUrl("http://52.78.107.230/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(createOkHttpClient())
+                    .build()
+
+            retrofit.create(RoomAPI::class.java).hostGroupDone(roomId)
+                .enqueue(object : Callback<String> {
+                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                        if (response.body() == "true") {
+                            val dialog = AlertDialog.Builder(this@ChatRoomActivity)
+                                .setMessage("완료처리가 되었습니다.")
+                                .setPositiveButton("확인", null)
+
+                            dialog.show()
+                            binding.roomFinishButton.isEnabled = false
+                            binding.roomFinishButton.setBackgroundColor(Color.GRAY)
+                            binding.roomFinishButton.text = "완료됨"
+                        }
+                    }
+
+                    override fun onFailure(call: Call<String>, t: Throwable) {
+                        TODO("Not yet implemented")
+                    }
+                })
 
         }
         binding.userListRCV.layoutManager = LinearLayoutManager(this)
@@ -329,13 +367,67 @@ class ChatRoomActivity : AppCompatActivity() {
         }
 
         binding.groupChatExitRoomButton.setOnClickListener {
-            var builder = AlertDialog.Builder(this)
-            builder.setMessage("정말로 방을 나가시겠습니까?")
-            builder.setPositiveButton(
-                "나가기"
-            ) { dialog, which -> exitRoom() }
-            builder.setNegativeButton("취소", null)
-            builder.show()
+            val retrofit =
+                Retrofit.Builder()
+                    .baseUrl("http://52.78.107.230/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(createOkHttpClient())
+                    .build()
+
+            retrofit.create(RoomAPI::class.java).outRoomCheck(roomId)
+                .enqueue(object : Callback<LoadingRoom> {
+                    override fun onResponse(
+                        call: Call<LoadingRoom>,
+                        response: Response<LoadingRoom>
+                    ) {
+
+                        val room: LoadingRoom = response.body()!!
+                        val data: MainFragmentItemData = room.roomList[0]
+                        if (room.success) {
+                            Log.e("그냥멤버", "들어오긴함")
+                            if (data.hostName != MainActivity.loginUserNickname && data.nowNumOfPeople.toInt() > 1) {
+                                Log.e("그냥멤버", "그냥멤버")
+                                var builder = AlertDialog.Builder(this@ChatRoomActivity)
+                                builder.setMessage("정말로 방을 나가시겠습니까?")
+                                builder.setPositiveButton(
+                                    "나가기"
+                                ) { dialog, which ->
+                                    exitRoom()
+                                }
+                                builder.setNegativeButton("취소", null)
+                                builder.show()
+                            } else if (data.hostName == MainActivity.loginUserNickname && data.nowNumOfPeople.toInt() == 1) {
+                                Log.e("멤버", "마지막")
+                                var builder = AlertDialog.Builder(this@ChatRoomActivity)
+                                builder.setMessage("방을 없애고 나가시겠습니까?")
+                                builder.setPositiveButton(
+                                    "나가기"
+                                ) { dialog, which ->
+                                    deleteRoom()
+                                }
+                                builder.setNegativeButton("취소", null)
+                                builder.show()
+                            } else {
+                                Log.e("멤버", "방폭")
+                                var builder = AlertDialog.Builder(this@ChatRoomActivity)
+                                builder.setMessage("정말로 방을 나가시겠습니까?")
+                                builder.setPositiveButton(
+                                    "나가기"
+                                ) { dialog, which ->
+                                    changeHost(users[1].userNickname)
+                                }
+                                builder.setNegativeButton("취소", null)
+                                builder.show()
+                            }
+                        }
+                    }
+
+
+                    override fun onFailure(call: Call<LoadingRoom>, t: Throwable) {
+
+                    }
+                })
+
 
         }
         binding.groupChatAddImageButton.setOnClickListener {
@@ -386,6 +478,27 @@ class ChatRoomActivity : AppCompatActivity() {
             readMessage()
 
         })
+        socket.on("kick") {
+            val data: MessageData = gson.fromJson(it[0].toString(), MessageData::class.java)
+            if (data.content == MainActivity.loginUserNickname) {
+                runOnUiThread {
+                    AlertDialog.Builder(this).setMessage("방에서 내보내졌습니다.")
+                        .setPositiveButton(
+                            "확인"
+                        ) { _, _ ->
+                            onBackPressed()
+
+                        }.setCancelable(false).create()
+                        .show()
+                }
+            }
+
+
+
+
+            joinMember()
+
+        }
 
         socket.on(
             "outRoom",
@@ -408,7 +521,8 @@ class ChatRoomActivity : AppCompatActivity() {
                     }
 
                 }
-                joinMember()
+                exitRoomInfoLoad()
+
 
             })
         socket.on(
@@ -1031,16 +1145,17 @@ class ChatRoomActivity : AppCompatActivity() {
 //                            chatAdapter.notifyDataSetChanged()
 
                             Handler().postDelayed(Runnable {
-                                binding.groupChatRecyclerView.scrollToPosition(chatAdapter.arrayList.size)
-                            },1000)
+                                binding.groupChatRecyclerView.scrollToPosition(chatAdapter.arrayList.size - 1)
+                            }, 1000)
 
-
+                            joinMember()
 
                             firstLoading = false
 
                         } else {
+                            members = response.body()!!.members
                             requestPage = false
-
+                            joinMember()
                         }
                     }
 
@@ -1053,6 +1168,7 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private fun userIntoMessageRead(pagenum: Int) {
+
         val retrofit =
             Retrofit.Builder()
                 .baseUrl("http://52.78.107.230/")
@@ -1140,24 +1256,43 @@ class ChatRoomActivity : AppCompatActivity() {
             .build()
 
         val server = retrofit.create(RoomAPI::class.java).joinRoomMember(chatroomRoomId)
-            .enqueue(object : Callback<ArrayList<LoadRoomUsers>> {
+            .enqueue(object : Callback<GroupChatUserList> {
                 override fun onResponse(
-                    call: Call<ArrayList<LoadRoomUsers>>,
-                    response: Response<ArrayList<LoadRoomUsers>>
+                    call: Call<GroupChatUserList>,
+                    response: Response<GroupChatUserList>
                 ) {
 
-                    val users: ArrayList<LoadRoomUsers>? = response.body()
+                    users = response.body()!!.list
                     if (users != null) {
+                        members = response.body()!!.members
+                        val temp = users[0]
+                        for (i in users.indices) {
+                            if (users[i].userNickname == hostName) {
+                                users[0] = users[i]
+                                users[i] = temp
+                            }
+
+                        }
                         userList =
-                            ChatRoomUserListRCVAdapter(this@ChatRoomActivity, users, hostName)
+                            ChatRoomUserListRCVAdapter(
+                                this@ChatRoomActivity,
+                                users,
+                                hostName,
+                                roomId,
+                                members
+                            )
+
                         binding.userListRCV.adapter = userList
                         userList.notifyDataSetChanged()
+                        val gson = GsonBuilder().create()
+                        val theList = gson.fromJson<java.util.ArrayList<String>>(members, object :
+                            TypeToken<java.util.ArrayList<String>>() {}.type)
 
 
                     }
                 }
 
-                override fun onFailure(call: Call<ArrayList<LoadRoomUsers>>, t: Throwable) {
+                override fun onFailure(call: Call<GroupChatUserList>, t: Throwable) {
 
                 }
             })
@@ -1178,7 +1313,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     response: Response<ChatRoomSubscriptionResult>
                 ) {
                     val list: ChatRoomSubscriptionResult? = response.body()
-                    if (list!!.success && chatroomHostName == MainActivity.loginUserNickname) {
+                    if (list!!.success && hostName == MainActivity.loginUserNickname) {
                         for (item in list.userList) {
                             if (item.status == 0) {
                                 binding.chatRoomNewSubscriptionCircle.visibility = View.VISIBLE
@@ -1333,6 +1468,86 @@ class ChatRoomActivity : AppCompatActivity() {
                         binding.RoomInformationCategoryAddressTextview.text = address
 
                         getMapImage(mapX, mapY, shopName, address)
+
+                    }
+
+                }
+
+                override fun onFailure(call: Call<LoadingRoom>, t: Throwable) {
+                    Toast.makeText(this@ChatRoomActivity, "서버와 연결이 원활하지 않습니다.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            })
+
+
+    }
+    fun exitRoomInfoLoad() {
+        roomId = intent.getStringExtra("roomId")!!
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        retrofit.create(RoomAPI::class.java).groupChatRoomInfoLoad(roomId)
+            .enqueue(object : Callback<LoadingRoom> {
+                override fun onResponse(call: Call<LoadingRoom>, response: Response<LoadingRoom>) {
+                    if (response.body()!!.success) {
+                        val data = response!!.body()!!.roomList
+                        val title = data[0].title
+                        val info = data[0].info
+                        hostName = data[0].hostName
+                        val address = data[0].address
+                        val date = data[0].date
+                        val shopName = data[0].shopName
+                        val roomStatus = data[0].roomStatus
+                        val nowNumOfPeople = data[0].nowNumOfPeople
+                        val numOfPeople = data[0].numOfPeople
+                        val mapX = data[0].mapX
+                        val mapY = data[0].mapY
+                        val finish = data[0].finish
+                        if (roomStatus > 5) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
+                            binding.RoomInformationStatus.text = "모집중"
+                        } else if (roomStatus > 0.9) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+                            val text: String = getString(R.string.room_status_imminent_time)
+                            binding.RoomInformationStatus.text =
+                                String.format(text, Math.round(roomStatus).toInt())
+
+                        } else if (roomStatus < 0.9 && roomStatus > 0.0) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
+                            binding.RoomInformationStatus.text = "임박"
+
+                        } else if (roomStatus < 0) {
+                            if (hostName == MainActivity.loginUserNickname && nowNumOfPeople!!.toInt() > 1) {
+                                binding.finishLinear.visibility = View.VISIBLE
+                                if (finish!!.toInt() == 1) {
+                                    binding.roomFinishButton.isEnabled = false
+                                    binding.roomFinishButton.setBackgroundColor(Color.GRAY)
+                                    binding.roomFinishButton.text = "완료됨"
+                                }
+                            } else {
+                                binding.finishLinear.visibility = View.GONE
+                            }
+
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
+                            binding.RoomInformationStatus.text = "마감"
+                        }
+
+                        binding.RoomInfomationDate.text = date
+                        binding.RoomInfoShopName.text = shopName
+                        binding.RoomInformationCategoryTitleTextview.text = title
+                        binding.RoomInformationCategoryIntroduceTextview.text = info
+                        binding.RoomInformationCategoryNumOfPeopleTextview.text =
+                            "${nowNumOfPeople}/${numOfPeople}명"
+                        binding.RoomInformationCategoryAddressTextview.text = address
+
+                        getMapImage(mapX, mapY, shopName, address)
+                        if (hostName == MainActivity.loginUserNickname) {
+                            binding.chatRoomSubscription.visibility = View.VISIBLE
+                        }
+                        hostSubscriptionCheck()
                         joinMember()
                     }
 
@@ -1437,6 +1652,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
                             val date = Date()
                             val strDate = sdf.format(date)
+
                             socket.emit(
                                 "outRoom", gson.toJson(
                                     MessageData(
@@ -1448,9 +1664,98 @@ class ChatRoomActivity : AppCompatActivity() {
                                     )
                                 )
                             )
+                            val intent =
+                                Intent(this@ChatRoomActivity, MainFragmentActivity::class.java)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            startActivity(intent)
 
-                            onBackPressed()
-                            Handler().postDelayed(Runnable { onBackPressed() }, 500)
+
+                        } else {
+                            Log.e("생성안됨", "안됨")
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+
+                }
+            })
+    }
+
+    private fun deleteRoom() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java)
+            .deleteRoom(
+                chatroomRoomId,
+                MainActivity.user_table_id.toString(),
+                MainActivity.loginUserNickname
+            )
+            .enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.body() == "true") {
+                        if (this@ChatRoomActivity::members.isInitialized) {
+                            val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                            val date = Date()
+                            val strDate = sdf.format(date)
+
+//                            socket.emit(
+//                                "outRoom", gson.toJson(
+//                                    MessageData(
+//                                        "EXITROOM",
+//                                        "EXITROOM",
+//                                        chatroomRoomId,
+//                                        MainActivity.loginUserNickname, "SERVER",
+//                                        strDate, members
+//                                    )
+//                                )
+//                            )
+
+                            val intent =
+                                Intent(this@ChatRoomActivity, MainFragmentActivity::class.java)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            startActivity(intent)
+
+
+                        } else {
+                            Log.e("생성안됨", "안됨")
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+
+                }
+            })
+    }
+
+    private fun changeHost(nickname: String) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java)
+            .changeHost(
+                chatroomRoomId,
+                nickname
+            )
+            .enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.body() == "true") {
+                        if (this@ChatRoomActivity::members.isInitialized) {
+                            val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                            val date = Date()
+                            val strDate = sdf.format(date)
+
+                            exitRoom()
+
+
                         } else {
                             Log.e("생성안됨", "안됨")
                         }
@@ -1544,6 +1849,36 @@ class ChatRoomActivity : AppCompatActivity() {
                             LinearLayoutManager::class.java.cast(binding.groupChatRecyclerView.layoutManager)
                         pagenum = layoutManager.itemCount
                         userIntoMessageRead(pagenum)
+                    }
+
+
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+
+                }
+            })
+    }
+
+    fun userReadMessage() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        val server = retrofit.create(RoomAPI::class.java)
+        server.readMessage(chatroomRoomId, MainActivity.user_table_id)
+            .enqueue(object : Callback<String> {
+                override fun onResponse(
+                    call: Call<String>,
+                    response: Response<String>
+                ) {
+                    if (response.body() == "true") {
+                        val layoutManager =
+                            LinearLayoutManager::class.java.cast(binding.groupChatRecyclerView.layoutManager)
+                        pagenum = layoutManager.itemCount
+                        messageRead(pagenum)
                     }
 
 

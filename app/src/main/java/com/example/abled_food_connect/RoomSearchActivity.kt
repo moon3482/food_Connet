@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.abled_food_connect.adapter.MainFragmentAdapter
+import com.example.abled_food_connect.adapter.RoomSearchAdapter
 import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.databinding.ActivityRoomSearchBinding
@@ -25,9 +25,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RoomSearchActivity : AppCompatActivity() {
     lateinit var binding: ActivityRoomSearchBinding
-    lateinit var mAdapter: MainFragmentAdapter
+    lateinit var mAdapter: RoomSearchAdapter
     lateinit var mArrayList: ArrayList<MainFragmentItemData>
     lateinit var searchType: String
+    lateinit var searchStr:String
+    var check = false
     private lateinit var imm: InputMethodManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +43,24 @@ class RoomSearchActivity : AppCompatActivity() {
 
         binding.RoomSearchRCV.layoutManager = LinearLayoutManager(this)
 
+        binding.hideDoneRoom.setOnClickListener {
+            check = when (check) {
+                false -> {
+                    Log.e("필터","있음")
+                    mAdapter.filter.filter("마감")
+                    binding.hideDoneRoomCheck.setImageResource(R.drawable.ic_baseline_check_circle_24)
+                    true
+                }
+                else -> {
+                    Log.e("필터","없음")
+                    mAdapter.filter.filter(null)
+                    binding.hideDoneRoomCheck.setImageResource(R.drawable.ic_baseline_noncheck_circle_24)
+                    false
+                }
+
+
+            }
+        }
 
         imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val searchTypeArray: Array<String> = resources.getStringArray(R.array.roomSearchArray)
@@ -74,7 +94,8 @@ class RoomSearchActivity : AppCompatActivity() {
         binding.RoomSearchEditText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
-                    roomSearch(searchType, query)
+                    searchStr = query
+                    roomSearch(searchType, searchStr)
                 }
                 return true
             }
@@ -92,7 +113,7 @@ class RoomSearchActivity : AppCompatActivity() {
 
     }
 
-    private fun roomSearch(type: String, content: String) {
+    fun roomSearch(type: String, content: String) {
 
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
@@ -109,9 +130,17 @@ class RoomSearchActivity : AppCompatActivity() {
                     mArrayList.clear()
                     val list: LoadingRoom = response.body()!!
                     mArrayList.addAll(list.roomList)
-                    mAdapter = MainFragmentAdapter(this@RoomSearchActivity, mArrayList)
+                    mAdapter = RoomSearchAdapter(this@RoomSearchActivity, mArrayList)
                     binding.RoomSearchRCV.adapter = mAdapter
-                    mAdapter.filter.filter(null)
+
+                    if(check){
+                        Log.e("필터","작동")
+                        mAdapter.filter.filter("마감")
+                    }else{
+                        Log.e("필터","없음")
+                        mAdapter.filter.filter(null)
+                    }
+
                     Log.e("리스트사이즈", mArrayList.size.toString())
                     Log.e("리스트사이즈", mAdapter.unList.size.toString())
 

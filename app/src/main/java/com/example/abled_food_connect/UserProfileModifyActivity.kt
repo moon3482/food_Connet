@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
@@ -27,9 +26,14 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.canhub.cropper.CropImage
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageView
+import com.canhub.cropper.options
 import com.example.abled_food_connect.data.UserProfileData
 import com.example.abled_food_connect.databinding.ActivityUserProfileModifyBinding
 import com.example.abled_food_connect.fragments.ReviewFragment
@@ -38,13 +42,11 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import com.canhub.cropper.CropImage
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageView
-import com.canhub.cropper.options
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,6 +54,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 
 class UserProfileModifyActivity : AppCompatActivity() {
@@ -450,9 +453,10 @@ class UserProfileModifyActivity : AppCompatActivity() {
 
         //이미지의 확장자를 구한다.
         val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri.toString())
+        val sdf = SimpleDateFormat("yyyyMMddHHmmss")
+        val date = sdf.format(Date())
 
-
-        var fileName = MainActivity.loginUserId+"."+extension
+        var fileName = MainActivity.loginUserId+date+"."+extension
         var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),file)
         var body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file",fileName,requestBody)
 
@@ -466,7 +470,7 @@ class UserProfileModifyActivity : AppCompatActivity() {
 
         //썸네일 이미지의 확장자는 압축할때 jpeg형식으로 압축하므로 jpeg이다.
 
-        var thumbnail_fileName = MainActivity.loginUserId+".jpeg"
+        var thumbnail_fileName = MainActivity.loginUserId+date+".jpeg"
         var thumbnail_requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),thumbnail_file)
         var thumbnail_body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file1",thumbnail_fileName,thumbnail_requestBody)
 
@@ -483,6 +487,7 @@ class UserProfileModifyActivity : AppCompatActivity() {
             Retrofit.Builder()
                 .baseUrl(getString(R.string.http_request_base_url))
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(createOkHttpClient())
                 .build()
 
         //creating our api
@@ -500,19 +505,23 @@ class UserProfileModifyActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response?.isSuccessful) {
-                    Log.d("이미지를 업로드했습니다",""+response?.body().toString())
+                    Log.e("이미지를 업로드했습니다",""+response?.body().toString())
 
                     var items : String? =  response.body()
 
 
                     //companion object의 닉네임 변수 변경한다.
                     MainActivity.loginUserNickname = userModifyNicName
+                    MainActivity.userThumbnailImage = "images/profile_image/$fileName"
+
 
                     //쉐어드 닉네임 변경한다.
                     val pref = getSharedPreferences("pref_user_data",0)
                     val edit = pref.edit()
                     if (edit != null) {
                         edit.putString("loginUserNickname", userModifyNicName)
+                        edit.putString("userThumbnailImage","images/profile_image/$fileName")
+
                         edit.apply()//저장완료
                     }
 
@@ -828,5 +837,13 @@ class UserProfileModifyActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+    private fun createOkHttpClient(): OkHttpClient {
+        //Log.d ("TAG","OkhttpClient");
+        val builder = OkHttpClient.Builder()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        builder.addInterceptor(interceptor)
+        return builder.build()
     }
 }
