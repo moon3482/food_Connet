@@ -28,6 +28,7 @@ interface RoomAPI {
         @Field("minimumAge") minimumAge: String,
         @Field("maximumAge") maximumAge: String,
         @Field("hostName") hostName: String,
+        @Field("hostIndex") hostIndex:Int,
         @Field("map_x") map_x: String,
         @Field("map_y") map_y: String
     ): Call<API.createRoomHost>
