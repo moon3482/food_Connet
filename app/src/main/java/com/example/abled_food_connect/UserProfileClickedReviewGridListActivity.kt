@@ -9,7 +9,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.abled_food_connect.adapter.ReviewParentPageCommentRvAdapter
 import com.example.abled_food_connect.adapter.UserProfileClickedReviewGridListAdapter
 import com.example.abled_food_connect.data.ReviewDetailViewRvData
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
@@ -30,7 +29,6 @@ class UserProfileClickedReviewGridListActivity : AppCompatActivity() {
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
-
     //프로필 클릭 당한 사람의 user_tb id를 받는 변수
     lateinit var clicked_user_tb_id : String
 
@@ -42,7 +40,8 @@ class UserProfileClickedReviewGridListActivity : AppCompatActivity() {
 
 
     //리사이클러뷰 어댑터
-    lateinit var mAdapter : UserProfileClickedReviewGridListAdapter
+    var mAdapter : UserProfileClickedReviewGridListAdapter = UserProfileClickedReviewGridListAdapter()
+
 
 
     //처음엑티비티를 실행하는지, 아니면 다시 돌아온 것인지 체크한다.
@@ -87,6 +86,7 @@ class UserProfileClickedReviewGridListActivity : AppCompatActivity() {
         gridRv.layoutManager = GridLayoutManager(applicationContext,3)
 
 
+        gridRv.adapter = mAdapter
         //리사이클러뷰 구분선
 
 
@@ -102,7 +102,7 @@ class UserProfileClickedReviewGridListActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        onResumeReviewDbLoading(clicked_user_tb_id)
+        reviewDbLoading(clicked_user_tb_id)
     }
 
 
@@ -131,9 +131,8 @@ class UserProfileClickedReviewGridListActivity : AppCompatActivity() {
                 GridRv_arrayList.clear()
                 GridRv_arrayList = items!!.roomList as ArrayList<ReviewDetailViewRvDataItem>
 
-                mAdapter =  UserProfileClickedReviewGridListAdapter(GridRv_arrayList)
+                mAdapter.reviewDetailViewRvDataArraylist = GridRv_arrayList
                 mAdapter.notifyDataSetChanged()
-                gridRv.adapter = mAdapter
 
 
 
@@ -148,53 +147,7 @@ class UserProfileClickedReviewGridListActivity : AppCompatActivity() {
 
 
 
-    fun onResumeReviewDbLoading(clicked_user_tb_id:String){
-        val retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.http_request_base_url))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val api = retrofit.create(API.UserProfileClickedReviewGridListRvInterface::class.java)
-        val user_profile_clicked_review_grid_rv_using = api.user_profile_clicked_review_grid_list_get(clicked_user_tb_id,MainActivity.user_table_id)
 
-
-        user_profile_clicked_review_grid_rv_using.enqueue(object : Callback<ReviewDetailViewRvData> {
-            override fun onResponse(
-                call: Call<ReviewDetailViewRvData>,
-                response: Response<ReviewDetailViewRvData>
-            ) {
-                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
-                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
-
-                var items : ReviewDetailViewRvData? =  response.body()
-
-
-                Log.d(ReviewFragment.TAG, "돌아옴 성공 : ${items!!.roomList}")
-
-
-
-                GridRv_arrayList.clear()
-
-
-                GridRv_arrayList = items!!.roomList as ArrayList<ReviewDetailViewRvDataItem>
-
-
-                mAdapter =  UserProfileClickedReviewGridListAdapter(GridRv_arrayList)
-                mAdapter.notifyDataSetChanged()
-                gridRv.adapter = mAdapter
-
-
-
-
-
-
-
-            }
-
-            override fun onFailure(call: Call<ReviewDetailViewRvData>, t: Throwable) {
-                Log.d(ReviewFragment.TAG, "실패 : $t")
-            }
-        })
-    }
 
 
     class HorizontalItemDecorator(private val divHeight : Int) : RecyclerView.ItemDecoration() {

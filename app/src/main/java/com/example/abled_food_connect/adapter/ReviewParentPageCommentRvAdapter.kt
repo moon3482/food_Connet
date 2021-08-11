@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,6 +18,7 @@ import com.example.abled_food_connect.R
 import com.example.abled_food_connect.ReviewCommentChildActivity
 import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.ReviewParentPageCommentGetDataItem
+import com.example.abled_food_connect.data.CommentDeleteData
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
 import retrofit2.Call
@@ -27,8 +27,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewParentPageCommentGetDataItem>,var reviewWritingUserNicname : String) : RecyclerView.Adapter<ReviewParentPageCommentRvAdapter.CustromViewHolder>(){
+class ReviewParentPageCommentRvAdapter(activity: Activity,val childCommentList: ArrayList<ReviewParentPageCommentGetDataItem>,var reviewWritingUserNicname : String) : RecyclerView.Adapter<ReviewParentPageCommentRvAdapter.CustromViewHolder>(){
 
+    var activity = activity
 
 
     //클릭리스너
@@ -120,7 +121,7 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
                                     DialogInterface.BUTTON_NEGATIVE ->{
 
 
-                                        reviewDeleteBtnClick(holder.commentDotBtn,holder.commentDotBtn.context,childCommentList.get(position).comment_id,position,childCommentList.get(position).review_id,childCommentList.get(position).comment_class,childCommentList.get(position).groupNum)
+                                        commentDeleteBtnClick(activity,holder.commentDotBtn,holder.commentDotBtn.context,childCommentList.get(position).comment_id,position,childCommentList.get(position).review_id,childCommentList.get(position).comment_class,childCommentList.get(position).groupNum)
                                         Toast.makeText(holder.commentDotBtn.context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show()
 
 
@@ -152,6 +153,8 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
 
         if(childCommentList.get(position).comment_class_child_count>0){
             holder.childCommentOpenBtnLinearLayout.visibility = View.VISIBLE
+        }else {
+            holder.childCommentOpenBtnLinearLayout.visibility = View.GONE
         }
 
         holder.childCommentWrtingBtn.setOnClickListener(View.OnClickListener {
@@ -191,9 +194,10 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
     }
 
     fun removeItem(position : Int){
-        childCommentList.removeAt(position)
+
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position,getItemCount())
+        notifyItemRangeChanged(0,childCommentList.size-1)
+        childCommentList.removeAt(position)
     }
 
 
@@ -219,7 +223,7 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
 
 
     //댓글 삭제버튼
-    fun reviewDeleteBtnClick(view: View,context : Context, what_click_comment_tb_id:Int,position: Int,review_id:Int,parentOrChild: Int ,groupNum: Int){
+    fun commentDeleteBtnClick(activity: Activity,view: View,context : Context, what_click_comment_tb_id:Int,position: Int,review_id:Int,parentOrChild: Int ,groupNum: Int){
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -228,18 +232,45 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
         val comment_del = api.comment_delete_btn_click(MainActivity.user_table_id,what_click_comment_tb_id,review_id,parentOrChild,groupNum)
 
 
-        comment_del.enqueue(object : Callback<String> {
+        comment_del.enqueue(object : Callback<CommentDeleteData> {
             override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
+                call: Call<CommentDeleteData>,
+                response: Response<CommentDeleteData>
             ) {
                 Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
 
                 if(response.body() != null) {
-                    val returnString: String = response.body()!!
+                    val returnString: CommentDeleteData = response.body()!!
 
-                    if(returnString =="true"){
+                    if(returnString.review_deleted == 1){
+
+                        var builder = AlertDialog.Builder(context)
+                        builder.setTitle("알림")
+                        builder.setMessage("작성자가 삭제한 리뷰입니다")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+
+                                        activity.onBackPressed()
+                                    }
+
+
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("확인", listener)
+
+                        builder.show()
+
+                    }
+                    else if(returnString.success == "true"){
                         Log.d("트루", "트루")
                         removeItem(position)
                         // 아래의 클릭리스너는 삭제후 클릭이벤트만 작동하면 되기 때문에 파라미터 값은 어떤 값이든 상관없다.
@@ -255,7 +286,7 @@ class ReviewParentPageCommentRvAdapter(val childCommentList: ArrayList<ReviewPar
 
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<CommentDeleteData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })

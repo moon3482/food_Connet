@@ -28,9 +28,9 @@ import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.ReviewChildPageCommentGetDataItem
+import com.example.abled_food_connect.data.CommentDeleteData
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
-import io.socket.client.Manager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -437,18 +437,22 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
 
 
 
-        comment_del.enqueue(object : Callback<String> {
+        comment_del.enqueue(object : Callback<CommentDeleteData> {
             override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
+                call: Call<CommentDeleteData>,
+                response: Response<CommentDeleteData>
             ) {
                 Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
 
                 if(response.body() != null) {
-                    val returnString: String = response.body()!!
+                    val returnString: CommentDeleteData = response.body()!!
 
-                    if(returnString =="true"){
+                    if(returnString.review_deleted == 1){
+                        adapterUseActivity.onBackPressed()
+                    }
+
+                    else if(returnString.success =="true"){
                         Log.d("트루", "트루")
 
                         Toast.makeText(context, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show()
@@ -467,7 +471,7 @@ class ReviewChildPageCommenRvAdapter(var myItemArrayChildPage: ArrayList<ReviewC
 
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<CommentDeleteData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })

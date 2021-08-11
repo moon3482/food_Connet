@@ -197,38 +197,52 @@ class UserProfileActivity : AppCompatActivity() {
                 var items: UserProfileData? = response.body()
 
 
-                //작성자 프로필
-                Glide.with(applicationContext)
-                    .load(getString(R.string.http_request_base_url) + items!!.profile_image)
-                    .circleCrop()
-                    .into(binding.userProfileIv)
+                if(items!!.account_delete == 1){
 
-                clicked_user_ProfileImage = items!!.profile_image
+                    binding.whenAccountNotDeletedLinearLayout.visibility = View.GONE
+                    binding.whenAccountDeletedLinearLayout.visibility = View.VISIBLE
 
-                binding.userProfileNicNameTv.text = items!!.nick_name
-                clicked_user_NicName = items!!.nick_name
+                }else{
+
+                    binding.whenAccountNotDeletedLinearLayout.visibility = View.VISIBLE
 
 
-                if (items!!.introduction == null || items!!.introduction.length == 0) {
-                    binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
-                } else {
-                    binding.userProfileIntroductionTv.text = items.introduction
+                    //작성자 프로필
+                    Glide.with(applicationContext)
+                        .load(getString(R.string.http_request_base_url) + items!!.profile_image)
+                        .circleCrop()
+                        .into(binding.userProfileIv)
+
+                    clicked_user_ProfileImage = items!!.profile_image
+
+                    binding.userProfileNicNameTv.text = items!!.nick_name
+                    clicked_user_NicName = items!!.nick_name
+
+
+                    if (items!!.introduction == null || items!!.introduction.length == 0) {
+                        binding.userProfileIntroductionTv.text = "안녕하세요. ${items!!.nick_name}입니다."
+                    } else {
+                        binding.userProfileIntroductionTv.text = items.introduction
+                    }
+
+                    binding.reviewTitleAndReviewCountTv.text = "작성한 리뷰 ${items.review_count}개"
+
+                    //랭킹관련
+
+                    binding.rankTv.text = "(${items.rank}위)"
+
+
+                    binding.tierTv.text = "${items.tier}"
+                    binding.rankingPointTv.text = "${items.rank_point}PT"
+
+
+                    Glide.with(applicationContext)
+                        .load(getString(R.string.http_request_base_url) + items!!.tier_image)
+                        .into(binding.tierBadgeImageIv)
+
                 }
 
-                binding.reviewTitleAndReviewCountTv.text = "작성한 리뷰 ${items.review_count}개"
 
-                //랭킹관련
-
-                binding.rankTv.text = "(${items.rank}위)"
-
-
-                binding.tierTv.text = "${items.tier}"
-                binding.rankingPointTv.text = "${items.rank_point}PT"
-
-
-                Glide.with(applicationContext)
-                    .load(getString(R.string.http_request_base_url) + items!!.tier_image)
-                    .into(binding.tierBadgeImageIv)
 
 
             }

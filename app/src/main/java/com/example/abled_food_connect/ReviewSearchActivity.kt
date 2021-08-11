@@ -4,11 +4,9 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
-import android.widget.SearchView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +38,9 @@ class ReviewSearchActivity : AppCompatActivity() {
     lateinit var detail_rv : RecyclerView
 
 
+
     //리사이클러뷰 어댑터
-    lateinit var mAdapter : ReviewSearchRvAdapter
+    var mAdapter : ReviewSearchRvAdapter = ReviewSearchRvAdapter()
 
 
     private var whatClickPostion : Int = 0
@@ -78,6 +77,7 @@ class ReviewSearchActivity : AppCompatActivity() {
         detail_rv = findViewById<RecyclerView>(R.id.review_Search_rv)
         detail_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+        detail_rv.adapter = mAdapter
 
         detail_rv.setHasFixedSize(false)
 
@@ -194,9 +194,9 @@ class ReviewSearchActivity : AppCompatActivity() {
 
                         DetailRv_arrayList = items!!.roomList as ArrayList<ReviewDetailViewRvDataItem>
 
-                        mAdapter =  ReviewSearchRvAdapter(DetailRv_arrayList)
+                        mAdapter.ReviewDetailList = DetailRv_arrayList
                         mAdapter.notifyDataSetChanged()
-                        detail_rv.adapter = mAdapter
+
 
                         //클릭리스너 등록
                         mAdapter.setItemClickListener( object : ReviewSearchRvAdapter.ItemClickListener{
@@ -222,6 +222,9 @@ class ReviewSearchActivity : AppCompatActivity() {
             }
         })
     }
+
+
+
 
 
     override fun onRestart() {
@@ -261,18 +264,27 @@ class ReviewSearchActivity : AppCompatActivity() {
                     var like_count = reviewDetailViewLikeAndCommentCountCheckData.like_count
                     var comment_count = reviewDetailViewLikeAndCommentCountCheckData.comment_count
 
+                    var review_deleted  = reviewDetailViewLikeAndCommentCountCheckData.review_deleted
+
                     Log.d(ReviewFragment.TAG, "나오시오 : ${reviewDetailViewLikeAndCommentCountCheckData}")
 
 
-                    DetailRv_arrayList.get(whatClickPostion).heart_making = islikeClicked
-                    DetailRv_arrayList.get(whatClickPostion).like_count = like_count.toString()
-                    DetailRv_arrayList.get(whatClickPostion).comment_count = comment_count.toString()
+                    if(review_deleted==1){
 
-                    mAdapter =  ReviewSearchRvAdapter(DetailRv_arrayList)
-                    mAdapter.notifyItemChanged(whatClickPostion)
-                    detail_rv.adapter = mAdapter
+                        mAdapter.removeItem(whatClickPostion)
 
-                    detail_rv.getLayoutManager()?.scrollToPosition(whatClickPostion)
+                    }else{
+
+                        DetailRv_arrayList.get(whatClickPostion).heart_making = islikeClicked
+                        DetailRv_arrayList.get(whatClickPostion).like_count = like_count.toString()
+                        DetailRv_arrayList.get(whatClickPostion).comment_count = comment_count.toString()
+                        mAdapter.notifyItemChanged(whatClickPostion)
+
+                    }
+
+
+
+
 
                     //클릭리스너 등록
                     mAdapter.setItemClickListener( object : ReviewSearchRvAdapter.ItemClickListener{
@@ -282,6 +294,12 @@ class ReviewSearchActivity : AppCompatActivity() {
 
                         }
                     })
+
+
+
+
+
+
 
 
                 }

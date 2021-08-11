@@ -2,9 +2,6 @@ package com.example.abled_food_connect.retrofit
 
 
 import android.content.Context
-import android.content.Intent
-import android.widget.Toast
-import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.*
 import com.google.gson.annotations.SerializedName
@@ -320,6 +317,17 @@ class API {
     }
 
 
+    interface deleteReviewCheckInterface {
+
+        @Multipart
+        @POST("review/review_delete_check.php")
+        fun review_delete_check(
+            @Part("review_tb_id") review_tb_id: Int
+        ): Call<ReviewDeleteCheckData>
+
+    }
+
+
 
     interface UserProfileClickedReviewGridListRvInterface {
 
@@ -331,6 +339,18 @@ class API {
         ): Call<ReviewDetailViewRvData>
 
     }
+
+
+    interface deletedReviewCheckUserProfileClickedReviewGridListRvInterface {
+
+        @Multipart
+        @POST("review/deleted_Review_Check_user_profile_clicked_review_grid_rv_list_get.php")
+        fun deleted_Review_Check_user_profile_clicked_review_grid_rv_list_get(
+            @Part("review_id") review_id: Int
+        ): Call<String>
+
+    }
+
 
     interface MyPageUserScheduleRvInterface {
 
@@ -477,7 +497,7 @@ class API {
 
 
     interface commentDeleteBtn{
-        // 리뷰삭제
+        // 댓글삭제
         @Multipart
         @POST("review/comment_delete_btn_click.php")
         fun comment_delete_btn_click(
@@ -487,7 +507,40 @@ class API {
             @Part("parentOrChild") parentOrChild: Int,
             @Part("groupNum") groupNum: Int
 
-        ): Call<String>
+        ): Call<CommentDeleteData>
+    }
+
+
+
+    //일정리스트에서 방제목을 클릭하면, 방정보를 가져온다.
+    //방정보 엑티비티로 가기 위해서는 방정보에 필요한 데이터를 가져와서 넘겨줘야한다.
+    interface roomInfoGetInterface {
+        @Multipart
+        @POST("schedule/room_info_get.php")
+        fun room_info_get(
+            @Part("room_id") room_id: Int,
+            @Part("hostName") hostName: String
+        ): Call<ScheduleClickRoomInfoData>
+
+    }
+
+
+
+    interface whenLogoutFcmtokenDeleteInterface {
+        @Multipart
+        @POST("user_info/when_logout_fcmtoken_delete.php")
+        fun when_logout_fcmtoken_delete(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<whenLogoutFcmtokenDeleteData>
+    }
+
+
+    interface userAccountDeleteInterface {
+        @Multipart
+        @POST("user_info/user_account_delete.php")
+        fun user_account_delete(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<userAccountDeleteData>
     }
 
 

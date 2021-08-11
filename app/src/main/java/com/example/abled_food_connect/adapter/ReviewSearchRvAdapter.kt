@@ -2,6 +2,7 @@ package com.example.abled_food_connect.adapter
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,6 +19,7 @@ import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.ReviewCommentActivity
 import com.example.abled_food_connect.UserProfileActivity
+import com.example.abled_food_connect.data.ReviewDeleteCheckData
 import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
 import com.example.abled_food_connect.data.ReviewLikeBtnClickData
 import com.example.abled_food_connect.fragments.ReviewFragment
@@ -28,8 +31,10 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ReviewSearchRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvDataItem>) : RecyclerView.Adapter<ReviewSearchRvAdapter.CustromViewHolder>(){
+class ReviewSearchRvAdapter () : RecyclerView.Adapter<ReviewSearchRvAdapter.CustromViewHolder>(){
 
+
+    var ReviewDetailList = ArrayList<ReviewDetailViewRvDataItem>()
 
 
     //클릭리스너
@@ -170,13 +175,12 @@ class ReviewSearchRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvD
 
         holder.reviewClickBtn.setOnClickListener(View.OnClickListener {
 
-            var toMoveCommentActivity : Intent = Intent(holder.commentBtn.context, ReviewCommentActivity::class.java)
-            toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
-            startActivity(
-                holder.commentBtn.context as Activity,
-                toMoveCommentActivity,
-                null
-            )
+            Log.d("포지션뭐야", position.toString())
+            itemClickListner.onClick(it,position,ReviewDetailList.get(position).review_id)
+
+            reviewDeleteCheck(holder.reviewClickBtn,holder.reviewClickBtn.context,ReviewDetailList.get(position).review_id,position)
+
+
         })
 
 //        //ReviewCommentActivity
@@ -209,10 +213,20 @@ class ReviewSearchRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvD
 
     }
 
+    fun removeItem(position : Int){
+
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(0,ReviewDetailList.size-1)
+        ReviewDetailList.removeAt(position)
+
+    }
+
 
 
 
     class CustromViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+
 
         //프로필 이미지
         val profileSearchIv = itemView.findViewById<ImageView>(R.id.profileSearchIv)
@@ -248,6 +262,83 @@ class ReviewSearchRvAdapter (var ReviewDetailList: ArrayList<ReviewDetailViewRvD
 
         val reviewClickBtn = itemView.findViewById<LinearLayout>(R.id.reviewClickBtn)
 
+    }
+
+
+
+    //클릭 시, 삭제된 리뷰인지 확인.
+    fun reviewDeleteCheck(view: View,context: Context,review_tb_id:Int,position: Int){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(context.getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.deleteReviewCheckInterface::class.java)
+        val review_delete = api.review_delete_check(review_tb_id)
+
+
+        review_delete.enqueue(object : Callback<ReviewDeleteCheckData> {
+            override fun onResponse(
+                call: Call<ReviewDeleteCheckData>,
+                response: Response<ReviewDeleteCheckData>
+            ) {
+                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+
+                var items : ReviewDeleteCheckData? =  response.body()
+
+                if (items != null) {
+                    if(items.review_deleted == 1){
+
+
+                        var builder = AlertDialog.Builder(context)
+                        builder.setTitle("알림")
+                        builder.setMessage("삭제된 리뷰입니다")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+
+                                        removeItem(position)
+                                    }
+
+
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("확인", listener)
+
+                        builder.show()
+
+                    }else{
+
+
+
+                        var toMoveCommentActivity : Intent = Intent(context, ReviewCommentActivity::class.java)
+                        toMoveCommentActivity.putExtra("review_id", ReviewDetailList.get(position).review_id)
+                        startActivity(
+                            context as Activity,
+                            toMoveCommentActivity,
+                            null
+                        )
+                    }
+
+                }
+
+
+
+
+
+            }
+
+            override fun onFailure(call: Call<ReviewDeleteCheckData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
     }
 
 

@@ -90,6 +90,9 @@ class MainFragmentActivity : AppCompatActivity() {
             intent.putExtra("roomId", roomid)
             startActivity(intent)
         }
+        else if(intent.getBooleanExtra("isDM",false) == true){
+            customGetIntent()
+        }
 
         else {
             //프래그먼트 인스턴스화
@@ -153,7 +156,63 @@ class MainFragmentActivity : AppCompatActivity() {
                 .show()
 
         }
+
     }
+
+
+    //본 엑티비티를 보고있는데, 새로운 인텐트가 오면 알림.
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        //FCM에 DM 메시지일 경우.
+        customGetIntent()
+
+    }
+
+
+    fun customGetIntent(){
+
+        //MainActivity 컴페오에 데이터가 없으면 쉐어드에서 불러온다.
+        if(MainActivity.loginUserNickname.length == 0){
+            sharedLoadData()
+        }
+
+
+        //FCM DM메시지 처리
+        if (intent!!.getBooleanExtra("isDM",false) == true) {
+            var fromUserProfileImage = intent.getStringExtra("fromUserProfileImage")
+            var fromUserNickname = intent.getStringExtra("fromUserNickname")
+            var fromUserTbId = intent.getStringExtra("fromUserTbId")
+
+
+            binding.bottomNav.selectedItemId = R.id.menu_chat
+
+            //isGroupOrDm을 1로 바꾼다.
+            //그룹채팅 0, DM은 1이다.
+            ChatingFragment.isGroupOrDm = 1
+
+            val DMintent = Intent(this, DirectMessageActivity::class.java)
+            DMintent.putExtra("writer_user_tb_id", fromUserTbId!!.toInt())
+            DMintent.putExtra("clicked_user_NicName", fromUserNickname)
+            DMintent.putExtra("clicked_user_ProfileImage", fromUserProfileImage)
+            startActivity(DMintent)
+
+        }
+    }
+
+
+
+
+    private fun sharedLoadData() {
+        val pref = getSharedPreferences("pref_user_data", 0)
+        MainActivity.user_table_id = pref.getInt("user_table_id", 0)
+        MainActivity.loginUserId = pref.getString("loginUserId", "")!!
+        MainActivity.loginUserNickname = pref.getString("loginUserNickname", "")!!
+        MainActivity.userThumbnailImage = pref.getString("userThumbnailImage", "")!!
+        MainActivity.userAge = pref.getInt("userAge",0)
+        MainActivity.userGender = pref.getString("userGender","")!!
+    }
+
+
 
     //바텀네비게이션 프래그먼트 셀렉트 리스너
     private val onBottomOnNavigationItemSelectedListener =

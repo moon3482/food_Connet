@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -8,10 +9,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.RankingFragmentRvDataItem
 
 class RankingFragmentRvAdapter(val rankingList: ArrayList<RankingFragmentRvDataItem>) : RecyclerView.Adapter<RankingFragmentRvAdapter.CustromViewHolder>(){
@@ -72,6 +75,11 @@ class RankingFragmentRvAdapter(val rankingList: ArrayList<RankingFragmentRvDataI
 //                .load(holder.profileImageIv.context.getString(R.string.http_request_base_url)+rankingList.get(position).profile_image)
 //                .into(holder.profileImageIv)
 
+            holder.toProfileActivityLinearLayout.setOnClickListener(View.OnClickListener {
+                var toMoveUserProfileActivity : Intent = Intent(holder.toProfileActivityLinearLayout.context, UserProfileActivity::class.java)
+                toMoveUserProfileActivity.putExtra("writer_user_tb_id", rankingList.get(position).user_tb_id)
+                holder.toProfileActivityLinearLayout.context.startActivity(toMoveUserProfileActivity, null)
+            })
 
 
             //top 1~3등은 순위에 이미지를 넣어준다.
@@ -136,6 +144,8 @@ class RankingFragmentRvAdapter(val rankingList: ArrayList<RankingFragmentRvDataI
     class CustromViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val rvItemLinearLayout = itemView.findViewById<LinearLayout>(R.id.rvItemLinearLayout)
+
+        val toProfileActivityLinearLayout = itemView.findViewById<LinearLayout>(R.id.toProfileActivityLinearLayout)
 
         val profileImageIv = itemView.findViewById<ImageView>(R.id.profileImageIv)
 
