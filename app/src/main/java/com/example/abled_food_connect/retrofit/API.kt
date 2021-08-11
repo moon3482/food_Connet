@@ -137,6 +137,9 @@ class API {
         @Multipart
         @POST("review/review_like_btn_click.php")
         fun review_Like_Btn_Click(
+            @Part("sendTargetUserTable_id") sendTargetUserTable_id: Int,
+            @Part("like_click_user_nicname") like_click_user_nicname: String,
+            @Part("which_text_choose") which_text_choose: String,
             @Part("what_click_review_tb_id") what_click_review_tb_id: Int,
             @Part("my_user_tb_id") my_user_tb_id: Int,
             @Part("my_user_tb_user_id") my_user_tb_user_id: String
@@ -158,6 +161,8 @@ class API {
         @Multipart
         @POST("review/review_parent_page_comment_writing.php")
         fun reviewParentPageCommentWritingSend(
+            @Part("which_text_choose") which_text_choose: String,
+            @Part("comment_writer_nicname") comment_writer_nicname: String,
             @Part("review_id") review_id: Int,
             @Part("writing_user_id") writing_user_id: Int,
             @Part("comment_content") comment: String,
@@ -186,6 +191,9 @@ class API {
         @Multipart
         @POST("review/review_child_page_comment_writing.php")
         fun review_child_page_comment_send_btn_click(
+            @Part("reviewWritingUserId") reviewWritingUserId: Int,
+            @Part("which_text_choose") which_text_choose: String,
+            @Part("comment_writer_nicname") comment_writer_nicname: String,
             @Part("review_id") review_id: Int,
             @Part("writing_user_id") writing_user_id: Int,
             @Part("comment_content") comment: String,

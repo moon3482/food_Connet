@@ -225,7 +225,7 @@ class UserProfileClickedReviewVerticalListAdapter () : RecyclerView.Adapter<User
 
         //좋아요 리니어 레이아웃 좋아요 버튼을 클릭
         holder.likeBtn.setOnClickListener(View.OnClickListener {
-            RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).review_id,position,holder.likeBtn.context)
+            RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).writer_user_tb_id,ReviewDetailList.get(position).review_description,ReviewDetailList.get(position).review_id,position,holder.likeBtn.context)
 
             Log.d("무엇", ReviewDetailList.get(position).review_id.toString()+ MainActivity.user_table_id+ MainActivity.loginUserId)
         })
@@ -459,13 +459,17 @@ class UserProfileClickedReviewVerticalListAdapter () : RecyclerView.Adapter<User
 
 
 
-    fun RvAdapterReviewLikeBtnClick(what_click_review_tb_id:Int,position : Int, context: Context){
+    fun RvAdapterReviewLikeBtnClick(sendTargetUserTable_id:Int, which_text_choose:String,what_click_review_tb_id:Int,position : Int, context: Context){
         val retrofit = Retrofit.Builder()
             .baseUrl(context.getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewLikeBtnClick::class.java)
-        val review_Like_Btn_Click = api.review_Like_Btn_Click(what_click_review_tb_id,
+        val review_Like_Btn_Click = api.review_Like_Btn_Click(
+            sendTargetUserTable_id,
+            MainActivity.loginUserNickname,
+            which_text_choose,
+            what_click_review_tb_id,
             MainActivity.user_table_id,
             MainActivity.loginUserId)
 

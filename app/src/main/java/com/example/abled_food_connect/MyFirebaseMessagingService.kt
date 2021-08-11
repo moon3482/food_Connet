@@ -1,10 +1,7 @@
 package com.example.abled_food_connect
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.VectorDrawable
@@ -23,6 +20,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     private val TAG = "MyFirebaseMsgService"
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -39,9 +37,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         remoteMessage.data?.let {
             when(true){
                 !it["isdm"].isNullOrEmpty()->{
-
                     DMSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["fromUserProfileImage"]!!,it["fromUserNickname"]!!,it["fromUserTbId"]!!)
+                }
 
+                !it["isParentComment"].isNullOrEmpty()->{
+                    ParentCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!)
+                }
+
+                !it["isChildComment"].isNullOrEmpty()->{
+                    ChildCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!,it["groupNum"]!!,it["comment_writing_user_id"]!!,it["comment_writing_user_nicname"]!!,it["reviewWritingUserId"]!!)
                 }
 
 
@@ -404,6 +408,152 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
             notificationBuilder
         )
+    }
+
+
+    //부모댓글이 달렸을때
+    private fun ParentCommentSendNotification(title: String, messageBody: String, review_id:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("isParentComment",true)
+        intent.putExtra("review_id",review_id.toInt())
+
+
+
+
+        Log.d("fcm - review_id", review_id)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+        val channelId = "ParentComment"
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_noti_icon)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(false)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setColor(getColor(R.color.txt_white_gray))
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+            .setChannelId(channelId)
+            .setGroupSummary(true)
+            .build()
+
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channelName = "ParentComment"
+            val channel =
+                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            channel.vibrationPattern = longArrayOf(0, 1500)
+
+
+
+
+            notificationManager.createNotificationChannel(channel)
+
+
+        }
+
+        val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val info = manager.getRunningTasks(1)
+        val componentName = info[0].topActivity
+        val ActivityName = componentName!!.shortClassName.substring(1)
+        Log.e("현재 액티비티", "" + ActivityName)
+
+        if(!(ActivityName == "ReviewCommentActivity" && ReviewCommentActivity.review_id == review_id.toInt())) {
+            Log.e("현재 노티왔어요!", "노티왔어요!")
+            notificationManager.notify(
+                0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+                notificationBuilder
+            )
+        }
+    }
+
+
+    //자식댓글이 달렸을때
+    private fun ChildCommentSendNotification(title: String, messageBody: String, review_id:String, groupNum:String,sendTargetUserTable_id:String,sendTargetUserNicName:String,reviewWritingUserId:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra("isChildComment",true)
+        intent.putExtra("review_id",review_id.toInt())
+        intent.putExtra("groupNum",groupNum.toInt())
+        intent.putExtra("sendTargetUserTable_id", sendTargetUserTable_id.toInt())
+        intent.putExtra("sendTargetUserNicName",sendTargetUserNicName)
+        intent.putExtra("reviewWritingUserId",reviewWritingUserId.toInt())
+
+
+
+
+        Log.d("fcm - review_id", review_id)
+
+
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+        val channelId = "ChildComment"
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_noti_icon)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(false)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setColor(getColor(R.color.txt_white_gray))
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+            .setChannelId(channelId)
+            .setGroupSummary(true)
+            .build()
+
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channelName = "ChildComment"
+            val channel =
+                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            channel.vibrationPattern = longArrayOf(0, 1500)
+
+
+
+
+            notificationManager.createNotificationChannel(channel)
+
+
+        }
+
+        val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val info = manager.getRunningTasks(1)
+        val componentName = info[0].topActivity
+        val ActivityName = componentName!!.shortClassName.substring(1)
+        Log.e("현재 액티비티", "" + ActivityName)
+
+
+        if(!(ActivityName == "ReviewCommentChildActivity" && ReviewCommentChildActivity.review_id == review_id.toInt() && ReviewCommentChildActivity.groupNum == groupNum.toInt())) {
+            Log.e("현재 노티왔어요!", "노티왔어요!")
+            notificationManager.notify(
+                0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+                notificationBuilder
+            )
+        }
+
     }
 
 

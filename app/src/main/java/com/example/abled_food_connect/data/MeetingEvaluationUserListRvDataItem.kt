@@ -21,6 +21,8 @@ data class MeetingEvaluationUserListRvDataItem(
     val thumbnail_image : String,
     @SerializedName("ishost")
     val is_host : Boolean,
+    @SerializedName("is_account_delete")
+    val is_account_delete: Int,
     @SerializedName("user_evaluation_what_did_you_say")
     var user_evaluation_what_did_you_say : String
 )

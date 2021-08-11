@@ -27,6 +27,7 @@ import com.example.abled_food_connect.adapter.ReviewParentPageCommentRvAdapter
 import com.example.abled_food_connect.adapter.Review_Detail_ViewPagerAdapter
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.databinding.ActivityReviewCommentBinding
+import com.example.abled_food_connect.fragments.ChatingFragment
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
 import retrofit2.Call
@@ -37,13 +38,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ReviewCommentActivity : AppCompatActivity() {
 
+
+    companion object {
+        var review_id : Int = -1
+    }
+
     // 전역 변수로 바인딩 객체 선언
     private var mBinding: ActivityReviewCommentBinding? = null
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
 
-    private var review_id : Int = -1
     private var room_id : Int = 0
 
 
@@ -120,7 +125,13 @@ class ReviewCommentActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        review_id = intent.getIntExtra("review_id",0)
+
+        customGetIntent()
+
+
+
+
+
         reviewDeleteCheck(review_id)
         //리뷰 정보를 가져온다
 
@@ -289,7 +300,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                     Log.d(ReviewFragment.TAG, "목록불러와 ${reviewParentPageCommentGetData.commentList}")
                     Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
 
-                    review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(this@ReviewCommentActivity,comment_ArrayList,writerNicname)
+                    review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(this@ReviewCommentActivity,comment_ArrayList,writerNicname,WriterUserTbId)
                     review_comment_Child_rv_adapter.notifyDataSetChanged()
 
                     //클릭리스너 등록
@@ -360,12 +371,18 @@ class ReviewCommentActivity : AppCompatActivity() {
 
     //리뷰작성버튼클릭
     fun CommentWritingBtnClick(review_id:Int,comment:String,comment_class:Int,sendTargetUserTable_id:Int,sendTargetUserNicName:String,groupNum:Int){
+
+        var which_text_choose = binding.contentReviewDescriptionTv.text.toString()
+        var comment_writer_nicname = MainActivity.loginUserNickname
+
+        Log.d("comment_writer_nicname", "comment_writer_nicname: "+comment_writer_nicname)
+
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewParentPageCommentWriting::class.java)
-        val review_Like_Btn_Click = api.reviewParentPageCommentWritingSend(review_id,MainActivity.user_table_id,comment,comment_class,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
+        val review_Like_Btn_Click = api.reviewParentPageCommentWritingSend(which_text_choose,comment_writer_nicname,review_id,MainActivity.user_table_id,comment,comment_class,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
         review_Like_Btn_Click.enqueue(object : Callback<ReviewParentPageCommentGetData> {
             override fun onResponse(
                 call: Call<ReviewParentPageCommentGetData>,
@@ -435,7 +452,7 @@ class ReviewCommentActivity : AppCompatActivity() {
                         Log.d(ReviewFragment.TAG, "목록불러와 ${reviewParentPageCommentGetData.commentList}")
                         Log.d(ReviewFragment.TAG, "목록불러와 : ${isSuccess}")
 
-                        review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(this@ReviewCommentActivity,comment_ArrayList,writerNicname)
+                        review_comment_Child_rv_adapter =  ReviewParentPageCommentRvAdapter(this@ReviewCommentActivity,comment_ArrayList,writerNicname,WriterUserTbId)
                         review_comment_Child_rv_adapter.notifyDataSetChanged()
 
                         //클릭리스너 등록
@@ -575,7 +592,7 @@ class ReviewCommentActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewLikeBtnClick::class.java)
-        val review_Like_Btn_Click = api.review_Like_Btn_Click(what_click_review_tb_id,MainActivity.user_table_id,MainActivity.loginUserId)
+        val review_Like_Btn_Click = api.review_Like_Btn_Click(WriterUserTbId, MainActivity.loginUserNickname,binding.contentReviewDescriptionTv.text.toString(), what_click_review_tb_id,MainActivity.user_table_id,MainActivity.loginUserId)
 
 
         review_Like_Btn_Click.enqueue(object : Callback<ReviewLikeBtnClickData> {
@@ -979,6 +996,46 @@ class ReviewCommentActivity : AppCompatActivity() {
     }
 
 
+
+    //fcm 관련 메서드
+
+    //본 엑티비티를 보고있는데, 새로운 인텐트가 오면 알림.
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        //FCM에 DM 메시지일 경우.
+        customGetIntent()
+
+    }
+
+
+    fun customGetIntent(){
+        review_id = intent.getIntExtra("review_id",0)
+        //FCM DM메시지 처리
+
+
+        //자식코멘트 FCM이 왔을 경우
+        if (intent!!.getBooleanExtra("isChildComment",false) == true) {
+            var isChildComment = intent.getBooleanExtra("isChildComment",false)
+            var reviewWritingUserId = intent.getIntExtra("reviewWritingUserId",0)
+            var review_id = intent.getIntExtra("review_id",0)
+            var groupNum = intent.getIntExtra("groupNum",0)
+            var sendTargetUserTable_id = intent.getIntExtra("sendTargetUserTable_id",0)
+            var sendTargetUserNicName = intent.getStringExtra("sendTargetUserNicName").toString()
+
+
+
+
+            val ChildCommentintent = Intent(this, ReviewCommentChildActivity::class.java)
+            ChildCommentintent.putExtra("isChildComment",isChildComment)
+            ChildCommentintent.putExtra("review_id",review_id)
+            ChildCommentintent.putExtra("groupNum",groupNum)
+            ChildCommentintent.putExtra("sendTargetUserTable_id", sendTargetUserTable_id)
+            ChildCommentintent.putExtra("sendTargetUserNicName",sendTargetUserNicName)
+            ChildCommentintent.putExtra("reviewWritingUserId",reviewWritingUserId)
+            startActivity(ChildCommentintent)
+
+        }
+    }
 
 
 

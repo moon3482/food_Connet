@@ -83,6 +83,16 @@ class MainFragmentActivity : AppCompatActivity() {
             customGetIntent()
         }
 
+        //부모댓글알림일경우
+        else if (intent!!.getBooleanExtra("isParentComment",false) == true) {
+            customGetIntent()
+        }
+
+        //자식댓글 알림일 경우
+        else if (intent!!.getBooleanExtra("isChildComment",false) == true) {
+            customGetIntent()
+        }
+
         else {
             //프래그먼트 인스턴스화
             mainFragment = MainFragment.newInstance()
@@ -154,7 +164,6 @@ class MainFragmentActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         //FCM에 DM 메시지일 경우.
         customGetIntent()
-
     }
 
 
@@ -186,6 +195,55 @@ class MainFragmentActivity : AppCompatActivity() {
             startActivity(DMintent)
 
         }
+
+
+
+        //FCM 부모댓글 알림처리
+        else if (intent!!.getBooleanExtra("isParentComment",false) == true) {
+            var review_id = intent.getIntExtra("review_id",0)
+
+
+            binding.bottomNav.selectedItemId = R.id.menu_home
+
+
+            val ParentCommentintent = Intent(this, ReviewCommentActivity::class.java)
+            ParentCommentintent.putExtra("review_id", review_id)
+            startActivity(ParentCommentintent)
+
+        }
+
+
+        //FCM 자식댓글 알림처리
+        else if (intent!!.getBooleanExtra("isChildComment",false) == true) {
+            var isChildComment = intent.getBooleanExtra("isChildComment",false)
+            var reviewWritingUserId = intent.getIntExtra("reviewWritingUserId",0)
+            var review_id = intent.getIntExtra("review_id",0)
+            var groupNum = intent.getIntExtra("groupNum",0)
+            var sendTargetUserTable_id = intent.getIntExtra("sendTargetUserTable_id",0)
+            var sendTargetUserNicName = intent.getStringExtra("sendTargetUserNicName").toString()
+
+
+
+
+
+            binding.bottomNav.selectedItemId = R.id.menu_home
+
+
+            val ChildCommentintent = Intent(this, ReviewCommentActivity::class.java)
+            ChildCommentintent.putExtra("isChildComment",isChildComment)
+            ChildCommentintent.putExtra("review_id",review_id)
+            ChildCommentintent.putExtra("groupNum",groupNum)
+            ChildCommentintent.putExtra("sendTargetUserTable_id", sendTargetUserTable_id)
+            ChildCommentintent.putExtra("sendTargetUserNicName",sendTargetUserNicName)
+            ChildCommentintent.putExtra("reviewWritingUserId",reviewWritingUserId)
+            startActivity(ChildCommentintent)
+
+        }
+
+
+
+
+
     }
 
 

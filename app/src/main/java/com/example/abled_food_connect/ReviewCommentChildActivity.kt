@@ -40,10 +40,18 @@ class ReviewCommentChildActivity : AppCompatActivity() {
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
+    companion object {
+        var review_id : Int = -1
 
-    private var review_id : Int = 0
+        //groupNum 몇번째 부모에 속해있는 자식 코멘트인가.
+        //db에 저장될때 자식 코멘트는 부모와 동일한 groupNum을 가진다.
+        var groupNum : Int = 0
+    }
 
 
+
+    //리뷰작성자와, 댓글 작성자 모두에게 알림이 갈수 있도록 리뷰작성자 유저테이블id도 자식댓글엑티비티로 넘겨준다.
+    var reviewWritingUserId : Int = 0
 
     private lateinit var comment_content : String
     private var comment_class : Int = 0
@@ -69,9 +77,7 @@ class ReviewCommentChildActivity : AppCompatActivity() {
     var childOrParent : Int = 1
 
 
-    //groupNum 몇번째 부모에 속해있는 자식 코멘트인가.
-    //db에 저장될때 자식 코멘트는 부모와 동일한 groupNum을 가진다.
-    var groupNum : Int = 0
+
 
 
     //이전 엑티비티에서 답글달기 버튼을 누른경우
@@ -102,11 +108,10 @@ class ReviewCommentChildActivity : AppCompatActivity() {
         // 뷰 id도 파스칼케이스 + 카멜케이스의 네이밍규칙 적용으로 인해서 tv_message -> tvMessage 로 자동 변환 되었습니다.
 
 
-        review_id = intent.getIntExtra("review_id",0)
-        groupNum = intent.getIntExtra("groupNum",0)
-        WriterUserTbId = intent.getIntExtra("writing_user_id",0)
-        writerNicname = intent.getStringExtra("reviewWritingUserNicname").toString()
-        commentEtOpen = intent.getBooleanExtra("commentEtOpen",false)
+
+        //인텐트를 통해 자식댓글을 보기 위한 데이터를 가져온다.
+        customGetIntent()
+
 
 
         //삭제된 리뷰인지 확인
@@ -291,7 +296,7 @@ class ReviewCommentChildActivity : AppCompatActivity() {
                             //답글달기 버튼을 누르면 해당 댓글작성자의 tb_id, 닉네임, 그룹넘버를 가져온다.
                             this@ReviewCommentChildActivity.sendTargetUserTable_id = commentWriterUserTbId
                             this@ReviewCommentChildActivity.sendTargetUserNicName = commentWriterUserNicname
-                            this@ReviewCommentChildActivity.groupNum = groupNum
+                            ReviewCommentChildActivity.groupNum = groupNum
 
                             //1일 경우 자식 댓글(코멘트로 등록됨)
                             this@ReviewCommentChildActivity.childOrParent = 1
@@ -317,12 +322,17 @@ class ReviewCommentChildActivity : AppCompatActivity() {
 
     //리뷰작성버튼클릭
     fun CommentWritingBtnClick(review_id:Int,comment:String,comment_class:Int,sendTargetUserTable_id:Int,sendTargetUserNicName:String,groupNum:Int){
+
+        var which_text_choose = comment_ArrayList.get(0).comment_content
+        var comment_writer_nicname = MainActivity.loginUserNickname
+
+
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(API.reviewChildPageCommentWriting::class.java)
-        val review_Like_Btn_Click = api.review_child_page_comment_send_btn_click(review_id,MainActivity.user_table_id,comment,comment_class,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
+        val review_Like_Btn_Click = api.review_child_page_comment_send_btn_click(reviewWritingUserId,which_text_choose,comment_writer_nicname,review_id,MainActivity.user_table_id,comment,comment_class,sendTargetUserTable_id,sendTargetUserNicName,groupNum)
         review_Like_Btn_Click.enqueue(object : Callback<ReviewChildPageCommentGetData> {
             override fun onResponse(
                 call: Call<ReviewChildPageCommentGetData>,
@@ -410,7 +420,7 @@ class ReviewCommentChildActivity : AppCompatActivity() {
 
                                     this@ReviewCommentChildActivity.sendTargetUserTable_id = commentWriterUserTbId
                                     this@ReviewCommentChildActivity.sendTargetUserNicName = commentWriterUserNicname
-                                    this@ReviewCommentChildActivity.groupNum = groupNum
+                                    ReviewCommentChildActivity.groupNum = groupNum
 
                                     //1일 경우 자식 댓글(코멘트로 등록됨)
                                     this@ReviewCommentChildActivity.childOrParent = 1
@@ -458,5 +468,65 @@ class ReviewCommentChildActivity : AppCompatActivity() {
     private fun View.showKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+
+
+
+    //fcm 관련 메서드
+
+    //본 엑티비티를 보고있는데, 새로운 인텐트가 오면 알림.
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        //FCM에 DM 메시지일 경우.
+        customGetIntent()
+
+    }
+
+
+    fun customGetIntent(){
+
+        //MainActivity 컴페오에 데이터가 없으면 쉐어드에서 불러온다.
+        if(MainActivity.loginUserNickname.length == 0){
+            sharedLoadData()
+        }
+
+
+        //FCM DM메시지 처리
+        if (intent!!.getBooleanExtra("isChildComment",false) == true) {
+
+            reviewWritingUserId = intent.getIntExtra("reviewWritingUserId",0)
+            review_id = intent.getIntExtra("review_id",0)
+            groupNum = intent.getIntExtra("groupNum",0)
+            WriterUserTbId = intent.getIntExtra("sendTargetUserTable_id",0)
+            writerNicname = intent.getStringExtra("sendTargetUserNicName").toString()
+            commentEtOpen = intent.getBooleanExtra("commentEtOpen",false)
+
+            Log.d("reviewWritingUserId", "fcm값뭐야"+reviewWritingUserId.toString())
+            Log.d("WriterUserTbId", "WriterUserTbId값뭐야"+WriterUserTbId.toString())
+            Log.d("writerNicname", "writerNicname값뭐야"+writerNicname.toString())
+
+
+        }else{
+            //부모엑티비티에서 넘어 온 경우
+            reviewWritingUserId = intent.getIntExtra("reviewWritingUserId",0)
+            review_id = intent.getIntExtra("review_id",0)
+            groupNum = intent.getIntExtra("groupNum",0)
+            WriterUserTbId = intent.getIntExtra("parent_comment_writing_user_id",0)
+            writerNicname = intent.getStringExtra("parent_comment_writing_user_nicname").toString()
+            commentEtOpen = intent.getBooleanExtra("commentEtOpen",false)
+
+            Log.d("reviewWritingUserId", "fcm값뭐야"+reviewWritingUserId.toString())
+        }
+    }
+
+
+    private fun sharedLoadData() {
+        val pref = getSharedPreferences("pref_user_data", 0)
+        MainActivity.user_table_id = pref.getInt("user_table_id", 0)
+        MainActivity.loginUserId = pref.getString("loginUserId", "")!!
+        MainActivity.loginUserNickname = pref.getString("loginUserNickname", "")!!
+        MainActivity.userThumbnailImage = pref.getString("userThumbnailImage", "")!!
+        MainActivity.userAge = pref.getInt("userAge",0)
+        MainActivity.userGender = pref.getString("userGender","")!!
     }
 }

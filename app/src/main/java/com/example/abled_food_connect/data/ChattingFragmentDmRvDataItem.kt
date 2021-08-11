@@ -21,5 +21,7 @@ data class ChattingFragmentDmRvDataItem(
     @SerializedName("not_read_message_count_row")
     val not_read_message_count_row: Int,
     @SerializedName("now_server_time")
-    val now_server_time: String
+    val now_server_time: String,
+    @SerializedName("is_account_delete")
+    val is_account_delete: Int,
 )

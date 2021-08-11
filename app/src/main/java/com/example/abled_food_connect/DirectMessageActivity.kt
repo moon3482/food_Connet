@@ -98,9 +98,15 @@ class DirectMessageActivity : AppCompatActivity() {
     var isRvScrollBottom = false
 
 
+
+    //대화상대가 탈퇴한 유저인지 체크하는 변수
+    //0이면 탈퇴안한유저, 1이면 탈퇴한 유저.
+    var is_account_delete = 0
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_direct_message)
+        setContentView(R.layout.activity_direct_message)
 
 
         // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
@@ -127,6 +133,15 @@ class DirectMessageActivity : AppCompatActivity() {
         clicked_user_tb_id = intent.getIntExtra("writer_user_tb_id",0)
         clicked_user_NicName = intent.getStringExtra("clicked_user_NicName")!!
         clicked_user_ProfileImage = intent.getStringExtra("clicked_user_ProfileImage")!!
+        is_account_delete = intent.getIntExtra("is_account_delete",0)
+
+
+        if(is_account_delete == 1){
+            binding.imageSendBtn.isEnabled = false
+            binding.editText.isEnabled =false
+            binding.editText.hint = "대화가 불가능한 사용자입니다."
+            binding.messageSendBtn.isEnabled =false
+        }
         Log.d("상대의 id는?", clicked_user_tb_id.toString())
 
 

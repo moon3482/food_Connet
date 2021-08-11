@@ -44,6 +44,18 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
 
         holder.userNicNameTv.text = meetingEndUserList.get(position).user_nickname
 
+        //만약 평가하려는 모임원이 탈퇴했다면, 평가버튼이 사라지고 탈퇴했다는 문구가 뜬다.
+        if(meetingEndUserList.get(position).is_account_delete == 1){
+
+            holder.userAccountDeleteAlertTv.visibility = View.VISIBLE
+            holder.userEvaluationBtn.visibility = View.GONE
+
+
+
+
+        }else{
+
+        }
 
         holder.userEvaluationBtn.setOnClickListener {
 
@@ -117,6 +129,10 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
 
 
     class CustromViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        //함께했던 유저가 탈퇴했을 때, 나오는 문구
+        val userAccountDeleteAlertTv = itemView.findViewById<TextView>(R.id.userAccountDeleteAlertTv)
+
         val profileIv = itemView.findViewById<ImageView>(R.id.profileIv)
         val isHostTv = itemView.findViewById<TextView>(R.id.isHostTv)
         val userNicNameTv = itemView.findViewById<TextView>(R.id.userNicNameTv)

@@ -70,6 +70,7 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
             toDirectMessageActivity.putExtra("writer_user_tb_id", DMArrayList.get(position).your_table_id)
             toDirectMessageActivity.putExtra("clicked_user_NicName", DMArrayList.get(position).your_nick_name)
             toDirectMessageActivity.putExtra("clicked_user_ProfileImage", DMArrayList.get(position).your_thumbnail_image)
+            toDirectMessageActivity.putExtra("is_account_delete", DMArrayList.get(position).is_account_delete)
             startActivity(holder.DMListClickBtn.context, toDirectMessageActivity, null)
         }
     }

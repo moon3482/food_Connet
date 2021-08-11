@@ -345,57 +345,57 @@ class ReviewSearchRvAdapter () : RecyclerView.Adapter<ReviewSearchRvAdapter.Cust
 
 
 
-    fun RvAdapterReviewLikeBtnClick(what_click_review_tb_id:Int,position : Int, context: Context){
-        val retrofit = Retrofit.Builder()
-            .baseUrl(context.getString(R.string.http_request_base_url))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val api = retrofit.create(API.reviewLikeBtnClick::class.java)
-        val review_Like_Btn_Click = api.review_Like_Btn_Click(what_click_review_tb_id,
-            MainActivity.user_table_id,
-            MainActivity.loginUserId)
-
-
-        review_Like_Btn_Click.enqueue(object : Callback<ReviewLikeBtnClickData> {
-            override fun onResponse(
-                call: Call<ReviewLikeBtnClickData>,
-                response: Response<ReviewLikeBtnClickData>
-            ) {
-                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
-                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
-
-                if(response.body() != null) {
-                    val ReviewLikeBtnClickData: ReviewLikeBtnClickData = response.body()!!
-
-                    var heart_making = ReviewLikeBtnClickData.heart_making
-                    var how_many_like_count: Int = ReviewLikeBtnClickData.how_many_like_count
-                    var isSuccess: Boolean = ReviewLikeBtnClickData.success
-
-                    Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
-                    Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
-
-                    ReviewDetailList.get(position).like_count = how_many_like_count.toString()
-
-                    if(heart_making == true){
-                        ReviewDetailList.get(position).heart_making = true
-                        Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
-                    }else if(heart_making == false){
-                        ReviewDetailList.get(position).heart_making = false
-                        Log.d(ReviewFragment.TAG, "false : ${heart_making}")
-                    }
-
-                    notifyItemChanged(position)
-
-
-                }
-
-
-            }
-
-            override fun onFailure(call: Call<ReviewLikeBtnClickData>, t: Throwable) {
-                Log.d(ReviewFragment.TAG, "실패 : $t")
-            }
-        })
-    }
+//    fun RvAdapterReviewLikeBtnClick(what_click_review_tb_id:Int,position : Int, context: Context){
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl(context.getString(R.string.http_request_base_url))
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        val api = retrofit.create(API.reviewLikeBtnClick::class.java)
+//        val review_Like_Btn_Click = api.review_Like_Btn_Click(what_click_review_tb_id,
+//            MainActivity.user_table_id,
+//            MainActivity.loginUserId)
+//
+//
+//        review_Like_Btn_Click.enqueue(object : Callback<ReviewLikeBtnClickData> {
+//            override fun onResponse(
+//                call: Call<ReviewLikeBtnClickData>,
+//                response: Response<ReviewLikeBtnClickData>
+//            ) {
+//                Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
+//                Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
+//
+//                if(response.body() != null) {
+//                    val ReviewLikeBtnClickData: ReviewLikeBtnClickData = response.body()!!
+//
+//                    var heart_making = ReviewLikeBtnClickData.heart_making
+//                    var how_many_like_count: Int = ReviewLikeBtnClickData.how_many_like_count
+//                    var isSuccess: Boolean = ReviewLikeBtnClickData.success
+//
+//                    Log.d(ReviewFragment.TAG, "성공 현재 카운트 개수 : ${how_many_like_count}")
+//                    Log.d(ReviewFragment.TAG, "성공 : ${isSuccess}")
+//
+//                    ReviewDetailList.get(position).like_count = how_many_like_count.toString()
+//
+//                    if(heart_making == true){
+//                        ReviewDetailList.get(position).heart_making = true
+//                        Log.d(ReviewFragment.TAG, "트루 : ${heart_making}")
+//                    }else if(heart_making == false){
+//                        ReviewDetailList.get(position).heart_making = false
+//                        Log.d(ReviewFragment.TAG, "false : ${heart_making}")
+//                    }
+//
+//                    notifyItemChanged(position)
+//
+//
+//                }
+//
+//
+//            }
+//
+//            override fun onFailure(call: Call<ReviewLikeBtnClickData>, t: Throwable) {
+//                Log.d(ReviewFragment.TAG, "실패 : $t")
+//            }
+//        })
+//    }
 
 }

@@ -27,7 +27,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ReviewParentPageCommentRvAdapter(activity: Activity,val childCommentList: ArrayList<ReviewParentPageCommentGetDataItem>,var reviewWritingUserNicname : String) : RecyclerView.Adapter<ReviewParentPageCommentRvAdapter.CustromViewHolder>(){
+class ReviewParentPageCommentRvAdapter(activity: Activity,val childCommentList: ArrayList<ReviewParentPageCommentGetDataItem>,var reviewWritingUserNicname : String, var reviewWritingUserId :Int ) : RecyclerView.Adapter<ReviewParentPageCommentRvAdapter.CustromViewHolder>(){
 
     var activity = activity
 
@@ -162,10 +162,16 @@ class ReviewParentPageCommentRvAdapter(activity: Activity,val childCommentList: 
             itemClickListener.onClick(it,position,childCommentList.get(position).review_id, childCommentList.get(position).comment_id)
 
             var toMoveChildCommentActivity : Intent = Intent(holder.childCommentWrtingBtn.context, ReviewCommentChildActivity::class.java)
+
+
+            //리뷰작성자와, 댓글 작성자 모두에게 알림이 갈수 있도록 리뷰작성자 유저테이블id도 자식댓글엑티비티로 넘겨준다.
+            toMoveChildCommentActivity.putExtra("reviewWritingUserId", reviewWritingUserId)
+
+
             toMoveChildCommentActivity.putExtra("review_id", childCommentList.get(position).review_id)
             toMoveChildCommentActivity.putExtra("groupNum", childCommentList.get(position).groupNum)
-            toMoveChildCommentActivity.putExtra("writing_user_id", childCommentList.get(position).writing_user_id)
-            toMoveChildCommentActivity.putExtra("reviewWritingUserNicname",childCommentList.get(position).nick_name)
+            toMoveChildCommentActivity.putExtra("parent_comment_writing_user_id", childCommentList.get(position).writing_user_id)
+            toMoveChildCommentActivity.putExtra("parent_comment_writing_user_nicname",childCommentList.get(position).nick_name)
             toMoveChildCommentActivity.putExtra("commentEtOpen",true)
             startActivity(holder.childCommentWrtingBtn.context as Activity,toMoveChildCommentActivity,null)
         })
@@ -175,11 +181,18 @@ class ReviewParentPageCommentRvAdapter(activity: Activity,val childCommentList: 
             itemClickListener.onClick(it,position,childCommentList.get(position).review_id, childCommentList.get(position).comment_id)
 
 
+
             var toMoveChildCommentActivity : Intent = Intent(holder.childCommentWrtingBtn.context, ReviewCommentChildActivity::class.java)
+
+
+            //리뷰작성자와, 댓글 작성자 모두에게 알림이 갈수 있도록 리뷰작성자 유저테이블id도 자식댓글엑티비티로 넘겨준다.
+            toMoveChildCommentActivity.putExtra("reviewWritingUserId", reviewWritingUserId)
+
+
             toMoveChildCommentActivity.putExtra("review_id", childCommentList.get(position).review_id)
             toMoveChildCommentActivity.putExtra("groupNum", childCommentList.get(position).groupNum)
-            toMoveChildCommentActivity.putExtra("writing_user_id", childCommentList.get(position).writing_user_id)
-            toMoveChildCommentActivity.putExtra("reviewWritingUserNicname",childCommentList.get(position).nick_name)
+            toMoveChildCommentActivity.putExtra("parent_comment_writing_user_id", childCommentList.get(position).writing_user_id)
+            toMoveChildCommentActivity.putExtra("parent_comment_writing_user_nicname",childCommentList.get(position).nick_name)
             startActivity(holder.childCommentWrtingBtn.context as Activity,toMoveChildCommentActivity,null)
         })
 

@@ -1,12 +1,17 @@
 package com.example.abled_food_connect
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewTreeObserver
+import android.widget.TextView
 import android.widget.Toast
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -91,7 +96,7 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "평가가 완료되지 않은 모임원이 있습니다.", Toast.LENGTH_SHORT).show()
             }
 
-            if(isNull == false){
+            else if(isNull == false){
 
 
                 //clickedBtnCount은 여러번 클릭하는 것을 방지하기 위함이다.
@@ -106,7 +111,7 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
                         val userListJson = Gson().toJsonTree(userList, object : TypeToken<ArrayList<MeetingEvaluationUserListRvDataItem>>(){}.type)
 
-                        Log.d("json", userListJson.toString())
+                        Log.d("평가완료", userListJson.toString())
                         MeetingUserEvaluationWriting(userListJson.toString())
 
                     }catch (e : JSONException){
@@ -118,6 +123,8 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
 
         })
+
+
 
     }
 
@@ -170,20 +177,71 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
                 mAdapter.setItemClickListener(object: MeetingUserEvaluationRvAdapter.OnItemClickListener{
                     override fun onClick(v: View, position: Int, clickedText: String) {
-                        // 클릭 시 이벤트 작성
-//                        Toast.makeText(applicationContext,
-//                            "${userList[position].user_nickname}\n${clickedText}",
-//                            Toast.LENGTH_SHORT).show()
-
                         userList[position].user_evaluation_what_did_you_say = clickedText
-
                         Log.d("TAG", userList.toString())
-
                     }
                 })
 
                 mAdapter.notifyDataSetChanged()
                 meetingEndUserListRv.adapter = mAdapter
+
+
+
+
+                //함께했던 모임원 모두가 계정탈퇴로 확인되면, 자동으로 모임원평가가 완료된다.
+                var deleteAccoutCount = 0
+
+                for(i in 0..userList.size - 1){
+                    Log.d("deleteAccoutCount", userList.get(i).is_account_delete.toString())
+                    if(userList.get(i).is_account_delete == 1){
+                        deleteAccoutCount++
+
+                        //평가 문구는 "선택안함"으로 정한다.
+                        userList.get(i).user_evaluation_what_did_you_say="선택안함"
+                    }
+                }
+
+                var alertText = ""
+
+                if(userList.size == 1){
+                    //탈퇴한 모임원이 1명 인 경우의 문구
+                    alertText = "함께했던 모임원이 계정탈퇴를 했습니다.\n확인을 누르시면, 자동으로 평가가 완료됩니다."
+                }else{
+                    //탈퇴한 모임원이 복수일 경우의 문구
+                    alertText = "함께했던 모임원 모두가 계정탈퇴를 했습니다.\n확인을 누르시면, 자동으로 평가가 완료됩니다."
+                }
+
+                if(deleteAccoutCount == userList.size){
+
+
+                    var builder = AlertDialog.Builder(this@MeetingUserEvaluationActivity)
+                    builder.setTitle("자동완료")
+                    builder.setMessage(alertText)
+
+                    // 버튼 클릭시에 무슨 작업을 할 것인가!
+                    var listener = object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            when (p1) {
+                                DialogInterface.BUTTON_POSITIVE ->{
+
+                                    Log.d("TAG", userList.toString())
+                                    binding.sendReviewBtn.performClick()
+
+                                }
+
+
+                            }
+                        }
+                    }
+
+                    builder.setPositiveButton("확인", listener)
+                    builder.show()
+
+
+
+
+                }
+
 
 
 
