@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -144,6 +145,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                     response: Response<JoinRoomCheck>
                 ) {
                     val joinRoomCheck = response.body()
+                    if (joinRoomCheck!!.isRoom){
                     if (joinRoomCheck!!.success) {
                         val intent = Intent(context, RoomInformationActivity::class.java)
                         intent.putExtra("roomId", mainData.roomId)
@@ -190,7 +192,14 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                         context.startActivity(intent)
 
                     }
-                }
+                }else{
+                    val dialog = AlertDialog.Builder(context)
+                        dialog.setMessage("해당방을 찾을수 없습니다.")
+                            .setPositiveButton("확인"
+                            ) { dialog, which ->
+                                mMainFragment.load()
+                            }.setCancelable(false).create().show()
+                    }}
 
                 override fun onFailure(call: Call<JoinRoomCheck>, t: Throwable) {
 

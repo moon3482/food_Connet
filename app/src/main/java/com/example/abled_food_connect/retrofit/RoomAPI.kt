@@ -129,7 +129,7 @@ interface RoomAPI {
     @POST("/groupChat/joinRoomMember.php")
     fun joinRoomMember(
         @Field("roomId") roomId: String
-    ): Call<ArrayList<LoadRoomUsers>>
+    ): Call<GroupChatUserList>
 
     //그룹채팅 방나가기
     @FormUrlEncoded
@@ -137,6 +137,20 @@ interface RoomAPI {
     fun exitRoom(
         @Field("roomId") roomId: String,
         @Field("userIndexId") userIndexId: String,
+        @Field("userNickName") userNickName: String
+    ): Call<String>
+    //그룹채팅 방없애기
+    @FormUrlEncoded
+    @POST("/groupChat/deleteRoom.php")
+    fun deleteRoom(
+        @Field("roomId") roomId: String,
+        @Field("userIndexId") userIndexId: String,
+        @Field("userNickName") userNickName: String
+    ): Call<String>
+    @FormUrlEncoded
+    @POST("/groupChat/changeHost.php")
+    fun changeHost(
+        @Field("roomId") roomId: String,
         @Field("userNickName") userNickName: String
     ): Call<String>
 
@@ -205,6 +219,18 @@ interface RoomAPI {
     fun groupChatRoomInfoLoad(
         @Field("roomId") userId: String
 
+    ): Call<LoadingRoom>
+
+    @FormUrlEncoded
+    @POST("HostGroupDoneFCM.php")
+    fun hostGroupDone(
+        @Field("roomId") roomId: String
+
+    ): Call<String>
+    @FormUrlEncoded
+    @POST("outRoomCheck.php")
+    fun outRoomCheck(
+        @Field("roomId") roomId: String
     ): Call<LoadingRoom>
 }
 

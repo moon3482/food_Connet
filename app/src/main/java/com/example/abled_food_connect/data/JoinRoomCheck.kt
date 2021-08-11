@@ -9,5 +9,7 @@ data class JoinRoomCheck(
     @SerializedName("success")
     val success: Boolean,
     @SerializedName("hostName")
-    val hostName: String
+    val hostName: String,
+    @SerializedName("isRoom")
+    val isRoom:Boolean,
 )
