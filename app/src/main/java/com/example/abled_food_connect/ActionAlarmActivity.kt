@@ -71,6 +71,10 @@ class ActionAlarmActivity : AppCompatActivity() {
         ActionAlarmGet()
 
 
+        binding.ActionAlarmSwipeRefresh.setOnRefreshListener {
+            ActionAlarmGet()
+            binding.ActionAlarmSwipeRefresh.isRefreshing = false //서버 통신 완료 후 호출해줍니다.
+        }
 
 
 

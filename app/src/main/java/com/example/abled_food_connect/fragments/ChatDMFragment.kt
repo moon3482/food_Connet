@@ -199,13 +199,7 @@ class ChatDMFragment : Fragment() {
                 }
 
 
-                //누군가 1대1 대화창에 들어갔다가 나가면, 방은 생성되지만 메시지가 없어서 하단 정렬부분에서 에러가 생김.
-                // 따라서 메시지가 없는 대화창은 뜨지 않게 했다.
-                for(i in 0..DM_List_arrayList.size-1){
-                    if(DM_List_arrayList.get(i).send_time==null){
-                        DM_List_arrayList.removeAt(i)
-                    }
-                }
+
 
 
                 DM_List_arrayList.sortWith(object: Comparator<ChattingFragmentDmRvDataItem>{

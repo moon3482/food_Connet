@@ -48,12 +48,12 @@ class UserProfileActivity : AppCompatActivity() {
         //인스턴스를 활용하여 생성된 뷰를 액티비티에 표시 합니다.
         setContentView(binding.root)
 
-        // 이제부터 binding 바인딩 변수를 활용하여 마음 껏 xml 파일 내의 뷰 id 접근이 가능해집니다.
+        // 이제부터 binding 바인딩 변수를 활용하여 마음껏 xml 파일 내의 뷰 id 접근이 가능해집니다.
 
 
         setSupportActionBar(binding.userProfileToolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
-        binding.userProfileToolbar.title = "프로필"
+
         //툴바에 백버튼 만들기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -239,6 +239,13 @@ class UserProfileActivity : AppCompatActivity() {
                     Glide.with(applicationContext)
                         .load(getString(R.string.http_request_base_url) + items!!.tier_image)
                         .into(binding.tierBadgeImageIv)
+
+
+                    if(items.no_show_count >0){
+                        binding.userProfileToolbar.title = "${items!!.nick_name}님 프로필 (노쇼:${items.no_show_count}회)"
+                    }else{
+                        binding.userProfileToolbar.title = "${items!!.nick_name}님 프로필"
+                    }
 
                 }
 

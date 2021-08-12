@@ -1,11 +1,16 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.DialogInterface
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -47,8 +52,11 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
         //만약 평가하려는 모임원이 탈퇴했다면, 평가버튼이 사라지고 탈퇴했다는 문구가 뜬다.
         if(meetingEndUserList.get(position).is_account_delete == 1){
 
+
             holder.userAccountDeleteAlertTv.visibility = View.VISIBLE
-            holder.userEvaluationBtn.visibility = View.GONE
+
+            holder.evaluationCheckLL.visibility  = View.GONE
+
 
 
 
@@ -111,6 +119,75 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
             })
             popupMenu.show()
         }
+
+
+
+
+        //스크롤을 다시 올렸을때, 체크박스가 풀리지 않고 재활용된 뷰가 제대로 뜨게 하기 위함.
+        if(meetingEndUserList.get(position).user_evaluation_what_did_you_say == "노쇼"){
+            holder.noShowCheckBox.isChecked = true
+            holder.userEvaluationBtn.isEnabled = false
+            holder.userEvaluationBtn.setBackgroundColor(Color.GRAY)
+            holder.userEvaluationTv.text = "노쇼"
+
+        }else{
+            //노쇼체크를 푼 경우
+            holder.noShowCheckBox.isChecked = false
+            holder.userEvaluationBtn.isEnabled = true
+            holder.userEvaluationBtn.setBackgroundResource(R.drawable.comment_writer_edge)
+            holder.userEvaluationTv.text = "평가 항목을 선택해주세요."
+        }
+
+
+
+
+        holder.noShowCheckBox.setOnClickListener {
+
+            var builder = AlertDialog.Builder(holder.noShowCheckBox.context)
+            builder.setTitle("노쇼")
+            builder.setMessage(meetingEndUserList.get(position).user_nickname+"님께서 모임장소에 나오지 않으셨나요?")
+
+            // 버튼 클릭시에 무슨 작업을 할 것인가!
+            var listener = object : DialogInterface.OnClickListener {
+                override fun onClick(p0: DialogInterface?, p1: Int) {
+                    when (p1) {
+                        DialogInterface.BUTTON_NEGATIVE ->{
+                            //노쇼체크를 한 경우
+                            holder.noShowCheckBox.isChecked = true
+                            holder.userEvaluationBtn.isEnabled = false
+                            holder.userEvaluationBtn.setBackgroundColor(Color.GRAY)
+                            holder.userEvaluationTv.text = "노쇼"
+                            meetingEndUserList.get(position).user_evaluation_what_did_you_say = "노쇼"
+
+                            if(meetingEndUserList.get(position).user_evaluation_what_did_you_say == "노쇼"){
+                                Log.d("노쇼클릭", "노쇼")
+                            }
+                        }
+
+                        DialogInterface.BUTTON_POSITIVE ->{
+                            //노쇼체크를 푼 경우
+                            holder.noShowCheckBox.isChecked = false
+                            holder.userEvaluationBtn.isEnabled = true
+                            holder.userEvaluationBtn.setBackgroundResource(R.drawable.comment_writer_edge)
+                            holder.userEvaluationTv.text = "평가 항목을 선택해주세요."
+                            meetingEndUserList.get(position).user_evaluation_what_did_you_say = ""
+                        }
+
+
+
+                    }
+                }
+            }
+
+            builder.setNegativeButton("네", listener)
+            builder.setPositiveButton("아니오", listener)
+
+
+            builder.show()
+        }
+
+
+
     }
 
     fun addItem(prof:MeetingEvaluationUserListRvDataItem){
@@ -133,6 +210,8 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
         //함께했던 유저가 탈퇴했을 때, 나오는 문구
         val userAccountDeleteAlertTv = itemView.findViewById<TextView>(R.id.userAccountDeleteAlertTv)
 
+        var evaluationCheckLL = itemView.findViewById<LinearLayout>(R.id.evaluationCheckLL)
+
         val profileIv = itemView.findViewById<ImageView>(R.id.profileIv)
         val isHostTv = itemView.findViewById<TextView>(R.id.isHostTv)
         val userNicNameTv = itemView.findViewById<TextView>(R.id.userNicNameTv)
@@ -140,6 +219,7 @@ class MeetingUserEvaluationRvAdapter(val meetingEndUserList: ArrayList<MeetingEv
         val userEvaluationBtn = itemView.findViewById<LinearLayout>(R.id.userEvaluationBtn)
 
 
+        var noShowCheckBox = itemView.findViewById<CheckBox>(R.id.noShowCheckBox)
     }
 
 

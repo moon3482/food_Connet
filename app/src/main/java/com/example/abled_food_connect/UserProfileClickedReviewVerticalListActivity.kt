@@ -36,7 +36,7 @@ class UserProfileClickedReviewVerticalListActivity : AppCompatActivity() {
 
 
     //리사이클러뷰 어래이리스트
-    private lateinit var reviewDetailViewRvDataArraylist : ArrayList<ReviewDetailViewRvDataItem>
+    private var reviewDetailViewRvDataArraylist = ArrayList<ReviewDetailViewRvDataItem>()
 
     //리사이클러뷰
     lateinit var detail_rv : RecyclerView

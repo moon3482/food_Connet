@@ -87,7 +87,7 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
             var isNull = false
             for(i in 0..userList.size-1){
-                if(userList.get(i).user_evaluation_what_did_you_say == null){
+                if(userList.get(i).user_evaluation_what_did_you_say == null || userList.get(i).user_evaluation_what_did_you_say.length == 0){
                     isNull = true
                 }
             }

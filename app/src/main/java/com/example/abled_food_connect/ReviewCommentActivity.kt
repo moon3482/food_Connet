@@ -666,6 +666,37 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                         }
 
+                        //만약 클릭한 하트가 한번 더 클릭했을때, 취소하고 싶으면 하단문장을 지워라.
+                        var isDoubleLikeButtonClicked = ReviewLikeBtnClickData.isDoubleLikeButtonClicked
+                        if(isDoubleLikeButtonClicked == true){
+                            var builder = AlertDialog.Builder(this@ReviewCommentActivity)
+                            builder.setTitle("알림")
+                            builder.setMessage("이미 좋아요를 클릭하셨습니다.")
+
+                            // 버튼 클릭시에 무슨 작업을 할 것인가!
+                            var listener = object : DialogInterface.OnClickListener {
+                                override fun onClick(p0: DialogInterface?, p1: Int) {
+                                    when (p1) {
+                                        DialogInterface.BUTTON_POSITIVE ->{
+                                            Log.d("TAG", "닫기버튼 클릭")
+                                        }
+
+//                                        DialogInterface.BUTTON_NEGATIVE ->{
+//
+//                                            reviewDeleteBtnClick(review_id,room_id)
+//
+//                                        }
+
+                                    }
+                                }
+                            }
+
+                            builder.setPositiveButton("닫기", listener)
+//                            builder.setNegativeButton("삭제", listener)
+
+                            builder.show()
+                        }
+
 
                     }
 

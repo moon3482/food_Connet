@@ -43,5 +43,7 @@ data class UserProfileData(
     @SerializedName("number")
     val number: Int,
     @SerializedName("account_delete")
-    val account_delete: Int
+    val account_delete: Int,
+    @SerializedName("no_show_count")
+    val no_show_count: Int
 )

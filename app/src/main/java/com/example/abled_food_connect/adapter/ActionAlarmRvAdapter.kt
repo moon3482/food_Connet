@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Spannable
@@ -12,8 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.ReviewCommentActivity
+import com.example.abled_food_connect.UserProfileActivity
 import com.example.abled_food_connect.data.ActionAlarmListDataItem
 
 class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -32,7 +36,7 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     parent,
                     false
                 )
-                MultiViewHolder0(view)
+                parentCommentViewHolder(view)
             }
 
             //자식댓글일때
@@ -42,7 +46,7 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     parent,
                     false
                 )
-                MultiViewHolder1(view)
+                childCommentViewHolder(view)
             }
 
             //좋아요가 눌렸을때
@@ -52,7 +56,7 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     parent,
                     false
                 )
-                MultiViewHolder2(view)
+                userLikeAlertViewHolder(view)
             }
 
             //else도 좋아요가 눌렸을때이다. 추가할때 수정요망
@@ -62,7 +66,7 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     parent,
                     false
                 )
-                MultiViewHolder2(view)
+                userLikeAlertViewHolder(view)
             }
         }
     }
@@ -86,21 +90,21 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(getItemViewType(position)) {
             0 -> {
-                (holder as MultiViewHolder0).bind(datas[position])
+                (holder as parentCommentViewHolder).bind(datas[position])
 
             }
             1 -> {
-                (holder as MultiViewHolder1).bind(datas[position])
+                (holder as childCommentViewHolder).bind(datas[position])
 
             }
 
             2 -> {
-                (holder as MultiViewHolder2).bind(datas[position])
+                (holder as userLikeAlertViewHolder).bind(datas[position])
             }
         }
     }
 
-    inner class MultiViewHolder0(view: View) : RecyclerView.ViewHolder(view) {
+    inner class parentCommentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val parentCommentClickBtnLL: LinearLayout = view.findViewById(R.id.parentCommentClickBtnLL)
         private val parentCommentDatetimeTv: TextView = view.findViewById(R.id.parentCommentDatetimeTv)
@@ -115,9 +119,21 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var sender_comment_content = spannable{ bold(color(Color.BLACK,item.sender_comment_content)) }
 
             parentCommentTitleTv.text = which_text_choose+ " 글에 "+ sender_user_tb_nicname + "님이 댓글을 남기셨습니다. : "+ sender_comment_content
+
+
+            parentCommentClickBtnLL.setOnClickListener(View.OnClickListener {
+                var ParentCommentintent : Intent = Intent(parentCommentClickBtnLL.context, ReviewCommentActivity::class.java)
+                ParentCommentintent.putExtra("review_id", item.review_id)
+                parentCommentClickBtnLL.context.startActivity(ParentCommentintent, null)
+
+
+            })
+
+
+
         }
     }
-    inner class MultiViewHolder1(view: View) : RecyclerView.ViewHolder(view) {
+    inner class childCommentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val childCommentClickBtnLL: LinearLayout = view.findViewById(R.id.childCommentClickBtnLL)
         private val childCommentDatetimeTv: TextView = view.findViewById(R.id.childCommentDatetimeTv)
@@ -134,11 +150,22 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             childCommentTitleTv.text = which_text_choose+ " 댓글에 "+ sender_user_tb_nicname + "님이 답글을 남기셨습니다. : "+ sender_comment_content
 
+            childCommentClickBtnLL.setOnClickListener(View.OnClickListener {
+                var childCommentintent : Intent = Intent(childCommentClickBtnLL.context, ReviewCommentActivity::class.java)
+                childCommentintent.putExtra("isChildComment",true)
+                childCommentintent.putExtra("review_id",item.review_id)
+                childCommentintent.putExtra("groupNum",item.groupNum)
+                childCommentintent.putExtra("sendTargetUserTable_id", item.sender_user_tb_id)
+                childCommentintent.putExtra("sendTargetUserNicName",item.sender_user_tb_nicname)
+                childCommentintent.putExtra("reviewWritingUserId",item.reviewWritingUserId)
+                childCommentClickBtnLL.context.startActivity(childCommentintent, null)
+
+            })
 
         }
     }
 
-    inner class MultiViewHolder2(view: View) : RecyclerView.ViewHolder(view) {
+    inner class userLikeAlertViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val userLikeAlertLL: LinearLayout = view.findViewById(R.id.userLikeAlertLL)
         private val userLikeDatetimeTv: TextView = view.findViewById(R.id.userLikeDatetimeTv)
@@ -152,6 +179,13 @@ class ActionAlarmRvAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var sender_user_tb_nicname = spannable{ bold(color(Color.BLACK,"'"+item.sender_user_tb_nicname+"'")) }
 
             userLikeTitleTv.text = which_text_choose+" 글을 "+ sender_user_tb_nicname +"님이 좋아합니다."
+
+            userLikeAlertLL.setOnClickListener(View.OnClickListener {
+                var ParentCommentintent : Intent = Intent(userLikeAlertLL.context, ReviewCommentActivity::class.java)
+                ParentCommentintent.putExtra("review_id", item.review_id)
+                userLikeAlertLL.context.startActivity(ParentCommentintent, null)
+
+            })
 
         }
     }
