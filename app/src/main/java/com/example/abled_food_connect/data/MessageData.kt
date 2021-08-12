@@ -9,7 +9,9 @@ class MessageData(
     @SerializedName("content") val content: String,
     @SerializedName("thumbnailImage") val thumbnailImage: String,
     @SerializedName("sendTime") val sendTime: String? = null,
-    @SerializedName("members") val members:String
+    @SerializedName("members") val members:String,
+    @SerializedName("userIndex") val userIndex:Int
+
 ) {
 
 }

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -127,6 +128,7 @@ class ChatRoomActivity : AppCompatActivity() {
         chatroomRoomId = intent.getStringExtra("roomId").toString()
         chatroomHostName = intent.getStringExtra("hostName").toString()
         userName = MainActivity.loginUserNickname.toString()
+        hostName = intent.getStringExtra("hostName")!!
         thumbnailImage = MainActivity.userThumbnailImage.toString()
         Log.e("유져 정보", chatroomRoomId.toString() + userName)
         notiIcon = binding.chatRoomNewSubscriptionCircle
@@ -414,7 +416,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                 builder.setPositiveButton(
                                     "나가기"
                                 ) { dialog, which ->
-                                    changeHost(users[1].userNickname)
+                                    changeHost(users[1].userNickname, users[1].userIndexId)
                                 }
                                 builder.setNegativeButton("취소", null)
                                 builder.show()
@@ -503,6 +505,7 @@ class ChatRoomActivity : AppCompatActivity() {
         socket.on(
             "outRoom",
             Emitter.Listener {
+                Log.e("방나간거", "방나간거 처리")
                 val data: MessageData = gson.fromJson(it[0].toString(), MessageData::class.java)
 
                 val layoutManager =
@@ -565,7 +568,8 @@ class ChatRoomActivity : AppCompatActivity() {
                         binding.groupChatInputMessageEditText.text.toString(),
                         thumbnailImage,
                         null,
-                        members
+                        members,
+                        MainActivity.user_table_id
                     )
                 )
             )
@@ -1061,7 +1065,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     "TIMELINE",
                     chatroomRoomId,
                     "SERVER", "SERVER",
-                    "SERVER", members
+                    "SERVER", members, 0
                 )
             )
         )
@@ -1380,10 +1384,11 @@ class ChatRoomActivity : AppCompatActivity() {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     intent.addCategory(Intent.CATEGORY_BROWSABLE)
 
-                    val list = packageManager.queryIntentActivities(
+                    val list: List<ResolveInfo> = packageManager.queryIntentActivities(
                         intent,
                         PackageManager.MATCH_DEFAULT_ONLY
                     )
+                    Log.e("지도이미지", "이미지 : $list")
                     if (list == null || list.isEmpty()) {
                         startActivity(
                             Intent(
@@ -1392,7 +1397,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             )
                         )
                     } else {
-                        startActivity(intent)
+                        ActivityCompat.startActivity(this@ChatRoomActivity, intent, null)
                     }
                 }
             }
@@ -1481,6 +1486,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
 
     }
+
     fun exitRoomInfoLoad() {
         roomId = intent.getStringExtra("roomId")!!
         val retrofit = Retrofit.Builder()
@@ -1660,7 +1666,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                         "EXITROOM",
                                         chatroomRoomId,
                                         MainActivity.loginUserNickname, "SERVER",
-                                        strDate, members
+                                        strDate, members, 0
                                     )
                                 )
                             )
@@ -1733,7 +1739,7 @@ class ChatRoomActivity : AppCompatActivity() {
             })
     }
 
-    private fun changeHost(nickname: String) {
+    private fun changeHost(nickname: String, userIndex: Int) {
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -1743,7 +1749,8 @@ class ChatRoomActivity : AppCompatActivity() {
         val server = retrofit.create(RoomAPI::class.java)
             .changeHost(
                 chatroomRoomId,
-                nickname
+                nickname,
+                userIndex
             )
             .enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
@@ -1948,7 +1955,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                                 items.ImageName,
                                                 thumbnailImage,
                                                 null,
-                                                members
+                                                members, MainActivity.user_table_id
                                             )
                                         )
                                     )
@@ -1962,7 +1969,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                                 items.ImageName,
                                                 thumbnailImage,
                                                 null,
-                                                members
+                                                members, MainActivity.user_table_id
                                             )
                                         )
                                     )

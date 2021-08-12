@@ -125,7 +125,7 @@ class ChatRoomUserListRCVAdapter(
                                         "GETOUTROOM",
                                         roomId,
                                         user.userNickname, "SERVER",
-                                        strDate, members
+                                        strDate, members,0
                                     )
                                 )
                             )
