@@ -141,7 +141,7 @@ class DirectMessageActivity : AppCompatActivity() {
         //내 프로필 이미지 가져오기
         //userProfileLoading(MainActivity.user_table_id)
 
-
+        (binding.directMessageChatListRv.layoutManager as LinearLayoutManager).stackFromEnd = true
 
 
 
