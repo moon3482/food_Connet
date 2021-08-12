@@ -70,9 +70,13 @@ class ActionAlarmActivity : AppCompatActivity() {
         //알림리스트를 불러온다.
         ActionAlarmGet()
 
+        //엑티비티에 들어와 알람목록을 확인했다는 표시를 한다.
+        ActionAlarmActivityEnterCheck()
+
 
         binding.ActionAlarmSwipeRefresh.setOnRefreshListener {
             ActionAlarmGet()
+            ActionAlarmActivityEnterCheck()
             binding.ActionAlarmSwipeRefresh.isRefreshing = false //서버 통신 완료 후 호출해줍니다.
         }
 
@@ -117,6 +121,37 @@ class ActionAlarmActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ActionAlarmListData>, t: Throwable) {
+                Log.d(ReviewFragment.TAG, "실패 : $t")
+            }
+        })
+    }
+
+
+
+    //엑티비티에 들어와 알람목록을 확인했다는 표시를 한다.
+    fun ActionAlarmActivityEnterCheck(){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(API.ActionAlarmActivityEnterCheckInterface::class.java)
+        val list_get = api.action_alarm_activity_enter_check(MainActivity.user_table_id)
+
+
+        list_get.enqueue(object : Callback<ActionAlarmActivityEnterCheckData> {
+            override fun onResponse(
+                call: Call<ActionAlarmActivityEnterCheckData>,
+                response: Response<ActionAlarmActivityEnterCheckData>
+            ) {
+                Log.d("알람목록을 확인", "성공 : ${response.raw()}")
+                Log.d("알람목록을 확인", "성공 : ${response.body().toString()}")
+
+                if(response.body() != null) {
+
+                }
+            }
+
+            override fun onFailure(call: Call<ActionAlarmActivityEnterCheckData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })

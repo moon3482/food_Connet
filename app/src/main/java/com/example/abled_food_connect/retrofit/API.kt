@@ -2,6 +2,7 @@ package com.example.abled_food_connect.retrofit
 
 
 import android.content.Context
+import com.example.abled_food_connect.NewActionAlarmCheckData
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.*
 import com.google.gson.annotations.SerializedName
@@ -558,6 +559,25 @@ class API {
         fun action_alarm_list_get(
             @Part("user_tb_id") user_tb_id: Int,
         ): Call<ActionAlarmListData>
+    }
+
+
+    interface ActionAlarmActivityEnterCheckInterface{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/action_alarm_activity_enter_check.php")
+        fun action_alarm_activity_enter_check(
+            @Part("user_tb_id") user_tb_id: Int,
+        ): Call<ActionAlarmActivityEnterCheckData>
+    }
+
+    interface NewActionAlarmCheckInterface{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/new_action_alarm_check.php")
+        fun new_action_alarm_check(
+            @Part("user_tb_id") user_tb_id: Int,
+        ): Call<NewActionAlarmCheckData>
     }
 
 
