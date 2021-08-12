@@ -78,7 +78,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var snackbar: Snackbar
     private lateinit var snackbarTextView: TextView
     private lateinit var snackbarView: View
-    private lateinit var hostName: String
+//    private lateinit var hostName: String
     private lateinit var roomId: String
     private lateinit var vi: View
     private var userIndex: Int = 0
@@ -98,6 +98,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     companion object {
         lateinit var socket: Socket
+        var hostName = ""
     }
 
     val cropImage = registerForActivityResult(CropImageContract()) { result ->

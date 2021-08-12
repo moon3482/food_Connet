@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.abled_food_connect.ChatRoomActivity
 import com.example.abled_food_connect.JoinRoomSubscriptionActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.UserProfileActivity
@@ -159,7 +160,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                                 roomId,
                                 chatRoomUserData.nickName, "SERVER",
                                 "SERVER", members,0
-                            )
+                            ,ChatRoomActivity.hostName)
                         )
                     )
                 } else {
@@ -172,7 +173,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                                 roomId,
                                 chatRoomUserData.nickName, "SERVER",
                                 "SERVER", members,0
-                            )
+                            ,ChatRoomActivity.hostName)
                         )
                     )
                 }
@@ -195,7 +196,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                     roomId,
                     "SERVER", "SERVER",
                     "SERVER", members,0
-                )
+                ,ChatRoomActivity.hostName)
             )
         )
     }
