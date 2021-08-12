@@ -22,10 +22,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.abled_food_connect.*
-import com.example.abled_food_connect.data.RoomData
-import com.example.abled_food_connect.data.UserProfileData
-import com.example.abled_food_connect.data.userAccountDeleteData
-import com.example.abled_food_connect.data.whenLogoutFcmtokenDeleteData
+import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.facebook.*
@@ -48,6 +45,8 @@ import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import io.socket.client.IO
 import io.socket.client.Socket
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
@@ -58,6 +57,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MyPageFragment : Fragment() {
 
@@ -557,6 +559,10 @@ class MyPageFragment : Fragment() {
 
                                             //실질적인 구글 클라이언트 로그인 기록이 초기화된다.
                                             googleSignInClient.signOut()
+                                        }
+
+                                        GlobalScope.launch {
+                                            loadRoomList()
                                         }
 
 
@@ -1143,29 +1149,35 @@ class MyPageFragment : Fragment() {
             .build()
 
         retrofit.create(RoomAPI::class.java).accountRoom(MainActivity.user_table_id.toString())
-            .enqueue(object : Callback<ArrayList<String>> {
+            .enqueue(object : Callback<ArrayList<AccountSocketData>> {
                 override fun onResponse(
-                    call: Call<ArrayList<String>>,
-                    response: Response<ArrayList<String>>
+                    call: Call<ArrayList<AccountSocketData>>,
+                    response: Response<ArrayList<AccountSocketData>>
                 ) {
                     if (response.body() != null) {
+                        val sdf = SimpleDateFormat("yyyy-mm-dd HH:mm:ss")
+                        val date = Date()
+                        val strDate = sdf.format(date)
                         for (room in response.body()!!) {
                             mSocket.emit(
-                                "listIn",
-                                gson.toJson(
-                                    RoomData(
-                                        MainActivity.loginUserNickname,
-                                        room,
-                                        MainActivity.user_table_id
+                                "outRoom", gson.toJson(
+                                    MessageData(
+                                        "EXITROOM",
+                                        "EXITROOM",
+                                        room.roomId,
+                                        MainActivity.loginUserNickname, "SERVER",
+                                        strDate, room.members, 0
+                                        , room.hostName
                                     )
                                 )
                             )
+
                         }
                     }
                 }
 
-                override fun onFailure(call: Call<ArrayList<String>>, t: Throwable) {
-                    TODO("Not yet implemented")
+                override fun onFailure(call: Call<ArrayList<AccountSocketData>>, t: Throwable) {
+
                 }
             })
     }
