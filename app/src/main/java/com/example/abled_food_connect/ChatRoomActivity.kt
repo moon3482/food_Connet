@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -127,6 +128,7 @@ class ChatRoomActivity : AppCompatActivity() {
         chatroomRoomId = intent.getStringExtra("roomId").toString()
         chatroomHostName = intent.getStringExtra("hostName").toString()
         userName = MainActivity.loginUserNickname.toString()
+        hostName = intent.getStringExtra("hostName")!!
         thumbnailImage = MainActivity.userThumbnailImage.toString()
         Log.e("유져 정보", chatroomRoomId.toString() + userName)
         notiIcon = binding.chatRoomNewSubscriptionCircle
@@ -1380,10 +1382,11 @@ class ChatRoomActivity : AppCompatActivity() {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     intent.addCategory(Intent.CATEGORY_BROWSABLE)
 
-                    val list = packageManager.queryIntentActivities(
+                    val list :List<ResolveInfo> = packageManager.queryIntentActivities(
                         intent,
                         PackageManager.MATCH_DEFAULT_ONLY
                     )
+                    Log.e("지도이미지","이미지 : $list")
                     if (list == null || list.isEmpty()) {
                         startActivity(
                             Intent(
@@ -1392,7 +1395,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             )
                         )
                     } else {
-                        startActivity(intent)
+                       ActivityCompat.startActivity(this@ChatRoomActivity,intent,null)
                     }
                 }
             }
