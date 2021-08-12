@@ -57,7 +57,8 @@
         <activity android:name=".JoinRoomSubscriptionActivity" />
         <activity
             android:name=".DirectMessageActivity"
-            android:windowSoftInputMode="adjustPan" />
+
+            />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".UserProfileClickedReviewVerticalListActivity" />
         <activity android:name=".UserProfileClickedReviewGridListActivity" />
