@@ -102,7 +102,7 @@ class ChatGroupFragment : Fragment() {
     fun socketLoadChatList() {
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(context?.getString(R.string.http_request_base_url))
+            .baseUrl("http://52.78.107.230/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(createOkHttpClient())
             .build()

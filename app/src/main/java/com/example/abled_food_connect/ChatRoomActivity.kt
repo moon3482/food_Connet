@@ -177,9 +177,7 @@ class ChatRoomActivity : AppCompatActivity() {
         socket.connect()
         joinMember()
         hostSubscriptionCheck()
-        if (this::hostName.isInitialized) {
 
-        }
 
         socket.emit(
             "read",

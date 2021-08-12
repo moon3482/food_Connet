@@ -53,7 +53,7 @@ class UserProfileActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.userProfileToolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
-
+        binding.userProfileToolbar.title = "프로필"
         //툴바에 백버튼 만들기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -242,9 +242,9 @@ class UserProfileActivity : AppCompatActivity() {
 
 
                     if(items.no_show_count >0){
-                        binding.userProfileToolbar.title = "${items!!.nick_name}님 프로필 (노쇼:${items.no_show_count}회)"
+
                     }else{
-                        binding.userProfileToolbar.title = "${items!!.nick_name}님 프로필"
+
                     }
 
                 }
