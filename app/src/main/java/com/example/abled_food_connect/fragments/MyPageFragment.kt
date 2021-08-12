@@ -22,8 +22,12 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.abled_food_connect.*
-import com.example.abled_food_connect.data.*
+import com.example.abled_food_connect.data.RoomData
+import com.example.abled_food_connect.data.UserProfileData
+import com.example.abled_food_connect.data.userAccountDeleteData
+import com.example.abled_food_connect.data.whenLogoutFcmtokenDeleteData
 import com.example.abled_food_connect.retrofit.API
+import com.example.abled_food_connect.retrofit.RoomAPI
 import com.facebook.*
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
@@ -37,10 +41,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.kakao.sdk.auth.model.Prompt
 import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
+import io.socket.client.IO
+import io.socket.client.Socket
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -50,25 +59,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-class MyPageFragment:Fragment() {
+class MyPageFragment : Fragment() {
 
 
-    lateinit var userProfileIv : ImageView
-    lateinit var userProfileNicNameTv : TextView
-    lateinit var userProfileIntroductionTv : TextView
+    lateinit var userProfileIv: ImageView
+    lateinit var userProfileNicNameTv: TextView
+    lateinit var userProfileIntroductionTv: TextView
+    lateinit var gson: Gson
+    lateinit var social_login_type: String
+    lateinit var table_user_id: String
+    lateinit var mSocket: Socket
 
-    lateinit var social_login_type : String
-    lateinit var table_user_id :String
 
+    lateinit var tierBadgeImageIv: ImageView
+    lateinit var tierTv: TextView
+    lateinit var rankingPointTv: TextView
 
-
-
-    lateinit var tierBadgeImageIv : ImageView
-    lateinit var tierTv : TextView
-    lateinit var rankingPointTv : TextView
-
-    lateinit var rankTv : TextView
-
+    lateinit var rankTv: TextView
 
 
     // Firebase Authentication 관리 클래스
@@ -86,7 +93,8 @@ class MyPageFragment:Fragment() {
         .baseUrl("http://52.78.107.230/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    val userAccountDeleteApi = userAccountDeleteRetrofit.create(API.userAccountDeleteInterface::class.java)
+    val userAccountDeleteApi =
+        userAccountDeleteRetrofit.create(API.userAccountDeleteInterface::class.java)
     val account_delete = userAccountDeleteApi.user_account_delete(MainActivity.user_table_id)
 
 
@@ -96,23 +104,23 @@ class MyPageFragment:Fragment() {
 
     var now_Account_delete = 0
 
-    companion object{
-        const val TAG : String = "마이페이지 프래그먼트 로그"
-        fun newInstance(): MyPageFragment{
+    companion object {
+        const val TAG: String = "마이페이지 프래그먼트 로그"
+        fun newInstance(): MyPageFragment {
             return MyPageFragment()
         }
 
-            lateinit var progressBar: ProgressDialog
+        lateinit var progressBar: ProgressDialog
 
     }
 
     override fun onResume() {
         super.onResume()
 
-        if(now_Account_delete == 0){
+        if (now_Account_delete == 0) {
             //작성자 프로필
             Glide.with(userProfileIv.context)
-                .load(getString(R.string.http_request_base_url)+MainActivity.userThumbnailImage)
+                .load(getString(R.string.http_request_base_url) + MainActivity.userThumbnailImage)
                 .circleCrop()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
@@ -121,7 +129,7 @@ class MyPageFragment:Fragment() {
             userProfileNicNameTv.text = MainActivity.loginUserNickname
             //유저 정보를 DB에서 가져온다.
             userProfileLoading(MainActivity.user_table_id)
-        }else{
+        } else {
             now_Account_delete = 0
         }
 
@@ -129,12 +137,13 @@ class MyPageFragment:Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG,"마이페이지 onCreate()")
+        Log.d(TAG, "마이페이지 onCreate()")
+        gson = Gson()
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.d(TAG,"마이페이지 onAttach()")
+        Log.d(TAG, "마이페이지 onAttach()")
     }
 
     override fun onCreateView(
@@ -162,51 +171,67 @@ class MyPageFragment:Fragment() {
         rankTv = view.findViewById<TextView>(R.id.rankTv)
 
 
-        val toUserProfileModifyActivityBtn = view.findViewById<TextView>(R.id.toUserProfileModifyActivityBtn)
+        val toUserProfileModifyActivityBtn =
+            view.findViewById<TextView>(R.id.toUserProfileModifyActivityBtn)
 
 
-        toUserProfileModifyActivityBtn.setOnClickListener{
+        toUserProfileModifyActivityBtn.setOnClickListener {
             val intent = Intent(requireContext(), UserProfileModifyActivity::class.java)
             startActivity(intent)
         }
 
 
-        val toMoveWrittenReviewListActivityBtn = view.findViewById<LinearLayout>(R.id.toMoveWrittenReviewListActivityBtn)
+        val toMoveWrittenReviewListActivityBtn =
+            view.findViewById<LinearLayout>(R.id.toMoveWrittenReviewListActivityBtn)
         toMoveWrittenReviewListActivityBtn.setOnClickListener(View.OnClickListener {
-            var toUserProfileClickedReviewGridListActivity : Intent = Intent(context, UserProfileClickedReviewGridListActivity::class.java)
-            toUserProfileClickedReviewGridListActivity.putExtra("writer_user_tb_id", MainActivity.user_table_id)
+            var toUserProfileClickedReviewGridListActivity: Intent =
+                Intent(context, UserProfileClickedReviewGridListActivity::class.java)
+            toUserProfileClickedReviewGridListActivity.putExtra(
+                "writer_user_tb_id",
+                MainActivity.user_table_id
+            )
             startActivity(toUserProfileClickedReviewGridListActivity, null)
         })
 
 
-        val toMoveReviewWritingActivityBtn = view.findViewById<LinearLayout>(R.id.toMoveReviewWritingActivityBtn)
+        val toMoveReviewWritingActivityBtn =
+            view.findViewById<LinearLayout>(R.id.toMoveReviewWritingActivityBtn)
         toMoveReviewWritingActivityBtn.setOnClickListener(View.OnClickListener {
-            var toUnwrittenReviewListActivity : Intent = Intent(context, UnwrittenReviewListActivity::class.java)
+            var toUnwrittenReviewListActivity: Intent =
+                Intent(context, UnwrittenReviewListActivity::class.java)
             startActivity(toUnwrittenReviewListActivity, null)
         })
 
 
-        val toMoveUserProfileBadgeListActivityBtn = view.findViewById<LinearLayout>(R.id.toMoveUserProfileBadgeListActivityBtn)
+        val toMoveUserProfileBadgeListActivityBtn =
+            view.findViewById<LinearLayout>(R.id.toMoveUserProfileBadgeListActivityBtn)
         toMoveUserProfileBadgeListActivityBtn.setOnClickListener(View.OnClickListener {
-            var toUserProfileBadgeListActivity : Intent = Intent(context, UserProfileBadgeListActivity::class.java)
-            toUserProfileBadgeListActivity.putExtra("user_tb_id",MainActivity.user_table_id)
-            toUserProfileBadgeListActivity.putExtra("user_nicname",MainActivity.loginUserNickname)
+            var toUserProfileBadgeListActivity: Intent =
+                Intent(context, UserProfileBadgeListActivity::class.java)
+            toUserProfileBadgeListActivity.putExtra("user_tb_id", MainActivity.user_table_id)
+            toUserProfileBadgeListActivity.putExtra("user_nicname", MainActivity.loginUserNickname)
             startActivity(toUserProfileBadgeListActivity, null)
         })
 
 
-        val toMoveUserProfileEvaluationListActivity = view.findViewById<LinearLayout>(R.id.toMoveUserProfileEvaluationListActivity)
+        val toMoveUserProfileEvaluationListActivity =
+            view.findViewById<LinearLayout>(R.id.toMoveUserProfileEvaluationListActivity)
         toMoveUserProfileEvaluationListActivity.setOnClickListener(View.OnClickListener {
-            var toUserProfileEvaluationListActivity : Intent = Intent(context, UserProfileEvaluationListActivity::class.java)
-            toUserProfileEvaluationListActivity.putExtra("user_tb_id",MainActivity.user_table_id)
-            toUserProfileEvaluationListActivity.putExtra("user_nicname",MainActivity.loginUserNickname)
+            var toUserProfileEvaluationListActivity: Intent =
+                Intent(context, UserProfileEvaluationListActivity::class.java)
+            toUserProfileEvaluationListActivity.putExtra("user_tb_id", MainActivity.user_table_id)
+            toUserProfileEvaluationListActivity.putExtra(
+                "user_nicname",
+                MainActivity.loginUserNickname
+            )
             startActivity(toUserProfileEvaluationListActivity, null)
         })
 
 
-        val toMyPageUserScheduleActivityBtn = view.findViewById<LinearLayout>(R.id.toMyPageUserScheduleActivityBtn)
+        val toMyPageUserScheduleActivityBtn =
+            view.findViewById<LinearLayout>(R.id.toMyPageUserScheduleActivityBtn)
 
-        toMyPageUserScheduleActivityBtn.setOnClickListener{
+        toMyPageUserScheduleActivityBtn.setOnClickListener {
             val intent = Intent(requireContext(), MyPageUserScheduleActivity::class.java)
             startActivity(intent)
         }
@@ -226,7 +251,7 @@ class MyPageFragment:Fragment() {
                         DialogInterface.BUTTON_POSITIVE ->
 
 
-                            activity?.let{
+                            activity?.let {
 
                                 logout()
 
@@ -262,14 +287,12 @@ class MyPageFragment:Fragment() {
                         DialogInterface.BUTTON_POSITIVE ->
 
 
-                            activity?.let{
+                            activity?.let {
 
                                 accountDelete()
 
                                 //탈퇴버튼을 눌렀는지 확인하는 변수
                                 now_Account_delete = 1
-
-
 
 
                             }
@@ -296,9 +319,6 @@ class MyPageFragment:Fragment() {
         auth = FirebaseAuth.getInstance()
 
         // xml에서 구글 로그인 버튼 코드 가져오기
-
-
-
 
 
         // 구글 로그인을 위해 구성되어야 하는 코드 (Id, Email request)
@@ -335,8 +355,7 @@ class MyPageFragment:Fragment() {
     }
 
 
-
-    fun logout(){
+    fun logout() {
 
 
         val retrofit = Retrofit.Builder()
@@ -359,35 +378,28 @@ class MyPageFragment:Fragment() {
 
                 var items: whenLogoutFcmtokenDeleteData? = response.body()
 
-                if(items!!.success == true){
+                if (items!!.success == true) {
 
                     //카카오 로그아웃
 
-                    if(social_login_type == "KAKAO"){
+                    if (social_login_type == "KAKAO") {
                         UserApiClient.instance.logout { error ->
                             if (error != null) {
                                 Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
-                            }
-                            else {
+                            } else {
                                 Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
                             }
                         }
-                    }
-
-                    else if(social_login_type == "FACEBOOK"){
+                    } else if (social_login_type == "FACEBOOK") {
                         //페이스북 로그아웃
                         LoginManager.getInstance().logOut()
                         Log.d(TAG, "logout: facebook 로그아웃")
-                    }
-
-                    else if(social_login_type == "NAVER"){
+                    } else if (social_login_type == "NAVER") {
                         //네이버 로그아웃
                         OAuthLogin.getInstance().logout(context)
                         Log.d("TAG", OAuthLogin.getInstance().getState(context).toString())
                         OAuthLogin.getInstance().getState(context)
-                    }
-
-                    else if(social_login_type == "GOOGLE"){
+                    } else if (social_login_type == "GOOGLE") {
 
                         Log.d(TAG, "logout: 구글 로그아웃")
 
@@ -417,11 +429,10 @@ class MyPageFragment:Fragment() {
                     Toast.makeText(context, "로그아웃 되었습니다.", Toast.LENGTH_LONG).show()
 
 
-
-                    val pref = activity?.getSharedPreferences("pref_user_data",0)
+                    val pref = activity?.getSharedPreferences("pref_user_data", 0)
                     val edit = pref?.edit()
                     if (edit != null) {
-                        edit.putBoolean("login_check",false)
+                        edit.putBoolean("login_check", false)
                         edit.apply()//저장완료
                     }
 
@@ -430,19 +441,17 @@ class MyPageFragment:Fragment() {
                     startActivity(intent)
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                    } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+                    } else {
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
 
                     requireActivity().finish()
 
 
-                }else{
+                } else {
 
                     Toast.makeText(context, "로그아웃 할 수 없습니다.", Toast.LENGTH_SHORT).show()
 
                 }
-
-
-
 
 
             }
@@ -451,11 +460,6 @@ class MyPageFragment:Fragment() {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })
-
-
-
-
-
 
 
     }
@@ -503,8 +507,7 @@ class MyPageFragment:Fragment() {
 
 
                     //현재 접속중인 계정과 탈퇴를 위해 로그인한 구글계정이 동일한지 확인
-                    if(table_user_id == uid){
-
+                    if (table_user_id == uid) {
 
 
                         //일치하면, DB탈퇴관련 레트로핏을 실행시킨다.
@@ -516,11 +519,11 @@ class MyPageFragment:Fragment() {
                                 Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
                                 Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
 
-                                if(response.body() != null) {
+                                if (response.body() != null) {
                                     val Item: userAccountDeleteData = response.body()!!
 
 
-                                    if(Item.success == true){
+                                    if (Item.success == true) {
                                         //DB에서 탈퇴관련 데이터 정리 완료
                                         Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
 
@@ -528,21 +531,27 @@ class MyPageFragment:Fragment() {
                                         //구글 계정연동 해제
                                         auth!!.getCurrentUser()!!.delete()
 
-                                        Toast.makeText(requireContext(), "회원탈퇴가 완료되었습니다.", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "회원탈퇴가 완료되었습니다.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
 
                                         //구글 로그아웃
                                         FirebaseAuth.getInstance().signOut()
 
                                         // 구글 로그인을 위해 구성되어야 하는 코드 (Id, Email request)
-                                        var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                            .requestIdToken(getString(R.string.default_web_client_id))
-                                            .requestEmail()
-                                            .build()
+                                        var gso =
+                                            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                                .requestIdToken(getString(R.string.default_web_client_id))
+                                                .requestEmail()
+                                                .build()
 
 
                                         var googleSignInClient: GoogleSignInClient? = null
 
-                                        googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }
+                                        googleSignInClient =
+                                            context?.let { GoogleSignIn.getClient(it, gso) }
 
                                         if (googleSignInClient != null) {
 
@@ -551,23 +560,28 @@ class MyPageFragment:Fragment() {
                                         }
 
 
-
-
-
                                         //구글연동해제 이후 로그인엑티비티로 이동
                                         val intent = Intent(context, MainActivity::class.java)
                                         startActivity(intent)
+
+
+
                                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+                                        } else {
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
 
                                         requireActivity().finish()
 
 
-                                    }else{
+                                    } else {
                                         //DB에서 탈퇴관련 데이터 정리 실패
                                         Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
-                                        Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
 
 
@@ -576,19 +590,22 @@ class MyPageFragment:Fragment() {
 
                             }
 
-                            override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+                            override fun onFailure(
+                                call: Call<userAccountDeleteData>,
+                                t: Throwable
+                            ) {
                                 Log.d(MyPageFragment.TAG, "실패 : $t")
                             }
                         })
 
 
-
-                    }else{
-                        Toast.makeText(requireContext(), "현재 로그인 중인 계정과 동일한 계정이 아닙니다.", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "현재 로그인 중인 계정과 동일한 계정이 아닙니다.",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-
-
-
 
 
                 } else {
@@ -597,9 +614,6 @@ class MyPageFragment:Fragment() {
                 }
             }
     } //firebaseAuthWithGoogle
-
-
-
 
 
     /*탈퇴하기 - 각각의 소셜로그인마다 탈퇴 처리를 해야해서, 소스가 지저분합니다.
@@ -612,25 +626,30 @@ class MyPageFragment:Fragment() {
     //또한 본인이 현재 접속중인 계정과 일치여부를 확인하기 위함도 있다.
     //소셜로그인이 완료+현재 접속 중인 계정과 일치 시, 탈퇴처리가 이루어진다.
 
-    fun accountDelete(){
+    fun accountDelete() {
 
 
         //카카오 로그아웃 및 연결해제
 
 
+        if (social_login_type == "KAKAO") {
 
-        if(social_login_type == "KAKAO"){
+            Toast.makeText(
+                context,
+                "탈퇴를 위해 카카오 로그인이 필요합니다. 카카오 로그인 후, 탈퇴가 완료됩니다.",
+                Toast.LENGTH_SHORT
+            ).show()
 
-            Toast.makeText(context, "탈퇴를 위해 카카오 로그인이 필요합니다. 카카오 로그인 후, 탈퇴가 완료됩니다.", Toast.LENGTH_SHORT).show()
-
-            UserApiClient.instance.loginWithKakaoAccount(requireContext(), prompts = listOf(Prompt.LOGIN)) { token, error ->
+            UserApiClient.instance.loginWithKakaoAccount(
+                requireContext(),
+                prompts = listOf(Prompt.LOGIN)
+            ) { token, error ->
                 if (error != null) {
                     Log.e(TAG, "로그인 실패", error)
-                    Toast.makeText(requireContext(), "아이디 또는 비밀번호를 다시 확인해주세요.", Toast.LENGTH_LONG).show()
-                }
-                else if (token != null) {
+                    Toast.makeText(requireContext(), "아이디 또는 비밀번호를 다시 확인해주세요.", Toast.LENGTH_LONG)
+                        .show()
+                } else if (token != null) {
                     Log.i(TAG, "로그인 성공 ${token.accessToken}")
-
 
 
                     //카카오톡 로그인 리퀘스트
@@ -640,7 +659,7 @@ class MyPageFragment:Fragment() {
                         } else if (user != null) {
 
                             //현재 접속중인 계정과 탈퇴를 위해 로그인한 카카오계정이 동일한지 확인
-                            if(user.id.toString() == table_user_id){
+                            if (user.id.toString() == table_user_id) {
 
 
                                 //계정이 일치하면, DB탈퇴관련 레트로핏을 실행시킨다.
@@ -650,41 +669,49 @@ class MyPageFragment:Fragment() {
                                         response: Response<userAccountDeleteData>
                                     ) {
                                         Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
-                                        Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
+                                        Log.d(
+                                            MyPageFragment.TAG,
+                                            "데이터로드 : ${response.body().toString()}"
+                                        )
 
-                                        if(response.body() != null) {
+                                        if (response.body() != null) {
                                             val Item: userAccountDeleteData = response.body()!!
 
 
-                                            if(Item.success == true){
+                                            if (Item.success == true) {
                                                 //DB에서 탈퇴관련 데이터 정리 완료
                                                 Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
 
 
-
                                                 //카카오 소셜로그인 연동해제
-                                                UserApiClient.instance.unlink  { error ->
+                                                UserApiClient.instance.unlink { error ->
                                                     if (error != null) {
                                                         Log.e(TAG, "카카오 회원 탈퇴 실패.", error)
-                                                    }
-                                                    else {
+                                                    } else {
 
                                                         UserApiClient.instance.logout { error ->
                                                             if (error != null) {
-                                                                Log.e(TAG, "로그아웃 실패. SDK에서 토큰 삭제됨", error)
-                                                            }
-                                                            else {
+                                                                Log.e(
+                                                                    TAG,
+                                                                    "로그아웃 실패. SDK에서 토큰 삭제됨",
+                                                                    error
+                                                                )
+                                                            } else {
                                                                 Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
                                                             }
                                                         }
 
 
                                                         //연동해제 이후 로그인엑티비티로 이동
-                                                        val intent = Intent(context, MainActivity::class.java)
+                                                        val intent = Intent(
+                                                            context,
+                                                            MainActivity::class.java
+                                                        )
                                                         startActivity(intent)
                                                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
                                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+                                                        } else {
+                                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
 
                                                         requireActivity().finish()
 
@@ -692,11 +719,14 @@ class MyPageFragment:Fragment() {
                                                 }
 
 
-
-                                            }else{
+                                            } else {
                                                 //DB에서 탈퇴관련 데이터 정리 실패
                                                 Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
-                                                Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(
+                                                    context,
+                                                    "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
 
 
@@ -705,13 +735,20 @@ class MyPageFragment:Fragment() {
 
                                     }
 
-                                    override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+                                    override fun onFailure(
+                                        call: Call<userAccountDeleteData>,
+                                        t: Throwable
+                                    ) {
                                         Log.d(MyPageFragment.TAG, "실패 : $t")
                                     }
                                 })
 
-                            }else{
-                                Toast.makeText(context, "현재 접속중인 계정과 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "현재 접속중인 계정과 일치하지 않습니다.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
 
 
@@ -719,16 +756,11 @@ class MyPageFragment:Fragment() {
                     }
 
 
-
-
                 }
             }
 
 
-
-        }
-
-        else if(social_login_type == "FACEBOOK"){
+        } else if (social_login_type == "FACEBOOK") {
             //페이스북 로그아웃 및 연결 해제
 
 
@@ -759,17 +791,22 @@ class MyPageFragment:Fragment() {
                                 Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
                                 Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
 
-                                if(response.body() != null) {
+                                if (response.body() != null) {
                                     val Item: userAccountDeleteData = response.body()!!
 
 
-                                    if(Item.success == true){
+                                    if (Item.success == true) {
                                         //DB에서 탈퇴관련 데이터 정리 완료
                                         Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
 
 
                                         //페이스북 계정 연동해제 리퀘스트
-                                        var request = GraphRequest(loginResult?.accessToken, "/me/permissions", null, HttpMethod.DELETE, GraphRequest.Callback() { response -> })
+                                        var request = GraphRequest(
+                                            loginResult?.accessToken,
+                                            "/me/permissions",
+                                            null,
+                                            HttpMethod.DELETE,
+                                            GraphRequest.Callback() { response -> })
                                         request.executeAsync()
 
 
@@ -778,15 +815,20 @@ class MyPageFragment:Fragment() {
                                         startActivity(intent)
                                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        } else { intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
+                                        } else {
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); }
 
                                         requireActivity().finish()
 
 
-                                    }else{
+                                    } else {
                                         //DB에서 탈퇴관련 데이터 정리 실패
                                         Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
-                                        Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
 
 
@@ -795,47 +837,47 @@ class MyPageFragment:Fragment() {
 
                             }
 
-                            override fun onFailure(call: Call<userAccountDeleteData>, t: Throwable) {
+                            override fun onFailure(
+                                call: Call<userAccountDeleteData>,
+                                t: Throwable
+                            ) {
                                 Log.d(MyPageFragment.TAG, "실패 : $t")
                             }
                         })
 
 
-
-
                     }
 
                     override fun onCancel() {
-                        Toast.makeText(requireContext(), "Login Cancelled", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Login Cancelled", Toast.LENGTH_LONG)
+                            .show()
                     }
 
                     override fun onError(exception: FacebookException) {
-                        Toast.makeText(requireContext(), exception.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), exception.message, Toast.LENGTH_LONG)
+                            .show()
                     }
                 })
 
 
-
-
-
-        }
-
-        else if(social_login_type == "NAVER"){
+        } else if (social_login_type == "NAVER") {
 
 
             //기존 네이버 로그인 세션을 제거한다.
             OAuthLogin.getInstance().logout(context)
-            Toast.makeText(context, "탈퇴를 위해 네이버 아이디 로그인이 필요합니다. 네이버 로그인 후, 탈퇴가 완료됩니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "탈퇴를 위해 네이버 아이디 로그인이 필요합니다. 네이버 로그인 후, 탈퇴가 완료됩니다.",
+                Toast.LENGTH_SHORT
+            ).show()
 
             //네이버 로그인 창을 띄운다.
             //로그인에 성공하면 계정연결 해제가 이루어진다.
             //네이버 연동해제는 mOAuthLoginHandler를 확인할 것.
-            OAuthLogin.getInstance().startOauthLoginActivity(activity,mOAuthLoginHandler)
+            OAuthLogin.getInstance().startOauthLoginActivity(activity, mOAuthLoginHandler)
 
 
-        }
-
-        else if(social_login_type == "GOOGLE"){
+        } else if (social_login_type == "GOOGLE") {
 
             //구글 연결해제 과정
 
@@ -865,29 +907,25 @@ class MyPageFragment:Fragment() {
             //구글 로그인 후, 현재 로그인한 계정과 일치하면 탈퇴처리를 진행한다.
             //구글 탈퇴는 firebaseAuthWithGoogle를 확인할 것
             googleLogin()
-            Toast.makeText(context, "현재 계정과 동일한 구글 계정을 선택해주세요. 로그인한 계정과 동일할 경우 탈퇴처리가 완료됩니다.", Toast.LENGTH_LONG).show()
-
-
+            Toast.makeText(
+                context,
+                "현재 계정과 동일한 구글 계정을 선택해주세요. 로그인한 계정과 동일할 경우 탈퇴처리가 완료됩니다.",
+                Toast.LENGTH_LONG
+            ).show()
 
 
         }
 
 
-
-
-        val pref = activity?.getSharedPreferences("pref_user_data",0)
+        val pref = activity?.getSharedPreferences("pref_user_data", 0)
         val edit = pref?.edit()
         if (edit != null) {
-            edit.putBoolean("login_check",false)
+            edit.putBoolean("login_check", false)
             edit.apply()//저장완료
         }
 
 
-
-
     }
-
-
 
 
     //네이버 소셜로그인 - 연동해제 및 탈퇴처리.
@@ -920,7 +958,7 @@ class MyPageFragment:Fragment() {
                 val id = jObject.getString("id")
 
                 //현재 접속중인 계정과 탈퇴를 위해 로그인한 네이버계정이 동일한지 확인
-                if(table_user_id == id){
+                if (table_user_id == id) {
 
 
                     //계정이 일치하면, DB탈퇴관련 레트로핏을 실행시킨다.
@@ -932,20 +970,24 @@ class MyPageFragment:Fragment() {
                             Log.d(MyPageFragment.TAG, "데이터로드 : ${response.raw()}")
                             Log.d(MyPageFragment.TAG, "데이터로드 : ${response.body().toString()}")
 
-                            if(response.body() != null) {
+                            if (response.body() != null) {
                                 val Item: userAccountDeleteData = response.body()!!
 
 
-                                if(Item.success == true){
+                                if (Item.success == true) {
                                     //DB에서 탈퇴관련 데이터 정리 완료
                                     Log.d(MyPageFragment.TAG, "DB탈퇴처리완료")
 
                                     OAuthLogin.getInstance().logoutAndDeleteToken(context)
-                                    Log.d("TAG", OAuthLogin.getInstance().getState(context).toString())
+                                    Log.d(
+                                        "TAG",
+                                        OAuthLogin.getInstance().getState(context).toString()
+                                    )
                                     OAuthLogin.getInstance().getState(context)
 
 
-                                    Toast.makeText(context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT)
+                                        .show()
 
                                     //연동해제 이후 로그인엑티비티로 이동
                                     val intent = Intent(context, MainActivity::class.java)
@@ -958,10 +1000,14 @@ class MyPageFragment:Fragment() {
                                     requireActivity().finish()
 
 
-                                }else{
+                                } else {
                                     //DB에서 탈퇴관련 데이터 정리 실패
                                     Log.d(MyPageFragment.TAG, "DB탈퇴처리실패")
-                                    Toast.makeText(context, "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "탈퇴에 실패했습니다. 관리자에게 연락부탁드립니다.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
 
 
@@ -976,9 +1022,7 @@ class MyPageFragment:Fragment() {
                     })
 
 
-
-
-                }else{
+                } else {
                     Toast.makeText(context, "현재 접속 중인 계정과 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
 
                     OAuthLogin.getInstance().logoutAndDeleteToken(context)
@@ -987,14 +1031,9 @@ class MyPageFragment:Fragment() {
                 }
 
 
-
-
-
-
-
-
             } else {
-                Toast.makeText(requireContext(), "아이디 또는 비밀번호를 다시 확인해주세요.", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "아이디 또는 비밀번호를 다시 확인해주세요.", Toast.LENGTH_LONG)
+                    .show()
                 Log.d(TAG, "네이버회원탈퇴실패")
             }
         }
@@ -1038,7 +1077,7 @@ class MyPageFragment:Fragment() {
 //    }
 
 
-    fun userProfileLoading(user_tb_id:Int){
+    fun userProfileLoading(user_tb_id: Int) {
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
@@ -1057,20 +1096,19 @@ class MyPageFragment:Fragment() {
                 Log.d(ReviewFragment.TAG, "프로필 정보 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "프로필 정보 : ${response.body().toString()}")
 
-                var items : UserProfileData? =  response.body()
+                var items: UserProfileData? = response.body()
 
 
                 social_login_type = items!!.social_login_type
-                table_user_id =  items!!.user_id
+                table_user_id = items!!.user_id
                 Log.d("소셜로그인 타입은?", social_login_type)
 
 
-                if(items!!.introduction == null||items!!.introduction.length<1){
+                if (items!!.introduction == null || items!!.introduction.length < 1) {
                     userProfileIntroductionTv.text = "자기소개가 없습니다."
-                }else{
+                } else {
                     userProfileIntroductionTv.text = items!!.introduction
                 }
-
 
 
                 //랭킹관련
@@ -1080,7 +1118,7 @@ class MyPageFragment:Fragment() {
 
 
                 Glide.with(requireContext())
-                    .load(getString(R.string.http_request_base_url)+items!!.tier_image)
+                    .load(getString(R.string.http_request_base_url) + items!!.tier_image)
                     .into(tierBadgeImageIv)
 
                 rankTv.text = "(${items.rank}위)"
@@ -1095,5 +1133,55 @@ class MyPageFragment:Fragment() {
         })
     }
 
+    fun loadRoomList() {
+        mSocket = IO.socket(requireContext().getString(R.string.chat_socket_url))
+        mSocket.connect()
+        val retrofit = Retrofit.Builder()
+            .baseUrl(requireContext().getString(R.string.http_request_base_url))
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(createOkHttpClient())
+            .build()
+
+        retrofit.create(RoomAPI::class.java).accountRoom(MainActivity.user_table_id.toString())
+            .enqueue(object : Callback<ArrayList<String>> {
+                override fun onResponse(
+                    call: Call<ArrayList<String>>,
+                    response: Response<ArrayList<String>>
+                ) {
+                    if (response.body() != null) {
+                        for (room in response.body()!!) {
+                            mSocket.emit(
+                                "listIn",
+                                gson.toJson(
+                                    RoomData(
+                                        MainActivity.loginUserNickname,
+                                        room,
+                                        MainActivity.user_table_id
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<ArrayList<String>>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    fun accountSocket() {
+
+
+    }
+
+    private fun createOkHttpClient(): OkHttpClient {
+        //Log.d ("TAG","OkhttpClient");
+        val builder = OkHttpClient.Builder()
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        builder.addInterceptor(interceptor)
+        return builder.build()
+    }
 
 }

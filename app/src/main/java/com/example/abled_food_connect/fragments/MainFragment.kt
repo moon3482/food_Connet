@@ -146,6 +146,7 @@ class MainFragment : Fragment() {
         super.onStop()
         Log.d(TAG, "메인프래그먼트 onStop()")
 
+
     }
 
     override fun onDestroyView() {
@@ -164,7 +165,8 @@ class MainFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.room_search,menu)
+         inflater.inflate(R.menu.room_search,menu)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

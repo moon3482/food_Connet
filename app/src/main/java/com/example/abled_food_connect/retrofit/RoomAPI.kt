@@ -152,7 +152,8 @@ interface RoomAPI {
     @POST("/groupChat/changeHost.php")
     fun changeHost(
         @Field("roomId") roomId: String,
-        @Field("userNickName") userNickName: String
+        @Field("userNickName") userNickName: String,
+        @Field("userIndex")userIndex:Int
     ): Call<String>
 
     //채팅프레그먼트에서 그룹채팅목록 불러오기
@@ -233,5 +234,11 @@ interface RoomAPI {
     fun outRoomCheck(
         @Field("roomId") roomId: String
     ): Call<LoadingRoom>
+
+    @FormUrlEncoded
+    @POST("accountRoom.php")
+    fun accountRoom(
+        @Field("userIndex") userIndex: String
+    ): Call<ArrayList<String>>
 }
 

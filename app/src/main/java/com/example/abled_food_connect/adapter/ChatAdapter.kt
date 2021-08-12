@@ -156,7 +156,7 @@ class ChatAdapter :
         Log.e("어레이",arrayList.size.toString())
         Log.e("어레이2",comArrayList.size.toString())
         for(num in arrayList.indices){
-            if (arrayList[num].readMember != comArrayList[num].readMember){
+            if (arrayList[num] != comArrayList[num]){
                 Log.e("어레이비교 다름","${comArrayList[num].readMember} , ${arrayList[num].readMember}")
                 arrayList[num] = comArrayList[num].copy()
                 notifyItemChanged(num)

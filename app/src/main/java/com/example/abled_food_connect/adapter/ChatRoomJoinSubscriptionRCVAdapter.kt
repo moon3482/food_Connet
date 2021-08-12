@@ -158,7 +158,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                                 "JOINMEMBER",
                                 roomId,
                                 chatRoomUserData.nickName, "SERVER",
-                                "SERVER", members
+                                "SERVER", members,0
                             )
                         )
                     )
@@ -171,7 +171,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                                 "JOINMEMBER",
                                 roomId,
                                 chatRoomUserData.nickName, "SERVER",
-                                "SERVER", members
+                                "SERVER", members,0
                             )
                         )
                     )
@@ -194,7 +194,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                     "TIMELINE",
                     roomId,
                     "SERVER", "SERVER",
-                    "SERVER", members
+                    "SERVER", members,0
                 )
             )
         )
