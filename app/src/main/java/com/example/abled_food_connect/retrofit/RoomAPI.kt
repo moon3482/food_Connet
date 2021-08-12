@@ -239,6 +239,6 @@ interface RoomAPI {
     @POST("accountRoom.php")
     fun accountRoom(
         @Field("userIndex") userIndex: String
-    ): Call<ArrayList<String>>
+    ): Call<ArrayList<AccountSocketData>>
 }
 
