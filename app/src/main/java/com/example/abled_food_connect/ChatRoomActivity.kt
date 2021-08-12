@@ -570,7 +570,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         null,
                         members,
                         MainActivity.user_table_id
-                    )
+                    ,hostName)
                 )
             )
 //        chatList.add(
@@ -1066,7 +1066,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     chatroomRoomId,
                     "SERVER", "SERVER",
                     "SERVER", members, 0
-                )
+                    ,hostName)
             )
         )
     }
@@ -1667,7 +1667,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                         chatroomRoomId,
                                         MainActivity.loginUserNickname, "SERVER",
                                         strDate, members, 0
-                                    )
+                                        ,hostName)
                                 )
                             )
                             val intent =
@@ -1956,7 +1956,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                                 thumbnailImage,
                                                 null,
                                                 members, MainActivity.user_table_id
-                                            )
+                                                ,hostName)
                                         )
                                     )
                                 } else {
@@ -1970,7 +1970,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                                 thumbnailImage,
                                                 null,
                                                 members, MainActivity.user_table_id
-                                            )
+                                                ,hostName)
                                         )
                                     )
                                 }
