@@ -79,8 +79,10 @@ class MainFragmentActivity : AppCompatActivity() {
 
             binding.bottomNav.selectedItemId = R.id.menu_chat
             val roomid = intent.getStringExtra("FCMRoomId")
+            val hostName = intent.getStringExtra("hostName")
             val intent = Intent(this, ChatRoomActivity::class.java)
             intent.putExtra("roomId", roomid)
+            intent.putExtra("hostName",hostName)
             startActivity(intent)
 
         }else if(intent.hasExtra("review")){
