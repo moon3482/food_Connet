@@ -2,6 +2,7 @@ package com.example.abled_food_connect
 
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -53,7 +54,7 @@ class UserProfileActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.userProfileToolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
-        binding.userProfileToolbar.title = "프로필"
+
         //툴바에 백버튼 만들기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -241,10 +242,17 @@ class UserProfileActivity : AppCompatActivity() {
                         .into(binding.tierBadgeImageIv)
 
 
-                    if(items.no_show_count >0){
-
+                    binding.userProfileNicNameTv.text = items!!.nick_name
+                    if(items.no_show_count >=3){
+                        binding.noShowTv.visibility = View.VISIBLE
+                        binding.noShowTv.text="노쇼:${items.no_show_count}회"
+                        binding.noShowTv.background = resources.getDrawable(R.drawable.social_login_google_button)
+                        binding.noShowTv.setTextColor(Color.WHITE)
+                    }else if(items.no_show_count == 2){
+                        binding.noShowTv.visibility = View.VISIBLE
+                        binding.noShowTv.text="노쇼:${items.no_show_count}회"
                     }else{
-
+                        binding.noShowTv.visibility = View.GONE
                     }
 
                 }

@@ -55,18 +55,39 @@
             android:layout_gravity="center">
 
 
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/userProfileNicNameTv"
-                android:text="닉네임"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="20dp">
 
-                android:textSize="24dp"
-                android:textStyle="bold" />
+                <TextView
+                    android:gravity="center"
+                    android:id="@+id/userProfileNicNameTv"
+                    android:text="닉네임"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="24dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_toRightOf="@+id/userProfileNicNameTv"
+                    android:id="@+id/noShowTv"
+                    android:text="노쇼:2회"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:background="@drawable/social_login_kakao_button"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
 
             <LinearLayout
                 android:gravity="center"
