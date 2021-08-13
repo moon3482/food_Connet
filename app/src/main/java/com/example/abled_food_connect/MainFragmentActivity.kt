@@ -134,7 +134,7 @@ class MainFragmentActivity : AppCompatActivity() {
                 startActivity(nextIntent)
 
             })
-        token()
+
 
 
     }
@@ -168,7 +168,7 @@ class MainFragmentActivity : AppCompatActivity() {
                 .show()
 
         }
-
+        token()
     }
 
 

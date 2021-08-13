@@ -58,6 +58,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 !it["finished"].isNullOrEmpty()->{
                     finishDoneSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
                 }
+                !it["cancel"].isNullOrEmpty() ->{
+                    messageCancelSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
+                }
                 else->{
                     messageSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
                 }
@@ -134,6 +137,59 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtra("FCMRoomId",roomId)
         intent.putExtra("hostName",hostName)
+
+        Log.d("호스트네임", "messageSendNotification: "+hostName)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+        val channelId = "message"
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_noti_icon)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(false)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setColor(getColor(R.color.txt_white_gray))
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+            .setChannelId(channelId)
+            .setGroupSummary(true)
+            .build()
+
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channelName = "message"
+            val channel =
+                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            channel.vibrationPattern = longArrayOf(0, 1500)
+
+
+
+
+            notificationManager.createNotificationChannel(channel)
+
+
+        }
+
+        notificationManager.notify(
+            0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+            notificationBuilder
+        )
+    }
+    private fun messageCancelSendNotification(title: String, messageBody: String,roomId:String,hostName:String) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
 
         Log.d("호스트네임", "messageSendNotification: "+hostName)
 
