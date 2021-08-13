@@ -706,6 +706,9 @@ class MyPageFragment : Fragment() {
                                                                 Log.i(TAG, "로그아웃 성공. SDK에서 토큰 삭제됨")
                                                             }
                                                         }
+                                                        GlobalScope.launch {
+                                                            loadRoomList()
+                                                        }
 
 
                                                         //연동해제 이후 로그인엑티비티로 이동
@@ -814,7 +817,9 @@ class MyPageFragment : Fragment() {
                                             HttpMethod.DELETE,
                                             GraphRequest.Callback() { response -> })
                                         request.executeAsync()
-
+                                        GlobalScope.launch {
+                                            loadRoomList()
+                                        }
 
                                         //연동해제 이후 로그인엑티비티로 이동
                                         val intent = Intent(context, MainActivity::class.java)
@@ -990,7 +995,9 @@ class MyPageFragment : Fragment() {
                                         OAuthLogin.getInstance().getState(context).toString()
                                     )
                                     OAuthLogin.getInstance().getState(context)
-
+                                    GlobalScope.launch {
+                                        loadRoomList()
+                                    }
 
                                     Toast.makeText(context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT)
                                         .show()
