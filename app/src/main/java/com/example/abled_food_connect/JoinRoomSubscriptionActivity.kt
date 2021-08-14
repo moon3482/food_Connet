@@ -27,14 +27,17 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
     lateinit var roomId: String
     lateinit var socket: Socket
     lateinit var gson:Gson
+    lateinit var userList:ArrayList<ChatRoomUserData>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
         roomId = intent.getStringExtra("roomId").toString()
         gson = Gson()
-
-
+        userList = ArrayList<ChatRoomUserData>()
+binding.joinRoomSubscriptionToolbar.title = "신청함"
 
     }
 
@@ -66,7 +69,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
                 ) {
                     val list: ChatRoomSubscriptionResult? = response.body()
                     if (list!!.success) {
-                        val userList = ArrayList<ChatRoomUserData>()
+
                         for(item in list.userList){
                             if(item.status == 0||item.status ==1 ){
                                 userList.add(item)
@@ -81,12 +84,22 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
                                 userList,socket,roomId,this@JoinRoomSubscriptionActivity
                             )
 
-                        if(userList.size>0){
-                           binding.joinRoomSubscriptionRCV.visibility = View.VISIBLE
-                            binding.tvNonSubscription.visibility = View.GONE
+
+
+                        if(userList.size == 0){
+                           binding.joinRoomSubscriptionRCV.visibility = View.GONE
+                            binding.tvNonSubscription.visibility = View.VISIBLE
                         }else{
-                            binding.joinRoomSubscriptionRCV.visibility =View.GONE
-                            binding.tvNonSubscription.visibility=View.VISIBLE
+                            binding.joinRoomSubscriptionRCV.visibility =View.VISIBLE
+                            binding.tvNonSubscription.visibility=View.GONE
+                        }
+                    }else{
+                        if(userList.size == 0){
+                            binding.joinRoomSubscriptionRCV.visibility = View.GONE
+                            binding.tvNonSubscription.visibility = View.VISIBLE
+                        }else{
+                            binding.joinRoomSubscriptionRCV.visibility =View.VISIBLE
+                            binding.tvNonSubscription.visibility=View.GONE
                         }
                     }
                 }

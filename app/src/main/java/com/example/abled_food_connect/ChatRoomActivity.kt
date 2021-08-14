@@ -3,6 +3,7 @@ package com.example.abled_food_connect
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
@@ -99,6 +100,12 @@ class ChatRoomActivity : AppCompatActivity() {
     companion object {
         lateinit var socket: Socket
         var hostName = ""
+
+            lateinit var instance: ChatRoomActivity
+            fun chatRoomActivityContext() : Context {
+                return instance.applicationContext
+            }
+
     }
 
     val cropImage = registerForActivityResult(CropImageContract()) { result ->
@@ -1301,7 +1308,7 @@ class ChatRoomActivity : AppCompatActivity() {
             })
     }
 
-    private fun hostSubscriptionCheck() {
+ fun hostSubscriptionCheck() {
         val retrofit =
             Retrofit.Builder()
                 .baseUrl(getString(R.string.http_request_base_url))

@@ -29,6 +29,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message data payload: " + remoteMessage.data);
         }
 
+
+
+
+
+
+
         if (remoteMessage.notification != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.notification!!.body);
         }
@@ -62,7 +68,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     messageCancelSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
                 }
                 else->{
+
                     messageSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
+                    val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+
+                    when(manager.appTasks[0].taskInfo.topActivity?.let { it.className }){
+                        "com.example.abled_food_connect.RoomInformationActivity"->{
+//                            (applicationContext as RoomInformationActivity).joinSubscription(it["roomId"].toString(),M)
+                        }
+                    }
+
                 }
             }
         }

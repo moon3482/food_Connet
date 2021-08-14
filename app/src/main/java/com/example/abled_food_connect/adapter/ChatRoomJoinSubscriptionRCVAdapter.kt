@@ -70,11 +70,19 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                 )
                 timelimeCheck(chatRoomUserData)
                 arrayList.removeAt(position)
+                if(arrayList.size ==0){
+                    activity.binding.tvNonSubscription.visibility = View.VISIBLE
+                    activity.binding.joinRoomSubscriptionRCV.visibility = View.GONE
+                }
                 notifyDataSetChanged()
             }
             holder.CancleButton.setOnClickListener {
                 updateSubscriptionStatus(chatRoomUserData.subscriptionId.toString(), "3")
                 arrayList.removeAt(position)
+                if(arrayList.size ==0){
+                    activity.binding.tvNonSubscription.visibility = View.VISIBLE
+                    activity.binding.joinRoomSubscriptionRCV.visibility = View.GONE
+                }
                 notifyDataSetChanged()
 
             }

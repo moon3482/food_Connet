@@ -70,7 +70,7 @@
                     android:paddingTop="20dp"
                     android:paddingEnd="100dp"
                     android:paddingBottom="10dp"
-                    android:src="@drawable/naver_logo"
+                    android:src="@drawable/chat_others_message_background"
                     app:civ_border_color="@color/app_theme_color"
                     app:civ_border_width="5dp" />
 
