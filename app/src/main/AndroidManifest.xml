@@ -31,7 +31,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ActionAlarmActivity"></activity>
+        <receiver
+            android:name=".broadcastReciver.RoomInformationBroadcast"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="RoomInfo"/>
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".ActionAlarmActivity" />
         <activity
             android:name=".PermissionGrantedActivity"
             android:exported="true" />
@@ -55,10 +64,7 @@
         <activity android:name=".ReviewSearchActivity" />
         <activity android:name=".UserProfileModifyActivity" />
         <activity android:name=".JoinRoomSubscriptionActivity" />
-        <activity
-            android:name=".DirectMessageActivity"
-
-            />
+        <activity android:name=".DirectMessageActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".UserProfileClickedReviewVerticalListActivity" />
         <activity android:name=".UserProfileClickedReviewGridListActivity" />

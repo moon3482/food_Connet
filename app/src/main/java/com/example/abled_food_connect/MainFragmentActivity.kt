@@ -85,11 +85,10 @@ class MainFragmentActivity : AppCompatActivity() {
             intent.putExtra("hostName",hostName)
             startActivity(intent)
 
-        }else if(intent.hasExtra("review")){
+        }else if(intent.hasExtra("finishedGroup")){
             binding.bottomNav.selectedItemId = R.id.menu_mypage
-            val roomid = intent.getStringExtra("FCMRoomId")
             val intent = Intent(this, UnwrittenReviewListActivity::class.java)
-            intent.putExtra("roomId", roomid)
+
             startActivity(intent)
         }
         else if(intent.getBooleanExtra("isDM",false) == true){
@@ -147,8 +146,8 @@ class MainFragmentActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (intent.hasExtra("review")) {
-            intent.removeExtra("review")
+        if (intent.hasExtra("finishedGroup")) {
+            intent.removeExtra("finishedGroup")
         }
     }
 

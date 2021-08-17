@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,6 +15,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
+import com.example.abled_food_connect.broadcastReciver.RoomInformationBroadcast
 import com.example.abled_food_connect.data.SubscriptionData
 import com.example.abled_food_connect.databinding.ActivityRoomInformationBinding
 import com.example.abled_food_connect.retrofit.MapSearch
@@ -56,7 +58,10 @@ class RoomInformationActivity : AppCompatActivity() {
     var mapX: Double = 0.0
     var mapY: Double = 0.0
     val TAG = "RoomInfoActivity"
-
+    val broadcast = RoomInformationBroadcast()
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+    }
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +77,11 @@ class RoomInformationActivity : AppCompatActivity() {
         if (intent.hasExtra("roomId")) {
             roomId = intent.getStringExtra("roomId")!!
         }
+
+
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("RoomInfo")
+        registerReceiver(broadcast,intentFilter)
 
         loadRoomInfo()
 
@@ -111,6 +121,7 @@ class RoomInformationActivity : AppCompatActivity() {
         } else {
             finish()
         }
+        unregisterReceiver(broadcast)
     }
 
     fun getMapImage(x: Double?, y: Double?, placeName: String?, address: String) {
@@ -196,7 +207,7 @@ class RoomInformationActivity : AppCompatActivity() {
 
     fun loadRoomInfo() {
         val retrofit = Retrofit.Builder()
-            .baseUrl(applicationContext.getString(R.string.http_request_base_url))
+            .baseUrl("http://52.78.107.230/")
             .addConverterFactory(ScalarsConverterFactory.create())
             .client(createOkHttpClient())
             .build()
@@ -288,6 +299,13 @@ class RoomInformationActivity : AppCompatActivity() {
                                 }
                             }
 
+                        }
+                        if (join == "0") {
+                            binding.RoomInfoSubscriptionRoomBtn.visibility = View.VISIBLE
+                            binding.RoomInfoJoinRoomBtn.visibility = View.GONE
+                        } else {
+                            binding.RoomInfoSubscriptionRoomBtn.visibility = View.GONE
+                            binding.RoomInfoJoinRoomBtn.visibility = View.VISIBLE
                         }
 
                         if (roomStatus > 5) {
@@ -427,5 +445,7 @@ class RoomInformationActivity : AppCompatActivity() {
         context.startActivity(mainIntent)
         Runtime.getRuntime().exit(0)
     }
+
+
 
 }
