@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
@@ -62,6 +63,7 @@ class RoomInformationActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
     }
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,11 +79,13 @@ class RoomInformationActivity : AppCompatActivity() {
         if (intent.hasExtra("roomId")) {
             roomId = intent.getStringExtra("roomId")!!
         }
-
+        setSupportActionBar(binding.RoomInformationToolbar)
+        val tb = supportActionBar!!
+        tb.setDisplayHomeAsUpEnabled(true)
 
         val intentFilter = IntentFilter()
         intentFilter.addAction("RoomInfo")
-        registerReceiver(broadcast,intentFilter)
+        registerReceiver(broadcast, intentFilter)
 
         loadRoomInfo()
 
@@ -122,6 +126,17 @@ class RoomInformationActivity : AppCompatActivity() {
             finish()
         }
         unregisterReceiver(broadcast)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home ->{
+                onBackPressed()
+            }
+            else->{}
+        }
+
+        return super.onOptionsItemSelected(item)
+
     }
 
     fun getMapImage(x: Double?, y: Double?, placeName: String?, address: String) {
@@ -445,7 +460,6 @@ class RoomInformationActivity : AppCompatActivity() {
         context.startActivity(mainIntent)
         Runtime.getRuntime().exit(0)
     }
-
 
 
 }

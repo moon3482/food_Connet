@@ -3,6 +3,7 @@ package com.example.abled_food_connect
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
@@ -40,6 +41,7 @@ class RoomSearchActivity : AppCompatActivity() {
         setSupportActionBar(binding.RoomSearchToolbar)
         val tb = supportActionBar!!
         tb.title = "방 검색"
+        tb.setDisplayHomeAsUpEnabled(true)
 
         binding.RoomSearchRCV.layoutManager = LinearLayoutManager(this)
 
@@ -111,6 +113,16 @@ class RoomSearchActivity : AppCompatActivity() {
         super.onResume()
         binding.RoomSearchEditText.onActionViewExpanded()
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home ->{
+                onBackPressed()
+            }
+            else->{}
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun roomSearch(type: String, content: String) {

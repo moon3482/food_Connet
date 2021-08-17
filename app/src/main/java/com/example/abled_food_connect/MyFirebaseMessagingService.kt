@@ -123,6 +123,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                             }
 //                            (applicationContext as RoomInformationActivity).joinSubscription(it["roomId"].toString(),M)
                         }
+                        "com.example.abled_food_connect.JoinRoomSubscriptionActivity"->{
+                            if (!noti["subscription"].isNullOrEmpty()){
+                                val intent = Intent()
+                                intent.action = "subscription"
+                                intent.putExtra("roomId",noti["roomId"])
+                                sendBroadcast(intent)
+                            }
+                        }
                     }
 
                 }

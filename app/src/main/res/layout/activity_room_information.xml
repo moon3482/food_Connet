@@ -7,6 +7,15 @@
     android:orientation="vertical"
     tools:context=".RoomInformationActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/RoomInformationToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:title="방정보"
+        android:theme="?attr/actionBarTheme" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -132,6 +132,7 @@ class ChatRoomActivity : AppCompatActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         val tb = supportActionBar!!
         tb.title = "그룹 채팅방"
+        tb.setDisplayHomeAsUpEnabled(true)
         binding.chatDrawerLinear.setOnTouchListener { _, _ -> true }
         chatroomRoomId = intent.getStringExtra("roomId").toString()
         chatroomHostName = intent.getStringExtra("hostName").toString()
@@ -244,6 +245,10 @@ class ChatRoomActivity : AppCompatActivity() {
                 binding.chatDrawerLayout.openDrawer(Gravity.RIGHT)
                 true
 
+            }
+            android.R.id.home->{
+                onBackPressed()
+                true
             }
             else -> {
                 super.onOptionsItemSelected(item)

@@ -1,10 +1,12 @@
 package com.example.abled_food_connect
 
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.abled_food_connect.adapter.ChatRoomJoinSubscriptionRCVAdapter
+import com.example.abled_food_connect.broadcastReciver.SubscriptionBroadcast
 import com.example.abled_food_connect.data.ChatRoomSubscriptionResult
 import com.example.abled_food_connect.data.ChatRoomUserData
 import com.example.abled_food_connect.data.RoomData
@@ -26,9 +28,9 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
     val binding by lazy { ActivityJoinRoomSubscriptionBinding.inflate(layoutInflater) }
     lateinit var roomId: String
     lateinit var socket: Socket
-    lateinit var gson:Gson
-    lateinit var userList:ArrayList<ChatRoomUserData>
-
+    lateinit var gson: Gson
+    lateinit var userList: ArrayList<ChatRoomUserData>
+    val broadcast = SubscriptionBroadcast()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +39,10 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
         roomId = intent.getStringExtra("roomId").toString()
         gson = Gson()
         userList = ArrayList<ChatRoomUserData>()
-binding.joinRoomSubscriptionToolbar.title = "신청함"
+        binding.joinRoomSubscriptionToolbar.title = "신청함"
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("subscription")
+        registerReceiver(broadcast, intentFilter)
 
     }
 
@@ -49,11 +54,20 @@ binding.joinRoomSubscriptionToolbar.title = "신청함"
 
     override fun onStop() {
         super.onStop()
-        socket.emit("left", gson.toJson(RoomData(MainActivity.loginUserNickname, roomId,MainActivity.user_table_id)))
+        socket.emit(
+            "left",
+            gson.toJson(
+                RoomData(
+                    MainActivity.loginUserNickname,
+                    roomId,
+                    MainActivity.user_table_id
+                )
+            )
+        )
         socket.disconnect()
     }
 
-    private fun hostSubscriptionCheck(roomId: String) {
+    fun hostSubscriptionCheck(roomId: String) {
         val retrofit =
             Retrofit.Builder()
                 .baseUrl(getString(R.string.http_request_base_url))
@@ -70,8 +84,8 @@ binding.joinRoomSubscriptionToolbar.title = "신청함"
                     val list: ChatRoomSubscriptionResult? = response.body()
                     if (list!!.success) {
 
-                        for(item in list.userList){
-                            if(item.status == 0||item.status ==1 ){
+                        for (item in list.userList) {
+                            if (item.status == 0 || item.status == 1) {
                                 userList.add(item)
                             }
                         }
@@ -81,25 +95,25 @@ binding.joinRoomSubscriptionToolbar.title = "신청함"
                         binding.joinRoomSubscriptionRCV.adapter =
                             ChatRoomJoinSubscriptionRCVAdapter(
                                 this@JoinRoomSubscriptionActivity,
-                                userList,socket,roomId,this@JoinRoomSubscriptionActivity
+                                userList, socket, roomId, this@JoinRoomSubscriptionActivity
                             )
 
 
 
-                        if(userList.size == 0){
-                           binding.joinRoomSubscriptionRCV.visibility = View.GONE
-                            binding.tvNonSubscription.visibility = View.VISIBLE
-                        }else{
-                            binding.joinRoomSubscriptionRCV.visibility =View.VISIBLE
-                            binding.tvNonSubscription.visibility=View.GONE
-                        }
-                    }else{
-                        if(userList.size == 0){
+                        if (userList.size == 0) {
                             binding.joinRoomSubscriptionRCV.visibility = View.GONE
                             binding.tvNonSubscription.visibility = View.VISIBLE
-                        }else{
-                            binding.joinRoomSubscriptionRCV.visibility =View.VISIBLE
-                            binding.tvNonSubscription.visibility=View.GONE
+                        } else {
+                            binding.joinRoomSubscriptionRCV.visibility = View.VISIBLE
+                            binding.tvNonSubscription.visibility = View.GONE
+                        }
+                    } else {
+                        if (userList.size == 0) {
+                            binding.joinRoomSubscriptionRCV.visibility = View.GONE
+                            binding.tvNonSubscription.visibility = View.VISIBLE
+                        } else {
+                            binding.joinRoomSubscriptionRCV.visibility = View.VISIBLE
+                            binding.tvNonSubscription.visibility = View.GONE
                         }
                     }
                 }
@@ -118,7 +132,13 @@ binding.joinRoomSubscriptionToolbar.title = "신청함"
             Emitter.Listener {
                 socket.emit(
                     "enter",
-                    gson.toJson(RoomData(MainActivity.loginUserNickname, roomId,MainActivity.user_table_id))
+                    gson.toJson(
+                        RoomData(
+                            MainActivity.loginUserNickname,
+                            roomId,
+                            MainActivity.user_table_id
+                        )
+                    )
                 )
             })
 
