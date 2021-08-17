@@ -92,6 +92,7 @@ class MainFragmentActivity : AppCompatActivity() {
             intent.putExtra("roomId", roomid)
             startActivity(intent)
         }
+
         else if(intent.getBooleanExtra("isDM",false) == true){
             customGetIntent()
         }
