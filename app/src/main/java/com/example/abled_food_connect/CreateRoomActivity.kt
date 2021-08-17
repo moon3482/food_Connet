@@ -16,6 +16,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -89,6 +90,7 @@ class CreateRoomActivity : AppCompatActivity() {
         val minimum = binding.minimumAgeTextView
         placeName = String()
         context = this
+
         /*드롭다운 어댑터 설정*/
         maximum.setAdapter(setAdapter(age()))
         minimum.setAdapter(setAdapter(age()))
@@ -505,9 +507,9 @@ class CreateRoomActivity : AppCompatActivity() {
                         intent.putExtra("date", room.roomId.date)
                         intent.putExtra("shopName", room.roomId.shopName)
                         intent.putExtra("roomStatus", room.roomId.roomStatus)
-                        intent.putExtra("nowNumOfPeople",  room.roomId.nowNumOfPeople)
-                        intent.putExtra("hostIndex",room.roomId.hostIndex)
-                        Log.e("nowNumOfPeople",room.roomId.nowNumOfPeople)
+                        intent.putExtra("nowNumOfPeople", room.roomId.nowNumOfPeople)
+                        intent.putExtra("hostIndex", room.roomId.hostIndex)
+                        Log.e("nowNumOfPeople", room.roomId.nowNumOfPeople)
                         intent.putExtra("numOfPeople", room.roomId.numOfPeople)
                         intent.putExtra("keyWords", room.roomId.keyWords)
                         intent.putExtra("mapX", room.roomId.mapX)
@@ -629,8 +631,12 @@ class CreateRoomActivity : AppCompatActivity() {
                 createRoom()
             }
         }
+        setSupportActionBar(binding.CreateRoomActivityToolbar)
         /*툴바 타이틀 세팅*/
-        binding.CreateRoomActivityToolbar.title = "방만들기"
+        val tb = supportActionBar!!
+        tb.title = "방만들기"
+        tb.setDisplayHomeAsUpEnabled(true)
+
 
         /*성별 선택 남자 온클릭 리스너*/
         binding.CreateRoomActivityMaleImageView.setOnClickListener {
@@ -713,12 +719,23 @@ class CreateRoomActivity : AppCompatActivity() {
         }
 
         /*태그 온클릭 리스너*/
+        binding.tagLayout.isEnableCross = true
         binding.tagLayout.setOnTagClickListener(object : TagView.OnTagClickListener {
             override fun onTagClick(position: Int, text: String?) {
 
             }
 
             override fun onTagLongClick(position: Int, text: String?) {
+
+
+            }
+
+
+            override fun onSelectedTagDrag(position: Int, text: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onTagCrossClick(position: Int) {
                 /*태그 롱클릭시 제거*/
                 binding.tagLayout.removeTag(position)
                 /*태그 리스트에서 해당 포지션 제거*/
@@ -728,18 +745,9 @@ class CreateRoomActivity : AppCompatActivity() {
                 if (tagArray.size == 0) {
                     binding.emptyKeyWordTextView.visibility = View.VISIBLE
                 }
-
-
-            }
-
-            override fun onSelectedTagDrag(position: Int, text: String?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onTagCrossClick(position: Int) {
-                TODO("Not yet implemented")
             }
         })
+
         /*지도 이미지 버튼 클릭 리스너*/
         binding.CreateRoomMapSearchButton.setOnClickListener {
             val intent = Intent(this, CreateRoomMapSearchActivity::class.java)
@@ -788,6 +796,17 @@ class CreateRoomActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home ->{
+                onBackPressed()
+            }
+            else->{}
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 

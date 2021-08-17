@@ -74,6 +74,9 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
+        setSupportActionBar(binding.CreateRoomMapSearchToolbar)
+        val tb = supportActionBar!!
+        tb.title = "지도검색"
         gg = ArrayList()
         array = ArrayList()
         context = this

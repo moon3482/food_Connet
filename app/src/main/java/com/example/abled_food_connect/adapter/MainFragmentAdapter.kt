@@ -55,23 +55,26 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomStatus.text = maindata.title
         testholder.shopName.text = maindata.info
         testholder.roomStatus
-        if (maindata.roomStatus > 5) {
-            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
-            testholder.roomStatus.text = "모집중"
-        } else if (maindata.roomStatus > 0.9) {
-            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
-            val text: String = context.getString(R.string.room_status_imminent_time)
-            testholder.roomStatus.text =
-                String.format(text, Math.round(maindata.roomStatus).toInt())
-
-        } else if (maindata.roomStatus < 0.9 && maindata.roomStatus > 0.0) {
+        if (maindata.nowNumOfPeople == maindata.numOfPeople) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
-            testholder.roomStatus.text = "임박"
+            testholder.roomStatus.text = "FULL"
+        } else if (maindata.roomStatus > 5) {
+                testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
+                testholder.roomStatus.text = "모집중"
+            } else if (maindata.roomStatus > 0.9) {
+                testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+                val text: String = context.getString(R.string.room_status_imminent_time)
+                testholder.roomStatus.text =
+                    String.format(text, Math.round(maindata.roomStatus).toInt())
 
-        } else if (maindata.roomStatus < 0) {
-            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
-            testholder.roomStatus.text = "마감"
-        }
+            } else if (maindata.roomStatus < 0.9 && maindata.roomStatus > 0.0) {
+                testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
+                testholder.roomStatus.text = "임박"
+
+            } else if (maindata.roomStatus < 0) {
+                testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
+                testholder.roomStatus.text = "마감"
+            }
         if (maindata.gender.equals("male")) {
             testholder.gender.setImageResource(R.drawable.ic_male)
         } else if (maindata.gender == "female") {
@@ -145,10 +148,10 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                     response: Response<JoinRoomCheck>
                 ) {
                     val joinRoomCheck = response.body()
-                    if (joinRoomCheck!!.isRoom){
-                    if (joinRoomCheck!!.success) {
-                        val intent = Intent(context, RoomInformationActivity::class.java)
-                        intent.putExtra("roomId", mainData.roomId)
+                    if (joinRoomCheck!!.isRoom) {
+                        if (joinRoomCheck!!.success) {
+                            val intent = Intent(context, RoomInformationActivity::class.java)
+                            intent.putExtra("roomId", mainData.roomId)
 //                        intent.putExtra("title", mainData.title)
 //                        intent.putExtra("info", mainData.info)
 //                        intent.putExtra("hostName", mainData.hostName)
@@ -167,10 +170,10 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
 //                        intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
 //                        intent.putExtra("finish",mainData.finish)
 //                        intent.putExtra("join", "0")
-                        context.startActivity(intent)
-                    } else {
-                        val intent = Intent(context, RoomInformationActivity::class.java)
-                        intent.putExtra("roomId", mainData.roomId)
+                            context.startActivity(intent)
+                        } else {
+                            val intent = Intent(context, RoomInformationActivity::class.java)
+                            intent.putExtra("roomId", mainData.roomId)
 //                        intent.putExtra("title", mainData.title)
 //                        intent.putExtra("info", mainData.info)
 //                        intent.putExtra("hostName", mainData.hostName)
@@ -189,17 +192,19 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
 //                        intent.putExtra("imageUrl", joinRoomCheck.imageUrl)
 //                        intent.putExtra("finish",mainData.finish)
 //                        intent.putExtra("join", "1")
-                        context.startActivity(intent)
+                            context.startActivity(intent)
 
-                    }
-                }else{
-                    val dialog = AlertDialog.Builder(context)
+                        }
+                    } else {
+                        val dialog = AlertDialog.Builder(context)
                         dialog.setMessage("해당방을 찾을수 없습니다.")
-                            .setPositiveButton("확인"
+                            .setPositiveButton(
+                                "확인"
                             ) { dialog, which ->
                                 mMainFragment.load()
                             }.setCancelable(false).create().show()
-                    }}
+                    }
+                }
 
                 override fun onFailure(call: Call<JoinRoomCheck>, t: Throwable) {
 
@@ -248,12 +253,12 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                 filList = results?.values as ArrayList<MainFragmentItemData>
                 notifyDataSetChanged()
 
-                    if (filList.size == 0) {
-                        mMainFragment.swipeRefresh.visibility = View.GONE
-                        mMainFragment.refreshTextView.visibility = View.VISIBLE
-                    } else {
-                        mMainFragment.swipeRefresh.visibility = View.VISIBLE
-                        mMainFragment.refreshTextView.visibility = View.GONE
+                if (filList.size == 0) {
+                    mMainFragment.swipeRefresh.visibility = View.GONE
+                    mMainFragment.refreshTextView.visibility = View.VISIBLE
+                } else {
+                    mMainFragment.swipeRefresh.visibility = View.VISIBLE
+                    mMainFragment.refreshTextView.visibility = View.GONE
 
                 }
             }
