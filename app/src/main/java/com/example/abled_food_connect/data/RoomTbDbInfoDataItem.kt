@@ -38,7 +38,7 @@ data class RoomTbDbInfoDataItem(
     @SerializedName("name_host")
     val name_host : String,
     @SerializedName("room_status")
-    val room_status : Int,
+    val room_status : Double,
     @SerializedName("search_keyword")
     val search_keyword : String,
     @SerializedName("map_x")
