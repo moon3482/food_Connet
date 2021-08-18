@@ -389,6 +389,7 @@
 
 
         <LinearLayout
+            android:id="@+id/editTextLL"
             android:layout_gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -2,7 +2,7 @@ package com.example.abled_food_connect.retrofit
 
 
 import android.content.Context
-import com.example.abled_food_connect.NewActionAlarmCheckData
+import com.example.abled_food_connect.data.NewActionAlarmCheckData
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.*
 import com.google.gson.annotations.SerializedName
@@ -114,7 +114,7 @@ class API {
             @Part("rating_star_taste") rating_star_taste: Int,
             @Part("rating_star_service") rating_star_service: Int,
             @Part("rating_star_clean") rating_star_clean: Int,
-            @Part("rating_star_interior") rating_star_interior: Int): Call<String>
+            @Part("rating_star_interior") rating_star_interior: Int): Call<ReviewWritingData>
     }
 
 
@@ -425,7 +425,7 @@ class API {
             @Part("meeting_user_evaluation_Json") meeting_user_evaluation_Json: String,
             @Part("my_user_tb_id") my_user_tb_id: Int,
             @Part("my_user_nicname") my_user_nicname: String
-        ): Call<String>
+        ): Call<MeetingUserEvaluationWritingData>
 
     }
 
@@ -509,7 +509,7 @@ class API {
             @Part("what_click_review_tb_id") what_click_review_tb_id: Int,
             @Part("room_id") room_id: Int
 
-        ): Call<String>
+        ): Call<ReviewDeleteData>
     }
 
 
@@ -587,6 +587,17 @@ class API {
         fun new_action_alarm_check(
             @Part("user_tb_id") user_tb_id: Int,
         ): Call<NewActionAlarmCheckData>
+    }
+
+
+    interface RankingExplanationActivityEnterCheckInterface {
+
+        @Multipart
+        @POST("user_info/ranking_explanation_activity_enter_check.php")
+        fun ranking_explanation_activity_enter_check(
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+        ): Call<String>
+
     }
 
 

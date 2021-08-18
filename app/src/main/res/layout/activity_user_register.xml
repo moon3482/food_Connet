@@ -208,8 +208,8 @@
             android:orientation="horizontal"
             android:background="@drawable/rectangle_edge_bold"
             >
-
             <CheckBox
+                android:layout_marginLeft="10dp"
                 android:id="@+id/checkAllCheckBox"
                 android:layout_weight="20"
                 android:text="필수사항에 전체동의 합니다."

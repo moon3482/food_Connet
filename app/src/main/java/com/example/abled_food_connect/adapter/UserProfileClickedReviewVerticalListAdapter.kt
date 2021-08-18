@@ -17,10 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.*
-import com.example.abled_food_connect.data.ReviewDeleteCheckData
-import com.example.abled_food_connect.data.ReviewDetailViewRvData
-import com.example.abled_food_connect.data.ReviewDetailViewRvDataItem
-import com.example.abled_food_connect.data.ReviewLikeBtnClickData
+import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
 import me.relex.circleindicator.CircleIndicator3
@@ -463,19 +460,20 @@ class UserProfileClickedReviewVerticalListAdapter () : RecyclerView.Adapter<User
         val review_Like_Btn_Click = api.review_delete_btn_click(MainActivity.user_table_id,what_click_review_tb_id,room_id)
 
 
-        review_Like_Btn_Click.enqueue(object : Callback<String> {
+        review_Like_Btn_Click.enqueue(object : Callback<ReviewDeleteData> {
             override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
+                call: Call<ReviewDeleteData>,
+                response: Response<ReviewDeleteData>
             ) {
                 Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
 
                 if(response.body() != null) {
-                    val returnString: String = response.body()!!
+                    val items: ReviewDeleteData = response.body()!!
 
-                    if(returnString =="true"){
-                        Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    if(items.success ==true){
+                        //Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "리뷰가 삭제되었습니다.\n"+"랭킹포인트 ${items.minus_season_point}점이 감소하였습니다.\n"+"현재 시즌 랭킹포인트 : ${items.now_season_total_rangking_point}", Toast.LENGTH_LONG).show()
                         removeItem(position)
                     }else{
                         Log.d("false", "false")
@@ -487,7 +485,7 @@ class UserProfileClickedReviewVerticalListAdapter () : RecyclerView.Adapter<User
 
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<ReviewDeleteData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })

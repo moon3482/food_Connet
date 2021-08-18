@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
         var userThumbnailImage: String = ""
         var userGender:String = ""
         var userAge:Int = 0
+        var ranking_explanation_check : Int = 0
     }
 
 
@@ -714,6 +715,7 @@ class MainActivity : AppCompatActivity() {
                         val loginId = userlogin.userId
                         val loginNickname = userlogin.userNickname
                         val loginThumbnailImage = userlogin.userThumbnailImage
+
                         Toast.makeText(applicationContext, "로그인 되었습니다.", Toast.LENGTH_LONG)
                             .show();
                         Log.d("성공", "" + "유저가있습니다.")
@@ -725,6 +727,7 @@ class MainActivity : AppCompatActivity() {
                         userThumbnailImage = loginThumbnailImage
                         userAge = userlogin.userAge
                         userGender = userlogin.userGender
+                        ranking_explanation_check = userlogin.ranking_explanation_check
 
 
                         //쉐어드프리퍼런스에 값을 저장한다.
@@ -783,6 +786,9 @@ class MainActivity : AppCompatActivity() {
         edit.putString("userGender", userGender)
         edit.putInt("userAge",userAge)
         edit.putBoolean("login_check", true)
+        edit.putInt("ranking_explanation_check",ranking_explanation_check)
+
+
         edit.apply()//저장완료
 
 
@@ -797,6 +803,7 @@ class MainActivity : AppCompatActivity() {
         userAge = pref.getInt("userAge",0)
         userGender = pref.getString("userGender","")!!
         sharedLoginCheckBoolean = pref.getBoolean("login_check", false)!!
+        ranking_explanation_check = pref.getInt("ranking_explanation_check",0)
 
         //자동로그인 확인
         if (sharedLoginCheckBoolean == true) {

@@ -38,18 +38,62 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             when(true){
                 !it["islikeBtnClick"].isNullOrEmpty()->{
                     likeBtnClickSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!)
+
+
+
+                    //좋아요가 왔기 때문에 메인 프래그먼트 신규알림 표시되는 종 색깔 바꿔준다
+
+                    val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+
+                    when (manager.appTasks[0].taskInfo.topActivity?.let { it.className }) {
+                        "com.example.abled_food_connect.MainFragmentActivity" -> {
+                            Log.e(TAG, "onMessageReceived: 있음", )
+                            val intentFilter = Intent()
+                            intentFilter.action = "NewActionAlarm"
+                            sendBroadcast(intentFilter)
+                        }
+                    }
                 }
 
                 !it["isdm"].isNullOrEmpty()->{
                     DMSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["fromUserProfileImage"]!!,it["fromUserNickname"]!!,it["fromUserTbId"]!!)
+
                 }
 
                 !it["isParentComment"].isNullOrEmpty()->{
                     ParentCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!)
+
+
+                    //좋아요가 왔기 때문에 메인 프래그먼트 신규알림 표시되는 종 색깔 바꿔준다
+
+                    val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+
+                    when (manager.appTasks[0].taskInfo.topActivity?.let { it.className }) {
+                        "com.example.abled_food_connect.MainFragmentActivity" -> {
+                            Log.e(TAG, "onMessageReceived: 있음", )
+                            val intentFilter = Intent()
+                            intentFilter.action = "NewActionAlarm"
+                            sendBroadcast(intentFilter)
+                        }
+                    }
                 }
 
                 !it["isChildComment"].isNullOrEmpty()->{
                     ChildCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!,it["groupNum"]!!,it["comment_writing_user_id"]!!,it["comment_writing_user_nicname"]!!,it["reviewWritingUserId"]!!)
+
+
+                    //좋아요가 왔기 때문에 메인 프래그먼트 신규알림 표시되는 종 색깔 바꿔준다
+
+                    val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+
+                    when (manager.appTasks[0].taskInfo.topActivity?.let { it.className }) {
+                        "com.example.abled_food_connect.MainFragmentActivity" -> {
+                            Log.e(TAG, "onMessageReceived: 있음", )
+                            val intentFilter = Intent()
+                            intentFilter.action = "NewActionAlarm"
+                            sendBroadcast(intentFilter)
+                        }
+                    }
                 }
 
 

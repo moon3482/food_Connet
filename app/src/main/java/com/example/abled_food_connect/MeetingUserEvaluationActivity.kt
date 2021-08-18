@@ -71,7 +71,7 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
         meetingEndUserListRv = binding.meetingEndUserListRv
         meetingEndUserListRv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        meetingEndUserListRv.setHasFixedSize(true)
+        meetingEndUserListRv.setHasFixedSize(false)
 
 
         room_id = intent.getIntExtra("room_id", 0)
@@ -311,23 +311,29 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
         val meeting_user_evaluation_send = api.meeting_user_evaluation_writing(meeting_user_evaluation_Json,MainActivity.user_table_id,MainActivity.loginUserNickname)
 
 
-        meeting_user_evaluation_send.enqueue(object : Callback<String> {
+        meeting_user_evaluation_send.enqueue(object : Callback<MeetingUserEvaluationWritingData> {
 
             override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
+                call: Call<MeetingUserEvaluationWritingData>,
+                response: Response<MeetingUserEvaluationWritingData>
             ) {
                 Log.d(ReviewFragment.TAG, "리뷰 컨텐츠 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "가져온값 : ${response.body().toString()}")
 
 
-                Toast.makeText(applicationContext,
-                    "모임원 평가를 완료하였습니다.",
-                    Toast.LENGTH_SHORT).show()
+                val items: MeetingUserEvaluationWritingData = response.body()!!
 
-                onBackPressed()
-                finish()
-                //var items : MeetingEvaluationUserListRvData? =  response.body()
+                if(items.success == true){
+                    Toast.makeText(applicationContext, "모임원 평가를 완료했습니다.\n"+"랭킹포인트 ${items.get_season_point}점을 획득하셨습니다.\n"+"현재 시즌 랭킹포인트 : ${items.now_season_total_rangking_point}", Toast.LENGTH_LONG).show()
+//                Toast.makeText(applicationContext,
+//                    "모임원 평가를 완료하였습니다.",
+//                    Toast.LENGTH_SHORT).show()
+
+                    onBackPressed()
+                    finish()
+                    //var items : MeetingEvaluationUserListRvData? =  response.body()
+                }
+
 
 
 
@@ -335,7 +341,7 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
 
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<MeetingUserEvaluationWritingData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
 
             }

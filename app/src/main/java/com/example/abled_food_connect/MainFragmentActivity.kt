@@ -286,6 +286,7 @@ val s = mutableListOf<String>()
         MainActivity.userThumbnailImage = pref.getString("userThumbnailImage", "")!!
         MainActivity.userAge = pref.getInt("userAge",0)
         MainActivity.userGender = pref.getString("userGender","")!!
+        MainActivity.ranking_explanation_check = pref.getInt("ranking_explanation_check",0)
     }
 
 

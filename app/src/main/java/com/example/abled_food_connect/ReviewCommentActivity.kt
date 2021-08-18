@@ -138,7 +138,7 @@ class ReviewCommentActivity : AppCompatActivity() {
         //댓글버튼을 누른 것인지 아닌지 체크
         //댓글버튼을 누르고 들어왔다면, 엑티비티 입장시 댓글화면으로 이동함.
         clicked_review_btn = intent.getIntExtra("clicked_review_btn",0)
-        reviewContentLoading(review_id)
+
 
 
 
@@ -269,7 +269,9 @@ class ReviewCommentActivity : AppCompatActivity() {
 
         if(room_id != -1){
             //삭제된 글인지 확인
+            //삭제된 글이아니라면 컨텐츠를 불러옴.
             reviewDeleteCheck(review_id)
+
         }
     }
 
@@ -537,6 +539,10 @@ class ReviewCommentActivity : AppCompatActivity() {
                 if (items != null) {
                     if(items.review_deleted == 1){
 
+                        //틀이 되는 nestedScroll을 안보이게한다. 채팅바도 안보이게한다.
+                        binding.nestedScroll.visibility = View.GONE
+                        binding.editTextLL.visibility = View.GONE
+
                         var builder = AlertDialog.Builder(this@ReviewCommentActivity)
                         builder.setTitle("알림")
                         builder.setMessage("작성자가 삭제한 리뷰입니다.")
@@ -568,6 +574,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                     }else{
 
+                        reviewContentLoading(Companion.review_id)
 
                     }
 
@@ -933,19 +940,20 @@ class ReviewCommentActivity : AppCompatActivity() {
         val review_Like_Btn_Click = api.review_delete_btn_click(MainActivity.user_table_id,what_click_review_tb_id,room_id)
 
 
-        review_Like_Btn_Click.enqueue(object : Callback<String> {
+        review_Like_Btn_Click.enqueue(object : Callback<ReviewDeleteData> {
             override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
+                call: Call<ReviewDeleteData>,
+                response: Response<ReviewDeleteData>
             ) {
                 Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
 
                 if(response.body() != null) {
-                    val returnString: String = response.body()!!
+                    val items: ReviewDeleteData = response.body()!!
 
-                    if(returnString =="true"){
-                        Toast.makeText(applicationContext, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    if(items.success ==true){
+                        //Toast.makeText(applicationContext, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "리뷰가 삭제되었습니다.\n"+"랭킹포인트 ${items.minus_season_point}점이 감소하였습니다.\n"+"현재 시즌 랭킹포인트 : ${items.now_season_total_rangking_point}", Toast.LENGTH_LONG).show()
                         onBackPressed()
                     }else{
                         Log.d("false", "false")
@@ -957,7 +965,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<ReviewDeleteData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })
