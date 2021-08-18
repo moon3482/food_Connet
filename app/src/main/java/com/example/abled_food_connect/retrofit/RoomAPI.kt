@@ -240,5 +240,12 @@ interface RoomAPI {
     fun accountRoom(
         @Field("userIndex") userIndex: String
     ): Call<ArrayList<AccountSocketData>>
+
+    @FormUrlEncoded
+    @POST("loadRoomInfo.php")
+    fun loadRoomInfo(
+        @Field("roomId") roomId: String,
+        @Field("userIndex") userIndex:Int
+    ): Call<String>
 }
 

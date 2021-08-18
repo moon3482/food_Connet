@@ -44,29 +44,86 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     DMSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["fromUserProfileImage"]!!,it["fromUserNickname"]!!,it["fromUserTbId"]!!)
                 }
 
-                !it["isParentComment"].isNullOrEmpty()->{
-                    ParentCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!)
+                !it["isParentComment"].isNullOrEmpty() -> {
+                    ParentCommentSendNotification(it["title"]!!, it["body"]!!, it["review_id"]!!)
                 }
 
-                !it["isChildComment"].isNullOrEmpty()->{
-                    ChildCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!,it["groupNum"]!!,it["comment_writing_user_id"]!!,it["comment_writing_user_nicname"]!!,it["reviewWritingUserId"]!!)
+                !it["isChildComment"].isNullOrEmpty() -> {
+                    ChildCommentSendNotification(
+                        it["title"]!!,
+                        it["body"]!!,
+                        it["review_id"]!!,
+                        it["groupNum"]!!,
+                        it["comment_writing_user_id"]!!,
+                        it["comment_writing_user_nicname"]!!,
+                        it["reviewWritingUserId"]!!
+                    )
                 }
 
 
-                !it["finish"].isNullOrEmpty()->{
-                    finishRoomCheckSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
+                !it["finish"].isNullOrEmpty() -> {
+                    finishRoomCheckSendNotification(
+                        it["title"]!!,
+                        it["body"]!!,
+                        it["roomId"]!!,
+                        it["hostName"]!!
+                    )
                 }
-                !it["finishedGroup"].isNullOrEmpty() ->{
-                    finishGroupFCMSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
+                !it["finishedGroup"].isNullOrEmpty() -> {
+                    finishGroupFCMSendNotification(
+                        it["title"]!!,
+                        it["body"]!!,
+                        it["roomId"]!!,
+                        it["hostName"]!!
+                    )
                 }
-                !it["finished"].isNullOrEmpty()->{
-                    finishDoneSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
+                !it["finished"].isNullOrEmpty() -> {
+                    finishDoneSendNotification(
+                        it["title"]!!,
+                        it["body"]!!,
+                        it["roomId"]!!,
+                        it["hostName"]!!
+                    )
                 }
-                !it["cancel"].isNullOrEmpty() ->{
-                    messageCancelSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
+                !it["cancel"].isNullOrEmpty() -> {
+                    messageCancelSendNotification(
+                        it["title"]!!,
+                        it["body"]!!,
+                        it["roomId"]!!,
+                        it["hostName"]!!
+                    )
                 }
-                else->{
-                    messageSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["hostName"]!!)
+                else -> {
+                    val noti = it
+                    messageSendNotification(
+                        it["title"]!!,
+                        it["body"]!!,
+                        it["roomId"]!!,
+                        it["hostName"]!!
+                    )
+                    val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+
+                    when (manager.appTasks[0].taskInfo.topActivity?.let { it.className }) {
+                        "com.example.abled_food_connect.RoomInformationActivity" -> {
+                            if (!noti["join"].isNullOrEmpty()) {
+                                Log.e(TAG, "onMessageReceived: 있음", )
+                                val intentFilter = Intent()
+                                intentFilter.action = "RoomInfo"
+                                sendBroadcast(intentFilter)
+
+                            }
+//                            (applicationContext as RoomInformationActivity).joinSubscription(it["roomId"].toString(),M)
+                        }
+                        "com.example.abled_food_connect.JoinRoomSubscriptionActivity"->{
+                            if (!noti["subscription"].isNullOrEmpty()){
+                                val intent = Intent()
+                                intent.action = "subscription"
+                                intent.putExtra("roomId",noti["roomId"])
+                                sendBroadcast(intent)
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -136,13 +193,75 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             })
     }
 
-    private fun messageSendNotification(title: String, messageBody: String,roomId:String,hostName:String) {
+    private fun messageSendNotification(
+        title: String,
+        messageBody: String,
+        roomId: String,
+        hostName: String
+    ) {
         val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra("FCMRoomId",roomId)
-        intent.putExtra("hostName",hostName)
+        intent.putExtra("FCMRoomId", roomId)
+        intent.putExtra("hostName", hostName)
 
-        Log.d("호스트네임", "messageSendNotification: "+hostName)
+        Log.d("호스트네임", "messageSendNotification: " + hostName)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, roomId)
+            .setSmallIcon(R.drawable.ic_noti_icon)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(false)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setColor(getColor(R.color.txt_white_gray))
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+            .setChannelId(roomId)
+            .setGroupSummary(true)
+            .build()
+
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channel =
+                NotificationChannel(roomId, roomId, NotificationManager.IMPORTANCE_HIGH)
+            channel.vibrationPattern = longArrayOf(0, 1500)
+
+
+
+
+            notificationManager.createNotificationChannel(channel)
+
+
+        }
+
+        notificationManager.notify(
+            0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+            notificationBuilder
+        )
+    }
+
+    private fun messageCancelSendNotification(
+        title: String,
+        messageBody: String,
+        roomId: String,
+        hostName: String
+    ) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+
+        Log.d("호스트네임", "messageSendNotification: " + hostName)
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
@@ -190,65 +309,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             notificationBuilder
         )
     }
-    private fun messageCancelSendNotification(title: String, messageBody: String,roomId:String,hostName:String) {
+
+    private fun finishRoomCheckSendNotification(
+        title: String,
+        messageBody: String,
+        roomId: String,
+        hostName: String
+    ) {
         val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-
-
-        Log.d("호스트네임", "messageSendNotification: "+hostName)
-
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
-        )
-        val channelId = "message"
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_noti_icon)
-            .setWhen(System.currentTimeMillis())
-            .setShowWhen(false)
-            .setContentTitle(title)
-            .setContentText(messageBody)
-            .setAutoCancel(true)
-            .setColor(getColor(R.color.txt_white_gray))
-            .setPriority(Notification.PRIORITY_HIGH)
-            .setDefaults(Notification.DEFAULT_VIBRATE)
-            .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
-            .setChannelId(channelId)
-            .setGroupSummary(true)
-            .build()
-
-
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create channel to show notifications.
-            val channelName = "message"
-            val channel =
-                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
-            channel.vibrationPattern = longArrayOf(0, 1500)
-
-
-
-
-            notificationManager.createNotificationChannel(channel)
-
-
-        }
-
-        notificationManager.notify(
-            0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
-            notificationBuilder
-        )
-    }
-
-    private fun finishRoomCheckSendNotification(title: String, messageBody: String,roomId:String,hostName:String) {
-        val intent = Intent(this, MainFragmentActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra("FCMRoomId",roomId)
-        intent.putExtra("hostName",hostName)
+        intent.putExtra("FCMRoomId", roomId)
+        intent.putExtra("hostName", hostName)
 
 
         val pendingIntent = PendingIntent.getActivity(
@@ -256,7 +327,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             PendingIntent.FLAG_ONE_SHOT
         )
 
-        val icon = (ResourcesCompat.getDrawable(resources, R.drawable.ic_finish, null) as VectorDrawable).toBitmap()
+        val icon = (ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.ic_finish,
+            null
+        ) as VectorDrawable).toBitmap()
         val channelId = "finish"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
@@ -270,8 +345,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setPriority(Notification.PRIORITY_HIGH)
             .setDefaults(Notification.DEFAULT_VIBRATE)
             .setSound(defaultSoundUri)
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText(messageBody))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(messageBody)
+            )
             .setContentIntent(pendingIntent)
             .setChannelId(channelId)
             .build()
@@ -300,18 +377,28 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             notificationBuilder
         )
     }
-    private fun finishDoneSendNotification(title: String, messageBody: String,roomId:String,hostName:String) {
+
+    private fun finishDoneSendNotification(
+        title: String,
+        messageBody: String,
+        roomId: String,
+        hostName: String
+    ) {
         val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra("FCMRoomId",roomId)
-        intent.putExtra("hostName",hostName)
+        intent.putExtra("FCMRoomId", roomId)
+        intent.putExtra("hostName", hostName)
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
             PendingIntent.FLAG_ONE_SHOT
         )
 
-        val icon = (ResourcesCompat.getDrawable(resources, R.drawable.ic_finish, null) as VectorDrawable).toBitmap()
+        val icon = (ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.ic_finish,
+            null
+        ) as VectorDrawable).toBitmap()
         val channelId = "finished"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
@@ -325,8 +412,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setPriority(Notification.PRIORITY_HIGH)
             .setDefaults(Notification.DEFAULT_VIBRATE)
             .setSound(defaultSoundUri)
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText(messageBody))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(messageBody)
+            )
             .setContentIntent(pendingIntent)
             .setChannelId(channelId)
 
@@ -356,18 +445,28 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             notificationBuilder
         )
     }
-    private fun finishGroupFCMSendNotification(title: String, messageBody: String,roomId:String,hostName:String) {
+
+    private fun finishGroupFCMSendNotification(
+        title: String,
+        messageBody: String,
+        roomId: String,
+        hostName: String
+    ) {
         val intent = Intent(this, MainFragmentActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.putExtra("review",roomId)
-        intent.putExtra("hostName",hostName)
+        intent.putExtra("finishedGroup", roomId)
+        intent.putExtra("hostName", hostName)
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
             PendingIntent.FLAG_ONE_SHOT
         )
 
-        val icon = (ResourcesCompat.getDrawable(resources, R.drawable.ic_finish, null) as VectorDrawable).toBitmap()
+        val icon = (ResourcesCompat.getDrawable(
+            resources,
+            R.drawable.ic_finish,
+            null
+        ) as VectorDrawable).toBitmap()
         val channelId = "Group"
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -382,8 +481,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setPriority(Notification.PRIORITY_HIGH)
             .setDefaults(Notification.DEFAULT_VIBRATE)
             .setSound(defaultSoundUri)
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText(messageBody))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(messageBody)
+            )
             .setContentIntent(pendingIntent)
             .setChannelId(channelId)
             .build()
@@ -561,7 +662,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 
         Log.d("fcm - review_id", review_id)
-
 
 
         val pendingIntent = PendingIntent.getActivity(

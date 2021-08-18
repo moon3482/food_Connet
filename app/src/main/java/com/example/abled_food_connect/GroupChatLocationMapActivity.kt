@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -84,8 +85,9 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
-        checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
-
+        if (Build.VERSION.SDK_INT>29) {
+            checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
+        }
     }
 
     override fun onResume() {

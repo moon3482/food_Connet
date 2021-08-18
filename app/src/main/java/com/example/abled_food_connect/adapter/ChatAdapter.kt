@@ -16,6 +16,7 @@ import com.example.abled_food_connect.data.ItemType
 import com.example.abled_food_connect.databinding.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
+import org.json.JSONArray
 
 class ChatAdapter :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -195,11 +196,12 @@ class ChatAdapter :
         RecyclerView.ViewHolder(binding.root), DatetimeToTime {
         fun bind(data: ChatItem) {
 
-            val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
+            val array = JSONArray(data.readMember).length()
 
             binding.chatMyMessageText.text = data.content
             binding.chatMyTimeStamp.text = isDatetimeToTime(data)
             if (array > 0) {
+                binding.readMembersMyMessage.visibility = View.VISIBLE
                 binding.readMembersMyMessage.text = array.toString()
             } else {
                 binding.readMembersMyMessage.visibility = View.GONE

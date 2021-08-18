@@ -6,6 +6,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -73,6 +74,7 @@ class MainFragmentActivity : AppCompatActivity() {
         setSupportActionBar(binding.maintoolbar)
         val tb = supportActionBar!!
         tb.setTitle("홈")
+        tb.setDisplayHomeAsUpEnabled(true)
         //첫화면에서 리뷰 플로팅 버튼 숨김
         binding.mainFragmentCreateReviewBtn.hide()
         if (intent.hasExtra("FCMRoomId")) {
@@ -85,11 +87,10 @@ class MainFragmentActivity : AppCompatActivity() {
             intent.putExtra("hostName",hostName)
             startActivity(intent)
 
-        }else if(intent.hasExtra("review")){
+        }else if(intent.hasExtra("finishedGroup")){
             binding.bottomNav.selectedItemId = R.id.menu_mypage
-            val roomid = intent.getStringExtra("FCMRoomId")
             val intent = Intent(this, UnwrittenReviewListActivity::class.java)
-            intent.putExtra("roomId", roomid)
+
             startActivity(intent)
         }
 
@@ -148,8 +149,8 @@ class MainFragmentActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (intent.hasExtra("review")) {
-            intent.removeExtra("review")
+        if (intent.hasExtra("finishedGroup")) {
+            intent.removeExtra("finishedGroup")
         }
     }
 
@@ -180,6 +181,17 @@ class MainFragmentActivity : AppCompatActivity() {
         customGetIntent()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home ->{
+                onBackPressed()
+            }
+            else->{}
+        }
+
+        return super.onOptionsItemSelected(item)
+
+    }
 
     fun customGetIntent(){
 
