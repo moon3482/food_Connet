@@ -16,10 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.abled_food_connect.adapter.MeetingUserEvaluationRvAdapter
-import com.example.abled_food_connect.data.ChattingFragmentDmRvDataItem
-import com.example.abled_food_connect.data.MeetingEvaluationUserListRvData
-import com.example.abled_food_connect.data.MeetingEvaluationUserListRvDataItem
-import com.example.abled_food_connect.data.UserProfileData
+import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.databinding.ActivityMeetingUserEvaluationBinding
 import com.example.abled_food_connect.fragments.ReviewFragment
 import com.example.abled_food_connect.retrofit.API
@@ -112,7 +109,55 @@ class MeetingUserEvaluationActivity : AppCompatActivity() {
                         val userListJson = Gson().toJsonTree(userList, object : TypeToken<ArrayList<MeetingEvaluationUserListRvDataItem>>(){}.type)
 
                         Log.d("평가완료", userListJson.toString())
-                        MeetingUserEvaluationWriting(userListJson.toString())
+
+
+                        //버튼을 클릭한 유저가 노쇼상태인지 아닌지 확인한다.
+                        val retrofit = Retrofit.Builder()
+                            .baseUrl(getString(R.string.http_request_base_url))
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build()
+                        val api = retrofit.create(API.MeetingUserEvaluationWritingBeforeNoShowCheck::class.java)
+
+                        val meeting_user_evaluation_writing_before_no_show_check = api.meeting_user_evaluation_writing_before_no_show_check(room_id,MainActivity.user_table_id)
+
+
+                        meeting_user_evaluation_writing_before_no_show_check.enqueue(object : Callback<MeetingUserEvaluationWritingBeforeNoShowCheckData> {
+
+                            override fun onResponse(
+                                call: Call<MeetingUserEvaluationWritingBeforeNoShowCheckData>,
+                                response: Response<MeetingUserEvaluationWritingBeforeNoShowCheckData>
+                            ) {
+                                Log.d("노쇼유저인가?", "리뷰 컨텐츠 : ${response.raw()}")
+                                Log.d("노쇼유저인가?", "가져온값 : ${response.body().toString()}")
+
+                                var items : MeetingUserEvaluationWritingBeforeNoShowCheckData? =  response.body()
+
+                                //노쇼라면 토스트메시지를, 노쇼가 아니라면 리뷰 제출을 한다.
+                                if (items != null) {
+                                    if(items.isNoShow == 1){
+                                        Toast.makeText(applicationContext, "노쇼한 유저는 모임원 평가를 할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                                    }else{
+                                        MeetingUserEvaluationWriting(userListJson.toString())
+                                    }
+                                }
+
+                            }
+
+                            override fun onFailure(call: Call<MeetingUserEvaluationWritingBeforeNoShowCheckData>, t: Throwable) {
+                                Log.d(ReviewFragment.TAG, "실패 : $t")
+
+                            }
+                        })
+
+
+
+
+
+
+
+
+
+                        
 
                     }catch (e : JSONException){
                     }

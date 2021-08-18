@@ -849,7 +849,40 @@ class ReviewCommentActivity : AppCompatActivity() {
 
                 //좋아요 리니어 레이아웃 좋아요 버튼을 클릭
                 binding.contentLikeBtn.setOnClickListener(View.OnClickListener {
-                    ReviewLikeBtnClick(review_id)
+
+                    //처음 좋아요를 누르는 경우, 다이얼로그가 나와서 좋아요를 누르시겠습니까? 문구 나오게한다.
+                    if(items!!.roomList.get(0).heart_making == false){
+                        var builder = AlertDialog.Builder(this@ReviewCommentActivity)
+                        builder.setTitle("알림")
+                        builder.setMessage("좋아요를 누르시겠습니까?")
+
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        Log.d("TAG", "닫기버튼 클릭")
+                                    }
+
+                                        DialogInterface.BUTTON_NEGATIVE ->{
+
+                                            ReviewLikeBtnClick(review_id)
+
+                                        }
+
+                                }
+                            }
+                        }
+
+                        builder.setPositiveButton("닫기", listener)
+                        builder.setNegativeButton("좋아요", listener)
+                        builder.show()
+
+
+                    }else{
+                        ReviewLikeBtnClick(review_id)
+                    }
+
                 })
 
                 //좋아요 개수

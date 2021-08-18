@@ -96,6 +96,7 @@ val s = mutableListOf<String>()
 
             startActivity(intent)
         }
+
         else if(intent.getBooleanExtra("isDM",false) == true){
             customGetIntent()
         }

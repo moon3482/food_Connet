@@ -394,6 +394,15 @@ class API {
     }
 
 
+    interface MeetingUserEvaluationWritingBeforeNoShowCheck{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/meeting_user_evaluation_writing_before_no_show_check.php")
+        fun meeting_user_evaluation_writing_before_no_show_check(
+            @Part("room_id") room_id: Int,
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<MeetingUserEvaluationWritingBeforeNoShowCheckData>
+    }
 
 
 

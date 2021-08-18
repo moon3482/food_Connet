@@ -31,6 +31,8 @@ class UserProfileJoinHistoryActivity : AppCompatActivity() {
     lateinit var UserProfileJoinHistoryRv : RecyclerView
 
 
+    lateinit var UserNicName : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile_join_history)
@@ -53,7 +55,7 @@ class UserProfileJoinHistoryActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        var UserNicName = intent.getStringExtra("UserNicName")
+        UserNicName = intent.getStringExtra("UserNicName")!!
 
         if (UserNicName != null) {
             UserProfileJoinHistoryLoading(UserNicName)
@@ -110,7 +112,7 @@ class UserProfileJoinHistoryActivity : AppCompatActivity() {
                         binding.UserProfileJoinHistoryRv.visibility = View.GONE
                     }else{
 
-                        var mAdapter =  UserProfileJoinHistoryRvAdapter(ScheduleArrayList)
+                        var mAdapter =  UserProfileJoinHistoryRvAdapter(ScheduleArrayList,UserNicName)
                         mAdapter.notifyDataSetChanged()
 
                         UserProfileJoinHistoryRv.adapter = mAdapter

@@ -214,7 +214,43 @@ class ReviewDetailViewRvAdapter () : RecyclerView.Adapter<ReviewDetailViewRvAdap
 
         //좋아요 리니어 레이아웃 좋아요 버튼을 클릭
         holder.likeBtn.setOnClickListener(View.OnClickListener {
-            RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).writer_user_tb_id,ReviewDetailList.get(position).review_description,ReviewDetailList.get(position).review_id,position,holder.likeBtn.context)
+
+
+
+            //처음 좋아요를 누르는 경우, 다이얼로그가 나와서 좋아요를 누르시겠습니까? 문구 나오게한다.
+            if(ReviewDetailList.get(position).heart_making == false){
+                var builder = AlertDialog.Builder(holder.likeBtn.context)
+                builder.setTitle("알림")
+                builder.setMessage("좋아요를 누르시겠습니까?")
+
+                // 버튼 클릭시에 무슨 작업을 할 것인가!
+                var listener = object : DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        when (p1) {
+                            DialogInterface.BUTTON_POSITIVE ->{
+                                Log.d("TAG", "닫기버튼 클릭")
+                            }
+
+                            DialogInterface.BUTTON_NEGATIVE ->{
+
+                                RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).writer_user_tb_id,ReviewDetailList.get(position).review_description,ReviewDetailList.get(position).review_id,position,holder.likeBtn.context)
+
+                            }
+
+                        }
+                    }
+                }
+
+                builder.setPositiveButton("닫기", listener)
+                builder.setNegativeButton("좋아요", listener)
+                builder.show()
+
+
+            }else{
+                RvAdapterReviewLikeBtnClick(ReviewDetailList.get(position).writer_user_tb_id,ReviewDetailList.get(position).review_description,ReviewDetailList.get(position).review_id,position,holder.likeBtn.context)
+            }
+
+
 
             Log.d("무엇", ReviewDetailList.get(position).review_id.toString()+MainActivity.user_table_id+MainActivity.loginUserId)
         })

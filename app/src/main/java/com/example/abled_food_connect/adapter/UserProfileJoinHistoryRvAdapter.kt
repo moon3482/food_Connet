@@ -17,7 +17,7 @@ import com.example.abled_food_connect.data.UserProfileJoinHistoryRvDataItem
 import java.util.*
 import kotlin.collections.ArrayList
 
-class UserProfileJoinHistoryRvAdapter (val ScheduleDataList: ArrayList<UserProfileJoinHistoryRvDataItem>) : RecyclerView.Adapter<UserProfileJoinHistoryRvAdapter.CustromViewHolder>(){
+class UserProfileJoinHistoryRvAdapter (val ScheduleDataList: ArrayList<UserProfileJoinHistoryRvDataItem>,val UserNicName : String) : RecyclerView.Adapter<UserProfileJoinHistoryRvAdapter.CustromViewHolder>(){
 
 
 
@@ -36,7 +36,7 @@ class UserProfileJoinHistoryRvAdapter (val ScheduleDataList: ArrayList<UserProfi
 
 
 
-        if(ScheduleDataList.get(position).name_host == MainActivity.loginUserNickname){
+        if(ScheduleDataList.get(position).name_host == UserNicName){
             holder.hostOrGuestIv.setImageResource(R.drawable.ic_bell_ring_alarm_green)
             holder.hostorGusetTv.setText("호스트")
         }else{
