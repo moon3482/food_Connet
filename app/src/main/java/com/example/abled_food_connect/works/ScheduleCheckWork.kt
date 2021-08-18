@@ -84,10 +84,11 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
                         if (response.body()!!.list.size > 0) {
                             for (item in response.body()!!.list) {
 
-
-                                    doWorkWithGpsWork(context, item.time, item.string)
-
-
+                                Log.e(
+                                    "스케줄체크워크",
+                                    "onResponse: ${item.string} 남은시간${(item.time.toDouble() / 60)} 분",
+                                )
+                                doWorkWithGpsWork(context, item.time, item.string)
 
 
                             }
