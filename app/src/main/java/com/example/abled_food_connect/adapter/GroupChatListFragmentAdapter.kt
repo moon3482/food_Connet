@@ -99,7 +99,7 @@ class GroupChatListFragmentAdapter(
             val messageTime = sdf2.parse(data)
             val mMessageTime = sdf.format(messageTime)
             val dateResult = sdf.format(date)
-            Log.e("시간","시간은? ${mMessageTime},${dateResult}")
+//            Log.e("시간","시간은? ${mMessageTime},${dateResult}")
             if (mMessageTime.equals(dateResult)){
                 return sdf3.format(messageTime).toString()
             }else{

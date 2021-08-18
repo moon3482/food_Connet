@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
@@ -153,6 +154,7 @@ class ChatRoomActivity : AppCompatActivity() {
         MainActivity.userAge = pref.getInt("userAge", 0)
         MainActivity.userGender = pref.getString("userGender", "")!!
 
+
 //binding.groupChatRecyclerView.viewTreeObserver.addOnGlobalLayoutListener {
 //
 //
@@ -173,7 +175,6 @@ class ChatRoomActivity : AppCompatActivity() {
         Log.d(TAG, "onStart 호출")
 
 
-
     }
 
     override fun onRestart() {
@@ -191,8 +192,17 @@ class ChatRoomActivity : AppCompatActivity() {
         socket.connect()
         joinMember()
         hostSubscriptionCheck()
-        NotificationManagerCompat.from(this).cancel(roomId,roomId.toInt())
-
+//        NotificationManagerCompat.from(this).cancel(roomId,roomId.toInt())
+//        val notiPreference = getSharedPreferences("roomNotification", Context.MODE_PRIVATE)
+//        val editor = notiPreference.edit()
+//        if (notiPreference.contains(roomId)) {
+//            if (notiPreference.getBoolean(roomId, true)) {
+//            binding.
+//            }
+//        } else {
+//            editor.putBoolean(roomId, true)
+//            editor.apply()
+//        }
 
         socket.emit(
             "read",
@@ -585,7 +595,7 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private fun sendMessage() {
-        if (socket.connected()&& listSocket.connected()) {
+        if (socket.connected() && listSocket.connected()) {
             socket.emit(
                 "newMessage",
                 gson.toJson(
