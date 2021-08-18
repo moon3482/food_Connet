@@ -2,6 +2,7 @@ package com.example.abled_food_connect
 
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +41,8 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
         gson = Gson()
         userList = ArrayList<ChatRoomUserData>()
         binding.joinRoomSubscriptionToolbar.title = "신청함"
+        setSupportActionBar(binding.joinRoomSubscriptionToolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         val intentFilter = IntentFilter()
         intentFilter.addAction("subscription")
         registerReceiver(broadcast, intentFilter)
@@ -76,6 +79,16 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home ->{
+                onBackPressed()
+            }
+            else->{}
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     fun hostSubscriptionCheck(roomId: String) {

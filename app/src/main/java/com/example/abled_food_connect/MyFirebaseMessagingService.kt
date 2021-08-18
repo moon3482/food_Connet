@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.drawable.VectorDrawable
 import android.media.RingtoneManager
 import android.os.Build
@@ -161,12 +162,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(p0: String) {
         super.onNewToken(p0)
+       val shared = applicationContext.getSharedPreferences("pref_user_data",0)
+        val index = shared.getInt("user_table_id",0)
+
+
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        retrofit.create(RoomAPI::class.java).tokenInsert(MainActivity.user_table_id, p0)
+        retrofit.create(RoomAPI::class.java).tokenInsert(index, p0)
             .enqueue(object :
                 Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {

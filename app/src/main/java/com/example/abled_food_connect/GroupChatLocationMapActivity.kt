@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -69,7 +70,8 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 .also { fm.beginTransaction().add(R.id.GroupLocationMapView, it).commit() }
 
         mapFragment.getMapAsync(this)
-
+        setSupportActionBar(binding.GroupLocationToolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         binding.GroupLocationRefresh.setOnClickListener {
             binding.GroupLocationRefresh.startAnimation(
                 rotate
@@ -85,7 +87,7 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
-        if (Build.VERSION.SDK_INT>29) {
+        if (Build.VERSION.SDK_INT > 29) {
             checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
         }
     }
@@ -96,6 +98,17 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
         loadMemberLocation()
 
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home ->{
+                onBackPressed()
+            }
+            else->{}
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -156,15 +169,16 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                             val bitmap =
                                 Marker.DEFAULT_ICON.getBitmap(this@GroupChatLocationMapActivity)
                             val inflater = LayoutInflater.from(this@GroupChatLocationMapActivity)
-                            val roomInfo:MainFragmentItemData = response.body()!!.roomInfo
+                            val roomInfo: MainFragmentItemData = response.body()!!.roomInfo
 
                             var roomMarker = Marker()
-                            roomMarker.position = LatLng(roomInfo.mapY,roomInfo.mapX)
+                            roomMarker.position = LatLng(roomInfo.mapY, roomInfo.mapX)
                             builder.include(roomMarker.position)
                             roomMarker.icon = MarkerIcons.RED
                             roomMarker.map = it
                             var roomInfoWindow = InfoWindow()
-                            roomInfoWindow.adapter = object : InfoWindow.DefaultTextAdapter(this@GroupChatLocationMapActivity){
+                            roomInfoWindow.adapter = object :
+                                InfoWindow.DefaultTextAdapter(this@GroupChatLocationMapActivity) {
                                 override fun getText(p0: InfoWindow): CharSequence {
                                     return roomInfo.placeName
                                 }
@@ -173,19 +187,23 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                             markerList.add(roomMarker)
 
                             for (item in response.body()!!.members) {
-                                builder.include(LatLng(item.x,item.y))
-                                val view = inflater.inflate(R.layout.group_location_item, null, true)
+                                builder.include(LatLng(item.x, item.y))
+                                val view =
+                                    inflater.inflate(R.layout.group_location_item, null, true)
                                 val markerImage = view.findViewById<ImageView>(R.id.markerDot)
                                 markerImage.setImageBitmap(bitmap)
-                                val profileImage = view.findViewById<CircleImageView>(R.id.markerCircle)
+                                val profileImage =
+                                    view.findViewById<CircleImageView>(R.id.markerCircle)
                                 if (item.userNickname == MainActivity.loginUserNickname) {
 
-                                    var nickname = view.findViewById<TextView>(R.id.groupLocationUserNick)
+                                    var nickname =
+                                        view.findViewById<TextView>(R.id.groupLocationUserNick)
                                     nickname.setBackgroundResource(R.drawable.social_login_naver_button)
                                     nickname.setTextColor(Color.parseColor("#FFFFFF"))
                                     nickname.text = "나"
                                 } else {
-                                    var nickname = view.findViewById<TextView>(R.id.groupLocationUserNick)
+                                    var nickname =
+                                        view.findViewById<TextView>(R.id.groupLocationUserNick)
                                     nickname.text = item.userNickname
                                 }
                                 profileImage.load(getString(R.string.http_request_base_url) + item.userThumbnail)
@@ -250,9 +268,13 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    private fun Context.checkSinglePermission(permission: String) : Boolean {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    private fun Context.checkSinglePermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
+
     private fun checkPermissions() {
         //거절되었거나 아직 수락하지 않은 권한(퍼미션)을 저장할 문자열 배열 리스트
         var rejectedPermissionList = ArrayList<String>()

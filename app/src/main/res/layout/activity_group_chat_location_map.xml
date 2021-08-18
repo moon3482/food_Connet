@@ -8,12 +8,22 @@
     tools:context=".GroupChatLocationMapActivity">
 
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/GroupLocationToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:title="위치 확인"
+        android:theme="?attr/actionBarTheme" />
+
     <fragment
         android:id="@+id/GroupLocationMapView"
         android:name="com.naver.maps.map.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_below="@id/GroupLocationToolbar"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/GroupLocationRefresh"
