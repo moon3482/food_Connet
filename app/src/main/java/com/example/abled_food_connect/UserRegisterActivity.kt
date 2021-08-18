@@ -441,6 +441,20 @@ class UserRegisterActivity : AppCompatActivity() {
             builder.show()
         }
 
+        binding.checkAllCheckBox.setOnClickListener{
+            if(binding.checkAllCheckBox.isChecked == true){
+                binding.checkbox1.isChecked = true
+                binding.checkbox2.isChecked = true
+                binding.checkbox3.isChecked = true
+                binding.checkbox4.isChecked = true
+            }else{
+                binding.checkbox1.isChecked = false
+                binding.checkbox2.isChecked = false
+                binding.checkbox3.isChecked = false
+                binding.checkbox4.isChecked = false
+            }
+        }
+
 
 
 

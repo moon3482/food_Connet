@@ -54,13 +54,15 @@ class UserProfileActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.userProfileToolbar) //커스텀한 toolbar를 액션바로 사용
         supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
-
+        binding.userProfileToolbar.title = "프로필"
         //툴바에 백버튼 만들기
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
         //어떤 유저를 선택했는지 이전엑티비티에서 유저 테이블 아이디를 받아온다.
         clicked_user_tb_id = intent.getIntExtra("writer_user_tb_id", 0)
+
+        Log.d("clicked_user_tb_id값", clicked_user_tb_id.toString())
 
         //유저 정보를 가져온다.
         userProfileLoading(clicked_user_tb_id)
