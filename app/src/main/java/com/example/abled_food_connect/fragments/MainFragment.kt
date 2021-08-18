@@ -79,6 +79,9 @@ class MainFragment : Fragment() {
         refreshTextView = view.findViewById(R.id.mainFragmentSwipeRefreshTextView)
         recyclerView = view.findViewById(R.id.mainRcv) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        mainFragmentListArray = ArrayList()
+        recyclerViewAdapter =
+            MainFragmentAdapter(requireContext(),this@MainFragment, mainFragmentListArray)
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
@@ -246,10 +249,10 @@ class MainFragment : Fragment() {
 
                     val list: LoadingRoom = response.body()!!
                     val array: ArrayList<MainFragmentItemData> = list.roomList
-                    mainFragmentListArray = list.roomList
-                    recyclerViewAdapter =
-                        MainFragmentAdapter(requireContext(),this@MainFragment, mainFragmentListArray)
+                    mainFragmentListArray.addAll(list.roomList)
+
                     recyclerView.adapter = recyclerViewAdapter
+                    recyclerViewAdapter.notifyDataSetChanged()
                     swipeRefresh.isRefreshing = false
                     refreshTextView.isRefreshing = false
                     if(check){

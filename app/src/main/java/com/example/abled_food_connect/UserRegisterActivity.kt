@@ -1,5 +1,6 @@
 package com.example.abled_food_connect
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentUris
@@ -13,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.Editable
@@ -40,6 +42,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import kotlinx.coroutines.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -61,20 +64,19 @@ class UserRegisterActivity : AppCompatActivity() {
     //사진첩에서 이미지 가져올때 사용하는 변수
     lateinit var imageView: ImageView
     lateinit var button: Button
+    lateinit var job:Job
     private val pickImage = 100
     private var imageUri: Uri? = null
 
 
     //카메라로 사진찍고 이미지 가져올때 사용하는 변수
     val REQUEST_IMAGE_CAPTURE = 1
-    lateinit var currentPhotoPath : String
-
+    lateinit var currentPhotoPath: String
 
 
     //이미지 Uri
-    lateinit var userProfileImageUri : String
-    lateinit var thumbnail_userProfileImageUri : String
-
+    lateinit var userProfileImageUri: String
+    lateinit var thumbnail_userProfileImageUri: String
 
 
     //닉네임 중복 체크했는지 확인하는 변수
@@ -82,13 +84,13 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
     //유저정보 테이블에 저장할 값
-    lateinit var user_id : String
-    lateinit var social_login_type  : String
-    lateinit var nick_name  : String
-    var profile_get_check  : String ="NOIMAGE"
-    lateinit var birth_year  : String
-    lateinit var user_gender  : String
-    lateinit var phone_number  : String
+    lateinit var user_id: String
+    lateinit var social_login_type: String
+    lateinit var nick_name: String
+    var profile_get_check: String = "NOIMAGE"
+    lateinit var birth_year: String
+    lateinit var user_gender: String
+    lateinit var phone_number: String
 
 
     /*
@@ -96,32 +98,29 @@ class UserRegisterActivity : AppCompatActivity() {
      */
     // 전역 변수로 바인딩 객체 선언
     private var mBinding: ActivityUserRegisterBinding? = null
+
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
-
-
-
 
 
     //파이어베이스 전화번호 인증
 
     lateinit var auth: FirebaseAuth
-    lateinit var storedVerificationId:String
+    lateinit var storedVerificationId: String
     lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
-    var phone_auth_isFisished : String ="NO"
+    var phone_auth_isFisished: String = "NO"
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 
-
         // 기존 setContentView 를 제거해주시고..
         //setContentView(R.layout.activity_user_register)
 
-         // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
+        // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
         // 액티비티에서 사용할 바인딩 클래스의 인스턴스 생성
         mBinding = ActivityUserRegisterBinding.inflate(layoutInflater)
         // getRoot 메서드로 레이아웃 내부의 최상위 위치 뷰의
@@ -146,14 +145,12 @@ class UserRegisterActivity : AppCompatActivity() {
         settingPermission()
 
 
-
         val cropImage = registerForActivityResult(CropImageContract()) { result ->
             if (result.isSuccessful) {
                 // use the returned uri
                 Log.d("TAG", "석세스")
                 val uriContent = result.originalUri
                 val uriFilePath = result.getUriFilePath(this) // optional usage
-
 
 
                 //profile_get_check에 이미지를 가져왔다는 표시를 해준다
@@ -166,35 +163,36 @@ class UserRegisterActivity : AppCompatActivity() {
 
                 //이미지 uri를 비트맵으로 변환한다.
                 val bitmap =
-                    MediaStore.Images.Media.getBitmap(applicationContext.getContentResolver(), uriContent)
+                    MediaStore.Images.Media.getBitmap(
+                        applicationContext.getContentResolver(),
+                        uriContent
+                    )
 
                 //썸네일 크기 줄이기 비트맵 크기를 1/2로 줄인다.
 
-                var width : Int =bitmap.width
-                var height : Int = bitmap.height
+                var width: Int = bitmap.width
+                var height: Int = bitmap.height
 
-                var resize_bitmap : Bitmap
-                if(width>100||height>100){
-                    resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, 300, 300*height/width, true)
+                var resize_bitmap: Bitmap
+                if (width > 100 || height > 100) {
+                    resize_bitmap =
+                        Bitmap.createScaledBitmap(bitmap!!, 300, 300 * height / width, true)
 
-                }else{
-                    resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, width/2, height/2, true)
+                } else {
+                    resize_bitmap = Bitmap.createScaledBitmap(bitmap!!, width / 2, height / 2, true)
                 }
 
                 //썸네일 용량 줄이기 비트맵 화질을 낮춘다.
                 resize_bitmap = compressBitmap(resize_bitmap)!!
 
 
-
-
-
 //                Log.d("uri", resultUri.toString())
-
 
 
                 if (uriFilePath != null) {
                     userProfileImageUri = uriFilePath
-                    thumbnail_userProfileImageUri =  getRealPathFromURI(getImageUri(applicationContext,resize_bitmap)!!)!!
+                    thumbnail_userProfileImageUri =
+                        getRealPathFromURI(getImageUri(applicationContext, resize_bitmap)!!)!!
                     //thumbnail_userProfileImageUri =
 
                     Log.d("uriContent", uriContent.toString())
@@ -202,8 +200,6 @@ class UserRegisterActivity : AppCompatActivity() {
                     Log.d("uri", userProfileImageUri)
                     Log.d("uri", thumbnail_userProfileImageUri)
                 }
-
-
 
 
             } else {
@@ -224,18 +220,17 @@ class UserRegisterActivity : AppCompatActivity() {
         }
 
 
-
         //닉네임 글자수 10자 제한
         binding.nicNameEt.setMaxLength(10)
 
 
         binding.nicNameCheckBtn.setOnClickListener(View.OnClickListener {
 
-            binding.nicNameEt.setText(binding.nicNameEt.text.toString().replace(" ",""))
-            if(binding.nicNameEt.text.toString().length>0){
-                    nicName_duplicate_check(binding.nicNameEt.text.toString())
-                    Log.d("이름", binding.nicNameEt.text.toString())
-            }else{
+            binding.nicNameEt.setText(binding.nicNameEt.text.toString().replace(" ", ""))
+            if (binding.nicNameEt.text.toString().length > 0) {
+                nicName_duplicate_check(binding.nicNameEt.text.toString())
+                Log.d("이름", binding.nicNameEt.text.toString())
+            } else {
                 Toast.makeText(applicationContext, "닉네임을 입력해주세요.", Toast.LENGTH_LONG).show()
             }
 
@@ -246,16 +241,15 @@ class UserRegisterActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {
 
             }
+
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
+
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 nicName_dup_check_str = "NO"
             }
         })
-
-
-
 
 
         //출생연도 선택버튼
@@ -267,13 +261,13 @@ class UserRegisterActivity : AppCompatActivity() {
         binding.birthYearBtn.setOnClickListener {
 
             val dialog = AlertDialog.Builder(this).create()
-            val edialog : LayoutInflater = LayoutInflater.from(this)
-            val mView : View = edialog.inflate(R.layout.dialog_datepicker,null)
+            val edialog: LayoutInflater = LayoutInflater.from(this)
+            val mView: View = edialog.inflate(R.layout.dialog_datepicker, null)
 
-            val year : NumberPicker = mView.findViewById(R.id.yearpicker_datepicker)
+            val year: NumberPicker = mView.findViewById(R.id.yearpicker_datepicker)
 
-            val cancel : Button = mView.findViewById(R.id.cancel_button_datepicker)
-            val save : Button = mView.findViewById(R.id.save_button_datepicker)
+            val cancel: Button = mView.findViewById(R.id.cancel_button_datepicker)
+            val save: Button = mView.findViewById(R.id.save_button_datepicker)
 
 
             //  순환 안되게 막기
@@ -292,7 +286,6 @@ class UserRegisterActivity : AppCompatActivity() {
             year.value = 1990
 
 
-
             //  취소 버튼 클릭 시
             cancel.setOnClickListener {
                 dialog.dismiss()
@@ -302,8 +295,8 @@ class UserRegisterActivity : AppCompatActivity() {
             //  완료 버튼 클릭 시
             save.setOnClickListener {
 
-                birth_year =(year.value).toString()
-                binding.birthYearBtn.setText(birth_year+"년")
+                birth_year = (year.value).toString()
+                binding.birthYearBtn.setText(birth_year + "년")
                 Log.d("나와", (year.value).toString() + "년")
                 // month_textview_statsfrag.text = (month.value).toString() + "월"
 
@@ -318,7 +311,7 @@ class UserRegisterActivity : AppCompatActivity() {
 
         // 라디오 버튼 상태를 바꿨을때, 자동으로 나타나는 상태 표시(람다식)
         binding.genderSelectRg.setOnCheckedChangeListener { radioGroup, i ->
-            when(i){
+            when (i) {
                 R.id.genderManRb ->
                     user_gender = "MAN"
                 R.id.genderWomanRb ->
@@ -333,14 +326,14 @@ class UserRegisterActivity : AppCompatActivity() {
         파이어베이스 인증
          */
 
-        auth=FirebaseAuth.getInstance()
+        auth = FirebaseAuth.getInstance()
 
 
 
 
 
 
-        binding.firebaseCodeSendBtn.setOnClickListener{
+        binding.firebaseCodeSendBtn.setOnClickListener {
             login()
         }
 
@@ -354,7 +347,8 @@ class UserRegisterActivity : AppCompatActivity() {
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                Toast.makeText(applicationContext, "[나는 로봇이 아닙니다] 인증을 해주세요.", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "[나는 로봇이 아닙니다] 인증을 해주세요.", Toast.LENGTH_LONG)
+                    .show()
             }
 
             override fun onCodeSent(
@@ -362,8 +356,8 @@ class UserRegisterActivity : AppCompatActivity() {
                 token: PhoneAuthProvider.ForceResendingToken
             ) {
 
-                Log.d("TAG","onCodeSent:$verificationId")
-                if(verificationId!=null) {
+                Log.d("TAG", "onCodeSent:$verificationId")
+                if (verificationId != null) {
                     storedVerificationId = verificationId
                     resendToken = token
                     Toast.makeText(applicationContext, "코드를 발송했습니다.", Toast.LENGTH_SHORT).show()
@@ -373,19 +367,20 @@ class UserRegisterActivity : AppCompatActivity() {
         }
 
 
-        binding.firebaseCodeCheckBtn.setOnClickListener{
-            var otp=binding.firebaseCodeInputEt.text.toString().trim()
-            if(!otp.isEmpty()){
-                val credential : PhoneAuthCredential = PhoneAuthProvider.getCredential(
-                    storedVerificationId.toString(), otp)
+        binding.firebaseCodeCheckBtn.setOnClickListener {
+            var otp = binding.firebaseCodeInputEt.text.toString().trim()
+            if (!otp.isEmpty()) {
+                val credential: PhoneAuthCredential = PhoneAuthProvider.getCredential(
+                    storedVerificationId.toString(), otp
+                )
                 signInWithPhoneAuthCredential(credential)
-            }else{
-                Toast.makeText(this,"다시 입력해주세요.",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "다시 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
 
 
-        binding.serviceTermsTextOpenBtn2.setOnClickListener{
+        binding.serviceTermsTextOpenBtn2.setOnClickListener {
             var builder = AlertDialog.Builder(this)
             builder.setTitle("서비스 이용 약관")
 
@@ -405,7 +400,7 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
 
-        binding.serviceTermsTextOpenBtn3.setOnClickListener{
+        binding.serviceTermsTextOpenBtn3.setOnClickListener {
             var builder = AlertDialog.Builder(this)
             builder.setTitle("개인정보 수집 및 이용 동의")
 
@@ -424,7 +419,7 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
 
-        binding.serviceTermsTextOpenBtn4.setOnClickListener{
+        binding.serviceTermsTextOpenBtn4.setOnClickListener {
             var builder = AlertDialog.Builder(this)
             builder.setTitle("위치정보 수집 및 이용 동의")
 
@@ -441,13 +436,13 @@ class UserRegisterActivity : AppCompatActivity() {
             builder.show()
         }
 
-        binding.checkAllCheckBox.setOnClickListener{
-            if(binding.checkAllCheckBox.isChecked == true){
+        binding.checkAllCheckBox.setOnClickListener {
+            if (binding.checkAllCheckBox.isChecked == true) {
                 binding.checkbox1.isChecked = true
                 binding.checkbox2.isChecked = true
                 binding.checkbox3.isChecked = true
                 binding.checkbox4.isChecked = true
-            }else{
+            } else {
                 binding.checkbox1.isChecked = false
                 binding.checkbox2.isChecked = false
                 binding.checkbox3.isChecked = false
@@ -464,53 +459,40 @@ class UserRegisterActivity : AppCompatActivity() {
         binding.userRegisterBtn.setOnClickListener {
 
 
-
-
-
-            if(profile_get_check == "NOIMAGE"){
-                Toast.makeText(this,"프로필 사진을 등록해주세요.",Toast.LENGTH_SHORT).show()
-            }
-            else if(nicName_dup_check_str=="NO"){
-                Toast.makeText(this,"닉네임 중복확인을 해주세요.",Toast.LENGTH_SHORT).show()
-            }
-            else if(birth_year.equals("")){
-                Toast.makeText(this,"출생연도를 선택해주세요.",Toast.LENGTH_SHORT).show()
-            }
-            else if(!binding.genderManRb.isChecked()&&!binding.genderWomanRb.isChecked()){
-                Toast.makeText(this,"성별을 선택해주세요.",Toast.LENGTH_SHORT).show()
-            }
-            else if(phone_auth_isFisished.equals("NO")){
-                Toast.makeText(this,"전화번호 인증을 완료해주세요.",Toast.LENGTH_SHORT).show()
+            if (profile_get_check == "NOIMAGE") {
+                Toast.makeText(this, "프로필 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
+            } else if (nicName_dup_check_str == "NO") {
+                Toast.makeText(this, "닉네임 중복확인을 해주세요.", Toast.LENGTH_SHORT).show()
+            } else if (birth_year.equals("")) {
+                Toast.makeText(this, "출생연도를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            } else if (!binding.genderManRb.isChecked() && !binding.genderWomanRb.isChecked()) {
+                Toast.makeText(this, "성별을 선택해주세요.", Toast.LENGTH_SHORT).show()
+            } else if (phone_auth_isFisished.equals("NO")) {
+                Toast.makeText(this, "전화번호 인증을 완료해주세요.", Toast.LENGTH_SHORT).show()
             }
 
             //약관 동의 버튼 확인
 
-            else if(binding.checkbox1.isChecked == false){
-                Toast.makeText(this,"만 18세 이상인지 체크해주세요",Toast.LENGTH_SHORT).show()
-            } else if(binding.checkbox2.isChecked == false){
-                Toast.makeText(this,"서비스 이용 약관을 체크해주세요.",Toast.LENGTH_SHORT).show()
-            } else if(binding.checkbox3.isChecked == false){
-                Toast.makeText(this,"개인정보 수집 및 이용 동의 약관을 체크해주세요.",Toast.LENGTH_SHORT).show()
-            } else if(binding.checkbox4.isChecked == false){
-                Toast.makeText(this,"위치정보 수집 및 이용 동의 약관을 체크해주세요.",Toast.LENGTH_SHORT).show()
-            }
+            else if (binding.checkbox1.isChecked == false) {
+                Toast.makeText(this, "만 18세 이상인지 체크해주세요", Toast.LENGTH_SHORT).show()
+            } else if (binding.checkbox2.isChecked == false) {
+                Toast.makeText(this, "서비스 이용 약관을 체크해주세요.", Toast.LENGTH_SHORT).show()
+            } else if (binding.checkbox3.isChecked == false) {
+                Toast.makeText(this, "개인정보 수집 및 이용 동의 약관을 체크해주세요.", Toast.LENGTH_SHORT).show()
+            } else if (binding.checkbox4.isChecked == false) {
+                Toast.makeText(this, "위치정보 수집 및 이용 동의 약관을 체크해주세요.", Toast.LENGTH_SHORT).show()
+            } else {
 
-
-
-
-            else {
-
-               RegistUserInfo(userProfileImageUri,thumbnail_userProfileImageUri)
+                RegistUserInfo(userProfileImageUri, thumbnail_userProfileImageUri)
             }
 
 
         }
 
 
-
     }
 
-    fun EditText.setMaxLength(maxLength: Int){
+    fun EditText.setMaxLength(maxLength: Int) {
         filters = arrayOf<InputFilter>(InputFilter.LengthFilter(maxLength))
     }
 
@@ -524,8 +506,8 @@ class UserRegisterActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK){
-            when(requestCode) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
 
                 CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
 
@@ -536,10 +518,6 @@ class UserRegisterActivity : AppCompatActivity() {
             }
         }
     }
-
-
-
-
 
 
     //비트맵 이미지를 압축시칸다.
@@ -553,7 +531,12 @@ class UserRegisterActivity : AppCompatActivity() {
     //비트맵 이미지 uri를 가져온다.
     fun getImageUri(inContext: Context?, inImage: Bitmap?): Uri? {
 
-        val path = MediaStore.Images.Media.insertImage(inContext?.getContentResolver(), inImage, "Title"+ Calendar.getInstance().getTime(), null)
+        val path = MediaStore.Images.Media.insertImage(
+            inContext?.getContentResolver(),
+            inImage,
+            "Title" + Calendar.getInstance().getTime(),
+            null
+        )
 
         Log.d("uri 나와라", path)
         return Uri.parse(path)
@@ -575,11 +558,7 @@ class UserRegisterActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
-    fun RegistUserInfo(imageUri:String,thumbnail_ImageUri:String){
+    fun RegistUserInfo(imageUri: String, thumbnail_ImageUri: String) {
 
 //        //원본이미지
 //        val uriPathHelper = UserProfileModifyActivity.URIPathHelper()
@@ -592,9 +571,10 @@ class UserRegisterActivity : AppCompatActivity() {
         val extension = MimeTypeMap.getFileExtensionFromUrl(imageUri)
 
 
-        var fileName = user_id+"."+extension
-        var requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),file)
-        var body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file",fileName,requestBody)
+        var fileName = user_id + "." + extension
+        var requestBody: RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+        var body: MultipartBody.Part =
+            MultipartBody.Part.createFormData("uploaded_file", fileName, requestBody)
 
 
 //        //썸네일이미지
@@ -609,13 +589,18 @@ class UserRegisterActivity : AppCompatActivity() {
 
 
         //var thumbnail_fileName = MainActivity.user_table_id.toString()+"."+thumbnail_extension
-        var thumbnail_fileName = user_id+".jpeg"
-        var thumbnail_requestBody : RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(),thumbnail_file)
-        var thumbnail_body : MultipartBody.Part = MultipartBody.Part.createFormData("uploaded_file1",thumbnail_fileName,thumbnail_requestBody)
+        var thumbnail_fileName = user_id + ".jpeg"
+        var thumbnail_requestBody: RequestBody =
+            RequestBody.create("image/*".toMediaTypeOrNull(), thumbnail_file)
+        var thumbnail_body: MultipartBody.Part = MultipartBody.Part.createFormData(
+            "uploaded_file1",
+            thumbnail_fileName,
+            thumbnail_requestBody
+        )
 
 
         //The gson builder
-        var gson : Gson =  GsonBuilder()
+        var gson: Gson = GsonBuilder()
             .setLenient()
             .create()
 
@@ -638,22 +623,37 @@ class UserRegisterActivity : AppCompatActivity() {
         //user_gender = binding.userGenderEt.text.toString()
         phone_number = binding.phoneNumberInputEt.text.toString()
 
-        server.post_Porfile_Request(user_id,social_login_type, nick_name,birth_year,user_gender,phone_number, body,thumbnail_body).enqueue(object: Callback<String> {
+        server.post_Porfile_Request(
+            user_id,
+            social_login_type,
+            nick_name,
+            birth_year,
+            user_gender,
+            phone_number,
+            body,
+            thumbnail_body
+        ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
             }
 
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response?.isSuccessful) {
-                    Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
-                    Log.d("레트로핏 결과2",""+response?.body().toString())
-                    var nextIntent :Intent = Intent(this@UserRegisterActivity, MainActivity::class.java)
+                    Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_LONG)
+                        .show();
+                    Log.d("레트로핏 결과2", "" + response?.body().toString())
+                    var nextIntent: Intent =
+                        Intent(this@UserRegisterActivity, MainActivity::class.java)
                     startActivity(nextIntent)
                     finish()
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
-                    Log.d("레트로핏 실패결과",""+response?.body().toString())
+                    Toast.makeText(
+                        getApplicationContext(),
+                        "Some error occurred...",
+                        Toast.LENGTH_LONG
+                    ).show();
+                    Log.d("레트로핏 실패결과", "" + response?.body().toString())
                 }
             }
         })
@@ -679,7 +679,10 @@ class UserRegisterActivity : AppCompatActivity() {
 
                 } else if (isDownloadsDocument(uri)) {
                     val id = DocumentsContract.getDocumentId(uri)
-                    val contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
+                    val contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"),
+                        java.lang.Long.valueOf(id)
+                    )
                     return getDataColumn(context, contentUri, null, null)
                 } else if (isMediaDocument(uri)) {
                     val docId = DocumentsContract.getDocumentId(uri)
@@ -705,12 +708,20 @@ class UserRegisterActivity : AppCompatActivity() {
             return null
         }
 
-        fun getDataColumn(context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
+        fun getDataColumn(
+            context: Context,
+            uri: Uri?,
+            selection: String?,
+            selectionArgs: Array<String>?
+        ): String? {
             var cursor: Cursor? = null
             val column = "_data"
             val projection = arrayOf(column)
             try {
-                cursor = uri?.let { context.getContentResolver().query(it, projection, selection, selectionArgs,null) }
+                cursor = uri?.let {
+                    context.getContentResolver()
+                        .query(it, projection, selection, selectionArgs, null)
+                }
                 if (cursor != null && cursor.moveToFirst()) {
                     val column_index: Int = cursor.getColumnIndexOrThrow(column)
                     return cursor.getString(column_index)
@@ -735,17 +746,8 @@ class UserRegisterActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
-
-
-
-
-
-    fun settingPermission(){
-        var permis = object  : PermissionListener {
+    fun settingPermission() {
+        var permis = object : PermissionListener {
             //            어떠한 형식을 상속받는 익명 클래스의 객체를 생성하기 위해 다음과 같이 작성
             override fun onPermissionGranted() {
 //                Toast.makeText(this@UserRegisterActivity, "권한 허가", Toast.LENGTH_SHORT)
@@ -766,20 +768,21 @@ class UserRegisterActivity : AppCompatActivity() {
             .setPermissions(
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.CAMERA)
+                android.Manifest.permission.CAMERA
+            )
             .check()
     }
 
-    fun startCapture(){
+    fun startCapture() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(packageManager)?.also {
-                val photoFile: File? = try{
+                val photoFile: File? = try {
                     createImageFile()
-                }catch(ex: IOException){
+                } catch (ex: IOException) {
                     null
                 }
-                photoFile?.also{
-                    val photoURI : Uri = FileProvider.getUriForFile(
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
                         this,
                         "com.example.abled_food_connect.provider",
                         it
@@ -792,29 +795,17 @@ class UserRegisterActivity : AppCompatActivity() {
     }
 
     @Throws(IOException::class)
-    private fun createImageFile() : File {
-        val timeStamp : String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir : File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    private fun createImageFile(): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
             "JPEG_${timeStamp}_",
             ".jpg",
             storageDir
-        ).apply{
+        ).apply {
             currentPhotoPath = absolutePath
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /*
@@ -822,16 +813,51 @@ class UserRegisterActivity : AppCompatActivity() {
      */
 
 
-
+    @DelicateCoroutinesApi
+    @SuppressLint("SetTextI18n")
     private fun login() {
-        val mobileNumber=binding.phoneNumberInputEt
-        var number=mobileNumber.text.toString().trim()
+        val mobileNumber = binding.phoneNumberInputEt
+        var number = mobileNumber.text.toString().trim()
 
-        if(!number.isEmpty()){
-            number="+82"+number
-            sendVerificationcode (number)
-        }else{
-            Toast.makeText(this,"정확한 전화번호를 입력해주세요.",Toast.LENGTH_SHORT).show()
+        if (!number.isEmpty()) {
+            number = "+82" + number
+            sendVerificationcode(number)
+            binding.UserRegisterTimerLinear.visibility = View.VISIBLE
+            binding.firebaseCodeCheckBtn.isEnabled = true
+            binding.firebaseCodeCheckBtn.setBackgroundColor(Color.BLACK)
+            if(this::job.isInitialized){
+            if(job.isActive){
+                job.cancel()
+            }}
+           GlobalScope.launch {  job = launch {
+               for (i in 60 downTo 0) {
+
+                   runOnUiThread {
+                       binding.UserRegisterTimerTv.text = "남은 시간 : ${i}초"
+                       if (i == 0 || phone_auth_isFisished == "YES") {
+                           binding.UserRegisterTimerLinear.visibility = View.GONE
+                           binding.firebaseCodeCheckBtn.isEnabled = false
+                           binding.firebaseCodeCheckBtn.setBackgroundColor(Color.GRAY)
+
+                       }
+                   }
+                   if (i == 0 || phone_auth_isFisished == "YES") {
+                       job.cancel()
+                                        }
+                   delay(1000L)
+               }
+           } }
+
+
+
+//                Handler().post {
+//                    binding.UserRegisterTimerLinear.visibility = View.GONE
+//                    binding.firebaseCodeSendBtn.isEnabled = false
+//                }
+
+
+        } else {
+            Toast.makeText(this, "정확한 전화번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -850,7 +876,7 @@ class UserRegisterActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this,"인증되었습니다.",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "인증되었습니다.", Toast.LENGTH_SHORT).show()
 
                     binding.firebaseCodeCheckBtn.setEnabled(false)
                     binding.firebaseCodeCheckBtn.setBackgroundColor(Color.GRAY)
@@ -867,21 +893,19 @@ class UserRegisterActivity : AppCompatActivity() {
 // Sign in failed, display a message and update the UI
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
 // The verification code entered was invalid
-                        Toast.makeText(this,"인증코드를 다시 입력해주세요.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "인증코드를 다시 입력해주세요.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
     }
 
 
-
-
     //닉네임 중복 확인
 
-    fun nicName_duplicate_check(nick_name:String){
+    fun nicName_duplicate_check(nick_name: String) {
 
         //The gson builder
-        var gson : Gson =  GsonBuilder()
+        var gson: Gson = GsonBuilder()
             .setLenient()
             .create()
 
@@ -897,7 +921,7 @@ class UserRegisterActivity : AppCompatActivity() {
         var server = retrofit.create(API.nicNameCheck::class.java)
 
         // 파일, 사용자 아이디, 파일이름
-        server.checkNicName(nick_name).enqueue(object:
+        server.checkNicName(nick_name).enqueue(object :
             Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
@@ -905,14 +929,22 @@ class UserRegisterActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response?.isSuccessful) {
-                    if(response?.body().toString()=="true") {
-                        Toast.makeText(getApplicationContext(), "이미 사용중인 닉네임입니다.", Toast.LENGTH_LONG)
+                    if (response?.body().toString() == "true") {
+                        Toast.makeText(
+                            getApplicationContext(),
+                            "이미 사용중인 닉네임입니다.",
+                            Toast.LENGTH_LONG
+                        )
                             .show();
 
                     }
 
-                    if(response?.body().toString()=="false") {
-                        Toast.makeText(getApplicationContext(), "사용할 수 있는 닉네임입니다.", Toast.LENGTH_LONG)
+                    if (response?.body().toString() == "false") {
+                        Toast.makeText(
+                            getApplicationContext(),
+                            "사용할 수 있는 닉네임입니다.",
+                            Toast.LENGTH_LONG
+                        )
                             .show();
                         nicName_dup_check_str = "YES"
 
@@ -921,15 +953,14 @@ class UserRegisterActivity : AppCompatActivity() {
                         binding.nicNameEt.setEnabled(false)
 
 
-
                     }
 
-                    Log.d("레트로핏 성공결과",""+response?.body().toString())
+                    Log.d("레트로핏 성공결과", "" + response?.body().toString())
 
                 } else {
                     Toast.makeText(getApplicationContext(), "서버연결 실패.", Toast.LENGTH_LONG).show();
-                    Log.d("레트로핏 실패결과",""+response?.body().toString())
-                    Log.d("레트로핏 실패결과",""+call.request())
+                    Log.d("레트로핏 실패결과", "" + response?.body().toString())
+                    Log.d("레트로핏 실패결과", "" + call.request())
 
                 }
             }
@@ -937,7 +968,7 @@ class UserRegisterActivity : AppCompatActivity() {
     }
 
 
-    val serviceTermsStr ="제 1 장 환영합니다!\n" +
+    val serviceTermsStr = "제 1 장 환영합니다!\n" +
             "제 1 조 (목적)\n" +
             "주식회사 푸드커넥트(이하 ‘회사’)가 제공하는 서비스를 이용해 주셔서 감사합니다. 회사는 여러분이 다양한 인터넷과 모바일 서비스를 좀 더 편리하게 이용할 수 있도록 회사 또는 관계사의 개별 서비스에 모두 접속 가능한 통합로그인계정 체계를 만들고 그에 적용되는 '푸드커넥트계정 약관(이하 '본 약관')을 마련하였습니다. 본 약관은 여러분이 푸드커넥트계정 서비스를 이용하는 데 필요한 권리, 의무 및 책임사항, 이용조건 및 절차 등 기본적인 사항을 규정하고 있으므로 조금만 시간을 내서 주의 깊게 읽어주시기 바랍니다.\n" +
             "제 2 조 (약관의 효력 및 변경)\n" +
@@ -1063,8 +1094,7 @@ class UserRegisterActivity : AppCompatActivity() {
             "맞춤형 콘텐츠 추천 및 마케팅 활용 목적으로 이용자 정보와 ‘쿠키’ 또는 ‘광고식별자’ 기반으로 수집된 행태정보를 활용할 수 있습니다. \n"
 
 
-
-    val locationInfoTerm ="제1조 목적\n" +
+    val locationInfoTerm = "제1조 목적\n" +
             "본 약관은 푸드커넥트(이하 “회사”)가 제공하는 위치기반서비스에 대해 회사와 위치기반서비스를 이용하는 개인위치정보주체(이하 “이용자”)간의 권리·의무 및 책임사항, 기타 필요한 사항 규정을 목적으로 합니다.\n" +
             "제2조 이용약관의 효력 및 변경\n" +
             "1. 본 약관은 이용자가 본 약관에 동의하고 회사가 정한 절차에 따라 위치기반서비스의 이용자로 등록됨으로써 효력이 발생합니다.\n" +
