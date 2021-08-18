@@ -24,6 +24,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -79,7 +80,8 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var snackbar: Snackbar
     private lateinit var snackbarTextView: TextView
     private lateinit var snackbarView: View
-//    private lateinit var hostName: String
+
+    //    private lateinit var hostName: String
     private lateinit var roomId: String
     private lateinit var vi: View
     private var userIndex: Int = 0
@@ -99,12 +101,13 @@ class ChatRoomActivity : AppCompatActivity() {
 
     companion object {
         lateinit var socket: Socket
+        lateinit var listSocket: Socket
         var hostName = ""
 
-            lateinit var instance: ChatRoomActivity
-            fun chatRoomActivityContext() : Context {
-                return instance.applicationContext
-            }
+        lateinit var instance: ChatRoomActivity
+        fun chatRoomActivityContext(): Context {
+            return instance.applicationContext
+        }
 
     }
 
@@ -149,7 +152,7 @@ class ChatRoomActivity : AppCompatActivity() {
         MainActivity.userThumbnailImage = pref.getString("userThumbnailImage", "")!!
         MainActivity.userAge = pref.getInt("userAge", 0)
         MainActivity.userGender = pref.getString("userGender", "")!!
-        userReadMessage()
+
 //binding.groupChatRecyclerView.viewTreeObserver.addOnGlobalLayoutListener {
 //
 //
@@ -168,7 +171,7 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart 호출")
-        init()
+
 
 
     }
@@ -179,12 +182,16 @@ class ChatRoomActivity : AppCompatActivity() {
         Log.d(TAG, "onStart 호출")
     }
 
+
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume 호출")
+        init()
+        userReadMessage()
         socket.connect()
         joinMember()
         hostSubscriptionCheck()
+        NotificationManagerCompat.from(this).cancel(roomId,roomId.toInt())
 
 
         socket.emit(
@@ -207,6 +214,7 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onStop()
         Log.d(TAG, "onStop 호출")
 //        chatAdapter.arrayList.clear()
+        chatAdapter.arrayList.clear()
         socket.disconnect()
 
     }
@@ -246,7 +254,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 true
 
             }
-            android.R.id.home->{
+            android.R.id.home -> {
                 onBackPressed()
                 true
             }
@@ -273,8 +281,8 @@ class ChatRoomActivity : AppCompatActivity() {
     fun init() {
         roomInfoLoad()
         socket = IO.socket(getString(R.string.chat_socket_url))
-
-
+        listSocket = IO.socket(getString(R.string.chat_list_socket_url))
+        listSocket.connect()
         Log.d("SOCKET", "Connection success : " + socket.id())
 
         chatClient = ChatClient.getInstance()
@@ -461,6 +469,15 @@ class ChatRoomActivity : AppCompatActivity() {
                 )
 
             })
+        listSocket.on(
+            Socket.EVENT_CONNECT,
+            Emitter.Listener {
+                socket.emit(
+                    "enter",
+                    gson.toJson(RoomData(userName, chatroomRoomId, MainActivity.user_table_id))
+                )
+
+            })
 
 
         socket.on(
@@ -568,7 +585,7 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private fun sendMessage() {
-        if (socket.connected()) {
+        if (socket.connected()&& listSocket.connected()) {
             socket.emit(
                 "newMessage",
                 gson.toJson(
@@ -580,8 +597,23 @@ class ChatRoomActivity : AppCompatActivity() {
                         thumbnailImage,
                         null,
                         members,
-                        MainActivity.user_table_id
-                    ,hostName)
+                        MainActivity.user_table_id, hostName
+                    )
+                )
+            )
+            listSocket.emit(
+                "newMessage",
+                gson.toJson(
+                    MessageData(
+                        "MESSAGE",
+                        userName,
+                        chatroomRoomId,
+                        binding.groupChatInputMessageEditText.text.toString(),
+                        thumbnailImage,
+                        null,
+                        members,
+                        MainActivity.user_table_id, hostName
+                    )
                 )
             )
 //        chatList.add(
@@ -1076,8 +1108,8 @@ class ChatRoomActivity : AppCompatActivity() {
                     "TIMELINE",
                     chatroomRoomId,
                     "SERVER", "SERVER",
-                    "SERVER", members, 0
-                    ,hostName)
+                    "SERVER", members, 0, hostName
+                )
             )
         )
     }
@@ -1313,7 +1345,7 @@ class ChatRoomActivity : AppCompatActivity() {
             })
     }
 
- fun hostSubscriptionCheck() {
+    fun hostSubscriptionCheck() {
         val retrofit =
             Retrofit.Builder()
                 .baseUrl(getString(R.string.http_request_base_url))
@@ -1677,8 +1709,8 @@ class ChatRoomActivity : AppCompatActivity() {
                                         "EXITROOM",
                                         chatroomRoomId,
                                         MainActivity.loginUserNickname, "SERVER",
-                                        strDate, members, 0
-                                        ,hostName)
+                                        strDate, members, 0, hostName
+                                    )
                                 )
                             )
                             val intent =
@@ -1966,8 +1998,8 @@ class ChatRoomActivity : AppCompatActivity() {
                                                 items.ImageName,
                                                 thumbnailImage,
                                                 null,
-                                                members, MainActivity.user_table_id
-                                                ,hostName)
+                                                members, MainActivity.user_table_id, hostName
+                                            )
                                         )
                                     )
                                 } else {
@@ -1980,8 +2012,8 @@ class ChatRoomActivity : AppCompatActivity() {
                                                 items.ImageName,
                                                 thumbnailImage,
                                                 null,
-                                                members, MainActivity.user_table_id
-                                                ,hostName)
+                                                members, MainActivity.user_table_id, hostName
+                                            )
                                         )
                                     )
                                 }

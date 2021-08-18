@@ -49,22 +49,33 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        init()
+
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        init()
+//        socket.emit(
+//            "left",
+//            gson.toJson(
+//                RoomData(
+//                    MainActivity.loginUserNickname,
+//                    roomId,
+//                    MainActivity.user_table_id
+//                )
+//            )
+//        )
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        socket.disconnect()
+    }
     override fun onStop() {
         super.onStop()
-        socket.emit(
-            "left",
-            gson.toJson(
-                RoomData(
-                    MainActivity.loginUserNickname,
-                    roomId,
-                    MainActivity.user_table_id
-                )
-            )
-        )
-        socket.disconnect()
+
     }
 
     fun hostSubscriptionCheck(roomId: String) {

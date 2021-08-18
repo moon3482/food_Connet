@@ -219,9 +219,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             this, 0 /* Request code */, intent,
             PendingIntent.FLAG_ONE_SHOT
         )
-        val channelId = "message"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+        val notificationBuilder = NotificationCompat.Builder(this, roomId)
             .setSmallIcon(R.drawable.ic_noti_icon)
             .setWhen(System.currentTimeMillis())
             .setShowWhen(false)
@@ -233,7 +232,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setDefaults(Notification.DEFAULT_VIBRATE)
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
-            .setChannelId(channelId)
+            .setChannelId(roomId)
             .setGroupSummary(true)
             .build()
 
@@ -243,9 +242,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
-            val channelName = "message"
             val channel =
-                NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+                NotificationChannel(roomId, roomId, NotificationManager.IMPORTANCE_HIGH)
             channel.vibrationPattern = longArrayOf(0, 1500)
 
 

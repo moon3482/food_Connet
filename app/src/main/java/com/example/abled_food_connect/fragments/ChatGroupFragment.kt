@@ -74,7 +74,7 @@ class ChatGroupFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         Log.d(ChatGroupFragment.TAG, "그룹채팅 프래그먼트 onStart()")
-        socket = IO.socket(getString(R.string.chat_socket_url))
+        socket = IO.socket(getString(R.string.chat_list_socket_url))
         init()
         socket.connect()
 
