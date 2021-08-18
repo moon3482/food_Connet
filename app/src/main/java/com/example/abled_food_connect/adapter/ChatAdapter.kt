@@ -184,6 +184,7 @@ class ChatAdapter :
 
             binding.chatOthersTimeStamp.text = isDatetimeToTime(data)
             if (array > 0) {
+                binding.readMembersOthersMessage.visibility = View.VISIBLE
                 binding.readMembersOthersMessage.text = array.toString()
             } else {
                 binding.readMembersOthersMessage.visibility = View.GONE
@@ -226,6 +227,7 @@ class ChatAdapter :
             binding.ImageChatOthersNickName.text = data.name
             binding.ImageChatOthersTimeStamp.text = isDatetimeToTime(data)
             if (array > 0) {
+                binding.ImageReadMembersOthersMessage.visibility = View.VISIBLE
                 binding.ImageReadMembersOthersMessage.text = array.toString()
             } else {
                 binding.ImageReadMembersOthersMessage.visibility = View.GONE
@@ -247,6 +249,8 @@ class ChatAdapter :
             }
             binding.ImageChatMyTimeStamp.text = isDatetimeToTime(data)
             if (array > 0) {
+                binding.ImageReadMembersMyMessage.visibility = View.VISIBLE
+
                 binding.ImageReadMembersMyMessage.text = array.toString()
             } else {
                 binding.ImageReadMembersMyMessage.visibility = View.GONE
