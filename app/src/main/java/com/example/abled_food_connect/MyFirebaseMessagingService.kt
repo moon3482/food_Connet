@@ -507,6 +507,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
 
+
     //DM을 받았을 때
     private fun DMSendNotification(title: String, messageBody: String, roomId:String, fromUserProfileImage:String, fromUserNickname:String,fromUserTbId:String) {
         val intent = Intent(this, MainFragmentActivity::class.java)
@@ -563,7 +564,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         notificationManager.notify(
-            0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+            999/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
             notificationBuilder
         )
     }
@@ -631,7 +632,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
             Log.e("현재 노티왔어요!", "노티왔어요!")
             notificationManager.notify(
-                0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+                998/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
                 notificationBuilder
             )
 
@@ -707,7 +708,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
             Log.e("현재 노티왔어요!", "노티왔어요!")
             notificationManager.notify(
-                0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+                997/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
                 notificationBuilder
             )
 
@@ -782,7 +783,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
             Log.e("현재 노티왔어요!", "islikeBtnClick 노티왔어요!")
             notificationManager.notify(
-                0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+                998/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
                 notificationBuilder
             )
 
