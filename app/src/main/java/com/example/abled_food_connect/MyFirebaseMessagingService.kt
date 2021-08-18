@@ -127,7 +127,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
 
         val channelId = "food"
@@ -200,7 +200,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, roomId)
@@ -257,7 +257,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
         val channelId = "message"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -316,7 +316,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
 
         val icon = (ResourcesCompat.getDrawable(
@@ -383,7 +383,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
 
         val icon = (ResourcesCompat.getDrawable(
@@ -451,7 +451,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
 
         val icon = (ResourcesCompat.getDrawable(

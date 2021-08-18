@@ -46,6 +46,7 @@
             android:background="@color/black"
             android:orientation="horizontal"
             android:padding="10dp"
+            android:layout_above="@id/messageInputLinear"
             android:visibility="gone">
 
             <de.hdodenhof.circleimageview.CircleImageView
