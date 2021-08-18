@@ -44,20 +44,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     DMSendNotification(it["title"]!!,it["body"]!!,it["roomId"]!!,it["fromUserProfileImage"]!!,it["fromUserNickname"]!!,it["fromUserTbId"]!!)
                 }
 
-                !it["isParentComment"].isNullOrEmpty() -> {
-                    ParentCommentSendNotification(it["title"]!!, it["body"]!!, it["review_id"]!!)
+                !it["isParentComment"].isNullOrEmpty()->{
+                    ParentCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!)
                 }
 
-                !it["isChildComment"].isNullOrEmpty() -> {
-                    ChildCommentSendNotification(
-                        it["title"]!!,
-                        it["body"]!!,
-                        it["review_id"]!!,
-                        it["groupNum"]!!,
-                        it["comment_writing_user_id"]!!,
-                        it["comment_writing_user_nicname"]!!,
-                        it["reviewWritingUserId"]!!
-                    )
+                !it["isChildComment"].isNullOrEmpty()->{
+                    ChildCommentSendNotification(it["title"]!!,it["body"]!!,it["review_id"]!!,it["groupNum"]!!,it["comment_writing_user_id"]!!,it["comment_writing_user_nicname"]!!,it["reviewWritingUserId"]!!)
                 }
 
 
@@ -662,6 +654,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 
         Log.d("fcm - review_id", review_id)
+
 
 
         val pendingIntent = PendingIntent.getActivity(

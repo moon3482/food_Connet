@@ -25,6 +25,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,7 +70,9 @@ class MainFragmentActivity : AppCompatActivity() {
         binding.bottomNav.setOnNavigationItemSelectedListener(
             onBottomOnNavigationItemSelectedListener
         )
+val s = mutableListOf<String>()
 
+        Log.e(TAG, "onCreate: ${s.toString()}", )
         //툴바 생성 및 타이틀 이름
         setSupportActionBar(binding.maintoolbar)
         val tb = supportActionBar!!
@@ -521,7 +524,7 @@ class MainFragmentActivity : AppCompatActivity() {
                 workRequest
             )
         WorkManager.getInstance(context).enqueue(workRequestOne)
-        Log.d("DatetimeCheckWork", "worker 시작함수")
+
     }
 
     @SuppressLint("MissingPermission")
