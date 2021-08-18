@@ -17,5 +17,10 @@ data class LoginDataClass(
     @SerializedName("userGender")
     val userGender: String,
     @SerializedName("userAge")
-    val userAge: Int
+    val userAge: Int,
+    @SerializedName("ranking_explanation_check")
+    val ranking_explanation_check: Int
+
+
+
 )

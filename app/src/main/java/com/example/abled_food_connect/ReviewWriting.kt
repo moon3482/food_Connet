@@ -39,6 +39,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.abled_food_connect.data.ReviewWritingData
 import com.example.abled_food_connect.data.RoomTbDbInfoData
 import com.example.abled_food_connect.databinding.*
 import com.example.abled_food_connect.fragments.ReviewFragment
@@ -440,25 +441,20 @@ class ReviewWriting : AppCompatActivity() {
 //            phone_number = binding.phoneNumberInputEt.text.toString()
 
         server.review_Writing_Request(itemphoto,room_id,MainActivity.user_table_id,MainActivity.loginUserId,MainActivity.loginUserNickname,restaurantAddressStr,restaurantName,"2021-05-19 14:57:42",appointment_day,appointment_time,review_description,tasteStarPoint,serviceStarPoint,cleanStarPoint,interiorStarPoint).enqueue(object:
-            Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            Callback<ReviewWritingData> {
+            override fun onFailure(call: Call<ReviewWritingData>, t: Throwable) {
                 t.message?.let { Log.d("레트로핏 결과1", it) }
             }
 
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+            override fun onResponse(call: Call<ReviewWritingData>, response: Response<ReviewWritingData>) {
                 if (response?.isSuccessful) {
-                    Toast.makeText(getApplicationContext(), "리뷰를 작성했습니다.", Toast.LENGTH_LONG).show();
-//                    var nextIntent : Intent = Intent(this@ReviewWriting, ReviewDetailViewRvActivity::class.java)
-//                    nextIntent.putExtra("review_id", response?.body().toString())
-//                    startActivity(nextIntent)
+                    val Item: ReviewWritingData = response.body()!!
 
                     var toMoveUserProfileClickedReviewVerticalListActivityIntent : Intent = Intent(this@ReviewWriting, UserProfileClickedReviewVerticalListActivity::class.java)
-
-                    var review_id = response?.body().toString().toInt()
+                    var review_id = Item.review_id
                     toMoveUserProfileClickedReviewVerticalListActivityIntent.putExtra("review_id", review_id)
                     startActivity(toMoveUserProfileClickedReviewVerticalListActivityIntent)
-
-                    Toast.makeText(applicationContext, "리뷰를 작성했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "리뷰완료!\n"+"랭킹포인트 ${Item.get_season_point}점을 획득하셨습니다.\n"+"현재 시즌 랭킹포인트 : ${Item.now_season_total_rangking_point}", Toast.LENGTH_LONG).show()
                     finish()
                     Log.d("레트로핏 결과2",""+response?.body().toString())
 

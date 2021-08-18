@@ -226,8 +226,8 @@
             android:orientation="horizontal"
             android:background="@drawable/rectangle_edge_bold"
             >
-
             <CheckBox
+                android:layout_marginLeft="10dp"
                 android:id="@+id/checkAllCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

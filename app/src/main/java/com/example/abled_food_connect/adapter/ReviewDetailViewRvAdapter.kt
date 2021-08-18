@@ -448,19 +448,20 @@ class ReviewDetailViewRvAdapter () : RecyclerView.Adapter<ReviewDetailViewRvAdap
         val review_Like_Btn_Click = api.review_delete_btn_click(MainActivity.user_table_id,what_click_review_tb_id,room_id)
 
 
-        review_Like_Btn_Click.enqueue(object : Callback<String> {
+        review_Like_Btn_Click.enqueue(object : Callback<ReviewDeleteData> {
             override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
+                call: Call<ReviewDeleteData>,
+                response: Response<ReviewDeleteData>
             ) {
                 Log.d(ReviewFragment.TAG, "성공 : ${response.raw()}")
                 Log.d(ReviewFragment.TAG, "성공 : ${response.body().toString()}")
 
                 if(response.body() != null) {
-                    val returnString: String = response.body()!!
+                    val items: ReviewDeleteData = response.body()!!
 
-                    if(returnString =="true"){
-                        Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    if(items.success ==true){
+                        //Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "리뷰가 삭제되었습니다.\n"+"랭킹포인트 ${items.minus_season_point}점이 감소하였습니다.\n"+"현재 시즌 랭킹포인트 : ${items.now_season_total_rangking_point}", Toast.LENGTH_LONG).show()
                         removeItem(position)
                     }else{
                         Log.d("false", "false")
@@ -472,7 +473,7 @@ class ReviewDetailViewRvAdapter () : RecyclerView.Adapter<ReviewDetailViewRvAdap
 
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<ReviewDeleteData>, t: Throwable) {
                 Log.d(ReviewFragment.TAG, "실패 : $t")
             }
         })

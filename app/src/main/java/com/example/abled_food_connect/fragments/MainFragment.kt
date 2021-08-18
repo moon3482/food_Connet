@@ -1,7 +1,9 @@
 package com.example.abled_food_connect.fragments
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -9,7 +11,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +20,7 @@ import com.example.abled_food_connect.*
 import com.example.abled_food_connect.adapter.MainFragmentAdapter
 import com.example.abled_food_connect.data.LoadingRoom
 import com.example.abled_food_connect.data.MainFragmentItemData
+import com.example.abled_food_connect.data.NewActionAlarmCheckData
 import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
@@ -42,6 +44,9 @@ class MainFragment : Fragment() {
     lateinit var swipeRefresh: SwipeRefreshLayout
     lateinit var refreshTextView:SwipeRefreshLayout
 
+
+    //브로드캐스트 리시버
+    val broadcast = NewActionAlarmCheckBroadCastReceiver()
 
     companion object {
         const val TAG: String = "홈 프래그먼트 로그"
@@ -129,6 +134,11 @@ class MainFragment : Fragment() {
 
 
 
+        //브로드캐스트 리시버
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("NewActionAlarm")
+        requireContext().registerReceiver(broadcast, intentFilter)
+
 
         return view
     }
@@ -190,6 +200,8 @@ class MainFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "메인프래그먼트 onDestroy()")
+
+        requireContext().unregisterReceiver(broadcast)
     }
 
     override fun onDetach() {
@@ -355,4 +367,34 @@ class MainFragment : Fragment() {
             }
         })
     }
+
+
+
+    //브로드캐스트리시버
+
+
+
+    inner class NewActionAlarmCheckBroadCastReceiver :BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+
+            if (intent.action == "NewActionAlarm") {
+
+                for (fragment in parentFragmentManager.fragments) {
+                    if (fragment.isVisible) {
+                        if (fragment is MainFragment) {
+                            NewActionAlarmCheck()
+                        }
+                    }
+                }
+
+            }
+
+            Log.d("리시버받음", "NewActionAlarm")
+
+
+        }
+
+
+    }
+
 }

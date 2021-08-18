@@ -2,6 +2,7 @@ package com.example.abled_food_connect.fragments
 
 import android.R.menu
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -15,8 +16,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.ActionAlarmActivity
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
+import com.example.abled_food_connect.RankingExplanationActivity
 import com.example.abled_food_connect.adapter.RankingFragmentRvAdapter
 import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.retrofit.API
@@ -73,6 +76,12 @@ class RankingFragment:Fragment() {
 
         rankingFragmentRv.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
         rankingFragmentRv.setHasFixedSize(false)
+
+
+        if(MainActivity.ranking_explanation_check == 0){
+            val intent = Intent(getActivity(), RankingExplanationActivity::class.java)
+            startActivity(intent)
+        }
 
 
         // 구분선 넣기
@@ -200,6 +209,16 @@ class RankingFragment:Fragment() {
 
 
         when (item.itemId) {
+
+
+            R.id.ranking_explanation_btn -> {
+                activity.let {
+                    val intent = Intent(context, RankingExplanationActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+
+
             R.id.Item0 ->{
                 seasonPointListLoading()
                 what_tier = "전체"

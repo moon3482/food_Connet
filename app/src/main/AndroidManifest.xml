@@ -31,80 +31,104 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
+        <activity android:name=".RankingExplanationActivity"></activity>
+
         <receiver
             android:name=".broadcastReciver.RoomInformationBroadcast"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="RoomInfo"/>
+                <action android:name="RoomInfo" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ActionAlarmActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ActionAlarmActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".PermissionGrantedActivity"
             android:exported="true" />
         <activity
             android:name=".RoomSearchActivity"
-            android:windowSoftInputMode="stateAlwaysVisible"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible" />
 
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="location|microphone"
             tools:node="merge" />
 
-        <activity android:name=".UserProfileBadgeListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".GroupChatLocationMapActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UserProfileEvaluationListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UserProfileJoinHistoryActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MeetingUserEvaluationActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UnwrittenReviewListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyPageUserScheduleListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyPageUserScheduleActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ReviewSearchActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UserProfileModifyActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".JoinRoomSubscriptionActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".DirectMessageActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UserProfileActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UserProfileClickedReviewVerticalListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UserProfileClickedReviewGridListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ReviewCommentChildActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ReviewCommentActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ReviewDetailViewRvActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ReviewWriting"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UserProfileBadgeListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".GroupChatLocationMapActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileEvaluationListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileJoinHistoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MeetingUserEvaluationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UnwrittenReviewListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyPageUserScheduleListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyPageUserScheduleActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReviewSearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileModifyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".JoinRoomSubscriptionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DirectMessageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileClickedReviewVerticalListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserProfileClickedReviewGridListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReviewCommentChildActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReviewCommentActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReviewDetailViewRvActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReviewWriting"
+            android:screenOrientation="portrait" />
         <activity android:name=".UserRegisterActivity" />
         <activity
             android:name=".CreateRoomActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".RoomInformationActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".RoomInformationActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ChatRoomActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".CreateRoomMapSearchActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".CreateRoomMapSearchActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -114,8 +138,9 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/map_search" />
         </activity>
-        <activity android:name=".MainFragmentActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".MainFragmentActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
@@ -131,8 +156,9 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -140,7 +166,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -156,8 +183,8 @@
         </activity>
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat" />
 
         <service
             android:name=".MyFirebaseMessagingService"
