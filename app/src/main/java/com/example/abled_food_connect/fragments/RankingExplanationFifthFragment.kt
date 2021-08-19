@@ -1,10 +1,12 @@
 package com.example.abled_food_connect.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.example.abled_food_connect.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -21,6 +23,7 @@ class RankingExplanationFifthFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    lateinit var fifthIv :ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,13 +33,18 @@ class RankingExplanationFifthFragment : Fragment() {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_ranking_explanation_fifth, container, false)
-
+        val drawable = resources.getDrawable(
+            R.drawable.ranking_explanation5
+        )
+        fifthIv = view.findViewById<ImageView>(R.id.fifthIv)
+        fifthIv.setImageDrawable(drawable)
         return view
     }
 
@@ -59,4 +67,5 @@ class RankingExplanationFifthFragment : Fragment() {
                 }
             }
     }
+
 }

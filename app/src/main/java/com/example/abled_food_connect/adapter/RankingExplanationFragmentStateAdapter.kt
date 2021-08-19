@@ -16,6 +16,8 @@ class RankingExplanationFragmentStateAdapter (fragmentActivity: FragmentActivity
         return fragments[position]
     }
 
+
+
     fun addFragment(fragment: Fragment) {
         fragments.add(fragment)
         notifyItemInserted(fragments.size-1)

@@ -4,6 +4,7 @@ import android.R
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
@@ -78,6 +79,8 @@ class RankingExplanationActivity : AppCompatActivity() {
                 }
 
                 if(viewPagerPosition == 4){
+
+
                     binding.finishBtn.visibility = View.VISIBLE
                     binding.nextBtn.visibility = View.GONE
                 }else{

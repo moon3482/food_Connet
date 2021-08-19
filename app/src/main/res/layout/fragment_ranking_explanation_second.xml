@@ -10,6 +10,7 @@
         android:id="@+id/secondIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ranking_explanation2"/>
+        android:src="@drawable/ranking_explanation2"
+        android:background="@color/app_theme_color"/>
 
 </FrameLayout>
