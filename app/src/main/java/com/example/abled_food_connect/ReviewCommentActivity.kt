@@ -1067,6 +1067,7 @@ class ReviewCommentActivity : AppCompatActivity() {
 
             R.id.refreshParantCommentBtn -> {
                 Toast.makeText(applicationContext, "댓글 새로고침을 눌렀습니다.", Toast.LENGTH_SHORT).show()
+                reviewContentLoading(Companion.review_id)
                 ParentCommentLoading(review_id)
             }
 

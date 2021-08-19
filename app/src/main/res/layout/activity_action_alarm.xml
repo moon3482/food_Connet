@@ -21,10 +21,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/actionAlarmRv" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/ifNoDataAlertTv"
+            android:text="알림이 없습니다."
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
