@@ -177,6 +177,10 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (response.body()!!.success) {
 
                         mapFragment.getMapAsync {
+                            for (marker in markerList) {
+                                marker.map = null
+                            }
+                            markerList.clear()
                             var builder = LatLngBounds.Builder()
                             val bitmap =
                                 Marker.DEFAULT_ICON.getBitmap(this@GroupChatLocationMapActivity)

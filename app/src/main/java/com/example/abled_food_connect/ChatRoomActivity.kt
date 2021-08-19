@@ -1522,10 +1522,22 @@ class ChatRoomActivity : AppCompatActivity() {
 
                             } else if (roomStatus < 0) {
 
-
+                                if (hostName == MainActivity.loginUserNickname && nowNumOfPeople!!.toInt() > 1) {
+                                    binding.finishLinear.visibility = View.VISIBLE
                                 if (finish!!.toInt() == 1) {
-                                    if (hostName == MainActivity.loginUserNickname && nowNumOfPeople!!.toInt() > 1) {
-                                        binding.finishLinear.visibility = View.VISIBLE
+
+                                    binding.roomFinishButton.isEnabled = false
+                                    binding.roomFinishButton.setBackgroundColor(Color.GRAY)
+                                    binding.roomFinishButton.text = "완료됨"
+                                    binding.groupChatInputMessageEditText.isEnabled = false
+                                    binding.groupChatSendMessageButton.isEnabled = false
+                                    binding.groupChatAddImageButton.isEnabled = false
+                                    binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
+                                }
+                                } else {
+                                    binding.finishLinear.visibility = View.GONE
+                                    if (finish!!.toInt() == 1) {
+
                                         binding.roomFinishButton.isEnabled = false
                                         binding.roomFinishButton.setBackgroundColor(Color.GRAY)
                                         binding.roomFinishButton.text = "완료됨"
@@ -1533,14 +1545,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                         binding.groupChatSendMessageButton.isEnabled = false
                                         binding.groupChatAddImageButton.isEnabled = false
                                         binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
-                                    }else{
-                                        binding.groupChatInputMessageEditText.isEnabled = false
-                                        binding.groupChatSendMessageButton.isEnabled = false
-                                        binding.groupChatAddImageButton.isEnabled = false
-                                        binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
                                     }
-                                } else {
-                                    binding.finishLinear.visibility = View.GONE
                                 }
 
                                 binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
@@ -1622,6 +1627,16 @@ class ChatRoomActivity : AppCompatActivity() {
                                 }
                             } else {
                                 binding.finishLinear.visibility = View.GONE
+                                if (finish!!.toInt() == 1) {
+
+                                    binding.roomFinishButton.isEnabled = false
+                                    binding.roomFinishButton.setBackgroundColor(Color.GRAY)
+                                    binding.roomFinishButton.text = "완료됨"
+                                    binding.groupChatInputMessageEditText.isEnabled = false
+                                    binding.groupChatSendMessageButton.isEnabled = false
+                                    binding.groupChatAddImageButton.isEnabled = false
+                                    binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
+                                }
                             }
 
                             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
