@@ -288,29 +288,58 @@ class ReviewCommentChildActivity : AppCompatActivity() {
                     Log.d(ReviewFragment.TAG, "자식목록불러와 ${reviewChildPageCommentGetData.childPageCommentList}")
                     Log.d(ReviewFragment.TAG, "자식목록불러와 : ${isSuccess}")
 
-                    review_comment_rv_adapter =  ReviewChildPageCommenRvAdapter(comment_ArrayList,writerNicname,this@ReviewCommentChildActivity)
-                    review_comment_rv_adapter.notifyDataSetChanged()
-                    reviewCommentRv.adapter = review_comment_rv_adapter
+                    if(comment_ArrayList.size == 0){
 
-                    //클릭리스너 등록
-                    review_comment_rv_adapter.setItemClickListener( object : ReviewChildPageCommenRvAdapter.ItemClickListener{
-                        override fun onClick(view: View, commentWriterUserTbId: Int, commentWriterUserNicname: String, childOrParent : Int, groupNum : Int) {
-                            binding.childToCommentAlertTextBar.visibility = View.VISIBLE
-                            binding.tosendTargetUserNicName.text = commentWriterUserNicname
-                            binding.writingCommentEt.requestFocus()
-                            view.hideKeyboard()
-                            view.showKeyboard()
+                        var builder = AlertDialog.Builder(this@ReviewCommentChildActivity)
+                        builder.setTitle("알림")
+                        builder.setMessage("삭제된 댓글입니다.")
 
-                            //답글달기 버튼을 누르면 해당 댓글작성자의 tb_id, 닉네임, 그룹넘버를 가져온다.
-                            this@ReviewCommentChildActivity.sendTargetUserTable_id = commentWriterUserTbId
-                            this@ReviewCommentChildActivity.sendTargetUserNicName = commentWriterUserNicname
-                            ReviewCommentChildActivity.groupNum = groupNum
+                        // 버튼 클릭시에 무슨 작업을 할 것인가!
+                        var listener = object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->{
+                                        onBackPressed()
+                                    }
 
-                            //1일 경우 자식 댓글(코멘트로 등록됨)
-                            this@ReviewCommentChildActivity.childOrParent = 1
+//
 
+                                }
+                            }
                         }
-                    })
+
+                        builder.setPositiveButton("닫기", listener)
+//
+
+                        builder.show()
+                    }else{
+
+                        review_comment_rv_adapter =  ReviewChildPageCommenRvAdapter(comment_ArrayList,writerNicname,this@ReviewCommentChildActivity)
+                        review_comment_rv_adapter.notifyDataSetChanged()
+                        reviewCommentRv.adapter = review_comment_rv_adapter
+
+                        //클릭리스너 등록
+                        review_comment_rv_adapter.setItemClickListener( object : ReviewChildPageCommenRvAdapter.ItemClickListener{
+                            override fun onClick(view: View, commentWriterUserTbId: Int, commentWriterUserNicname: String, childOrParent : Int, groupNum : Int) {
+                                binding.childToCommentAlertTextBar.visibility = View.VISIBLE
+                                binding.tosendTargetUserNicName.text = commentWriterUserNicname
+                                binding.writingCommentEt.requestFocus()
+                                view.hideKeyboard()
+                                view.showKeyboard()
+
+                                //답글달기 버튼을 누르면 해당 댓글작성자의 tb_id, 닉네임, 그룹넘버를 가져온다.
+                                this@ReviewCommentChildActivity.sendTargetUserTable_id = commentWriterUserTbId
+                                this@ReviewCommentChildActivity.sendTargetUserNicName = commentWriterUserNicname
+                                ReviewCommentChildActivity.groupNum = groupNum
+
+                                //1일 경우 자식 댓글(코멘트로 등록됨)
+                                this@ReviewCommentChildActivity.childOrParent = 1
+
+                            }
+                        })
+                    }
+
+
 
 
 

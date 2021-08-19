@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.abled_food_connect.adapter.ActionAlarmRvAdapter
@@ -110,6 +111,10 @@ class ActionAlarmActivity : AppCompatActivity() {
 
                     ActionAlarmAdapter.datas.clear()
                     ActionAlarmArrayList = ReviewLikeBtnClickData!!.ActionAlarmList as ArrayList<ActionAlarmListDataItem>
+                    if(ActionAlarmArrayList.size == 0){
+                        binding.ifNoDataAlertTv.visibility = View.VISIBLE
+                        binding.actionAlarmRv.visibility = View.GONE
+                    }
                     ActionAlarmAdapter.datas = ActionAlarmArrayList
                     ActionAlarmAdapter.notifyDataSetChanged()
 
