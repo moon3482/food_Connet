@@ -8,6 +8,15 @@ android:layout_height="match_parent"
 tools:context=".ReviewCommentChildActivity"
 android:orientation="vertical">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/MainToolbar" />
+
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/childNestedSv"
         android:layout_weight="1"

@@ -347,7 +347,7 @@ class UserRegisterActivity : AppCompatActivity() {
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                Toast.makeText(applicationContext, "[나는 로봇이 아닙니다] 인증을 해주세요.", Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, "정확한 전화번호를 입력해주세요.", Toast.LENGTH_LONG)
                     .show()
             }
 
