@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -107,6 +109,12 @@ class ReviewCommentChildActivity : AppCompatActivity() {
         // 이제부터 binding 바인딩 변수를 활용하여 마음 껏 xml 파일 내의 뷰 id 접근이 가능해집니다.
         // 뷰 id도 파스칼케이스 + 카멜케이스의 네이밍규칙 적용으로 인해서 tv_message -> tvMessage 로 자동 변환 되었습니다.
 
+
+        setSupportActionBar(binding.Toolbar) //커스텀한 toolbar를 액션바로 사용
+        supportActionBar?.setDisplayShowTitleEnabled(false) //액션바에 표시되는 제목의 표시유무를 설정합니다. false로 해야 custom한 툴바의 이름이 화면에 보이게 됩니다.
+        binding.Toolbar.title = "리뷰"
+        //툴바에 백버튼 만들기
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
         //인텐트를 통해 자식댓글을 보기 위한 데이터를 가져온다.
@@ -529,5 +537,30 @@ class ReviewCommentChildActivity : AppCompatActivity() {
         MainActivity.userAge = pref.getInt("userAge",0)
         MainActivity.userGender = pref.getString("userGender","")!!
         MainActivity.ranking_explanation_check = pref.getInt("ranking_explanation_check",0)
+    }
+
+
+    //액션버튼 메뉴 액션바에 집어 넣기
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.review_comment_child_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        when (id) {
+
+            R.id.refreshChildCommentBtn -> {
+                Toast.makeText(applicationContext, "댓글 새로고침을 눌렀습니다.", Toast.LENGTH_SHORT).show()
+                CommentLoading(review_id,groupNum)
+            }
+
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

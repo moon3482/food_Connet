@@ -6,7 +6,7 @@
 
     <item
         android:id="@+id/ranking_explanation_btn"
-        android:icon="@drawable/ic_baseline_info_24"
+        android:icon="@drawable/ic_baseline_ranking_info_24"
         android:title="랭킹정보"
         app:showAsAction="always|collapseActionView" />
 

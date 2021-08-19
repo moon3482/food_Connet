@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -1054,9 +1055,20 @@ class ReviewCommentActivity : AppCompatActivity() {
 
 
 
+    //액션버튼 메뉴 액션바에 집어 넣기
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.review_comment_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         when (id) {
+
+            R.id.refreshParantCommentBtn -> {
+                Toast.makeText(applicationContext, "댓글 새로고침을 눌렀습니다.", Toast.LENGTH_SHORT).show()
+                ParentCommentLoading(review_id)
+            }
 
             android.R.id.home -> {
                 finish()
