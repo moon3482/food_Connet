@@ -59,7 +59,13 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         init()
-//        socket.emit(
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+//                socket.emit(
 //            "left",
 //            gson.toJson(
 //                RoomData(
@@ -69,12 +75,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
 //                )
 //            )
 //        )
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        socket.disconnect()
+//        socket.disconnect()
     }
     override fun onStop() {
         super.onStop()

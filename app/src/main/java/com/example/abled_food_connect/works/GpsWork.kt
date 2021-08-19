@@ -33,8 +33,7 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
     var currentLongitude: Double = 0.0
     var perf = context.getSharedPreferences("pref_user_data", 0)
     val userIndex = perf.getInt("user_table_id", 0)
-    val roomId = inputData.getString("roomId");
-
+val TAG = "위치업뎃 워커"
     override suspend fun doWork(): Result {
 
          gps()
@@ -78,14 +77,21 @@ class GpsWork(val context: Context, workerParameters: WorkerParameters) :
         ) {
 
             if (isNetworkEnabled && !isGPSEnabled) {
-
+                Log.e(TAG, "getLatLng: 네트워크 o GPS x", )
                 val locatioNProvider = LocationManager.NETWORK_PROVIDER
                 currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
-            } else {
+            } else if (!isNetworkEnabled&&isGPSEnabled){
+                Log.e(TAG, "getLatLng: 네트워크 x GPS o", )
+
+                val locatioNProvider = LocationManager.GPS_PROVIDER
+                currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
+            }else if(isGPSEnabled){
+                Log.e(TAG, "getLatLng: GPS o", )
                 val locatioNProvider = LocationManager.GPS_PROVIDER
                 currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
             }
             if (currentLatLng == null) {
+                Log.e(TAG, "getLatLng: GPS null", )
                 val locatioNProvider = LocationManager.NETWORK_PROVIDER
                 currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
             }

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.drawable.VectorDrawable
 import android.media.RingtoneManager
 import android.os.Build
@@ -130,6 +129,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         it["hostName"]!!
                     )
                 }
+                !it["kick"].isNullOrEmpty() -> {
+                    kickMessageSendNotification(
+                        it["title"]!!,
+                        it["body"]!!,
+                        it["roomId"]!!,
+                        it["hostName"]!!
+                    )
+                }
+
                 else -> {
                     val noti = it
                     messageSendNotification(
@@ -246,6 +254,62 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         intent.putExtra("hostName", hostName)
 
         Log.d("호스트네임", "messageSendNotification: " + hostName)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder = NotificationCompat.Builder(this, roomId)
+            .setSmallIcon(R.drawable.ic_noti_icon)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(false)
+            .setContentTitle(title)
+            .setContentText(messageBody)
+            .setAutoCancel(true)
+            .setColor(getColor(R.color.txt_white_gray))
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+            .setChannelId(roomId)
+            .setGroupSummary(true)
+            .build()
+
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            val channel =
+                NotificationChannel(roomId, roomId, NotificationManager.IMPORTANCE_HIGH)
+            channel.vibrationPattern = longArrayOf(0, 1500)
+
+
+
+
+            notificationManager.createNotificationChannel(channel)
+
+
+        }
+
+        notificationManager.notify(
+            0/*(Math.random()*1000).toInt()+System.currentTimeMillis().toInt()*/ /* ID of notification */,
+            notificationBuilder
+        )
+    }
+
+    private fun kickMessageSendNotification(
+        title: String,
+        messageBody: String,
+        roomId: String,
+        hostName: String
+    ) {
+        val intent = Intent(this, MainFragmentActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,

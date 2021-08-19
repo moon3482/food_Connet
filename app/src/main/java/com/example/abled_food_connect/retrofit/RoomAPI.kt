@@ -140,6 +140,13 @@ interface RoomAPI {
         @Field("userIndexId") userIndexId: String,
         @Field("userNickName") userNickName: String
     ): Call<String>
+    @FormUrlEncoded
+    @POST("/groupChat/kickRoom.php")
+    fun kickRoom(
+        @Field("roomId") roomId: String,
+        @Field("userIndexId") userIndexId: String,
+        @Field("userNickName") userNickName: String
+    ): Call<String>
     //그룹채팅 방없애기
     @FormUrlEncoded
     @POST("/groupChat/deleteRoom.php")

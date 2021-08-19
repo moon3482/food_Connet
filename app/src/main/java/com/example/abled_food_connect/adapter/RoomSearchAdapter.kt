@@ -56,6 +56,10 @@ class RoomSearchAdapter(val context: Context, private val list: ArrayList<MainFr
         testholder.roomStatus.text = maindata.title
         testholder.shopName.text = maindata.info
         testholder.roomStatus
+        if (maindata.roomStatus>0&&maindata.nowNumOfPeople == maindata.numOfPeople) {
+            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_full)
+            testholder.roomStatus.text = "FULL"
+        } else
         if (maindata.roomStatus > 5) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
             testholder.roomStatus.text = "모집중"

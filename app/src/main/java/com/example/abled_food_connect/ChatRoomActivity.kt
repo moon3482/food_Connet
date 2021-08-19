@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
@@ -14,7 +13,6 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
@@ -25,10 +23,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageView
 import com.canhub.cropper.options
@@ -39,6 +40,7 @@ import com.example.abled_food_connect.databinding.ActivityChatRoomBinding
 import com.example.abled_food_connect.retrofit.ChatClient
 import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
+import com.example.abled_food_connect.works.GpsWork
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -175,6 +177,8 @@ class ChatRoomActivity : AppCompatActivity() {
         Log.d(TAG, "onStart 호출")
 
 
+
+
     }
 
     override fun onRestart() {
@@ -203,6 +207,11 @@ class ChatRoomActivity : AppCompatActivity() {
 //            editor.putBoolean(roomId, true)
 //            editor.apply()
 //        }
+        Thread{val workRequest: OneTimeWorkRequest =
+            OneTimeWorkRequestBuilder<GpsWork>().build()
+            WorkManager.getInstance(this).enqueueUniqueWork(
+                roomId,
+                ExistingWorkPolicy.REPLACE, workRequest)}.start()
 
         socket.emit(
             "read",
@@ -217,7 +226,8 @@ class ChatRoomActivity : AppCompatActivity() {
             "left",
             gson.toJson(RoomData(userName, chatroomRoomId, MainActivity.user_table_id))
         )
-
+        socket.disconnect()
+        listSocket.disconnect()
     }
 
     override fun onStop() {
@@ -225,7 +235,7 @@ class ChatRoomActivity : AppCompatActivity() {
         Log.d(TAG, "onStop 호출")
 //        chatAdapter.arrayList.clear()
         chatAdapter.arrayList.clear()
-        socket.disconnect()
+
 
     }
 
@@ -318,6 +328,10 @@ class ChatRoomActivity : AppCompatActivity() {
                             binding.roomFinishButton.isEnabled = false
                             binding.roomFinishButton.setBackgroundColor(Color.GRAY)
                             binding.roomFinishButton.text = "완료됨"
+                            binding.groupChatInputMessageEditText.isEnabled = false
+                            binding.groupChatSendMessageButton.isEnabled = false
+                            binding.groupChatAddImageButton.isEnabled = false
+                            binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
                         }
                     }
 
@@ -1188,7 +1202,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     response: Response<paginationData>
                 ) {
 
-
+                    chatAdapter.arrayList.clear()
                     if (response.body() != null) {
                         val list: paginationData? = response.body()
                         if (list!!.success) {
@@ -1199,11 +1213,11 @@ class ChatRoomActivity : AppCompatActivity() {
 
                             }
                             Log.e("채팅리드갯수", list.ChatLogList.size.toString())
-//                            chatAdapter.notifyDataSetChanged()
+                            chatAdapter.notifyDataSetChanged()
 
-                            Handler().postDelayed(Runnable {
-                                binding.groupChatRecyclerView.scrollToPosition(chatAdapter.arrayList.size - 1)
-                            }, 1000)
+//                            Handler().postDelayed(Runnable {
+//                                binding.groupChatRecyclerView.scrollToPosition(chatAdapter.arrayList.size - 1)
+//                            }, 1000)
 
                             joinMember()
 
@@ -1488,34 +1502,50 @@ class ChatRoomActivity : AppCompatActivity() {
                         val mapX = data[0].mapX
                         val mapY = data[0].mapY
                         val finish = data[0].finish
-                        if (roomStatus > 5) {
-                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
-                            binding.RoomInformationStatus.text = "모집중"
-                        } else if (roomStatus > 0.9) {
-                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
-                            val text: String = getString(R.string.room_status_imminent_time)
-                            binding.RoomInformationStatus.text =
-                                String.format(text, Math.round(roomStatus).toInt())
 
-                        } else if (roomStatus < 0.9 && roomStatus > 0.0) {
-                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
-                            binding.RoomInformationStatus.text = "임박"
+                        if (roomStatus > 0 && nowNumOfPeople == numOfPeople) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_full)
+                            binding.RoomInformationStatus.text = "FULL"
+                        } else
+                            if (roomStatus > 5) {
+                                binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
+                                binding.RoomInformationStatus.text = "모집중"
+                            } else if (roomStatus > 0.9) {
+                                binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
+                                val text: String = getString(R.string.room_status_imminent_time)
+                                binding.RoomInformationStatus.text =
+                                    String.format(text, Math.round(roomStatus).toInt())
 
-                        } else if (roomStatus < 0) {
-                            if (hostName == MainActivity.loginUserNickname && nowNumOfPeople!!.toInt() > 1) {
-                                binding.finishLinear.visibility = View.VISIBLE
+                            } else if (roomStatus < 0.9 && roomStatus > 0.0) {
+                                binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
+                                binding.RoomInformationStatus.text = "임박"
+
+                            } else if (roomStatus < 0) {
+
+
                                 if (finish!!.toInt() == 1) {
-                                    binding.roomFinishButton.isEnabled = false
-                                    binding.roomFinishButton.setBackgroundColor(Color.GRAY)
-                                    binding.roomFinishButton.text = "완료됨"
+                                    if (hostName == MainActivity.loginUserNickname && nowNumOfPeople!!.toInt() > 1) {
+                                        binding.finishLinear.visibility = View.VISIBLE
+                                        binding.roomFinishButton.isEnabled = false
+                                        binding.roomFinishButton.setBackgroundColor(Color.GRAY)
+                                        binding.roomFinishButton.text = "완료됨"
+                                        binding.groupChatInputMessageEditText.isEnabled = false
+                                        binding.groupChatSendMessageButton.isEnabled = false
+                                        binding.groupChatAddImageButton.isEnabled = false
+                                        binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
+                                    }else{
+                                        binding.groupChatInputMessageEditText.isEnabled = false
+                                        binding.groupChatSendMessageButton.isEnabled = false
+                                        binding.groupChatAddImageButton.isEnabled = false
+                                        binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
+                                    }
+                                } else {
+                                    binding.finishLinear.visibility = View.GONE
                                 }
-                            } else {
-                                binding.finishLinear.visibility = View.GONE
-                            }
 
-                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
-                            binding.RoomInformationStatus.text = "마감"
-                        }
+                                binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
+                                binding.RoomInformationStatus.text = "마감"
+                            }
 
                         binding.RoomInfomationDate.text = date
                         binding.RoomInfoShopName.text = shopName
@@ -1585,6 +1615,10 @@ class ChatRoomActivity : AppCompatActivity() {
                                     binding.roomFinishButton.isEnabled = false
                                     binding.roomFinishButton.setBackgroundColor(Color.GRAY)
                                     binding.roomFinishButton.text = "완료됨"
+                                    binding.groupChatInputMessageEditText.isEnabled = false
+                                    binding.groupChatSendMessageButton.isEnabled = false
+                                    binding.groupChatAddImageButton.isEnabled = false
+                                    binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
                                 }
                             } else {
                                 binding.finishLinear.visibility = View.GONE
@@ -1908,7 +1942,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         val layoutManager =
                             LinearLayoutManager::class.java.cast(binding.groupChatRecyclerView.layoutManager)
                         pagenum = layoutManager.itemCount
-                        userIntoMessageRead(pagenum)
+                        messageRead(pagenum)
                     }
 
 

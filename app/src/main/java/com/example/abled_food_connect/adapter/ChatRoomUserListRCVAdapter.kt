@@ -105,7 +105,7 @@ class ChatRoomUserListRCVAdapter(
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-            .exitRoom(
+            .kickRoom(
                 roomId,
                 user.userIndexId.toString(),
                 user.userNickname
@@ -129,6 +129,21 @@ class ChatRoomUserListRCVAdapter(
                                     )
                                 )
                             )
+                        ChatRoomActivity.listSocket.emit(
+                            "newMessage",
+                            gson.toJson(
+                                MessageData(
+                                    "OUTMEMBER",
+                                    "SERVER",
+                                    roomId,
+                                    user.userNickname,
+                                    "SERVER",
+                                    strDate,
+                                    members,
+                                    0, ChatRoomActivity.hostName
+                                )
+                            )
+                        )
 
 
                     }

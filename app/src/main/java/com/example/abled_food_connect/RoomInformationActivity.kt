@@ -322,7 +322,10 @@ class RoomInformationActivity : AppCompatActivity() {
                             binding.RoomInfoSubscriptionRoomBtn.visibility = View.GONE
                             binding.RoomInfoJoinRoomBtn.visibility = View.VISIBLE
                         }
-
+                        if (roomStatus>0&&nowNumOfPeople == numOfPeople) {
+                            binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_full)
+                            binding.RoomInformationStatus.text  = "FULL"
+                        } else
                         if (roomStatus > 5) {
                             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
                             binding.RoomInformationStatus.text = "모집중"

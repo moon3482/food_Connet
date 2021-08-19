@@ -55,8 +55,8 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomStatus.text = maindata.title
         testholder.shopName.text = maindata.info
         testholder.roomStatus
-        if (maindata.nowNumOfPeople == maindata.numOfPeople) {
-            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
+        if (maindata.roomStatus>0&&maindata.nowNumOfPeople == maindata.numOfPeople) {
+            testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_full)
             testholder.roomStatus.text = "FULL"
         } else if (maindata.roomStatus > 5) {
                 testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)

@@ -21,11 +21,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import coil.load
 import com.example.abled_food_connect.data.GroupChatLocationData
 import com.example.abled_food_connect.data.MainFragmentItemData
 import com.example.abled_food_connect.databinding.ActivityGroupChatLocationMapBinding
 import com.example.abled_food_connect.retrofit.RoomAPI
+import com.example.abled_food_connect.works.GpsWork
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
@@ -89,6 +94,13 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onStart()
         if (Build.VERSION.SDK_INT > 29) {
             checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
+        }
+        if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)){
+            val workRequest: OneTimeWorkRequest =
+                OneTimeWorkRequestBuilder<GpsWork>().build()
+            WorkManager.getInstance(this).enqueueUniqueWork(
+                roomId,
+                ExistingWorkPolicy.REPLACE, workRequest)
         }
     }
 

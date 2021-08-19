@@ -56,6 +56,17 @@ class ScheduleCheckWork(val context: Context, workerParameters: WorkerParameters
                 )
                 Log.d("GPSdd", "방번호 : ${roomTag} 실행여부 : ${check(roomTag)}")
             }
+
+            delay>=-3600&&0>=delay->{
+                Log.d("CheckGpsWorker", "worker 바로시작함수 진입")
+                val data = Data.Builder().put("roomId", roomTag).build()
+                val workRequest: OneTimeWorkRequest =
+                    OneTimeWorkRequestBuilder<GpsWork>().setInputData(data).build()
+                WorkManager.getInstance(context).enqueueUniqueWork(
+                    roomTag,
+                    ExistingWorkPolicy.REPLACE, workRequest
+                )
+            }
             else -> {
 
 
