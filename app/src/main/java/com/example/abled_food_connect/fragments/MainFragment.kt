@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.fragments
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -254,11 +255,12 @@ class MainFragment : Fragment() {
 
         server.loadingRoomGet(MainActivity.loginUserId)
             .enqueue(object : Callback<LoadingRoom> {
+                @SuppressLint("NotifyDataSetChanged")
                 override fun onResponse(
                     call: Call<LoadingRoom>,
                     response: Response<LoadingRoom>
                 ) {
-
+                    recyclerViewAdapter.unList.clear()
                     val list: LoadingRoom = response.body()!!
                     val array: ArrayList<MainFragmentItemData> = list.roomList
                     mainFragmentListArray.addAll(list.roomList)
