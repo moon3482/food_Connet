@@ -1531,6 +1531,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                     binding.roomFinishButton.text = "완료됨"
                                     binding.groupChatInputMessageEditText.isEnabled = false
                                     binding.groupChatSendMessageButton.isEnabled = false
+                                    binding.groupChatInputMessageEditText.hint = "모임이 완료되어 채팅이 불가능합니다."
                                     binding.groupChatAddImageButton.isEnabled = false
                                     binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
                                 }
@@ -1543,6 +1544,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                         binding.roomFinishButton.text = "완료됨"
                                         binding.groupChatInputMessageEditText.isEnabled = false
                                         binding.groupChatSendMessageButton.isEnabled = false
+                                        binding.groupChatInputMessageEditText.hint = "모임이 완료되어 채팅이 불가능합니다."
                                         binding.groupChatAddImageButton.isEnabled = false
                                         binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
                                     }
@@ -1622,6 +1624,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                     binding.roomFinishButton.text = "완료됨"
                                     binding.groupChatInputMessageEditText.isEnabled = false
                                     binding.groupChatSendMessageButton.isEnabled = false
+                                    binding.groupChatInputMessageEditText.hint = "모임이 완료되어 채팅이 불가능합니다."
                                     binding.groupChatAddImageButton.isEnabled = false
                                     binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
                                 }
@@ -1633,6 +1636,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                     binding.roomFinishButton.setBackgroundColor(Color.GRAY)
                                     binding.roomFinishButton.text = "완료됨"
                                     binding.groupChatInputMessageEditText.isEnabled = false
+                                    binding.groupChatInputMessageEditText.hint = "모임이 완료되어 채팅이 불가능합니다."
                                     binding.groupChatSendMessageButton.isEnabled = false
                                     binding.groupChatAddImageButton.isEnabled = false
                                     binding.groupChatSendMessageButton.setColorFilter(Color.GRAY)
