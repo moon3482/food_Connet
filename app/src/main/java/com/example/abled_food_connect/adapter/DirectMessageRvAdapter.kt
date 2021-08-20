@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.abled_food_connect.ChatImageZoom
 import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.UserProfileActivity
@@ -181,6 +182,14 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
             Glide.with(chatMyIv.context).load(chatMyIv.context.getString(R.string.http_request_base_url)+item.message).into(chatMyIv)
             chatMyTimeStamp.text = item.toShowTimeStr
             messageCheckTv.text = item.message_check
+
+
+            chatMyIv.setOnClickListener(View.OnClickListener {
+                var toChatImageZoomActivity : Intent = Intent(chatMyIv.context, ChatImageZoom::class.java)
+                toChatImageZoomActivity.putExtra("imagePath", item.message)
+                startActivity(chatMyIv.context, toChatImageZoomActivity, null)
+            })
+
         }
     }
 
@@ -205,6 +214,13 @@ class DirectMessageRvAdapter (private val mydata: MutableList<DirectMessageRvDat
             YourNicName.text = item.userNicName
             Glide.with(chatOthersIv.context).load(chatOthersIv.context.getString(R.string.http_request_base_url)+item.message).into(chatOthersIv)
             chatOthersTimeStamp.text = item.toShowTimeStr
+
+
+            chatOthersIv.setOnClickListener(View.OnClickListener {
+                var toChatImageZoomActivity : Intent = Intent(chatOthersIv.context, ChatImageZoom::class.java)
+                toChatImageZoomActivity.putExtra("imagePath", item.message)
+                startActivity(chatOthersIv.context, toChatImageZoomActivity, null)
+            })
 
 
         }
