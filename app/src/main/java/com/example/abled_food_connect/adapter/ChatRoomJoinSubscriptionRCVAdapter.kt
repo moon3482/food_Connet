@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -60,30 +61,67 @@ class ChatRoomJoinSubscriptionRCVAdapter(
             holder.profileImage.load(context.getString(R.string.http_request_base_url) + chatRoomUserData.thumbnailImage)
             holder.userId.text = chatRoomUserData.nickName
             holder.OkButton.setOnClickListener {
-                updateSubscriptionStatus(chatRoomUserData.subscriptionId.toString(), "2")
-                val join = API()
-                join.joinRoom(
-                    context,
-                    chatRoomUserData.roomId,
-                    chatRoomUserData.nickName,
-                    chatRoomUserData.userIndexId
-                )
-                timelimeCheck(chatRoomUserData)
-                arrayList.removeAt(position)
-                if(arrayList.size ==0){
-                    activity.binding.tvNonSubscription.visibility = View.VISIBLE
-                    activity.binding.joinRoomSubscriptionRCV.visibility = View.GONE
-                }
-                notifyDataSetChanged()
+
+                val okdialog = AlertDialog.Builder(context).setMessage("참여신청을 수락하시겠습니까?").setPositiveButton("수락"){ dialog, which ->
+                    val retrofit =
+                        Retrofit.Builder().baseUrl(context.getString(R.string.http_request_base_url))
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .client(createOkHttpClient())
+                            .build()
+                    retrofit.create(RoomAPI::class.java).nowPeople(chatRoomUserData.roomId).enqueue(object :Callback<String>{
+                        override fun onResponse(call: Call<String>, response: Response<String>) {
+                            if(response.body()!=null){
+                                if (response.body() == "true"){
+                                    updateSubscriptionStatus(chatRoomUserData.subscriptionId.toString(), "2")
+                                    val join = API()
+                                    join.joinRoom(
+                                        context,
+                                        chatRoomUserData.roomId,
+                                        chatRoomUserData.nickName,
+                                        chatRoomUserData.userIndexId
+                                    )
+                                    timelimeCheck(chatRoomUserData)
+                                    arrayList.removeAt(position)
+                                    if (arrayList.size == 0) {
+                                        activity.binding.tvNonSubscription.visibility = View.VISIBLE
+                                        activity.binding.joinRoomSubscriptionRCV.visibility = View.GONE
+                                    }
+                                    notifyDataSetChanged()
+                                }else{
+                                    val dialog = AlertDialog.Builder(context).setMessage("인원이 꽉 찼습니다.").setPositiveButton("확인",null).show()
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<String>, t: Throwable) {
+
+                        }
+                    })
+
+
+
+                }.setNegativeButton("취소",null).show()
+
+
+
+
             }
             holder.CancleButton.setOnClickListener {
-                updateSubscriptionStatus(chatRoomUserData.subscriptionId.toString(), "3")
-                arrayList.removeAt(position)
-                if(arrayList.size ==0){
-                    activity.binding.tvNonSubscription.visibility = View.VISIBLE
-                    activity.binding.joinRoomSubscriptionRCV.visibility = View.GONE
-                }
-                notifyDataSetChanged()
+                val dialog = AlertDialog.Builder(context).setMessage("참여신청을 거절하시겠습니까?")
+                    .setPositiveButton("거절"
+                    ) { dialog, which ->
+                        updateSubscriptionStatus(
+                            chatRoomUserData.subscriptionId.toString(),
+                            "3"
+                        )
+                        arrayList.removeAt(position)
+                        if (arrayList.size == 0) {
+                            activity.binding.tvNonSubscription.visibility = View.VISIBLE
+                            activity.binding.joinRoomSubscriptionRCV.visibility = View.GONE
+                        }
+                        notifyDataSetChanged()
+                    }.setNegativeButton("취소", null).show()
+
 
             }
             holder.InformationButton.setOnClickListener {
@@ -167,8 +205,8 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                                 "JOINMEMBER",
                                 roomId,
                                 chatRoomUserData.nickName, "SERVER",
-                                "SERVER", members,0
-                            ,ChatRoomActivity.hostName)
+                                "SERVER", members, 0, ChatRoomActivity.hostName
+                            )
                         )
                     )
                 } else {
@@ -180,8 +218,8 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                                 "JOINMEMBER",
                                 roomId,
                                 chatRoomUserData.nickName, "SERVER",
-                                "SERVER", members,0
-                            ,ChatRoomActivity.hostName)
+                                "SERVER", members, 0, ChatRoomActivity.hostName
+                            )
                         )
                     )
                 }
@@ -203,14 +241,15 @@ class ChatRoomJoinSubscriptionRCVAdapter(
                     "TIMELINE",
                     roomId,
                     "SERVER", "SERVER",
-                    "SERVER", members,0
-                ,ChatRoomActivity.hostName)
+                    "SERVER", members, 0, ChatRoomActivity.hostName
+                )
             )
         )
     }
 
     class ChatroomUserHolder2(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var profileImage = itemView.findViewById<CircleImageView>(R.id.chatRoomSubscriptionUserProfileImage)
+        var profileImage =
+            itemView.findViewById<CircleImageView>(R.id.chatRoomSubscriptionUserProfileImage)
         var userId = itemView.findViewById<TextView>(R.id.chatRoomSubscriptionUserListId)
         var CancleButton = itemView.findViewById<Button>(R.id.SubscriptionCancel)
         var OkButton = itemView.findViewById<Button>(R.id.SubscriptionOK)

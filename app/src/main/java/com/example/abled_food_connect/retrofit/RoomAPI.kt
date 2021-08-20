@@ -163,6 +163,12 @@ interface RoomAPI {
         @Field("userIndex")userIndex:Int
     ): Call<String>
 
+    @FormUrlEncoded
+    @POST("/groupChat/nowPeople.php")
+    fun nowPeople(
+        @Field("roomId") roomId: String
+    ): Call<String>
+
     //채팅프레그먼트에서 그룹채팅목록 불러오기
     @FormUrlEncoded
     @POST("groupChat/LoadGroupChatList.php")
