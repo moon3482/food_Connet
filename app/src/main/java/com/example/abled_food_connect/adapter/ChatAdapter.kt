@@ -1,14 +1,14 @@
 package com.example.abled_food_connect.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.size.OriginalSize
-import coil.transform.RoundedCornersTransformation
+import com.example.abled_food_connect.ChatImageZoom
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.ChatItem
 import com.example.abled_food_connect.data.DatetimeToTime
@@ -220,9 +220,15 @@ class ChatAdapter :
         fun bind(data: ChatItem) {
             val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
             binding.ImageChatOthersProFileImage.load(context.getString(R.string.http_request_base_url) + data.ThumbnailImage)
-            binding.ImageChatOthersImage.load(context.getString(R.string.http_request_base_url) + data.content){
-                size(OriginalSize)
-                transformations(RoundedCornersTransformation(30f))
+            binding.ImageChatOthersImage.load(context.getString(R.string.http_request_base_url) + data.content)
+            {
+//                size(OriginalSize)
+//                transformations(RoundedCornersTransformation(30f))
+            }
+            binding.ImageChatOthersImage.setOnClickListener {
+                val intent = Intent(context,ChatImageZoom::class.java)
+                intent.putExtra("imagePath",data.content)
+                context.startActivity(intent)
             }
             binding.ImageChatOthersNickName.text = data.name
             binding.ImageChatOthersTimeStamp.text = isDatetimeToTime(data)
@@ -242,10 +248,16 @@ class ChatAdapter :
         fun bind(data: ChatItem) {
             val array = (JsonParser.parseString(data.readMember) as JsonArray).size()
 
-            binding.ImageChatMyImage.load(context.getString(R.string.http_request_base_url) + data.content){
-                size(OriginalSize)
-                transformations(RoundedCornersTransformation(30f))
+            binding.ImageChatMyImage.load(context.getString(R.string.http_request_base_url) + data.content)
+            {
+//                size(OriginalSize)
+//                transformations(RoundedCornersTransformation(30f))
 
+            }
+            binding.ImageChatMyImage.setOnClickListener {
+                val intent = Intent(context,ChatImageZoom::class.java)
+                intent.putExtra("imagePath",data.content)
+                context.startActivity(intent)
             }
             binding.ImageChatMyTimeStamp.text = isDatetimeToTime(data)
             if (array > 0) {
