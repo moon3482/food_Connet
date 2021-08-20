@@ -31,7 +31,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbleD_Food_Connect"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RankingExplanationActivity"></activity>
+        <activity
+            android:name=".ChatImageZoom"
+            android:exported="true" />
+        <activity android:name=".RankingExplanationActivity" />
 
         <receiver
             android:name=".broadcastReciver.RoomInformationBroadcast"
@@ -115,8 +118,9 @@
         <activity
             android:name=".ReviewWriting"
             android:screenOrientation="portrait" />
-        <activity android:name=".UserRegisterActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".UserRegisterActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".CreateRoomActivity"
             android:screenOrientation="portrait"
