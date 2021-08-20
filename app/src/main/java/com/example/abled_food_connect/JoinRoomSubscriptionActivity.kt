@@ -108,7 +108,7 @@ class JoinRoomSubscriptionActivity : AppCompatActivity() {
                 ) {
                     val list: ChatRoomSubscriptionResult? = response.body()
                     if (list!!.success) {
-
+                        userList.clear()
                         for (item in list.userList) {
                             if (item.status == 0 || item.status == 1) {
                                 userList.add(item)
