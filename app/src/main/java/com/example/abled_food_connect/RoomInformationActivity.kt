@@ -59,7 +59,7 @@ class RoomInformationActivity : AppCompatActivity() {
     var mapX: Double = 0.0
     var mapY: Double = 0.0
     val TAG = "RoomInfoActivity"
-    val broadcast = RoomInformationBroadcast()
+    lateinit var broadcast:RoomInformationBroadcast
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
     }
@@ -83,9 +83,7 @@ class RoomInformationActivity : AppCompatActivity() {
         val tb = supportActionBar!!
         tb.setDisplayHomeAsUpEnabled(true)
 
-        val intentFilter = IntentFilter()
-        intentFilter.addAction("RoomInfo")
-        registerReceiver(broadcast, intentFilter)
+
 
         loadRoomInfo()
 
@@ -117,6 +115,14 @@ class RoomInformationActivity : AppCompatActivity() {
 //        }
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        broadcast = RoomInformationBroadcast()
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("RoomInfo")
+        registerReceiver(broadcast, intentFilter)
     }
 
     override fun onStop() {
