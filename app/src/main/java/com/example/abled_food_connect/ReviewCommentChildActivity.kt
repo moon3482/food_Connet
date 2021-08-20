@@ -302,8 +302,6 @@ class ReviewCommentChildActivity : AppCompatActivity() {
                                         onBackPressed()
                                     }
 
-//
-
                                 }
                             }
                         }

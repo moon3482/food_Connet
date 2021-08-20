@@ -66,6 +66,7 @@ class MyPageFragment : Fragment() {
 
     lateinit var userProfileIv: ImageView
     lateinit var userProfileNicNameTv: TextView
+    lateinit var noShowCountTv : TextView
     lateinit var userProfileIntroductionTv: TextView
     lateinit var gson: Gson
     lateinit var social_login_type: String
@@ -158,6 +159,7 @@ class MyPageFragment : Fragment() {
 
         userProfileIv = view.findViewById<ImageView>(R.id.userProfileIv)
         userProfileNicNameTv = view.findViewById<TextView>(R.id.userProfileNicNameTv)
+        noShowCountTv = view.findViewById<TextView>(R.id.noShowCountTv)
         userProfileIntroductionTv = view.findViewById<TextView>(R.id.userProfileIntroductionTv)
         progressBar = ProgressDialog(requireContext())
         progressBar.setMessage("로딩중..")
@@ -1122,6 +1124,7 @@ class MyPageFragment : Fragment() {
                     userProfileIntroductionTv.text = items!!.introduction
                 }
 
+                noShowCountTv.text = "노쇼:${items.no_show_count}회"
 
                 //랭킹관련
 
