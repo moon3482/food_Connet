@@ -3,7 +3,6 @@ package com.example.abled_food_connect.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,20 +38,20 @@ class GroupChatListFragmentAdapter(
         holder.itemView.setOnClickListener {
             val intent = Intent(context, ChatRoomActivity::class.java)
             intent.putExtra("roomId", mainFragmentItemData.roomId)
-            intent.putExtra("title", mainFragmentItemData.title)
-            intent.putExtra("info", mainFragmentItemData.info)
+//            intent.putExtra("title", mainFragmentItemData.title)
+//            intent.putExtra("info", mainFragmentItemData.info)
             intent.putExtra("hostName", mainFragmentItemData.hostName)
-            intent.putExtra("address", mainFragmentItemData.address)
-            intent.putExtra("date", mainFragmentItemData.date)
-            intent.putExtra("shopName", mainFragmentItemData.shopName)
-            intent.putExtra("roomStatus", mainFragmentItemData.roomStatus)
-            intent.putExtra("numOfPeople", mainFragmentItemData.numOfPeople.toString())
-            intent.putExtra("keyWords", mainFragmentItemData.keyWords)
-            intent.putExtra("nowNumOfPeople", mainFragmentItemData.nowNumOfPeople.toString())
-            intent.putExtra("mapX", mainFragmentItemData.mapX)
-            intent.putExtra("mapY", mainFragmentItemData.mapY)
-            intent.putExtra("finish",mainFragmentItemData.finish)
-            intent.putExtra("imageUrl", "imageUrl")
+//            intent.putExtra("address", mainFragmentItemData.address)
+//            intent.putExtra("date", mainFragmentItemData.date)
+//            intent.putExtra("shopName", mainFragmentItemData.shopName)
+//            intent.putExtra("roomStatus", mainFragmentItemData.roomStatus)
+//            intent.putExtra("numOfPeople", mainFragmentItemData.numOfPeople.toString())
+//            intent.putExtra("keyWords", mainFragmentItemData.keyWords)
+//            intent.putExtra("nowNumOfPeople", mainFragmentItemData.nowNumOfPeople.toString())
+//            intent.putExtra("mapX", mainFragmentItemData.mapX)
+//            intent.putExtra("mapY", mainFragmentItemData.mapY)
+//            intent.putExtra("finish",mainFragmentItemData.finish)
+//            intent.putExtra("imageUrl", "imageUrl")
             context.startActivity(intent)
         }
     }
@@ -64,16 +63,17 @@ class GroupChatListFragmentAdapter(
 
     class customholder(private val binding: ChatFragmentListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SimpleDateFormat")
         val dateform = SimpleDateFormat("MM-dd HH:mm")
         fun bind(data: GroupChatListData) {
             binding.groupChatListTile.text = data.title
             binding.groupChatListShopName.text = data.placeName
             binding.groupChatListNumfoPeople.text = data.nowNumOfPeople.toString()
             binding.groupChatListMessage.text = data.content
-            binding.groupChatListDate.text = isDateSet(data.sendTime)
+            binding.groupChatListDate.text = isDateSet(data.sendTime!!)
 
             when (true) {
-                data.nonReadCount > 300 -> {
+                data.nonReadCount!! > 300 -> {
                     binding.nonRead.visibility = View.VISIBLE
                     binding.nonRead.text = "300+"
                 }

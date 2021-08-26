@@ -92,7 +92,7 @@ val TAG = "위치업뎃 워커"
             }
             if (currentLatLng == null) {
                 Log.e(TAG, "getLatLng: GPS null", )
-                val locatioNProvider = LocationManager.NETWORK_PROVIDER
+                val locatioNProvider = LocationManager.GPS_PROVIDER
                 currentLatLng = locatioNManager.getLastKnownLocation(locatioNProvider)
             }
 

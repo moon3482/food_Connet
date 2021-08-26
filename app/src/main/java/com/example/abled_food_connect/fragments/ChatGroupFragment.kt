@@ -163,7 +163,7 @@ class ChatGroupFragment : Fragment() {
                             gson.toJson(
                                 RoomData(
                                     MainActivity.loginUserNickname,
-                                    item.roomId,
+                                    item.roomId!!,
                                     MainActivity.user_table_id
                                 )
                             )

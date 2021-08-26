@@ -4,54 +4,54 @@ import com.google.gson.annotations.SerializedName
 
 class GroupChatListData(
     @SerializedName("roomId")
-    var roomId: String,
+    var roomId: String?,
     @SerializedName("title")
-    var title: String,
+    var title: String?,
     @SerializedName("info")
-    var info: String,
+    var info: String?,
     @SerializedName("nowNumOfPeople")
-    var nowNumOfPeople: Int,
+    var nowNumOfPeople: Int?,
     @SerializedName("numOfPeople")
-    var numOfPeople: Int,
+    var numOfPeople: Int?,
     @SerializedName("date")
-    var date: String,
+    var date: String?,
     @SerializedName("time")
-    var time: String,
+    var time: String?,
     @SerializedName("address")
-    var address: String,
+    var address: String?,
     @SerializedName("roadAddress")
-    var roadAddress: String,
+    var roadAddress: String?,
     @SerializedName("shopName")
-    var shopName: String,
+    var shopName: String?,
     @SerializedName("placeName")
-    var placeName: String,
+    var placeName: String?,
     @SerializedName("keyWords")
-    var keyWords: String,
+    var keyWords: String?,
     @SerializedName("gender")
-    var gender: String,
+    var gender: String?,
     @SerializedName("minimumAge")
-    var minimumAge: Int,
+    var minimumAge: Int?,
     @SerializedName("maximumAge")
-    var maximumAge: Int,
+    var maximumAge: Int?,
     @SerializedName("hostName")
-    var hostName: String,
+    var hostName: String?,
     @SerializedName("roomStatus")
-    var roomStatus: Double,
+    var roomStatus: Double?,
     @SerializedName("map_x")
-    var mapX: Double,
+    var mapX: Double?,
     @SerializedName("map_y")
-    var mapY: Double,
+    var mapY: Double?,
     @SerializedName("joinMember")
-    var joinMember: ArrayList<String>,
+    var joinMember: ArrayList<String>?,
     @SerializedName("content")
-    var content: String,
+    var content: String?,
     @SerializedName("fromId")
-    var fromId: String,
+    var fromId: String?,
     @SerializedName("sendTime")
-    var sendTime: String,
+    var sendTime: String?,
     @SerializedName("nonRead")
-    var nonReadCount:Int,
+    var nonReadCount:Int?,
     @SerializedName("finish")
-    var finish:String
+    var finish:String?
 
 )

@@ -26,7 +26,6 @@ import com.example.abled_food_connect.data.*
 import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.facebook.*
-import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
@@ -45,8 +44,6 @@ import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
 import io.socket.client.IO
 import io.socket.client.Socket
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
@@ -59,7 +56,6 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MyPageFragment : Fragment() {
 
@@ -786,7 +782,7 @@ class MyPageFragment : Fragment() {
                 //로그아웃시 웹뷰설정을 하지 않으면, 크롬과 같은 인터넷 브라우져로 로그인을하게 된다.
                 //브라우져 로그인을 하게되면, 로그인 정보를 브라우져 캐시에 저장하고 있어 브라우져캐시를 지우지 않는한 페이스북 계정 입력창이 나오지 않는다.
                 //만약 다른 페이스북 계정으로 로그인 하고 싶은 유저를 위하여 웹뷰온리 옵션을 추가해주었다.
-                .setLoginBehavior(LoginBehavior.WEB_VIEW_ONLY)
+//                .setLoginBehavior(LoginBehavior.WEB_VIEW_ONLY)
                 .registerCallback(callbackManager, object : FacebookCallback<LoginResult?> {
                     override fun onSuccess(loginResult: LoginResult?) {
                         Log.d("TAG", "Success Login")

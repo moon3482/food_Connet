@@ -55,23 +55,23 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         testholder.roomStatus.text = maindata.title
         testholder.shopName.text = maindata.info
         testholder.roomStatus
-        if (maindata.roomStatus>0&&maindata.nowNumOfPeople == maindata.numOfPeople) {
+        if (maindata.roomStatus!!>0&&maindata.nowNumOfPeople == maindata.numOfPeople) {
             testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_full)
             testholder.roomStatus.text = "FULL"
-        } else if (maindata.roomStatus > 5) {
+        } else if (maindata.roomStatus!! > 5) {
                 testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
                 testholder.roomStatus.text = "모집중"
-            } else if (maindata.roomStatus > 0.9) {
+            } else if (maindata.roomStatus!! > 0.9) {
                 testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
                 val text: String = context.getString(R.string.room_status_imminent_time)
                 testholder.roomStatus.text =
-                    String.format(text, Math.round(maindata.roomStatus).toInt())
+                    String.format(text, Math.round(maindata.roomStatus!!).toInt())
 
-            } else if (maindata.roomStatus < 0.9 && maindata.roomStatus > 0.0) {
+            } else if (maindata.roomStatus!! < 0.9 && maindata.roomStatus!! > 0.0) {
                 testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline_imminent)
                 testholder.roomStatus.text = "임박"
 
-            } else if (maindata.roomStatus < 0) {
+            } else if (maindata.roomStatus!! < 0) {
                 testholder.roomStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_deadline)
                 testholder.roomStatus.text = "마감"
             }
@@ -89,7 +89,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             val text: String = context.getString(R.string.limit_age_badge)
             testholder.roomAge.text = String.format(text, maindata.minimumAge, maindata.maximumAge)
         }
-        if (maindata.joinMember.contains(MainActivity.user_table_id.toString())) {
+        if (maindata.joinMember!!.contains(MainActivity.user_table_id.toString())) {
             testholder.joinCheckImageView.visibility = View.VISIBLE
         } else {
             testholder.joinCheckImageView.visibility = View.INVISIBLE
@@ -107,7 +107,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
         }
         location = location.substring(0, location.length - 1)
         testholder.roomLocation.text = location
-        testholder.itemView.setOnClickListener { joinRoomCheckMethod(maindata, maindata.address) }
+        testholder.itemView.setOnClickListener { joinRoomCheckMethod(maindata, maindata.address!!) }
 
 
     }
@@ -141,7 +141,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
             .build()
 
         val server = retrofit.create(RoomAPI::class.java)
-        server.joinRoomCheck(mainData.roomId, MainActivity.loginUserNickname, mainData.hostName)
+        server.joinRoomCheck(mainData.roomId!!, MainActivity.loginUserNickname, mainData.hostName!!)
             .enqueue(object : Callback<JoinRoomCheck> {
                 override fun onResponse(
                     call: Call<JoinRoomCheck>,
@@ -236,7 +236,7 @@ class MainFragmentAdapter(val context: Context, private val list: ArrayList<Main
                     filList = ArrayList<MainFragmentItemData>()
                     for (index in unList) {
 
-                        if (!index.joinMember.contains(filterCheck)) {
+                        if (!index.joinMember!!.contains(filterCheck)) {
                             filList.add(index)
                         }
 

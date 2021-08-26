@@ -430,7 +430,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         val data: MainFragmentItemData = room.roomList[0]
                         if (room.success) {
                             Log.e("그냥멤버", "들어오긴함")
-                            if (data.hostName != MainActivity.loginUserNickname && data.nowNumOfPeople.toInt() > 1) {
+                            if (data.hostName != MainActivity.loginUserNickname && data.nowNumOfPeople!!.toInt() > 1) {
                                 Log.e("그냥멤버", "그냥멤버")
                                 var builder = AlertDialog.Builder(this@ChatRoomActivity)
                                 builder.setMessage("정말로 방을 나가시겠습니까?")
@@ -441,7 +441,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                 }
                                 builder.setNegativeButton("취소", null)
                                 builder.show()
-                            } else if (data.hostName == MainActivity.loginUserNickname && data.nowNumOfPeople.toInt() == 1) {
+                            } else if (data.hostName == MainActivity.loginUserNickname && data.nowNumOfPeople!!.toInt() == 1) {
                                 Log.e("멤버", "마지막")
                                 var builder = AlertDialog.Builder(this@ChatRoomActivity)
                                 builder.setMessage("방을 없애고 나가시겠습니까?")
@@ -1492,7 +1492,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         val data = response!!.body()!!.roomList
                         val title = data[0].title
                         val info = data[0].info
-                        hostName = data[0].hostName
+                        hostName = data[0].hostName!!
                         val address = data[0].address
                         val date = data[0].date
                         val shopName = data[0].shopName
@@ -1503,11 +1503,11 @@ class ChatRoomActivity : AppCompatActivity() {
                         val mapY = data[0].mapY
                         val finish = data[0].finish
 
-                        if (roomStatus > 0 && nowNumOfPeople == numOfPeople) {
+                        if (roomStatus!! > 0 && nowNumOfPeople == numOfPeople) {
                             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_full)
                             binding.RoomInformationStatus.text = "FULL"
                         } else
-                            if (roomStatus > 5) {
+                            if (roomStatus!! > 5) {
                                 binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
                                 binding.RoomInformationStatus.text = "모집중"
                             } else if (roomStatus > 0.9) {
@@ -1562,7 +1562,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             "${nowNumOfPeople}/${numOfPeople}명"
                         binding.RoomInformationCategoryAddressTextview.text = address
 
-                        getMapImage(mapX, mapY, shopName, address)
+                        getMapImage(mapX, mapY, shopName, address!!)
 
                     }
 
@@ -1592,7 +1592,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         val data = response!!.body()!!.roomList
                         val title = data[0].title
                         val info = data[0].info
-                        hostName = data[0].hostName
+                        hostName = data[0].hostName!!
                         val address = data[0].address
                         val date = data[0].date
                         val shopName = data[0].shopName
@@ -1602,10 +1602,10 @@ class ChatRoomActivity : AppCompatActivity() {
                         val mapX = data[0].mapX
                         val mapY = data[0].mapY
                         val finish = data[0].finish
-                        if (roomStatus > 5) {
+                        if (roomStatus!! > 5) {
                             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_recruitment)
                             binding.RoomInformationStatus.text = "모집중"
-                        } else if (roomStatus > 0.9) {
+                        } else if (roomStatus!! > 0.9) {
                             binding.RoomInformationStatus.setBackgroundResource(R.drawable.main_fragment_rooms_status_imminent)
                             val text: String = getString(R.string.room_status_imminent_time)
                             binding.RoomInformationStatus.text =
@@ -1655,7 +1655,7 @@ class ChatRoomActivity : AppCompatActivity() {
                             "${nowNumOfPeople}/${numOfPeople}명"
                         binding.RoomInformationCategoryAddressTextview.text = address
 
-                        getMapImage(mapX, mapY, shopName, address)
+                        getMapImage(mapX, mapY, shopName, address!!)
                         if (hostName == MainActivity.loginUserNickname) {
                             binding.chatRoomSubscription.visibility = View.VISIBLE
                         }

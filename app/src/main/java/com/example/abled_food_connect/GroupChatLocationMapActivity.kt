@@ -188,7 +188,7 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                             val roomInfo: MainFragmentItemData = response.body()!!.roomInfo
 
                             var roomMarker = Marker()
-                            roomMarker.position = LatLng(roomInfo.mapY, roomInfo.mapX)
+                            roomMarker.position = LatLng(roomInfo.mapY!!, roomInfo.mapX!!)
                             builder.include(roomMarker.position)
                             roomMarker.icon = MarkerIcons.RED
                             roomMarker.map = it
@@ -196,7 +196,7 @@ class GroupChatLocationMapActivity : AppCompatActivity(), OnMapReadyCallback {
                             roomInfoWindow.adapter = object :
                                 InfoWindow.DefaultTextAdapter(this@GroupChatLocationMapActivity) {
                                 override fun getText(p0: InfoWindow): CharSequence {
-                                    return roomInfo.placeName
+                                    return roomInfo.placeName!!
                                 }
                             }
                             roomInfoWindow.open(roomMarker)
