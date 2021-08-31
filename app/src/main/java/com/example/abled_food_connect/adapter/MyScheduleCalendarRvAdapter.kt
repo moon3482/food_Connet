@@ -69,9 +69,11 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
             //오늘인 경우
             if(calDateList.get(position).rvYear ==  year && calDateList.get(position).rvMonth == month && calDateList.get(position).rvDay ==day){
 
-                var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_red_full)
-                holder.rvDay.background =  drawable
-                holder.rvDay.setTextColor(Color.WHITE)
+
+                holder.rvDay.text = calDateList.get(position).rvDay.toString()
+                var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_red_edge)
+                holder.rvDay.background = drawable
+
 
                 holder.rvDay.text = calDateList.get(position).rvDay.toString()
 
@@ -86,9 +88,11 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
 
             else if(calDateList.get(position).meeting_result == 0){
 
-                var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_green_full)
-                holder.rvDay.background =  drawable
-                holder.rvDay.setTextColor(Color.WHITE)
+
+                holder.rvDay.text = calDateList.get(position).rvDay.toString()
+                var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_green_edge)
+                holder.rvDay.background = drawable
+
 
                 holder.rvDay.text = calDateList.get(position).rvDay.toString()
 
@@ -98,17 +102,46 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
 
 
 
+                //모임이 취소또는 종료 - 주황색원
+            }else if(calDateList.get(position).meeting_result == 1 || calDateList.get(position).meeting_result == 2){
 
-            }else if(calDateList.get(position).meeting_result == 1){
 
-                var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_orange_full)
-                holder.rvDay.background =  drawable
-                holder.rvDay.setTextColor(Color.WHITE)
-                holder.rvDay.text = calDateList.get(position).rvDay.toString()
+                if(calDateList.get(position).evaluation_is_required == 0) {
 
-                //배경 테두리
-                var backGroundDrawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.rv_day_tv_rectangle_background)
-                holder.rvDayTvBackgroundLinearLayout.background = backGroundDrawable
+                    holder.rvDay.text = calDateList.get(position).rvDay.toString()
+                    var drawable: Drawable? = getDrawable(
+                        holder.rvDay.context,
+                        R.drawable.circular_textview_yellow_edge
+                    )
+                    holder.rvDay.background = drawable
+
+
+
+                    holder.rvDay.text = calDateList.get(position).rvDay.toString()
+
+                    //배경 테두리
+                    var backGroundDrawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.rv_day_tv_rectangle_background)
+                    holder.rvDayTvBackgroundLinearLayout.background = backGroundDrawable
+                }else{
+
+                    holder.rvDay.text = calDateList.get(position).rvDay.toString()
+                    var drawable: Drawable? = getDrawable(
+                        holder.rvDay.context,
+                        R.drawable.circular_textview_orange_edge
+                    )
+                    holder.rvDay.background = drawable
+
+
+
+                    holder.rvDay.text = calDateList.get(position).rvDay.toString()
+
+                    //배경 테두리
+                    var backGroundDrawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.rv_day_tv_rectangle_background)
+                    holder.rvDayTvBackgroundLinearLayout.background = backGroundDrawable
+                }
+
+
+
 
 
             }else{
@@ -127,30 +160,40 @@ class MyScheduleCalendarRvAdapter (val calDateList: ArrayList<MyScheduleCalendar
                 //오늘인 경우
                 if(calDateList.get(position).rvYear ==  year && calDateList.get(position).rvMonth == month && calDateList.get(position).rvDay ==day){
 
+                    var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_red_full)
+                    holder.rvDay.background =  drawable
+                    holder.rvDay.setTextColor(Color.WHITE)
+
+
                     holder.rvDay.text = calDateList.get(position).rvDay.toString()
-                    var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_red_edge)
-                    holder.rvDay.background = drawable
-
-
-
 
                 }
 
                 //모임이 진행중 - 초록색원
                 else if (calDateList.get(position).meeting_result == 0) {
 
+                    var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_green_full)
+                    holder.rvDay.background =  drawable
+                    holder.rvDay.setTextColor(Color.WHITE)
+
                     holder.rvDay.text = calDateList.get(position).rvDay.toString()
-                    var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_green_edge)
-                    holder.rvDay.background = drawable
-
-
 
                 //모임이 취소또는 종료 - 주황색원
-               } else if (calDateList.get(position).meeting_result == 1) {
+               } else if (calDateList.get(position).meeting_result == 1 || calDateList.get(position).meeting_result == 2) {
 
-                    holder.rvDay.text = calDateList.get(position).rvDay.toString()
-                    var drawable: Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_orange_edge)
-                    holder.rvDay.background = drawable
+
+                    if(calDateList.get(position).evaluation_is_required == 0) {
+                        var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.social_login_kakao_button)
+                        holder.rvDay.background =  drawable
+                        holder.rvDay.setTextColor(Color.WHITE)
+                        holder.rvDay.text = calDateList.get(position).rvDay.toString()
+
+                    }else{
+                        var drawable : Drawable? = getDrawable(holder.rvDay.context, R.drawable.circular_textview_orange_full)
+                        holder.rvDay.background =  drawable
+                        holder.rvDay.setTextColor(Color.WHITE)
+                        holder.rvDay.text = calDateList.get(position).rvDay.toString()
+                    }
 
 
 

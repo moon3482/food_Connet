@@ -131,7 +131,8 @@ class ReviewDetailViewRvAdapter () : RecyclerView.Adapter<ReviewDetailViewRvAdap
                     R.id.reviewDeleteBtn ->{
                         var builder = AlertDialog.Builder(holder.reviewDotBtn.context)
                         builder.setTitle("리뷰삭제")
-                        builder.setMessage("리뷰를 삭제하시겠습니까?")
+                        builder.setMessage("리뷰를 삭제하시겠습니까?\n" +
+                                "(리뷰로 얻은 랭킹포인트가 차감됩니다.)")
 
                         // 버튼 클릭시에 무슨 작업을 할 것인가!
                         var listener = object : DialogInterface.OnClickListener {
@@ -221,7 +222,8 @@ class ReviewDetailViewRvAdapter () : RecyclerView.Adapter<ReviewDetailViewRvAdap
             if(ReviewDetailList.get(position).heart_making == false){
                 var builder = AlertDialog.Builder(holder.likeBtn.context)
                 builder.setTitle("알림")
-                builder.setMessage("좋아요를 누르시겠습니까?")
+                builder.setMessage("좋아요를 누르시겠습니까?\n" +
+                        "(좋아요 버튼을 누르면 취소가 불가능합니다.)")
 
                 // 버튼 클릭시에 무슨 작업을 할 것인가!
                 var listener = object : DialogInterface.OnClickListener {
