@@ -23,10 +23,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import co.lujun.androidtagview.TagView
-import com.example.abled_food_connect.array.age
-import com.example.abled_food_connect.array.maximumAge
-import com.example.abled_food_connect.array.minimumAge
-import com.example.abled_food_connect.array.numOfPeople
+import com.example.abled_food_connect.array.Age
+import com.example.abled_food_connect.array.MaximumAge
+import com.example.abled_food_connect.array.MinimumAge
+import com.example.abled_food_connect.array.NumOfPeople
 import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBinding
 import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.MapSearch
@@ -92,9 +92,9 @@ class CreateRoomActivity : AppCompatActivity() {
         context = this
 
         /*드롭다운 어댑터 설정*/
-        maximum.setAdapter(setAdapter(age()))
-        minimum.setAdapter(setAdapter(age()))
-        numOfPeople.setAdapter(setAdapter(numOfPeople()))
+        maximum.setAdapter(setAdapter(Age()))
+        minimum.setAdapter(setAdapter(Age()))
+        numOfPeople.setAdapter(setAdapter(NumOfPeople()))
 
         onClickListenerGroup()
 
@@ -237,21 +237,21 @@ class CreateRoomActivity : AppCompatActivity() {
     /**
      * 나이 어댑터
      * */
-    private fun setAdapter(age: age): ArrayAdapter<Int> {
+    private fun setAdapter(Age: Age): ArrayAdapter<Int> {
 
 
-        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray())
+        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, Age.numArray())
 
     }
 
-    private fun setAdapter(age: minimumAge, num: Int): ArrayAdapter<Int> {
+    private fun setAdapter(age: MinimumAge, num: Int): ArrayAdapter<Int> {
 
 
         return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
 
     }
 
-    private fun setAdapter(age: maximumAge, num: Int): ArrayAdapter<Int> {
+    private fun setAdapter(age: MaximumAge, num: Int): ArrayAdapter<Int> {
 
 
         return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
@@ -261,13 +261,13 @@ class CreateRoomActivity : AppCompatActivity() {
     /**
      * 모집인원 어댑터
      * */
-    private fun setAdapter(numOfPeople: numOfPeople): ArrayAdapter<Int> {
+    private fun setAdapter(NumOfPeople: NumOfPeople): ArrayAdapter<Int> {
 
 
         return ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item,
-            numOfPeople.numArray(3)
+            NumOfPeople.numArray(3)
         )
 
     }
@@ -763,13 +763,13 @@ class CreateRoomActivity : AppCompatActivity() {
                 id: Long
             ) {
                 val num = binding.minimumAgeTextView.text.toString().toInt()
-                binding.maximumAgeTextView.setAdapter(setAdapter(maximumAge(), num))
+                binding.maximumAgeTextView.setAdapter(setAdapter(MaximumAge(), num))
             }
         })
 
         binding.maximumAgeTextView.setOnItemClickListener { parent, view, position, id ->
             val num = binding.maximumAgeTextView.text.toString().toInt()
-            binding.minimumAgeTextView.setAdapter(setAdapter(minimumAge(), num))
+            binding.minimumAgeTextView.setAdapter(setAdapter(MinimumAge(), num))
         }
     }
 

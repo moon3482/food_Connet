@@ -1,17 +1,17 @@
 package com.example.abled_food_connect.array
 
-interface array {
+interface Array {
    fun numArray(num:Int): ArrayList<Int>
 
 
 
 }
 
-class age  {
+class Age  {
      fun numArray(): ArrayList<Int> {
         val list = ArrayList<Int>()
 
-        for (i in 18..100) {
+        for (i in 20..100) {
             list.add(i)
 
         }
@@ -19,11 +19,11 @@ class age  {
     }
 
 }
-class minimumAge : array {
+class MinimumAge : Array {
     override fun numArray(num:Int): ArrayList<Int> {
         val list = ArrayList<Int>()
 
-        for (i in 18..num) {
+        for (i in 20..num) {
             list.add(i)
 
         }
@@ -32,7 +32,7 @@ class minimumAge : array {
 
 }
 
-class maximumAge : array {
+class MaximumAge : Array {
     override fun numArray(num:Int): ArrayList<Int> {
         val list = ArrayList<Int>()
 
@@ -45,7 +45,7 @@ class maximumAge : array {
 
 }
 
-class numOfPeople : array {
+class NumOfPeople : Array {
     override fun numArray(num:Int): ArrayList<Int> {
         val list = ArrayList<Int>()
 

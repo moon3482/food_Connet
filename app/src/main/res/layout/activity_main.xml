@@ -77,7 +77,7 @@
                 android:background="@color/naver_theme_color"
                 android:gravity="center"
                 android:text="@string/naver_login"
-                android:textColor="@color/naver_text_color"
+                android:textColor="@color/white"
                 android:textSize="@dimen/mainActivityLoginButtonTextSize"
                 android:layout_marginRight="20dp" />
         </LinearLayout>
