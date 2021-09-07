@@ -148,7 +148,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
             caldateList.clear()
             for(i in 1..dayOfWeek-1){
 
-                caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
             }
 
             for(i in 1..maxday){
@@ -162,6 +162,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                 var meeting_result = 1
 
 
+
                 Log.d("TAG", dateStr)
                 //Log.d("TAG", scheduleArrayList.get(k).appointment_day)
                 for(k in 0..scheduleArrayList.size-1){
@@ -172,22 +173,42 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                         if(scheduleArrayList.get(k).meeting_result == 0){
                             meeting_result =0
                         }
+                        if(scheduleArrayList.get(k).meeting_result == 2){
+                            meeting_result =2
+                        }
                         checkNum = 1
                         break
                     }
 
                 }
 
+
+                var evaluation_is_required = 1
+
+                for(k in 0..scheduleArrayList.size-1){
+                    if(dateStr ==  scheduleArrayList.get(k).appointment_day){
+
+                        Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
+                        if(meeting_result == 1 && (scheduleArrayList.get(k).review_result == 0 || scheduleArrayList.get(k).user_evaluation == 0) ){
+                            evaluation_is_required =0
+                            Log.d("evaluation_is_required", evaluation_is_required.toString())
+                            break
+                        }
+                    }
+
+                }
+
                 if(checkNum == 1){
                     if(meeting_result == 0){
-                        caldateList.add(MyScheduleCalendarData(year,month,i,0))
-                    }else if(meeting_result == 1){
-                        caldateList.add(MyScheduleCalendarData(year,month,i,1))
+                        caldateList.add(MyScheduleCalendarData(year,month,i,0,-1))
+                    }else if(meeting_result == 1 || meeting_result == 2){
+
+                        caldateList.add(MyScheduleCalendarData(year,month,i,1,evaluation_is_required))
                     }
                 }
 
                 if(checkNum ==0){
-                    caldateList.add(MyScheduleCalendarData(year,month,i,-1))
+                    caldateList.add(MyScheduleCalendarData(year,month,i,-1,-1))
                 }
 
                 if(checkNum ==1){
@@ -197,7 +218,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
             }
 
             for(i in caldateList.size-1 .. 40){
-                caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
             }
 
 
@@ -302,7 +323,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
             caldateList.clear()
             for(i in 1..dayOfWeek-1){
 
-                caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
             }
 
             for(i in 1..maxday){
@@ -326,22 +347,41 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                         if(scheduleArrayList.get(k).meeting_result == 0){
                             meeting_result =0
                         }
+                        if(scheduleArrayList.get(k).meeting_result == 2){
+                            meeting_result =2
+                        }
                         checkNum = 1
                         break
                     }
 
                 }
 
+
+                var evaluation_is_required = 1
+
+                for(k in 0..scheduleArrayList.size-1){
+                    if(dateStr ==  scheduleArrayList.get(k).appointment_day){
+
+                        Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
+                        if(meeting_result == 1 && (scheduleArrayList.get(k).review_result == 0 || scheduleArrayList.get(k).user_evaluation == 0) ){
+                            evaluation_is_required =0
+                            Log.d("evaluation_is_required", evaluation_is_required.toString())
+                            break
+                        }
+                    }
+
+                }
+
                 if(checkNum == 1){
                     if(meeting_result == 0){
-                        caldateList.add(MyScheduleCalendarData(year,month,i,0))
-                    }else if(meeting_result == 1){
-                        caldateList.add(MyScheduleCalendarData(year,month,i,1))
+                        caldateList.add(MyScheduleCalendarData(year,month,i,0,-1))
+                    }else if(meeting_result == 1 || meeting_result == 2){
+                        caldateList.add(MyScheduleCalendarData(year,month,i,1,evaluation_is_required))
                     }
                 }
 
                 if(checkNum ==0){
-                    caldateList.add(MyScheduleCalendarData(year,month,i,-1))
+                    caldateList.add(MyScheduleCalendarData(year,month,i,-1,-1))
                 }
 
                 if(checkNum ==1){
@@ -351,7 +391,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
             }
 
             for(i in caldateList.size-1 .. 40){
-                caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
             }
 
 
@@ -496,7 +536,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                     caldateList.clear()
                     for(i in 1..dayOfWeek-1){
 
-                        caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                        caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
                     }
 
                     for(i in 1..maxday){
@@ -520,22 +560,43 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                                 if(scheduleArrayList.get(k).meeting_result == 0){
                                     meeting_result =0
                                 }
+                                if(scheduleArrayList.get(k).meeting_result == 2){
+                                    meeting_result =2
+                                }
                                 checkNum = 1
                                 break
                             }
 
                         }
 
+
+                        var evaluation_is_required = 1
+
+                        for(k in 0..scheduleArrayList.size-1){
+                            if(dateStr ==  scheduleArrayList.get(k).appointment_day){
+
+                                Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
+                                if(meeting_result == 1 && (scheduleArrayList.get(k).review_result == 0 || scheduleArrayList.get(k).user_evaluation == 0) ){
+                                    evaluation_is_required =0
+                                    Log.d("evaluation_is_required", evaluation_is_required.toString())
+                                    break
+                                }
+                            }
+
+                        }
+
+
+
                         if(checkNum == 1){
                             if(meeting_result == 0){
-                                caldateList.add(MyScheduleCalendarData(year,month,i,0))
-                            }else if(meeting_result == 1){
-                                caldateList.add(MyScheduleCalendarData(year,month,i,1))
+                                caldateList.add(MyScheduleCalendarData(year,month,i,0,-1))
+                            }else if(meeting_result == 1 || meeting_result == 2){
+                                caldateList.add(MyScheduleCalendarData(year,month,i,1,evaluation_is_required))
                             }
                         }
 
                         if(checkNum ==0){
-                            caldateList.add(MyScheduleCalendarData(year,month,i,-1))
+                            caldateList.add(MyScheduleCalendarData(year,month,i,-1,-1))
                         }
 
                         if(checkNum ==1){
@@ -545,7 +606,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                     }
 
                     for(i in caldateList.size-1 .. 40){
-                        caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                        caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
                     }
 
 
@@ -654,7 +715,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                     caldateList.clear()
                     for(i in 1..dayOfWeek-1){
 
-                        caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                        caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
                     }
 
                     for(i in 1..maxday){
@@ -678,22 +739,41 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                                 if(scheduleArrayList.get(k).meeting_result == 0){
                                     meeting_result =0
                                 }
+                                if(scheduleArrayList.get(k).meeting_result == 2){
+                                    meeting_result =2
+                                }
                                 checkNum = 1
                                 break
                             }
 
                         }
 
+
+                        var evaluation_is_required = 1
+
+                        for(k in 0..scheduleArrayList.size-1){
+                            if(dateStr ==  scheduleArrayList.get(k).appointment_day){
+
+                                Log.d("TAG", "scheduleArrayList.get(k).appointment_day")
+                                if(meeting_result == 1 && (scheduleArrayList.get(k).review_result == 0 || scheduleArrayList.get(k).user_evaluation == 0) ){
+                                    evaluation_is_required =0
+                                    Log.d("evaluation_is_required", evaluation_is_required.toString())
+                                    break
+                                }
+                            }
+
+                        }
+
                         if(checkNum == 1){
                             if(meeting_result == 0){
-                                caldateList.add(MyScheduleCalendarData(year,month,i,0))
-                            }else if(meeting_result == 1){
-                                caldateList.add(MyScheduleCalendarData(year,month,i,1))
+                                caldateList.add(MyScheduleCalendarData(year,month,i,0,-1))
+                            }else if(meeting_result == 1 || meeting_result == 2){
+                                caldateList.add(MyScheduleCalendarData(year,month,i,1,evaluation_is_required))
                             }
                         }
 
                         if(checkNum ==0){
-                            caldateList.add(MyScheduleCalendarData(year,month,i,-1))
+                            caldateList.add(MyScheduleCalendarData(year,month,i,-1,-1))
                         }
 
                         if(checkNum ==1){
@@ -703,7 +783,7 @@ class MyPageUserScheduleActivity : AppCompatActivity() {
                     }
 
                     for(i in caldateList.size-1 .. 40){
-                        caldateList.add(MyScheduleCalendarData(year,month,0,-1))
+                        caldateList.add(MyScheduleCalendarData(year,month,0,-1,-1))
                     }
 
 

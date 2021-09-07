@@ -165,7 +165,8 @@ class ReviewCommentActivity : AppCompatActivity() {
                     R.id.reviewDeleteBtn ->{
                         var builder = AlertDialog.Builder(this)
                         builder.setTitle("리뷰삭제")
-                        builder.setMessage("리뷰를 삭제하시겠습니까?")
+                        builder.setMessage("리뷰를 삭제하시겠습니까?\n" +
+                                "(리뷰로 얻은 랭킹포인트가 차감됩니다.)")
 
                         // 버튼 클릭시에 무슨 작업을 할 것인가!
                         var listener = object : DialogInterface.OnClickListener {
@@ -862,7 +863,8 @@ class ReviewCommentActivity : AppCompatActivity() {
                     if(items!!.roomList.get(0).heart_making == false){
                         var builder = AlertDialog.Builder(this@ReviewCommentActivity)
                         builder.setTitle("알림")
-                        builder.setMessage("좋아요를 누르시겠습니까?")
+                        builder.setMessage("좋아요를 누르시겠습니까?\n" +
+                                "(좋아요 버튼을 누르면 취소가 불가능합니다.)")
 
                         // 버튼 클릭시에 무슨 작업을 할 것인가!
                         var listener = object : DialogInterface.OnClickListener {

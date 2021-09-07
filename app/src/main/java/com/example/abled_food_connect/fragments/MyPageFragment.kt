@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
@@ -1120,7 +1121,17 @@ class MyPageFragment : Fragment() {
                     userProfileIntroductionTv.text = items!!.introduction
                 }
 
-                noShowCountTv.text = "노쇼:${items.no_show_count}회"
+
+
+
+                if(items.no_show_count >=3){
+                    noShowCountTv.text= "노쇼 : ${items.no_show_count}회"
+                    noShowCountTv.background = resources.getDrawable(R.drawable.social_login_google_button)
+                    noShowCountTv.setTextColor(Color.WHITE)
+                }else {
+                    noShowCountTv.text="노쇼 : ${items.no_show_count}회"
+                }
+
 
                 //랭킹관련
 
