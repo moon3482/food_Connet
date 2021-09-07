@@ -4,49 +4,49 @@ import com.google.gson.annotations.SerializedName
 
 data class MainFragmentItemData(
     @SerializedName("roomId")
-    var roomId: String,
+    var roomId: String? = null,
     @SerializedName("title")
-    var title: String,
+    var title: String? = null,
     @SerializedName("info")
-    var info: String,
+    var info: String? = null,
     @SerializedName("nowNumOfPeople")
-    var nowNumOfPeople: String,
+    var nowNumOfPeople: String? = null,
     @SerializedName("numOfPeople")
-    var numOfPeople: String,
+    var numOfPeople: String? = null,
     @SerializedName("date")
-    var date: String,
+    var date: String? = null,
     @SerializedName("time")
-    var time: String,
+    var time: String? = null,
     @SerializedName("address")
-    var address: String,
+    var address: String? = null,
     @SerializedName("roadAddress")
-    var roadAddress: String,
+    var roadAddress: String? = null,
     @SerializedName("shopName")
-    var shopName: String,
+    var shopName: String? = null,
     @SerializedName("placeName")
-    var placeName: String,
+    var placeName: String? = null,
     @SerializedName("keyWords")
-    var keyWords: String,
+    var keyWords: String? = null,
     @SerializedName("gender")
-    var gender: String,
+    var gender: String? = null,
     @SerializedName("minimumAge")
-    var minimumAge: Int,
+    var minimumAge: Int? = null,
     @SerializedName("maximumAge")
-    var maximumAge: Int,
+    var maximumAge: Int? = null,
     @SerializedName("hostName")
-    var hostName: String,
+    var hostName: String? = null,
     @SerializedName("hostIndex")
-    var hostIndex: String,
+    var hostIndex: String? = null,
     @SerializedName("roomStatus")
-    var roomStatus: Double,
+    var roomStatus: Double? = null,
     @SerializedName("map_x")
-    var mapX:Double,
+    var mapX:Double? = null,
     @SerializedName("map_y")
-    var mapY:Double,
+    var mapY:Double? = null,
     @SerializedName("joinMember")
-    var joinMember:ArrayList<String>,
+    var joinMember:ArrayList<String>? = null,
     @SerializedName("finish")
-    var finish:String
+    var finish:String? = null
 
 ) {
     private fun CreateRoom() {

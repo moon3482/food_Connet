@@ -1,5 +1,6 @@
 package com.example.abled_food_connect.adapter
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -49,7 +50,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
 
     lateinit var members: String
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val chatRoomUserData: ChatRoomUserData = arrayList[position]
         val holder = holder as ChatroomUserHolder2
         if (arrayList.size == 0) {
