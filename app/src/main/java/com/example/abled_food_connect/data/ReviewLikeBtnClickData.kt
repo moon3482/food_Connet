@@ -8,5 +8,9 @@ data class ReviewLikeBtnClickData(
     @SerializedName("how_many_like_count")
     val how_many_like_count: Int,
     @SerializedName("success")
-    val success: Boolean
+    val success: Boolean,
+    @SerializedName("review_deleted")
+    val review_deleted: Int,
+    @SerializedName("isDoubleLikeButtonClicked")
+    val isDoubleLikeButtonClicked: Boolean
 )

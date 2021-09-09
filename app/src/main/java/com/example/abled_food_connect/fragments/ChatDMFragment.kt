@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +38,8 @@ class ChatDMFragment : Fragment() {
 
     //그리드뷰 어댑터
     lateinit var DM_List_rv_Adapter : ChattingFragmentDmRvAdapter
+
+    lateinit var dmNoListAlertTv : TextView
 
 
     //소켓통신
@@ -113,6 +116,8 @@ class ChatDMFragment : Fragment() {
 
 
 
+        //DM 내역이 없으면 출력되는 텍스트뷰
+        dmNoListAlertTv = view.findViewById<TextView>(R.id.dmNoListAlertTv)
 
         //리사이클러뷰
         DM_List_rv = view.findViewById<RecyclerView>(R.id.ChatDmRCV)
@@ -179,7 +184,22 @@ class ChatDMFragment : Fragment() {
                     Log.d(TAG, "실행됨")
                     DM_List_arrayList.clear()
                 }
+
+
                 DM_List_arrayList = items!!.chattingList as ArrayList<ChattingFragmentDmRvDataItem>
+
+
+                Log.d("DM_List_arrayListsize", DM_List_arrayList.size.toString())
+
+                if(DM_List_arrayList.size == 0){
+                    dmNoListAlertTv.visibility =View.VISIBLE
+
+                }else{
+                    dmNoListAlertTv.visibility =View.GONE
+                }
+
+
+
 
 
                 DM_List_arrayList.sortWith(object: Comparator<ChattingFragmentDmRvDataItem>{
@@ -278,6 +298,14 @@ class ChatDMFragment : Fragment() {
                     DM_List_arrayList.clear()
                 }
                 DM_List_arrayList = items!!.chattingList as ArrayList<ChattingFragmentDmRvDataItem>
+
+
+                if(DM_List_arrayList.size == 0){
+                    dmNoListAlertTv.visibility =View.VISIBLE
+
+                }else{
+                    dmNoListAlertTv.visibility =View.GONE
+                }
 
                 DM_List_arrayList.sortWith(object: Comparator<ChattingFragmentDmRvDataItem>{
                     override fun compare(p1: ChattingFragmentDmRvDataItem, p2: ChattingFragmentDmRvDataItem): Int = when {

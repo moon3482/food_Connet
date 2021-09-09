@@ -32,11 +32,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="5dp"
+                    android:textSize="12dp"
                     tools:text="읽음" />
 
 
             <TextView
-                android:id="@+id/chatMyTimeStamp"
+                android:id="@+id/ImageChatMyTimeStamp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="bottom|end"
@@ -45,7 +46,7 @@
              </LinearLayout>
 
             <TextView
-                android:id="@+id/chatMyMessageText"
+                android:id="@+id/ImageChatMyMessageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/chat_my_message_background"

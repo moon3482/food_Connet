@@ -49,7 +49,7 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
 
 
 
-        if(DMArrayList.get(position).text_or_image == "Image"){
+        if(DMArrayList.get(position).text_or_image_or_dateline == "Image"){
             holder.dmListMessageTv.text = "사진을 보냈습니다."
         }else{
             holder.dmListMessageTv.text = DMArrayList.get(position).content
@@ -70,6 +70,7 @@ class ChattingFragmentDmRvAdapter (val DMArrayList: ArrayList<ChattingFragmentDm
             toDirectMessageActivity.putExtra("writer_user_tb_id", DMArrayList.get(position).your_table_id)
             toDirectMessageActivity.putExtra("clicked_user_NicName", DMArrayList.get(position).your_nick_name)
             toDirectMessageActivity.putExtra("clicked_user_ProfileImage", DMArrayList.get(position).your_thumbnail_image)
+            toDirectMessageActivity.putExtra("is_account_delete", DMArrayList.get(position).is_account_delete)
             startActivity(holder.DMListClickBtn.context, toDirectMessageActivity, null)
         }
     }

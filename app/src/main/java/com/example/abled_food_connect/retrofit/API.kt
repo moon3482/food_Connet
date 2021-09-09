@@ -2,9 +2,7 @@ package com.example.abled_food_connect.retrofit
 
 
 import android.content.Context
-import android.content.Intent
-import android.widget.Toast
-import com.example.abled_food_connect.ChatRoomActivity
+import com.example.abled_food_connect.data.NewActionAlarmCheckData
 import com.example.abled_food_connect.R
 import com.example.abled_food_connect.data.*
 import com.google.gson.annotations.SerializedName
@@ -57,6 +55,17 @@ class API {
 
 
     //프로필 수정 - 원본이미지와 압축된 이미지, 아이디, 자기소개를 보낸다.
+    interface UserProfileEvaluationListInterface {
+        @Multipart
+        @POST("review/user_profile_evaluation_list.php")
+        fun user_profile_evaluation_list_Request(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<UserProfileEvaluationListData>
+
+    }
+
+
+    //프로필 수정 - 원본이미지와 압축된 이미지, 아이디, 자기소개를 보낸다.
     interface UserProfileModifyImageChange_interface {
         @Multipart
         @POST("user_info/user_profile_modify.php")
@@ -69,6 +78,19 @@ class API {
         ): Call<String>
 
     }
+
+
+    interface roomTbDbInfoGetInterface {
+
+
+        @Multipart
+        @POST("review/room_tb_db_info_get.php")
+        fun room_tb_db_info_get(
+            @Part("room_id") room_id: Int
+        ): Call<RoomTbDbInfoData>
+
+    }
+
 
 
 
@@ -92,7 +114,7 @@ class API {
             @Part("rating_star_taste") rating_star_taste: Int,
             @Part("rating_star_service") rating_star_service: Int,
             @Part("rating_star_clean") rating_star_clean: Int,
-            @Part("rating_star_interior") rating_star_interior: Int): Call<String>
+            @Part("rating_star_interior") rating_star_interior: Int): Call<ReviewWritingData>
     }
 
 
@@ -110,11 +132,15 @@ class API {
 
     }
 
+
     interface reviewLikeBtnClick{
         // 좋아요 버튼 클릭
         @Multipart
         @POST("review/review_like_btn_click.php")
         fun review_Like_Btn_Click(
+            @Part("sendTargetUserTable_id") sendTargetUserTable_id: Int,
+            @Part("like_click_user_nicname") like_click_user_nicname: String,
+            @Part("which_text_choose") which_text_choose: String,
             @Part("what_click_review_tb_id") what_click_review_tb_id: Int,
             @Part("my_user_tb_id") my_user_tb_id: Int,
             @Part("my_user_tb_user_id") my_user_tb_user_id: String
@@ -136,6 +162,8 @@ class API {
         @Multipart
         @POST("review/review_parent_page_comment_writing.php")
         fun reviewParentPageCommentWritingSend(
+            @Part("which_text_choose") which_text_choose: String,
+            @Part("comment_writer_nicname") comment_writer_nicname: String,
             @Part("review_id") review_id: Int,
             @Part("writing_user_id") writing_user_id: Int,
             @Part("comment_content") comment: String,
@@ -164,6 +192,9 @@ class API {
         @Multipart
         @POST("review/review_child_page_comment_writing.php")
         fun review_child_page_comment_send_btn_click(
+            @Part("reviewWritingUserId") reviewWritingUserId: Int,
+            @Part("which_text_choose") which_text_choose: String,
+            @Part("comment_writer_nicname") comment_writer_nicname: String,
             @Part("review_id") review_id: Int,
             @Part("writing_user_id") writing_user_id: Int,
             @Part("comment_content") comment: String,
@@ -183,6 +214,18 @@ class API {
             @Part("review_tb_id") review_id: Int,
             @Part("user_tb_id") user_tb_id: Int
         ): Call<ReviewDetailViewLikeAndCommentCountCheckData>
+    }
+
+
+    interface rankingLatestThreeGetInterface {
+
+
+        @Multipart
+        @POST("ranking/ranking_latest_three_get.php")
+        fun ranking_latest_three_get(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<userProfileRankingLatestThreeData>
+
     }
 
 
@@ -236,7 +279,8 @@ class API {
         @Multipart
         @POST("chat/direct_message_list_get.php")
         fun direct_message_list_get(
-            @Part("roomName") roomName: String
+            @Part("roomName") roomName: String,
+            @Part("dm_log_tb_id") dm_log_tb_id: Int
         ): Call<DirectMessageNodeServerSendData>
     }
 
@@ -273,6 +317,27 @@ class API {
     }
 
 
+    interface UserProfileJoinHistoryRvInterface {
+        @Multipart
+        @POST("schedule/user_profile_join_history_rv_list_get.php")
+        fun user_profile_join_history_rv_list_get(
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<UserProfileJoinHistoryRvData>
+    }
+
+
+    interface deleteReviewCheckInterface {
+
+        @Multipart
+        @POST("review/review_delete_check.php")
+        fun review_delete_check(
+            @Part("review_tb_id") review_tb_id: Int
+        ): Call<ReviewDeleteCheckData>
+
+    }
+
+
+
     interface UserProfileClickedReviewGridListRvInterface {
 
         @Multipart
@@ -284,13 +349,254 @@ class API {
 
     }
 
+
+    interface deletedReviewCheckUserProfileClickedReviewGridListRvInterface {
+
+        @Multipart
+        @POST("review/deleted_Review_Check_user_profile_clicked_review_grid_rv_list_get.php")
+        fun deleted_Review_Check_user_profile_clicked_review_grid_rv_list_get(
+            @Part("review_id") review_id: Int
+        ): Call<String>
+
+    }
+
+
     interface MyPageUserScheduleRvInterface {
 
         @Multipart
         @POST("schedule/my_page_user_schedule_get.php")
         fun my_page_user_schedule_rv_get(
+            @Part("user_tb_nicname") user_tb_nicname: String,
+            @Part("date_reverse") date_reverse: Int //데이트 리버스는 일정리스트에서 예정된 일정의 날짜는 미래의 날짜를 asc, 완료된 일정은 과거읜 날을 desc
+        ): Call<MyPageUserScheduleData>
+
+    }
+
+
+
+    interface UnWrittenReviewListRvInterface {
+
+        @Multipart
+        @POST("schedule/un_written_review_list_get.php")
+        fun un_written_review_list_get(
             @Part("user_tb_nicname") user_tb_nicname: String
         ): Call<MyPageUserScheduleData>
+
+    }
+
+    interface UserProfileBadgeListDataGetInterface {
+        @Multipart
+        @POST("user_info/user_profile_badge_list_data_get.php")
+        fun user_profile_badge_list_data_get(
+            @Part("user_tb_id") user_tb_id: Int,
+            @Part("user_tb_nicname") user_tb_nicname: String
+        ): Call<UserProfileBadgeListData>
+    }
+
+
+    interface MeetingUserEvaluationWritingBeforeNoShowCheck{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/meeting_user_evaluation_writing_before_no_show_check.php")
+        fun meeting_user_evaluation_writing_before_no_show_check(
+            @Part("room_id") room_id: Int,
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<MeetingUserEvaluationWritingBeforeNoShowCheckData>
+    }
+
+
+
+
+    interface MeetingEvaluationUserListRvInterface {
+
+        @Multipart
+        @POST("schedule/meeting_evaluation_user_list.php")
+        fun meeting_evaluation_user_list_get(
+            @Part("room_id") room_id: Int
+        ): Call<MeetingEvaluationUserListRvData>
+
+    }
+
+    interface MeetingUserEvaluationWritingInterface {
+
+        @Multipart
+        @POST("schedule/meeting_user_evaluation_writing.php")
+        fun meeting_user_evaluation_writing(
+            @Part("meeting_user_evaluation_Json") meeting_user_evaluation_Json: String,
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("my_user_nicname") my_user_nicname: String
+        ): Call<MeetingUserEvaluationWritingData>
+
+    }
+
+
+    interface rankingFragmentRvSeasonPointListGetInterface {
+
+        @Multipart
+        @POST("ranking/season_point_list_get.php")
+        fun season_point_list_get(
+            @Part("my_nicname") my_nicname: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
+    interface rankingFragmentRvSeasonTierListGetInterface {
+
+        @Multipart
+        @POST("ranking/season_tier_list_get.php")
+        fun season_tier_list_get(
+            @Part("what_tier") what_tier: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
+    interface rankingRvPagingToDownInterface {
+
+        @Multipart
+        @POST("ranking/ranking_paging_to_down.php")
+        fun paging_to_down_get(
+            @Part("lastArrayNumber") lastArrayNumber: Int,
+            @Part("what_tier") what_tier: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+    interface rankingNicNameSearchInterface {
+
+        @Multipart
+        @POST("ranking/ranking_nicname_search.php")
+        fun anking_nicname_search_get(
+            @Part("searchNicName") searchNicName: String
+
+        ): Call<RankingFragmentRvData>
+
+    }
+
+
+    interface userProfileRankingGetInterface {
+        @Multipart
+        @POST("user_info/user_profile_ranking_get.php")
+        fun user_profile_ranking_get(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<userProfileRankingLatestThreeData>
+    }
+
+
+    interface clickedCommentDataLoadingInterface{
+        // 리뷰삭제
+        @Multipart
+        @POST("review/clicked_comment_data_loading.php")
+        fun clicked_comment_data_loading(
+            @Part("review_id") review_id: Int,
+            @Part("comment_tb_id") comment_tb_id: Int
+
+
+        ): Call<ReviewParentPageCommentGetData>
+    }
+
+
+    interface reviewDeleteBtn{
+        // 리뷰삭제
+        @Multipart
+        @POST("review/review_delete_btn_click.php")
+        fun review_delete_btn_click(
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("what_click_review_tb_id") what_click_review_tb_id: Int,
+            @Part("room_id") room_id: Int
+
+        ): Call<ReviewDeleteData>
+    }
+
+
+
+    interface commentDeleteBtn{
+        // 댓글삭제
+        @Multipart
+        @POST("review/comment_delete_btn_click.php")
+        fun comment_delete_btn_click(
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+            @Part("what_click_comment_id") what_click_comment_id: Int,
+            @Part("review_id") review_id: Int,
+            @Part("parentOrChild") parentOrChild: Int,
+            @Part("groupNum") groupNum: Int
+
+        ): Call<CommentDeleteData>
+    }
+
+
+
+    //일정리스트에서 방제목을 클릭하면, 방정보를 가져온다.
+    //방정보 엑티비티로 가기 위해서는 방정보에 필요한 데이터를 가져와서 넘겨줘야한다.
+    interface roomInfoGetInterface {
+        @Multipart
+        @POST("schedule/room_info_get.php")
+        fun room_info_get(
+            @Part("room_id") room_id: Int,
+            @Part("hostName") hostName: String
+        ): Call<ScheduleClickRoomInfoData>
+
+    }
+
+
+
+    interface whenLogoutFcmtokenDeleteInterface {
+        @Multipart
+        @POST("user_info/when_logout_fcmtoken_delete.php")
+        fun when_logout_fcmtoken_delete(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<whenLogoutFcmtokenDeleteData>
+    }
+
+
+    interface userAccountDeleteInterface {
+        @Multipart
+        @POST("user_info/user_account_delete.php")
+        fun user_account_delete(
+            @Part("user_tb_id") user_tb_id: Int
+        ): Call<userAccountDeleteData>
+    }
+
+    interface ActionAlarmListGetInterface{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/action_alarm_list_get.php")
+        fun action_alarm_list_get(
+            @Part("user_tb_id") user_tb_id: Int,
+        ): Call<ActionAlarmListData>
+    }
+
+
+    interface ActionAlarmActivityEnterCheckInterface{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/action_alarm_activity_enter_check.php")
+        fun action_alarm_activity_enter_check(
+            @Part("user_tb_id") user_tb_id: Int,
+        ): Call<ActionAlarmActivityEnterCheckData>
+    }
+
+    interface NewActionAlarmCheckInterface{
+        // 좋아요 버튼 클릭
+        @Multipart
+        @POST("schedule/new_action_alarm_check.php")
+        fun new_action_alarm_check(
+            @Part("user_tb_id") user_tb_id: Int,
+        ): Call<NewActionAlarmCheckData>
+    }
+
+
+    interface RankingExplanationActivityEnterCheckInterface {
+
+        @Multipart
+        @POST("user_info/ranking_explanation_activity_enter_check.php")
+        fun ranking_explanation_activity_enter_check(
+            @Part("my_user_tb_id") my_user_tb_id: Int,
+        ): Call<String>
 
     }
 

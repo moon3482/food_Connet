@@ -1,10 +1,13 @@
 package com.example.abled_food_connect
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -21,28 +24,25 @@ import com.example.abled_food_connect.data.kakaoDataClass.KakaoLocalSearch
 import com.example.abled_food_connect.data.naverDataClass.NaverSearchLocal
 import com.example.abled_food_connect.databinding.ActivityCreateRoomMapSearchBinding
 import com.example.abled_food_connect.retrofit.MapSearch
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
-import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.MarkerIcons
 import okhttp3.OkHttpClient
-import okhttp3.internal.notifyAll
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ted.gun0912.clustering.TedMap
-import ted.gun0912.clustering.TedMarker
 import ted.gun0912.clustering.clustering.Cluster
-import ted.gun0912.clustering.clustering.view.ClusterRenderer
 import ted.gun0912.clustering.naver.TedNaverClustering
-import ted.gun0912.clustering.naver.TedNaverMarker
 
 
 class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -60,16 +60,23 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var pickMarker: ClusterDataClass
     lateinit var array: ArrayList<ClusterMarkerData>
     lateinit var gg: ArrayList<Cluster<ClusterDataClass>>
+    lateinit var context: Context
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    // 위치값 얻어오기 객체
+    lateinit var locationRequest: LocationRequest // 위치 요청
+    lateinit var locationCallback: MyLocationCallBack // 내부 클래스, 위치 변경 후 지도에 표시.
+    var mLocationManager: LocationManager? = null
+    var mLocationListener: LocationListener? = null
 
-    companion object {
-        lateinit var context: Context
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = binding.root
         setContentView(view)
+        setSupportActionBar(binding.CreateRoomMapSearchToolbar)
+        val tb = supportActionBar!!
+        tb.title = "지도검색"
         gg = ArrayList()
         array = ArrayList()
         context = this
@@ -78,7 +85,19 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         markerList = ArrayList()
         infoWindow = InfoWindow()
         CLlist = ArrayList()
+        mLocationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+        mLocationListener = LocationListener {
+            var lat = 0.0
+            var lng = 0.0
+            if (it != null) {
+                lat = it.latitude
+                lng = it.longitude
+                Log.d("GmapViewFragment", "Lat: ${lat}, lon: ${lng}")
+            }
+            var currentLocation = LatLng(lat, lng)
 
+        }
+        locationInit()
         val fm = supportFragmentManager
         mapFragment = fm.findFragmentById(R.id.CreateRoomMapSearchMapView) as MapFragment?
             ?: MapFragment.newInstance()
@@ -163,6 +182,16 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        addLocationListener()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        removeLocationLister()
     }
 
     fun kakaoSearch(query: String) {
@@ -261,6 +290,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                         array[0].marker = tedNaverMarker
                                         array[0].clustetdata = clusterItem
                                         tedNaverMarker.marker.icon = MarkerIcons.RED
+                                        tedNaverMarker.marker.zIndex = 200
                                         array[0].clustetdata.check = true
                                         tedNaverMarker.check = true
                                         val info = InfoWindow()
@@ -285,6 +315,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                             }
 
                                         }
+                                        info.zIndex = 200
                                         info.open(array[0].marker.marker)
 
                                     } else {
@@ -307,6 +338,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                                 array[index].marker.marker.icon = MarkerIcons.GREEN
                                                 array[index].clustetdata.check = false
                                                 array[index].marker.check = false
+                                                array[index].marker.marker.zIndex = 0
                                                 array[index].marker.marker.infoWindow?.let {
 
                                                     it.adapter = object :
@@ -315,6 +347,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                                             return clusterItem.placeName
                                                         }
                                                     }
+                                                    it.zIndex = 0
                                                     it.open(array[index].marker.marker)
 
 
@@ -329,6 +362,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                         }
                                         clusterItem.status = 1
                                         tedNaverMarker.marker.icon = MarkerIcons.RED
+                                        tedNaverMarker.marker.zIndex = 200
                                         tedNaverMarker.check = true
                                         clusterItem.check = true
                                         intentX = clusterItem.position.longitude
@@ -359,7 +393,11 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
                                             }
 
                                         }
-                                        info?.let { it.open(array[0].marker.marker) }
+
+                                        info?.let {
+                                            it.zIndex = 200
+                                            it.open(array[0].marker.marker)
+                                        }
                                         naverMap.moveCamera(
                                             CameraUpdate.scrollTo(clusterItem.position)
                                                 .animate(CameraAnimation.Easing)
@@ -384,6 +422,7 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
 
                                     if (cluster.clusterData()) {
                                         tedNaverMarker.check = true
+                                        tedNaverMarker.marker.zIndex = 200
                                         tedNaverMarker.setImageDescriptor(
                                             tedNaverMarker.fromBitmap(
                                                 render.getDefaultCluster(cluster.size, cluster)
@@ -493,7 +532,44 @@ class CreateRoomMapSearchActivity : AppCompatActivity(), OnMapReadyCallback {
         val bounds = naverMap.contentBounds
         return list
     }
+
+    fun locationInit() {
+        fusedLocationProviderClient = FusedLocationProviderClient(this)
+        // 현재 사용자 위치를 저장.
+        locationCallback = MyLocationCallBack() // 내부 클래스 조작용 객체 생성
+        locationRequest = LocationRequest() // 위치 요청.
+
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        // 위치 요청의 우선순위 = 높은 정확도 우선.
+        locationRequest.interval = 10000 // 내 위치 지도 전달 간격
+        locationRequest.fastestInterval = 5000 // 지도 갱신 간격.
+
+    }
+
+    inner class MyLocationCallBack : LocationCallback() {
+        override fun onLocationResult(p0: LocationResult?) {
+            super.onLocationResult(p0)
+
+            val location = p0?.lastLocation
+            // 위도 경도를 지도 서버에 전달하면,
+            // 위치에 대한 지도 결과를 받아와서 저장.
+        }
+    }
+
+    fun removeLocationLister() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+        // 어플이 종료되면 지도 요청 해제.
+    }
+    @SuppressLint("MissingPermission")
+    fun addLocationListener() {
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        //위치 권한을 요청해야 함.
+        // 액티비티가 잠깐 쉴 때,
+        // 자신의 위치를 확인하고, 갱신된 정보를 요청
+    }
 }
+
+
 
 
 

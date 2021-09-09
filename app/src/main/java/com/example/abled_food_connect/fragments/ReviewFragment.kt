@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.abled_food_connect.MainActivity
 import com.example.abled_food_connect.data.ReviewFragmentLoadingData
 import com.example.abled_food_connect.data.ReviewFragmentLodingDataItem
 import com.example.abled_food_connect.adapter.ReviewFragmentGridViewAdapter
@@ -25,18 +26,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class ReviewFragment:Fragment() {
-    private val reviewFragmentListArray: ArrayList<MainFragmentItemData> = ArrayList()
 
 
     //리사이클러뷰 어래이리스트
-    private lateinit var gridView_arrayList : ArrayList<ReviewFragmentLodingDataItem>
+    private var gridView_arrayList = ArrayList<ReviewFragmentLodingDataItem>()
 
     //리사이클러뷰
     lateinit var rv : RecyclerView
 
 
     //그리드뷰 어댑터
-    lateinit var mAdapter : ReviewFragmentGridViewAdapter
+   var mAdapter = ReviewFragmentGridViewAdapter()
 
 
     companion object{
@@ -56,6 +56,13 @@ class ReviewFragment:Fragment() {
         Log.d(TAG,"리뷰프래그먼트 onAttach()")
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        Log.d(TAG,"리뷰프래그먼트 onResume()")
+        reviewDbLoading()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,6 +70,7 @@ class ReviewFragment:Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.review_fragment, container, false)
 
+        Log.d(TAG,"리뷰프래그먼트 onCreateView()")
 
 
         reviewDbLoading()
@@ -74,6 +82,7 @@ class ReviewFragment:Fragment() {
         //rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv.layoutManager = GridLayoutManager(context,3)
 
+        rv.adapter = mAdapter
 
         //리사이클러뷰 구분선
 
@@ -94,13 +103,15 @@ class ReviewFragment:Fragment() {
     }
 
 
+
+
     fun reviewDbLoading(){
         val retrofit = Retrofit.Builder()
             .baseUrl(getString(R.string.http_request_base_url))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(ReviewFragRvUsingInterface::class.java)
-        val callGetSearchNews = api.review_frag_rv_using_interface()
+        val callGetSearchNews = api.review_frag_rv_using_interface(MainActivity.user_table_id)
 
 
         callGetSearchNews.enqueue(object : Callback<ReviewFragmentLoadingData> {
@@ -108,8 +119,8 @@ class ReviewFragment:Fragment() {
                 call: Call<ReviewFragmentLoadingData>,
                 response: Response<ReviewFragmentLoadingData>
             ) {
-                Log.d(TAG, "성공 : ${response.raw()}")
-                Log.d(TAG, "성공 : ${response.body().toString()}")
+                Log.d(TAG, "리뷰성공 : ${response.raw()}")
+                Log.d(TAG, "리뷰성공 : ${response.body().toString()}")
 
                 var items : ReviewFragmentLoadingData? =  response.body()
 
@@ -117,12 +128,12 @@ class ReviewFragment:Fragment() {
                 Log.d(TAG, "성공 : ${items!!.roomList}")
 
 
+                gridView_arrayList.clear()
                 gridView_arrayList = items!!.roomList as ArrayList<ReviewFragmentLodingDataItem>
 
+                mAdapter.reviewList = gridView_arrayList
+                mAdapter.notifyDataSetChanged()
 
-
-                mAdapter =  ReviewFragmentGridViewAdapter(gridView_arrayList)
-                rv.adapter = mAdapter
 
 
 
@@ -170,7 +181,7 @@ class ReviewFragment:Fragment() {
 
             }
 
-            Toast.makeText(context, "버튼킬륵", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "버튼클릭", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
     }

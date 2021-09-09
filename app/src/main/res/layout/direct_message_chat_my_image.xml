@@ -33,10 +33,11 @@
                     android:layout_height="wrap_content"
                     android:gravity="bottom|end"
                     android:paddingStart="5dp"
+                    android:textSize="12dp"
                     tools:text="" />
 
             <TextView
-                android:id="@+id/chatMyTimeStamp"
+                android:id="@+id/ImageChatMyTimeStamp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="bottom|end"

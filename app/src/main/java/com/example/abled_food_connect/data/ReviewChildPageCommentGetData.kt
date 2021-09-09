@@ -8,6 +8,8 @@ data class ReviewChildPageCommentGetData(
     var success : Boolean,
     @SerializedName("comment_count")
     var comment_count : String,
+    @SerializedName("review_deleted")
+    var review_deleted : Int,
     @SerializedName("commentlist")
     var childPageCommentList : List<ReviewChildPageCommentGetDataItem>
 )

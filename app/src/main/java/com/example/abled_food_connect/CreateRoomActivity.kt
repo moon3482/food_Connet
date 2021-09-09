@@ -1,36 +1,39 @@
 package com.example.abled_food_connect
 
 import android.Manifest
+import android.annotation.TargetApi
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
-import android.util.SparseArray
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import co.lujun.androidtagview.TagView
-import com.example.abled_food_connect.array.age
-import com.example.abled_food_connect.array.maximumAge
-import com.example.abled_food_connect.array.minimumAge
-import com.example.abled_food_connect.array.numOfPeople
+import com.example.abled_food_connect.array.Age
+import com.example.abled_food_connect.array.MaximumAge
+import com.example.abled_food_connect.array.MinimumAge
+import com.example.abled_food_connect.array.NumOfPeople
 import com.example.abled_food_connect.databinding.ActivityCreateRoomActivityBinding
 import com.example.abled_food_connect.retrofit.API
 import com.example.abled_food_connect.retrofit.MapSearch
 import com.example.abled_food_connect.retrofit.RoomAPI
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
-import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import net.daum.android.map.*
 import okhttp3.OkHttpClient
@@ -41,10 +44,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.BufferedInputStream
 import java.io.InputStream
-import java.net.URLDecoder
-import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -60,15 +60,20 @@ class CreateRoomActivity : AppCompatActivity() {
     private val REQUIRED_PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
+
+
     )
+    private val ACCESS_FINE_LOCATION = 1000
     private var x: Double? = null
     private var y: Double? = null
     /*태그 리스트*/val PERMISSIONS_REQUEST_CODE = 100
+    val BACKGROUND_PERMISSIONS_REQUEST_CODE = 1110
     var tagArray: ArrayList<String> = ArrayList()
     lateinit var marker: Marker
     lateinit var placeName: String
     lateinit var address: String
     lateinit var roadAddress: String
+    lateinit var context: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,13 +89,16 @@ class CreateRoomActivity : AppCompatActivity() {
         val maximum = binding.maximumAgeTextView
         val minimum = binding.minimumAgeTextView
         placeName = String()
+        context = this
+
         /*드롭다운 어댑터 설정*/
-        maximum.setAdapter(setAdapter(age()))
-        minimum.setAdapter(setAdapter(age()))
-        numOfPeople.setAdapter(setAdapter(numOfPeople()))
+        maximum.setAdapter(setAdapter(Age()))
+        minimum.setAdapter(setAdapter(Age()))
+        numOfPeople.setAdapter(setAdapter(NumOfPeople()))
 
         onClickListenerGroup()
-        checkPermissions()
+
+
 
         getMapImage(null, null, null)
 
@@ -99,10 +107,19 @@ class CreateRoomActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        if (checkLocationService()) {
+            // GPS가 켜져있을 경우
+            permissionCheck()
+        } else {
+            // GPS가 꺼져있을 경우
+            Toast.makeText(this, "GPS를 켜주세요", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onResume() {
         super.onResume()
+//        checkBackgroundLocationPermissionAPI30(PERMISSIONS_REQUEST_CODE)
+
     }
 
     override fun onPause() {
@@ -156,6 +173,7 @@ class CreateRoomActivity : AppCompatActivity() {
                     || ActivityCompat.shouldShowRequestPermissionRationale(
                         this,
                         REQUIRED_PERMISSIONS[1]
+
                     )
                 ) {
                     Toast.makeText(
@@ -165,11 +183,24 @@ class CreateRoomActivity : AppCompatActivity() {
                     ).show()
                     finish()
                 } else {
+
                     Toast.makeText(this, "권한 설정이 거부되었습니다.\n설정에서 권한을 허용해야 합니다..", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
         }
+
+//        if (requestCode == ACCESS_FINE_LOCATION) {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // 권한 요청 후 승인됨 (추적 시작)
+//                Toast.makeText(this, "위치 권한이 승인되었습니다", Toast.LENGTH_SHORT).show()
+//
+//            } else {
+//                // 권한 요청 후 거절됨 (다시 요청 or 토스트)
+//                Toast.makeText(this, "위치 권한이 거절되었습니다", Toast.LENGTH_SHORT).show()
+//                permissionCheck()
+//            }
+//        }
     }
 
     /**
@@ -202,24 +233,25 @@ class CreateRoomActivity : AppCompatActivity() {
         }
     }
 
+
     /**
      * 나이 어댑터
      * */
-    private fun setAdapter(age: age): ArrayAdapter<Int> {
+    private fun setAdapter(Age: Age): ArrayAdapter<Int> {
 
 
-        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray())
+        return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, Age.numArray())
 
     }
 
-    private fun setAdapter(age: minimumAge, num: Int): ArrayAdapter<Int> {
+    private fun setAdapter(age: MinimumAge, num: Int): ArrayAdapter<Int> {
 
 
         return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
 
     }
 
-    private fun setAdapter(age: maximumAge, num: Int): ArrayAdapter<Int> {
+    private fun setAdapter(age: MaximumAge, num: Int): ArrayAdapter<Int> {
 
 
         return ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, age.numArray(num))
@@ -229,13 +261,13 @@ class CreateRoomActivity : AppCompatActivity() {
     /**
      * 모집인원 어댑터
      * */
-    private fun setAdapter(numOfPeople: numOfPeople): ArrayAdapter<Int> {
+    private fun setAdapter(NumOfPeople: NumOfPeople): ArrayAdapter<Int> {
 
 
         return ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item,
-            numOfPeople.numArray(3)
+            NumOfPeople.numArray(3)
         )
 
     }
@@ -428,7 +460,7 @@ class CreateRoomActivity : AppCompatActivity() {
         val retrofit =
             Retrofit.Builder()
                 .baseUrl(getString(R.string.http_request_base_url))
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()
 
@@ -450,6 +482,7 @@ class CreateRoomActivity : AppCompatActivity() {
             minAge,
             maxAge,
             hostName,
+            MainActivity.user_table_id,
             mapx.toString(),
             mapy.toString()
         )
@@ -474,7 +507,10 @@ class CreateRoomActivity : AppCompatActivity() {
                         intent.putExtra("date", room.roomId.date)
                         intent.putExtra("shopName", room.roomId.shopName)
                         intent.putExtra("roomStatus", room.roomId.roomStatus)
-                        intent.putExtra("numOfPeople", room.roomId.numOfPeople.toString())
+                        intent.putExtra("nowNumOfPeople", room.roomId.nowNumOfPeople)
+                        intent.putExtra("hostIndex", room.roomId.hostIndex)
+                        Log.e("nowNumOfPeople", room.roomId.nowNumOfPeople!!)
+                        intent.putExtra("numOfPeople", room.roomId.numOfPeople)
                         intent.putExtra("keyWords", room.roomId.keyWords)
                         intent.putExtra("mapX", room.roomId.mapX)
                         intent.putExtra("mapY", room.roomId.mapY)
@@ -595,8 +631,12 @@ class CreateRoomActivity : AppCompatActivity() {
                 createRoom()
             }
         }
+        setSupportActionBar(binding.CreateRoomActivityToolbar)
         /*툴바 타이틀 세팅*/
-        binding.CreateRoomActivityToolbar.title = "방만들기"
+        val tb = supportActionBar!!
+        tb.title = "방만들기"
+        tb.setDisplayHomeAsUpEnabled(true)
+
 
         /*성별 선택 남자 온클릭 리스너*/
         binding.CreateRoomActivityMaleImageView.setOnClickListener {
@@ -679,12 +719,23 @@ class CreateRoomActivity : AppCompatActivity() {
         }
 
         /*태그 온클릭 리스너*/
+        binding.tagLayout.isEnableCross = true
         binding.tagLayout.setOnTagClickListener(object : TagView.OnTagClickListener {
             override fun onTagClick(position: Int, text: String?) {
 
             }
 
             override fun onTagLongClick(position: Int, text: String?) {
+
+
+            }
+
+
+            override fun onSelectedTagDrag(position: Int, text: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onTagCrossClick(position: Int) {
                 /*태그 롱클릭시 제거*/
                 binding.tagLayout.removeTag(position)
                 /*태그 리스트에서 해당 포지션 제거*/
@@ -694,18 +745,9 @@ class CreateRoomActivity : AppCompatActivity() {
                 if (tagArray.size == 0) {
                     binding.emptyKeyWordTextView.visibility = View.VISIBLE
                 }
-
-
-            }
-
-            override fun onSelectedTagDrag(position: Int, text: String?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onTagCrossClick(position: Int) {
-                TODO("Not yet implemented")
             }
         })
+
         /*지도 이미지 버튼 클릭 리스너*/
         binding.CreateRoomMapSearchButton.setOnClickListener {
             val intent = Intent(this, CreateRoomMapSearchActivity::class.java)
@@ -721,13 +763,13 @@ class CreateRoomActivity : AppCompatActivity() {
                 id: Long
             ) {
                 val num = binding.minimumAgeTextView.text.toString().toInt()
-                binding.maximumAgeTextView.setAdapter(setAdapter(maximumAge(), num))
+                binding.maximumAgeTextView.setAdapter(setAdapter(MaximumAge(), num))
             }
         })
 
         binding.maximumAgeTextView.setOnItemClickListener { parent, view, position, id ->
             val num = binding.maximumAgeTextView.text.toString().toInt()
-            binding.minimumAgeTextView.setAdapter(setAdapter(minimumAge(), num))
+            binding.minimumAgeTextView.setAdapter(setAdapter(MinimumAge(), num))
         }
     }
 
@@ -754,6 +796,17 @@ class CreateRoomActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home ->{
+                onBackPressed()
+            }
+            else->{}
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 
@@ -826,7 +879,110 @@ class CreateRoomActivity : AppCompatActivity() {
     return list
     }
      */
+    @TargetApi(30)
+    private fun Context.checkBackgroundLocationPermissionAPI30(backgroundLocationRequestCode: Int) {
+        if (checkSinglePermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            return
+        } else {
+            AlertDialog.Builder(this)
+                .setTitle("위치 사용권한")
+                .setMessage("위치사용권한을 항상사용으로 변경해주세요.")
+                .setPositiveButton("설정") { _, _ ->
+//                     this request will take user to Application's Setting page
+//                    requestPermissions(
+//                        arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+//                        backgroundLocationRequestCode
+//                    )
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:$packageName")
+                    )
+                    startActivity(intent)
 
+                }
+                .setNegativeButton("취소") { dialog, _ ->
+                    dialog.dismiss()
+                    onBackPressed()
+                }
+                .setCancelable(false)
+                .create()
+                .show()
+        }
+
+
+    }
+
+    private fun Context.checkSinglePermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun permissionCheck() {
+        val preference = getPreferences(MODE_PRIVATE)
+        val isFirstCheck = preference.getBoolean("isFirstPermissionCheck", true)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // 권한이 없는 상태
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            ) {
+                // 권한 거절 (다시 한 번 물어봄)
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage("현재 위치를 확인하시려면 위치 권한을 허용해주세요.")
+                builder.setPositiveButton("확인") { dialog, which ->
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        ACCESS_FINE_LOCATION
+                    )
+                }
+                builder.setNegativeButton("취소") { dialog, which ->
+
+                }
+                builder.show()
+            } else {
+                if (isFirstCheck) {
+                    // 최초 권한 요청
+                    preference.edit().putBoolean("isFirstPermissionCheck", false).apply()
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        ACCESS_FINE_LOCATION
+                    )
+                } else {
+                    // 다시 묻지 않음 클릭 (앱 정보 화면으로 이동)
+                    val builder = AlertDialog.Builder(this)
+                    builder.setMessage("현재 위치를 확인하시려면 설정에서 위치 권한을 허용해주세요.")
+                    builder.setPositiveButton("설정으로 이동") { dialog, which ->
+                        val intent = Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:$packageName")
+                        )
+                        startActivity(intent)
+                    }
+                    builder.setNegativeButton("취소") { dialog, which ->
+
+                    }
+                    builder.show()
+                }
+            }
+        } else {
+            // 권한이 있는 상태
+
+        }
+    }
+
+    private fun checkLocationService(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
 }
 
 

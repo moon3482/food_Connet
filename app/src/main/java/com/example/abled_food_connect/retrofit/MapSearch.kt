@@ -37,4 +37,11 @@ interface MapSearch {
                       @Query("center") center: String? = null,
                       @Query("scale") scale: Int? = null
     ):Call<ResponseBody>
+    @FormUrlEncoded
+    @POST("/gpstest.php")
+    fun update(
+        @Field("userIndex")userIndex:Int,
+        @Field("x")x:String,
+        @Field("y")y:String
+    ): Call<String>
 }

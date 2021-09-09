@@ -3,21 +3,25 @@ package com.example.abled_food_connect.data
 import com.google.gson.annotations.SerializedName
 
 data class DirectMessageRvData(
+    @SerializedName("dm_log_tb_id")
+    var dm_log_tb_id: Int,
     @SerializedName("roomName")
-    val roomName: String,
+    var roomName: String,
     @SerializedName("user_tb_id")
-    val user_tb_id: Int,
+    var user_tb_id: Int,
     @SerializedName("userNicName")
-    val userNicName: String,
+    var userNicName: String,
     @SerializedName("userProfileImage")
-    val userProfileImage: String,
+    var userProfileImage: String,
     @SerializedName("message")
-    val message: String,
-    @SerializedName("TextOrImage")
-    val TextOrImage: String,
+    var message: String,
+    @SerializedName("TextOrImageOrDateLine")
+    var TextOrImageOrDateLine: String,
     @SerializedName("sendTime")
-    val sendTime: String,
+    var sendTime: String,
+    @SerializedName("toShowTimeStr")
+    var toShowTimeStr: String,
     @SerializedName("message_check")
-    val message_check: String
+    var message_check: String
 
 )

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">푸드 커넥트</string>
     <string name="join">입장</string>
+    <string name="lastLogin">lastLogin</string>
 
     <!--메인 액티비티사용 텍스트-->
     <string name="naver_login">네이버 로그인</string>
@@ -30,6 +31,8 @@
     <string name="create_room_activity_minimum_age">최소</string>
     <string name="create_room_activity_maximum_age">최대</string>
     <string name="empty_key_word_text">등록된 키워드가 없습니다.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

@@ -19,11 +19,11 @@
             android:layout_height="?attr/actionBarSize"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar">
+            app:toolbarId="@+id/CreateRoomMapSearchToolbar">
 
 
             <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/CreateRoomMapSearchToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"></androidx.appcompat.widget.Toolbar>
 

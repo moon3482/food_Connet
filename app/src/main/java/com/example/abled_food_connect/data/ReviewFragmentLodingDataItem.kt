@@ -1,7 +1,10 @@
 package com.example.abled_food_connect.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class ReviewFragmentLodingDataItem(
     @SerializedName("review_id")
     val review_id : Int,
@@ -40,8 +43,13 @@ data class ReviewFragmentLodingDataItem(
     @SerializedName("review_picture_2")
     val review_picture_2 : String,
     @SerializedName("like_count")
-    val like_count : String,
+    var like_count : String,
+    @SerializedName("heart_making")
+    var heart_making : Boolean,
     @SerializedName("comment_count")
-    val comment_count : String
-
-)
+    var comment_count : String,
+    @SerializedName("nick_name")
+    val nick_name : String,
+    @SerializedName("profile_image")
+    val profile_image : String
+): Parcelable

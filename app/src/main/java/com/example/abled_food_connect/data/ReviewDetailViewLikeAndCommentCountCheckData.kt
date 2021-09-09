@@ -8,5 +8,7 @@ data class ReviewDetailViewLikeAndCommentCountCheckData(
     @SerializedName("like_count")
     val like_count : Int,
     @SerializedName("comment_count")
-    val comment_count : Int
+    val comment_count : Int,
+    @SerializedName("review_deleted")
+    val review_deleted : Int
 )

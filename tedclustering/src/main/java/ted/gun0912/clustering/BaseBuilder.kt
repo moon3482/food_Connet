@@ -3,7 +3,6 @@ package ted.gun0912.clustering
 import android.content.Context
 import android.view.View
 import ted.gun0912.clustering.clustering.Cluster
-import ted.gun0912.clustering.clustering.ClusterManager
 import ted.gun0912.clustering.clustering.TedClusterItem
 import ted.gun0912.clustering.clustering.view.ClusterRenderer
 

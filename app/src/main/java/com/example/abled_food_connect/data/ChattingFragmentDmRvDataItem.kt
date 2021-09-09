@@ -8,8 +8,8 @@ data class ChattingFragmentDmRvDataItem(
     val room_name: String,
     @SerializedName("content")
     val content: String,
-    @SerializedName("text_or_image")
-    val text_or_image: String,
+    @SerializedName("text_or_image_or_dateline")
+    val text_or_image_or_dateline: String,
     @SerializedName("send_time")
     val send_time: String,
     @SerializedName("your_table_id")
@@ -21,5 +21,7 @@ data class ChattingFragmentDmRvDataItem(
     @SerializedName("not_read_message_count_row")
     val not_read_message_count_row: Int,
     @SerializedName("now_server_time")
-    val now_server_time: String
+    val now_server_time: String,
+    @SerializedName("is_account_delete")
+    val is_account_delete: Int,
 )

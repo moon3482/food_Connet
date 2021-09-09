@@ -6,15 +6,31 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context=".ReviewCommentChildActivity"
-android:orientation="vertical"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/reviewCommentChildRv"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/MainToolbar" />
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/childNestedSv"
         android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+        
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/reviewCommentChildRv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </androidx.core.widget.NestedScrollView>
+
+
 
     <LinearLayout
 
@@ -83,9 +99,6 @@ android:orientation="vertical"
 
 
     </LinearLayout>
-
-
-
 
 
 </LinearLayout>

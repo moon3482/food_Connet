@@ -5,7 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp">
+    android:layout_marginBottom="20dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="20dp">
 
     <LinearLayout
         android:gravity="center_vertical"
@@ -25,6 +27,7 @@
             android:layout_height="50dp"/>
 
         <LinearLayout
+            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -76,6 +79,13 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/reviewDotBtn"
+            android:src="@drawable/ic_baseline_more_vert_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
 
     </LinearLayout>
 
@@ -122,15 +132,15 @@
             android:layout_centerInParent="true" />
         <!--        android:layout_above="@+id/indicator"-->
         <me.relex.circleindicator.CircleIndicator3
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            app:ci_drawable="@drawable/black_radius"
             android:id="@+id/indicator"
             android:layout_width="match_parent"
             android:layout_height="18dp"
-            android:layout_marginBottom="10dp"
-            android:background="#ffffff"
-            android:visibility="gone"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/view_pager2"
-            app:ci_drawable="@drawable/black_radius" />
+            />
 
     </RelativeLayout>
 
@@ -237,7 +247,7 @@
 
     <TextView
         android:id="@+id/reviewDescriptionTv"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="10dp"
@@ -247,10 +257,10 @@
 
 
     <LinearLayout
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="35dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
