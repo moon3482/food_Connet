@@ -90,7 +90,7 @@ class MyPageFragment : Fragment() {
 
     //탈퇴 - DB 데이터 처리 관련 레트로핏 변수
     val userAccountDeleteRetrofit = Retrofit.Builder()
-        .baseUrl("http://52.78.107.230/")
+        .baseUrl("ServerIP")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     val userAccountDeleteApi =

@@ -228,7 +228,7 @@ class RoomInformationActivity : AppCompatActivity() {
 
     fun loadRoomInfo() {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://52.78.107.230/")
+            .baseUrl("ServerIP")
             .addConverterFactory(ScalarsConverterFactory.create())
             .client(createOkHttpClient())
             .build()

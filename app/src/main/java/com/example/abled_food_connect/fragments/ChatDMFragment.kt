@@ -94,7 +94,7 @@ class ChatDMFragment : Fragment() {
         //소켓통신
 
         try {
-            mySocket = IO.socket("http://52.78.107.230:3000")
+            mySocket = IO.socket("ServerIP:3000")
             //소켓이 접속할 uri을 설정한다.
         }catch (e: URISyntaxException) {
             e.printStackTrace()

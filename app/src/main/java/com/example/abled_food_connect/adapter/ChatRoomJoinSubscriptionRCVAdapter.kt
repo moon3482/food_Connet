@@ -186,7 +186,7 @@ class ChatRoomJoinSubscriptionRCVAdapter(
 
         val retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl("ServerIP")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()

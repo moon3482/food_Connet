@@ -179,7 +179,7 @@ class DirectMessageActivity : AppCompatActivity() {
 
 
         try {
-            mySocket = IO.socket("http://52.78.107.230:3000")
+            mySocket = IO.socket("ServerIP:3000")
             //소켓이 접속할 uri을 설정한다.
         }catch (e: URISyntaxException) {
             e.printStackTrace()
@@ -376,11 +376,11 @@ class DirectMessageActivity : AppCompatActivity() {
         if(from_user_tb_id == MyUserTableId){
 
 
-            direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+            direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"ServerIP"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
 
 
         }else{
-            direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+            direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"ServerIP"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
 
         }
 
@@ -682,9 +682,9 @@ class DirectMessageActivity : AppCompatActivity() {
                     var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 
                     if(from_user_tb_id == MyUserTableId){
-                        direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"ServerIP"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                     }else{
-                        direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+                        direct_message_data_Arraylist.add(DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"ServerIP"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                     }
                 }
 
@@ -752,9 +752,9 @@ class DirectMessageActivity : AppCompatActivity() {
                         var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 
                         if(from_user_tb_id == MyUserTableId){
-                            direct_message_data_Arraylist.add(0,DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+                            direct_message_data_Arraylist.add(0,DirectMessageRvData(dm_log_tb_id,room_name,MyUserTableId,MyUserNicName,"ServerIP"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                         }else{
-                            direct_message_data_Arraylist.add(0,DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+                            direct_message_data_Arraylist.add(0,DirectMessageRvData(dm_log_tb_id,room_name,clicked_user_tb_id,clicked_user_NicName,"ServerIP"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
                         }
 
                         insetCount++
@@ -830,9 +830,9 @@ class DirectMessageActivity : AppCompatActivity() {
 //                    var toShowTimeStr = show_time_split[0]+":"+show_time_split[1]
 //
 //                    if(from_user_tb_id == MyUserTableId){
-//                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"http://52.78.107.230/"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+//                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,MyUserTableId,MyUserNicName,"ServerIP"+MyProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
 //                    }else{
-//                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"http://52.78.107.230/"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
+//                        direct_message_data_Arraylist.add(DirectMessageRvData(room_name,clicked_user_tb_id,clicked_user_NicName,"ServerIP"+clicked_user_ProfileImage,content,text_or_image_or_dateline,send_time,toShowTimeStr,message_check))
 //                    }
 //                }
 //

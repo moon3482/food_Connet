@@ -311,7 +311,7 @@ class ChatRoomActivity : AppCompatActivity() {
         binding.roomFinishButton.setOnClickListener {
             val retrofit =
                 Retrofit.Builder()
-                    .baseUrl("http://52.78.107.230/")
+                    .baseUrl("ServerIP")
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(createOkHttpClient())
                     .build()
@@ -414,7 +414,7 @@ class ChatRoomActivity : AppCompatActivity() {
         binding.groupChatExitRoomButton.setOnClickListener {
             val retrofit =
                 Retrofit.Builder()
-                    .baseUrl("http://52.78.107.230/")
+                    .baseUrl("ServerIP")
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(createOkHttpClient())
                     .build()
@@ -1076,7 +1076,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         val retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl("ServerIP")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()
@@ -1141,7 +1141,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun messageLoad(pagenum: Int) {
         val retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl("ServerIP")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()
@@ -1188,7 +1188,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun messageRead(pagenum: Int) {
         val retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl("ServerIP")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()
@@ -1242,7 +1242,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         val retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl("ServerIP")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()

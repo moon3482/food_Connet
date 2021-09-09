@@ -681,7 +681,7 @@ class MainActivity : AppCompatActivity() {
         //creating retrofit object
         var retrofit =
             Retrofit.Builder()
-                .baseUrl("http://52.78.107.230/")
+                .baseUrl("ServerIP")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(createOkHttpClient())
                 .build()

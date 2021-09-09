@@ -105,7 +105,7 @@ val TAG = "위치업뎃 워커"
 
     private fun serverGps(userIndex: Int, x: String, y: String) {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://52.78.107.230/")
+            .baseUrl("ServerIP")
             .addConverterFactory(GsonConverterFactory.create())
             .client(createOkHttpClient())
             .build()

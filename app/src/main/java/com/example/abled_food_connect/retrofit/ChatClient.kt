@@ -10,7 +10,7 @@ class ChatClient {
     companion object {
         private var instance: ChatClient? = null
         lateinit var roomAPI: RoomAPI
-        var baseUrl: String = "http://52.78.107.230/"
+        var baseUrl: String = "ServerIP"
 
 
         fun getInstance(): ChatClient {
